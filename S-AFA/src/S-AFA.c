@@ -16,7 +16,7 @@ int main(void) {
 
 	config = load_config();
 
-	pthread_create(&thread_servidor, NULL, (void *) consola, NULL);
+	pthread_create(&thread_servidor, NULL, (void *) server, NULL);
 
 	pthread_create(&thread_consola, NULL, (void *) consola, NULL);
 
@@ -62,7 +62,7 @@ void server() {
 	FD_ZERO(&read_fds);
 
 	// obtener socket a la escucha
-	uint32_t servidor = build_server(config.PUERTO, log_safa);
+	uint32_t servidor = build_server(config.PUERTO, log_consola);
 
 	// añadir listener al conjunto maestro
 	FD_SET(servidor, &master);
@@ -73,7 +73,7 @@ void server() {
 	while (true) {
 		read_fds = master; // cópialo
 		if (select(fdmax + 1, &read_fds, NULL, NULL, NULL) == -1) {
-			log_error(log_safa, "select");
+			log_error(log_consola, "select");
 			exit(EXIT_FAILURE);
 		}
 		// explorar conexiones existentes en busca de datos que leer
@@ -83,12 +83,12 @@ void server() {
 					// gestionar nuevas conexiones
 					addrlen = sizeof(remoteaddr);
 					if ((newfd = accept(servidor, (struct sockaddr *) &remoteaddr, &addrlen)) == -1)
-						log_error(log_safa, "accept");
+						log_error(log_consola, "accept");
 					else {
 						FD_SET(newfd, &master); // añadir al conjunto maestro
 						if (newfd > fdmax) // actualizar el máximo
 							fdmax = newfd;
-						log_info(log_safa, "Nueva conexion desde %s en el socket %d", inet_ntoa(remoteaddr.sin_addr), newfd);
+						log_info(log_consola, "Nueva conexion desde %s en el socket %d", inet_ntoa(remoteaddr.sin_addr), newfd);
 					}
 				}
 				else
@@ -97,9 +97,9 @@ void server() {
 						// error o conexión cerrada por el cliente
 						if (nbytes == 0)
 							// conexión cerrada
-							log_info(log_safa, "Socket %d colgado", i);
+							log_info(log_consola, "Socket %d colgado", i);
 						else
-							log_error(log_safa, "recv (comando)");
+							log_error(log_consola, "recv (comando)");
 
 						close(i); // ¡Hasta luego!
 						FD_CLR(i, &master); // eliminar del conjunto maestro
@@ -113,22 +113,70 @@ void server() {
 
 void command_handler(uint32_t command) {
 	switch (command) {
-
+	case NUEVA_CONEXION_CPU:
+		log_info(log_consola, "Nueva conexion de CPU");
+		break;
+	case NUEVA_CONEXION_DIEGO:
+		log_info(log_consola, "Nueva conexion desde El Diego");
+		break;
 	default:
-		log_warning(log_safa, "%d: Comando recibido incorrecto", command);
+		log_warning(log_consola, "%d: Comando recibido incorrecto", command);
 	}
 }
 
 void consola() {
 	char *linea;
+	char *token;
+	console_t *consola;
 
 	while (true) {
 		linea = readline("S-AFA> ");
 
 		if (strlen(linea) > 0) {
 			add_history(linea);
+			log_info(log_consola, "Linea leida: %s", linea);
+			consola = malloc(sizeof(console_t));
 
-			print_c((void *) log_info, "Comando incorrecto\n");
+			if (consola != NULL) {
+				consola->comando = strdup(strtok(linea, " "));
+				consola->cant_params = 0;
+
+				while (consola->cant_params < MAX_PARAMS && (token = strtok(NULL, " ")) != NULL)
+					consola->param[consola->cant_params++] = strdup(token);
+
+				if (streq(consola->comando, "clear"))
+					system("clear");
+
+				else if (streq(consola->comando, "ejecutar"))
+					if (consola->cant_params < 1)
+						print_c((void *) log_info, "%s: falta la ruta del script que se desea ejecutar\n", consola->comando);
+					else {
+						// TODO: comando ejecutar
+					}
+
+				else if (streq(consola->comando, "status")) {
+					// TODO: comando status
+				}
+
+				else if (streq(consola->comando, "finalizar"))
+					if (consola->cant_params < 1)
+						print_c((void *) log_info, "%s: falta el ID correspondiente a un DT Block\n", consola->comando);
+					else {
+						// TODO: comando finalizar
+					}
+
+				else if (streq(consola->comando, "metricas")) {
+					// TODO: comando metricas
+				}
+
+				else
+					print_c((void *) log_info, "%s: Comando incorrecto\n", consola->comando);
+
+				free(consola->comando);
+				for (uint32_t i = 0; i < consola->cant_params; i++)
+					free(consola->param[i]);
+				free(consola);
+			}
 		}
 		free(linea);
 	}

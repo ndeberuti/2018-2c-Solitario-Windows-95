@@ -37,7 +37,7 @@ uint32_t build_server(uint32_t puerto, t_log *archivoLog) {
 	return listener;
 }
 
-uint32_t connect_server(char *dest_ip, uint32_t port, t_log *archivoLog) {
+uint32_t connect_server(char *dest_ip, uint32_t port, uint32_t handshake, t_log *archivoLog) {
 	uint32_t sockfd;
 	struct sockaddr_in their_addr; // información de la dirección de destino
 
@@ -55,6 +55,12 @@ uint32_t connect_server(char *dest_ip, uint32_t port, t_log *archivoLog) {
 		log_error(archivoLog, "connect");
 		exit(EXIT_FAILURE);
 	}
+
+	if (handshake != NULL)
+		if (send_int(sockfd, handshake) == -1) {
+			log_error(archivoLog, "handshake");
+			exit(EXIT_FAILURE);
+		}
 
 	return sockfd;
 }

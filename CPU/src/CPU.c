@@ -15,9 +15,11 @@ int main(void) {
 
 	config = load_config();
 
-	safa = connect_server(config.IP_SAFA, config.PUERTO_SAFA, log_cpu);
-	diego = connect_server(config.IP_DIEGO, config.PUERTO_DIEGO, log_cpu);
-	fm9 = connect_server(config.IP_FM9, config.PUERTO_FM9, log_cpu);
+	diego = connect_server(config.IP_DIEGO, config.PUERTO_DIEGO, CONEXION_DIEGO, log_cpu);
+	fm9 = connect_server(config.IP_FM9, config.PUERTO_FM9, CONEXION_FM9, log_cpu);
+	safa = connect_server(config.IP_SAFA, config.PUERTO_SAFA, CONEXION_SAFA, log_cpu);
+
+	while(true);
 
 	exit(EXIT_SUCCESS);
 }

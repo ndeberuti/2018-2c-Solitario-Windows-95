@@ -30,6 +30,11 @@
 char *PATH_LOG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/Logs/logSAFA.txt";
 char *PATH_CONFIG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/S-AFA/config.txt";
 
+#define MAX_PARAMS 1
+
+#define NUEVA_CONEXION_CPU 1
+#define NUEVA_CONEXION_DIEGO 2
+
 // estructuras
 typedef struct {
 	uint32_t PUERTO;
@@ -38,6 +43,12 @@ typedef struct {
 	uint32_t MULTIPROGRAMACION;
 	uint32_t RETARDO_PLANIF;
 } config_t;
+
+typedef struct {
+	char *comando;
+	char *param[MAX_PARAMS];
+	uint32_t cant_params;
+} console_t;
 
 // variables
 t_log *log_consola;

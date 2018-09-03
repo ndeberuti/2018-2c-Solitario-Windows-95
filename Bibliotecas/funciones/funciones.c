@@ -5,3 +5,8 @@ t_log *init_log(char *file, char *program_name, bool is_active_console, t_log_le
 	t_log *archivoLog = log_create(file, program_name, is_active_console, level);
 	return archivoLog;
 }
+
+bool streq(const char *s1, const char *s2) {
+	uint32_t size = strlen(s2);
+	return !strncmp(s1, s2, size) && strlen(s1) == size;
+}

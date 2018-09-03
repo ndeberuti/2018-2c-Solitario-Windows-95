@@ -15,9 +15,9 @@ int main(void) {
 
 	config = load_config();
 
-	safa = connect_server(config.IP_SAFA, config.PUERTO_SAFA, log_diego);
-	mdj = connect_server(config.IP_MDJ, config.PUERTO_MDJ, log_diego);
-	fm9 = connect_server(config.IP_FM9, config.PUERTO_FM9, log_diego);
+	fm9 = connect_server(config.IP_FM9, config.PUERTO_FM9, CONEXION_FM9, log_diego);
+	mdj = connect_server(config.IP_MDJ, config.PUERTO_MDJ, CONEXION_MDJ, log_diego);
+	safa = connect_server(config.IP_SAFA, config.PUERTO_SAFA, CONEXION_SAFA, log_diego);
 
 	pthread_create(&thread_servidor, NULL, (void *) server, NULL);
 
@@ -118,7 +118,9 @@ void server() {
 
 void command_handler(uint32_t command) {
 	switch (command) {
-
+	case NUEVA_CONEXION_CPU:
+		log_info(log_diego, "Nueva conexion de CPU");
+		break;
 	default:
 		log_warning(log_diego, "%d: Comando recibido incorrecto", command);
 	}
