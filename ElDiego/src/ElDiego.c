@@ -15,9 +15,26 @@ int main(void) {
 
 	config = load_config();
 
-	fm9 = connect_server(config.IP_FM9, config.PUERTO_FM9, CONEXION_FM9, log_diego);
-	mdj = connect_server(config.IP_MDJ, config.PUERTO_MDJ, CONEXION_MDJ, log_diego);
-	safa = connect_server(config.IP_SAFA, config.PUERTO_SAFA, CONEXION_SAFA, log_diego);
+	if ((safa = connect_server(config.IP_SAFA, config.PUERTO_SAFA, CONEXION_DIEGO, log_diego)) == 0) {
+		log_error(log_diego, "Error al conectar con S-AFA");
+		exit(EXIT_FAILURE);
+	}
+
+	log_info(log_diego, "Conexion con S-AFA exitosa");
+
+	if ((mdj = connect_server(config.IP_MDJ, config.PUERTO_MDJ, CONEXION_DIEGO, log_diego)) == 0) {
+		log_error(log_diego, "Error al conectar con MDJ");
+		exit(EXIT_FAILURE);
+	}
+
+	log_info(log_diego, "Conexion con MDJ exitosa");
+
+	if ((fm9 = connect_server(config.IP_FM9, config.PUERTO_FM9, CONEXION_DIEGO, log_diego)) == 0) {
+		log_error(log_diego, "Error al conectar con FM9");
+		exit(EXIT_FAILURE);
+	}
+
+	log_info(log_diego, "Conexion con FM9 exitosa");
 
 	pthread_create(&thread_servidor, NULL, (void *) server, NULL);
 
@@ -93,7 +110,7 @@ void server() {
 						FD_SET(newfd, &master); // añadir al conjunto maestro
 						if (newfd > fdmax) // actualizar el máximo
 							fdmax = newfd;
-						log_info(log_diego, "Nueva conexion desde %s en el socket %d", inet_ntoa(remoteaddr.sin_addr), newfd);
+						//log_info(log_diego, "Nueva conexion desde %s en el socket %d", inet_ntoa(remoteaddr.sin_addr), newfd);
 					}
 				}
 				else
@@ -102,7 +119,7 @@ void server() {
 						// error o conexión cerrada por el cliente
 						if (nbytes == 0)
 							// conexión cerrada
-							log_info(log_diego, "Socket %d colgado", i);
+							log_info(log_diego, "CPU desconectada");
 						else
 							log_error(log_diego, "recv (comando)");
 

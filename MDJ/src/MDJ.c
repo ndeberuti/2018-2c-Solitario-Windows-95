@@ -84,7 +84,7 @@ void server() {
 						FD_SET(newfd, &master); // añadir al conjunto maestro
 						if (newfd > fdmax) // actualizar el máximo
 							fdmax = newfd;
-						log_info(log_consola, "Nueva conexion desde %s en el socket %d", inet_ntoa(remoteaddr.sin_addr), newfd);
+						//log_info(log_consola, "Nueva conexion desde %s en el socket %d", inet_ntoa(remoteaddr.sin_addr), newfd);
 					}
 				}
 				else
@@ -93,7 +93,7 @@ void server() {
 						// error o conexión cerrada por el cliente
 						if (nbytes == 0)
 							// conexión cerrada
-							log_info(log_consola, "Socket %d colgado", i);
+							log_info(log_consola, "Se desconecto El Diego");
 						else
 							log_error(log_consola, "recv (comando)");
 
@@ -137,38 +137,36 @@ void consola() {
 				while (consola->cant_params < MAX_PARAMS && (token = strtok(NULL, " ")) != NULL)
 					consola->param[consola->cant_params++] = strdup(token);
 
-				if (streq(consola->comando, "clear"))
+				if (str_eq(consola->comando, "clear"))
 					system("clear");
 
-				else if (streq(consola->comando, "ls")) {
+				else if (str_eq(consola->comando, "ls")) {
 					// TODO: comando ls
 				}
 
-				else if (streq(consola->comando, "cd")) {
+				else if (str_eq(consola->comando, "cd"))
 					if (consola->cant_params < 1)
-						print_c((void *) log_info, "%s: falta el parametro <directorio>\n", consola->comando);
+						print_c(log_consola, "%s: falta el parametro <directorio>\n", consola->comando);
 					else {
 						// TODO: comando cd
 					}
-				}
 
-				else if (streq(consola->comando, "md5"))
+				else if (str_eq(consola->comando, "md5"))
 					if (consola->cant_params < 1)
-						print_c((void *) log_info, "%s: falta el parametro <archivo>\n", consola->comando);
+						print_c(log_consola, "%s: falta el parametro <archivo>\n", consola->comando);
 					else {
 						// TODO: comando md5
 					}
 
-				else if (streq(consola->comando, "cat")) {
+				else if (str_eq(consola->comando, "cat"))
 					if (consola->cant_params < 1)
-						print_c((void *) log_info, "%s: falta el parametro <archivo>\n", consola->comando);
+						print_c(log_consola, "%s: falta el parametro <archivo>\n", consola->comando);
 					else {
 						// TODO: comando cat
 					}
-				}
 
 				else
-					print_c((void *) log_info, "%s: Comando incorrecto\n", consola->comando);
+					print_c(log_consola, "%s: Comando incorrecto\n", consola->comando);
 
 				free(consola->comando);
 				for (uint32_t i = 0; i < consola->cant_params; i++)
@@ -178,14 +176,4 @@ void consola() {
 		}
 		free(linea);
 	}
-}
-
-void print_c(void (*log_function)(t_log *, const char *), char *message_template, ...) {
-	va_list arguments;
-	va_start(arguments, message_template);
-	char *message = string_from_vformat(message_template, arguments);
-	va_end(arguments);
-	log_function(log_consola, message);
-	printf("%s", message);
-	free(message);
 }

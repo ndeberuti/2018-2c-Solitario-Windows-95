@@ -20,11 +20,9 @@
 #include <pthread.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-#include <stdarg.h>
 #include "funciones/funciones.h"
 #include "commons/config.h"
 #include "servidor/servidor.h"
-#include "commons/string.h"
 
 // constantes
 char *PATH_LOG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/Logs/logFM9.txt";
@@ -32,8 +30,8 @@ char *PATH_CONFIG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/FM9/c
 
 #define MAX_PARAMS 1
 
-#define NUEVA_CONEXION_CPU 1
-#define NUEVA_CONEXION_DIEGO 2
+#define NUEVA_CONEXION_DIEGO 1
+#define NUEVA_CONEXION_CPU 4
 
 // estructuras
 typedef struct {
@@ -56,12 +54,12 @@ t_log *log_fm9;
 config_t config;
 pthread_t thread_servidor;
 pthread_t thread_consola;
+uint32_t diego;
 
 // funciones
 config_t load_config();
 void server();
-void command_handler(uint32_t command);
+void command_handler(uint32_t command, uint32_t socket);
 void consola();
-void print_c(void (*log_function)(t_log *, const char *), char *message_template, ...);
 
 #endif /* SRC_FM9_H_ */

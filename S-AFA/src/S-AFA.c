@@ -88,7 +88,7 @@ void server() {
 						FD_SET(newfd, &master); // añadir al conjunto maestro
 						if (newfd > fdmax) // actualizar el máximo
 							fdmax = newfd;
-						log_info(log_consola, "Nueva conexion desde %s en el socket %d", inet_ntoa(remoteaddr.sin_addr), newfd);
+						//log_info(log_consola, "Nueva conexion desde %s en el socket %d", inet_ntoa(remoteaddr.sin_addr), newfd);
 					}
 				}
 				else
@@ -97,7 +97,10 @@ void server() {
 						// error o conexión cerrada por el cliente
 						if (nbytes == 0)
 							// conexión cerrada
-							log_info(log_consola, "Socket %d colgado", i);
+							if (i == diego)
+								log_info(log_consola, "Se desconecto El Diego");
+							else
+								log_info(log_consola, "CPU desconectada");
 						else
 							log_error(log_consola, "recv (comando)");
 
@@ -106,18 +109,19 @@ void server() {
 					}
 					else
 						// tenemos datos de algún cliente
-						command_handler(command);
+						command_handler(command, i);
 			} // if (FD_ISSET(i, &read_fds))
 	} // while (true)
 }
 
-void command_handler(uint32_t command) {
+void command_handler(uint32_t command, uint32_t socket) {
 	switch (command) {
-	case NUEVA_CONEXION_CPU:
-		log_info(log_consola, "Nueva conexion de CPU");
-		break;
 	case NUEVA_CONEXION_DIEGO:
 		log_info(log_consola, "Nueva conexion desde El Diego");
+		diego = socket;
+		break;
+	case NUEVA_CONEXION_CPU:
+		log_info(log_consola, "Nueva conexion de CPU");
 		break;
 	default:
 		log_warning(log_consola, "%d: Comando recibido incorrecto", command);
@@ -144,33 +148,33 @@ void consola() {
 				while (consola->cant_params < MAX_PARAMS && (token = strtok(NULL, " ")) != NULL)
 					consola->param[consola->cant_params++] = strdup(token);
 
-				if (streq(consola->comando, "clear"))
+				if (str_eq(consola->comando, "clear"))
 					system("clear");
 
-				else if (streq(consola->comando, "ejecutar"))
+				else if (str_eq(consola->comando, "ejecutar"))
 					if (consola->cant_params < 1)
-						print_c((void *) log_info, "%s: falta la ruta del script que se desea ejecutar\n", consola->comando);
+						print_c(log_consola, "%s: falta la ruta del script que se desea ejecutar\n", consola->comando);
 					else {
 						// TODO: comando ejecutar
 					}
 
-				else if (streq(consola->comando, "status")) {
+				else if (str_eq(consola->comando, "status")) {
 					// TODO: comando status
 				}
 
-				else if (streq(consola->comando, "finalizar"))
+				else if (str_eq(consola->comando, "finalizar"))
 					if (consola->cant_params < 1)
-						print_c((void *) log_info, "%s: falta el ID correspondiente a un DT Block\n", consola->comando);
+						print_c(log_consola, "%s: falta el ID correspondiente a un DT Block\n", consola->comando);
 					else {
 						// TODO: comando finalizar
 					}
 
-				else if (streq(consola->comando, "metricas")) {
+				else if (str_eq(consola->comando, "metricas")) {
 					// TODO: comando metricas
 				}
 
 				else
-					print_c((void *) log_info, "%s: Comando incorrecto\n", consola->comando);
+					print_c(log_consola, "%s: Comando incorrecto\n", consola->comando);
 
 				free(consola->comando);
 				for (uint32_t i = 0; i < consola->cant_params; i++)
@@ -180,14 +184,4 @@ void consola() {
 		}
 		free(linea);
 	}
-}
-
-void print_c(void (*log_function)(t_log *, const char *), char *message_template, ...) {
-	va_list arguments;
-	va_start(arguments, message_template);
-	char *message = string_from_vformat(message_template, arguments);
-	va_end(arguments);
-	log_function(log_consola, message);
-	printf("%s", message);
-	free(message);
 }

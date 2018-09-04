@@ -12,8 +12,8 @@
 #include <arpa/inet.h>
 #include "../commons/log.h"
 
-uint32_t build_server(uint32_t puerto, t_log *archivoLog);
-uint32_t connect_server(char *dest_ip, uint32_t port, uint32_t handshake, t_log *archivoLog);
+uint32_t build_server(uint32_t port, t_log *log_file);
+uint32_t connect_server(char *dest_ip, uint32_t port, uint32_t handshake, t_log *log_file);
 uint32_t receive_int(uint32_t socket, uint32_t *buf);
 uint32_t receive_string(uint32_t socket, char **buf);
 uint32_t send_string(uint32_t socket, char *buf);

@@ -10,9 +10,12 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <stdarg.h>
 #include "../commons/log.h"
+#include "../commons/string.h"
 
 t_log *init_log(char *file, char *program_name, bool is_active_console, t_log_level level);
-bool streq(const char *s1, const char *s2);
+bool str_eq(const char *s1, const char *s2);
+void print_c(t_log *log_file, char *message_template, ...);
 
 #endif
