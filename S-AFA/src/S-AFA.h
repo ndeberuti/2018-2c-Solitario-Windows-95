@@ -22,16 +22,15 @@
 #include <readline/history.h>
 #include "funciones/funciones.h"
 #include "commons/config.h"
+#include "commons/collections/list.h"
 #include "servidor/servidor.h"
+#include "enums.h"
 
 // constantes
 char *PATH_LOG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/Logs/logSAFA.txt";
 char *PATH_CONFIG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/S-AFA/config.txt";
 
 #define MAX_PARAMS 1
-
-#define NUEVA_CONEXION_DIEGO 1
-#define NUEVA_CONEXION_CPU 4
 
 // estructuras
 typedef struct {
@@ -53,13 +52,17 @@ t_log *log_consola;
 t_log *log_safa;
 config_t config;
 pthread_t thread_servidor;
-pthread_t thread_consola;
+pthread_t thread_LTS;
+pthread_t thread_STS;
 uint32_t diego;
+fd_set master; // conjunto maestro de descriptores de fichero
+
 
 // funciones
 config_t load_config();
 void server();
-void command_handler(uint32_t command, uint32_t socket);
-void consola();
+void moduleHandler(uint32_t command, uint32_t socket);
+void longTermScheduler();
+void shortTermScheduler();
 
 #endif /* SRC_S_AFA_H_ */
