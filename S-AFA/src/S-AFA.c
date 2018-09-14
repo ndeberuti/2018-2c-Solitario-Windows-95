@@ -11,25 +11,44 @@ int main(void)
 	system("clear");
 	puts("PROCESO S-AFA\n");
 
-	log_consola = init_log(PATH_LOG, "Consola S-AFA", false, LOG_LEVEL_INFO);
-	log_safa = init_log(PATH_LOG, "Proceso S-AFA", true, LOG_LEVEL_INFO);
-	log_info(log_safa, "Inicio del proceso");
+	initializeVariables();
 
+	log_info(schedulerLog, "Inicio del proceso");
+
+	console();
+
+	exit(EXIT_SUCCESS);
+}
+
+void initializeVariables()
+{
+	executedInstructions = 0;
+	dma_executedInstructions = 0;
+	actualProcesses = 0;
+	totalProcesses = 0;
+	exit_executedInstructions = 0;
+	totalConnectedCpus =  0;
+
+	newQueue = list_create();
+	readyQueue = list_create();
+	blockedQueue = list_create();
+	executingQueue = list_create();
+	finishedQueue = list_create();
+	connectedCPUs = list_create();
+
+	consoleLog = init_log(PATH_LOG, "Consola S-AFA", false, LOG_LEVEL_INFO);
+	schedulerLog = init_log(PATH_LOG, "Proceso S-AFA", true, LOG_LEVEL_INFO);
 	config = load_config();
 
 	pthread_attr_t* threadAttributes;
 	pthread_attr_init(threadAttributes);
 	pthread_attr_setdetachstate(threadAttributes, PTHREAD_CREATE_DETACHED);
 
-	pthread_create(&thread_servidor, threadAttributes, (void *)server, NULL);
+	pthread_create(&serverThread, threadAttributes, (void *)server, NULL);
 
-	pthread_create(&thread_STS, threadAttributes, (void *)shortTermScheduler, NULL);
+	pthread_create(&stsThread, threadAttributes, (void *)shortTermScheduler, NULL);
 
-	pthread_create(thread_LTS, threadAttributes, (void *)longTermScheduler, NULL);
-
-	consola();
-
-	exit(EXIT_SUCCESS);
+	pthread_create(ltsThread, threadAttributes, (void *)longTermScheduler, NULL);
 }
 
 
@@ -37,23 +56,23 @@ config_t load_config()
 {
 	t_config *config = config_create(PATH_CONFIG);
 
-	config_t miConfig;
-	miConfig.PUERTO = config_get_int_value(config, "PUERTO");
-	miConfig.ALGORITMO = strdup(config_get_string_value(config, "ALGORITMO"));
-	miConfig.QUANTUM = config_get_int_value(config, "QUANTUM");
-	miConfig.MULTIPROGRAMACION = config_get_int_value(config, "MULTIPROGRAMACION");
-	miConfig.RETARDO_PLANIF = config_get_int_value(config, "RETARDO_PLANIF");
+	config_t configFile;
+	configFile.port = config_get_int_value(config, "PUERTO");
+	configFile.schedulingAlgorithm = strdup(config_get_string_value(config, "ALGORITMO"));
+	configFile.quantum = config_get_int_value(config, "QUANTUM");
+	configFile.multiprogrammingLevel = config_get_int_value(config, "MULTIPROGRAMACION");
+	configFile.schedulingDelay = config_get_int_value(config, "RETARDO_PLANIF");
 
-	log_info(log_safa, "---- Configuracion ----");
-	log_info(log_safa, "PUERTO = %d", miConfig.PUERTO);
-	log_info(log_safa, "ALGORITMO = %s", miConfig.ALGORITMO);
-	log_info(log_safa, "QUANTUM = %d", miConfig.QUANTUM);
-	log_info(log_safa, "MULTIPROGRAMACION = %d", miConfig.MULTIPROGRAMACION);
-	log_info(log_safa, "RETARDO_PLANIF = %d milisegundos", miConfig.RETARDO_PLANIF);
-	log_info(log_safa, "-----------------------");
+	log_info(schedulerLog, "---- Configuracion ----");
+	log_info(schedulerLog, "PUERTO = %d", configFile.port);
+	log_info(schedulerLog, "ALGORITMO = %s", configFile.schedulingAlgorithm);
+	log_info(schedulerLog, "QUANTUM = %d", configFile.quantum);
+	log_info(schedulerLog, "MULTIPROGRAMACION = %d", configFile.multiprogrammingLevel);
+	log_info(schedulerLog, "RETARDO_PLANIF = %d milisegundos", configFile.schedulingDelay);
+	log_info(schedulerLog, "-----------------------");
 
 	config_destroy(config);
-	return miConfig;
+	return configFile;
 }
 
 void server()
@@ -69,7 +88,7 @@ void server()
 	FD_ZERO(&read_fds);
 
 	// obtener socket a la escucha
-	uint32_t servidor = build_server(config.PUERTO, log_consola);
+	uint32_t servidor = build_server(config.port, consoleLog);
 
 	// añadir listener al conjunto maestro
 	FD_SET(servidor, &master);
@@ -82,7 +101,7 @@ void server()
 		read_fds = master; // cópialo
 		if (select(fdmax + 1, &read_fds, NULL, NULL, NULL) == -1)
 		{
-			log_error(log_consola, "Error en select");
+			log_error(consoleLog, "Error en select");
 			exit(EXIT_FAILURE);
 		}
 
@@ -96,7 +115,7 @@ void server()
 					// gestionar nuevas conexiones
 					addrlen = sizeof(remoteaddr);
 					if ((newfd = accept(servidor, (struct sockaddr *) &remoteaddr, &addrlen)) == -1)
-						log_error(log_consola, "Error en accept");
+						log_error(consoleLog, "Error en accept");
 					else
 					{
 						FD_SET(newfd, &master); // añadir al conjunto maestro
@@ -114,13 +133,13 @@ void server()
 						if (nbytes == 0)
 						{
 							// conexión cerrada
-							if (i == diego)
-								log_info(log_consola, "DMA desconectado");
+							if (i == dmaSocket)
+								log_info(consoleLog, "DMA desconectado");
 							else
-								log_info(log_consola, "CPU desconectada");
+								log_info(consoleLog, "CPU desconectada");
 						}
 						else
-							log_error(log_consola, "recv (comando)");
+							log_error(consoleLog, "recv (comando)");
 
 						close(i); // ¡Hasta luego!
 						FD_CLR(i, &master); // eliminar del conjunto maestro
@@ -141,23 +160,29 @@ void moduleHandler(uint32_t command, uint32_t socket)
 	switch (command)
 	{
 		case NUEVA_CONEXION_DMA:
-			log_info(log_consola, "Nueva conexion desde el DMA");
-			diego = socket;
+			log_info(consoleLog, "Nueva conexion desde el DMA");
+			dmaSocket = socket;
 			break;
 		case NUEVA_CONEXION_CPU:
-			log_info(log_consola, "Nueva conexion de CPU");
-			//list_add();	//AGREGO LA CPU A LA LISTA DE CPUS CONECTADAS, DANDOLE UN ID Y EL SOCKET -> LISTA DE ESTRUCTURAS
+			log_info(consoleLog, "Nueva conexion de CPU");
+
+			cpu_t* cpuConnection = calloc(1, sizeof(cpu_t));
+			cpuConnection->cpuId = ++totalConnectedCpus;
+			cpuConnection->currentProcess = 0;
+			cpuConnection->isFree = true;
+
+			list_add(connectedCPUs, cpuConnection);
 			break;
 		case MSJ_DESDE_CPU:
-			log_info(log_consola, "Mensaje desde CPU"); //por ahi tengo que informar que cpu me manda msj
-			taskHandler("CPU desconectada", socket, cpuTaskHandler); //por ahi tengo que informar que CPU se murio
+			log_info(consoleLog, "Mensaje desde CPU"); //TODO: por ahi tengo que informar que cpu me manda msj
+			taskHandler("CPU desconectada", socket, cpuTaskHandler); //TODO: por ahi tengo que informar que CPU se murio
 			break;
 		case MSJ_DESDE_DMA:
-			log_info(log_consola, "Mensaje desde DMA");
+			log_info(consoleLog, "Mensaje desde DMA");
 			taskHandler("DMA desconectado", socket, dmaTaskHandler);
 			break;
 		default:
-			log_warning(log_consola, "%d: Comando recibido incorrecto\n", command);
+			log_warning(consoleLog, "%d: Comando recibido incorrecto\n", command);
 	}
 }
 
@@ -171,9 +196,9 @@ void taskHandler(char* errorMsg, int socket, void (*taskHandler)(uint32_t, uint3
 	{
 		// error o conexión cerrada por el cliente
 		if (nbytes == 0)
-			log_info(log_consola, errorMsg);
+			log_info(consoleLog, errorMsg);
 		else
-			log_error(log_consola, "recv (comando)");
+			log_error(consoleLog, "recv (comando)");
 
 		close(socket); // ¡Hasta luego!
 		FD_CLR(socket, &master); // eliminar del conjunto maestro
@@ -194,7 +219,7 @@ void dmaTaskHandler(uint32_t task, uint32_t socket)
 	{
 		//TODO
 		default:
-			log_warning(log_consola, "La tarea %d es incorrecta", task);
+			log_warning(consoleLog, "La tarea %d es incorrecta", task);
 	}
 }
 
@@ -205,78 +230,122 @@ void cpuTaskHandler(uint32_t task, uint32_t socket)
 	{
 		//TODO
 		default:
-			log_warning(log_consola, "La tarea %d es incorrecta", task);
+			log_warning(consoleLog, "La tarea %d es incorrecta", task);
 	}
 }
 
 
-void consola()
+void console()
 {
-	char *linea;
+	char *line;
 	char *token;
-	console_t *consola;
+	console_t *console;
 
 	while (true)
 	{
-		linea = readline("S-AFA> ");
+		line = readline("S-AFA> ");
 
-		if (strlen(linea) > 0)
+		if (strlen(line) > 0)
 		{
-			add_history(linea);
-			log_info(log_consola, "Linea leida: %s", linea);
-			consola = malloc(sizeof(console_t));
+			add_history(line);
+			log_info(consoleLog, "Linea leida: %s", line);
+			console = malloc(sizeof(console_t));
 
-			if (consola != NULL)
+			if (console != NULL)
 			{
-				consola->comando = strdup(strtok(linea, " "));
-				consola->cant_params = 0;
+				console->command = strdup(strtok(line, " "));
+				console->paramsQty = 0;
 
-				while (consola->cant_params < MAX_PARAMS && (token = strtok(NULL, " ")) != NULL)
-					consola->param[consola->cant_params++] = strdup(token);
+				while (console->paramsQty < MAX_PARAMS && (token = strtok(NULL, " ")) != NULL)
+					console->param[console->paramsQty++] = strdup(token);
 
-				if (str_eq(consola->comando, "clear"))
+				if (str_eq(console->command, "clear"))
 					system("clear");
 
-				else if (str_eq(consola->comando, "ejecutar"))
+				else if (str_eq(console->command, "ejecutar"))
 				{
-					if (consola->cant_params < 1)
-						print_c(log_consola, "%s: falta la ruta del script que se desea ejecutar\n", consola->comando);
+					if (console->paramsQty < 1)
+						print_c(consoleLog, "%s: falta la ruta del script que se desea ejecutar\n", console->command);
 					else
 					{
-						// TODO: comando ejecutar
+						executeScript(console->param[0]);
 					}
 				}
 
-				else if (str_eq(consola->comando, "status"))
+				else if (str_eq(console->command, "status"))
 				{
 					// TODO: comando status
 				}
 
-				else if (str_eq(consola->comando, "finalizar"))
+				else if (str_eq(console->command, "finalizar"))
 				{
-					if (consola->cant_params < 1)
-						print_c(log_consola, "%s: falta el ID correspondiente a un DT Block\n", consola->comando);
+					if (console->paramsQty < 1)
+						print_c(consoleLog, "%s: falta el ID correspondiente a un DT Block\n", console->command);
 					else
 					{
 						// TODO: comando finalizar
 					}
 				}
 
-				else if (str_eq(consola->comando, "metricas"))
+				else if (str_eq(console->command, "metricas"))
 				{
 					// TODO: comando metricas
 				}
 
 				else
-					print_c(log_consola, "%s: Comando incorrecto\n", consola->comando);
+					print_c(consoleLog, "%s: Comando incorrecto\n", console->command);
 
-				free(consola->comando);
-				for (uint32_t i = 0; i < consola->cant_params; i++)
-					free(consola->param[i]);
-				free(consola);
+				free(console->command);
+				for (uint32_t i = 0; i < console->paramsQty; i++)
+					free(console->param[i]);
+				free(console);
 			}
 		}
 
-		free(linea);
+		free(line);
 	}
 }
+
+
+void executeScript(char* script)
+{
+	PCB_t* process = createPCB(script);
+
+	if(process == NULL)
+	{
+		log_error("Ocurrio un problema al intentar crear el PCB para el nuevo proceso");
+		return;
+	}
+
+	addProcessToNewQueue(process);
+	//STS tiene que activarse si no hay procesos ejecutando y hay procesos en Ready
+}
+
+
+PCB_t* crearPCB(char* scriptName)
+{
+	PCB_t* process = calloc(1, sizeof(PCB_t));
+
+	if(process == NULL)	//no se pudo reservar memoria
+		return NULL;
+
+	process->fileTable = list_create();
+	process->newQueueArrivalTime = executedInstructions;
+	process->newQueueLeaveTime = 0;
+	process->pid = ++totalProcesses;
+	process->programCounter = NULL;
+	process->script = strdup(scriptName); // scriptName es parte de una estructura que va a ser liberada
+	process->wasInitialized = false;
+
+	return process;
+}
+
+void addProcessToNewQueue(PCB_t* process)
+{
+	list_add(newQueue, process);
+
+	//TODO: Signal LTS -> semaphores needed
+}
+
+//TODO: regarding the sts, if a new cpu connects, it must be activated
+//(that new cpu will be selected anyways, no need to specify one for the STS to assign a process to it)
