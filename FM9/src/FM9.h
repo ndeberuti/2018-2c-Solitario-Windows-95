@@ -35,14 +35,31 @@ typedef struct {
 	uint32_t TAM_PAGINA;
 } config_t;
 
+
+
+typedef struct {
+	int numero;
+	char* palabra;
+} prueba_t;
+
+
+
+
+
 // variables
 t_log *log_fm9;
 config_t config;
 pthread_t thread_servidor;
+void* memory_pointer; //puntero a primer direccion de FM9
+//prueba_t *prueba;
+
 
 // funciones
 config_t load_config();
 void server();
 void command_handler(uint32_t command);
+void inicializar_memoria();
+void deserializar(void* buffer, int tamanio);
+void serializar(void* buffer_envio);
 
 #endif /* SRC_FM9_H_ */

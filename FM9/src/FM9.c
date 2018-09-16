@@ -7,6 +7,10 @@
 #include "FM9.h"
 
 int main(void) {
+	//simulacion de serializacion/deserializacion
+	void* buffer_envio;
+
+
 	system("clear");
 	puts("PROCESO FM9\n");
 
@@ -14,6 +18,11 @@ int main(void) {
 	log_info(log_fm9, "Inicio del proceso");
 
 	config = load_config();
+
+
+	inicializar_memoria();
+
+	//serializar(buffer_envio);
 
 	pthread_create(&thread_servidor, NULL, (void *) server, NULL);
 
@@ -113,3 +122,68 @@ void command_handler(uint32_t command) {
 		log_warning(log_fm9, "%d: Comando recibido incorrecto", command);
 	}
 }
+
+void inicializar_memoria(){
+
+	//alocacion de memoria
+
+
+	memory_pointer  = malloc(config.TAMANIO);
+
+	if(memory_pointer == NULL){
+
+		log_error(log_fm9, "Puntero de memoria a NULL");
+
+	}
+
+	log_info(log_fm9, "Alocacion exitosa");
+
+}
+
+/*
+
+void serializar(void * buffer_envio){
+
+int longitud = 5;
+char * palabra = "hola";
+
+
+
+buffer_envio = malloc(sizeof(int)+ 5);
+
+memcpy(buffer_envio, &longitud, sizeof(int));
+
+memcpy(buffer_envio + sizeof(int), &palabra, 5);
+
+
+
+}
+
+void deserializar(void* buffer, int tamanio){
+int offset = 0;
+void* buffer_envio;
+
+
+serializar(buffer_envio);
+
+
+
+
+
+
+memcpy(&prueba->numero, buffer_envio, sizeof(int));
+
+offset =+ sizeof(int);
+
+memcpy(&prueba->palabra, buffer_envio + offset, prueba->numero);
+
+free(buffer_envio);
+
+log_info(log_fm9,"%d", prueba->numero);
+
+}
+
+*/
+
+
+
