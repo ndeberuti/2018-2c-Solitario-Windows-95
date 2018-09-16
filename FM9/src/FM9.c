@@ -19,16 +19,16 @@ int main(void) {
 
 	config = load_config();
 
-
 	inicializar_memoria();
 
 	//serializar(buffer_envio);
 
 	pthread_create(&thread_servidor, NULL, (void *) server, NULL);
-
 	pthread_join(thread_servidor, NULL);
 
 	exit(EXIT_SUCCESS);
+
+	free(memory_pointer);
 }
 
 config_t load_config() {
@@ -123,39 +123,92 @@ void command_handler(uint32_t command) {
 	}
 }
 
+
 void inicializar_memoria(){
-
 	//alocacion de memoria
-
 
 	memory_pointer  = malloc(config.TAMANIO);
 
 	if(memory_pointer == NULL){
-
 		log_error(log_fm9, "Puntero de memoria a NULL");
-
 	}
 
 	log_info(log_fm9, "Alocacion exitosa");
 
+	setear_modo();
 }
+
+
+void setear_modo(){
+	if(strcmp("SEG", config.MODO)== 0){
+		setear_segmentacion_simple();
+	}
+	else if(strcmp("TPI", config.MODO)== 0){
+		setear_paginacion_invertida();
+	}
+	else if(strcmp("SPI", config.MODO)== 0){
+		setear_segmentacion_paginada();
+	}
+	else {
+		log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
+	}
+}
+
+void setear_segmentacion_simple(){
+	log_info(log_fm9, "Segmentación Simple seteada");
+}
+
+void setear_paginacion_invertida(){
+	log_info(log_fm9, "Tablas de Paginación Invertida seteada");
+}
+
+void setear_segmentacion_paginada(){
+	log_info(log_fm9, "Segmentación Paginada seteada");
+}
+
+
+void recibir_proceso(int socket){
+	int pid,longitud_paquete= 0;
+	void * buffer_recepcion;
+
+	recv(socket, &pid, sizeof(int), MSG_WAITALL);
+	recv(socket, &longitud_paquete, sizeof(int), MSG_WAITALL);
+	recv(socket, buffer_recepcion, longitud_paquete, MSG_WAITALL);
+
+	guardar_proceso(pid, longitud_paquete, buffer_recepcion);
+}
+
+void guardar_proceso(int pid ,int longitud_paquete, void * buffer_recepcion){
+
+	int offset = 0 ;
+
+#warning REDONDEAR PARA ARRIBA!!!!
+	//TODO REDONDEAR PARA ARRIBA!!!!
+	int cantidad_lineas_proceso= longitud_paquete / config.MAX_LINEA;
+
+	//TODO verificar que haya memoria disponible
+	//TODO guardar pid, linea y asociar la estructura administrativa
+	while(offset <= longitud_paquete){
+		memcpy(memory_pointer, buffer_recepcion + offset,config.MAX_LINEA);
+		offset+= config.MAX_LINEA;
+	}
+}
+
 
 /*
 
 void serializar(void * buffer_envio){
 
-int longitud = 5;
-char * palabra = "hola";
+	int longitud = 5;
+	char * palabra = "hola";
 
 
 
-buffer_envio = malloc(sizeof(int)+ 5);
+	buffer_envio = malloc(sizeof(int)+ 5);
 
-memcpy(buffer_envio, &longitud, sizeof(int));
+	memcpy(buffer_envio, &longitud, sizeof(int));
 
-memcpy(buffer_envio + sizeof(int), &palabra, 5);
-
-
+	memcpy(buffer_envio + sizeof(int), &palabra, 5);
 
 }
 
@@ -165,11 +218,6 @@ void* buffer_envio;
 
 
 serializar(buffer_envio);
-
-
-
-
-
 
 memcpy(&prueba->numero, buffer_envio, sizeof(int));
 

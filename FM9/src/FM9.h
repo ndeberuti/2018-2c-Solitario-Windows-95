@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <math.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
@@ -42,7 +43,11 @@ typedef struct {
 	char* palabra;
 } prueba_t;
 
-
+/*enum MODOS_EJECUCION {
+	SEGMENTACION_SIMPLE= "SEG",
+	PAGINACION_INVERTIDA = "TPI",
+	SEGMENTACION_PAGINADA = "SPI"
+};*/
 
 
 
@@ -59,6 +64,11 @@ config_t load_config();
 void server();
 void command_handler(uint32_t command);
 void inicializar_memoria();
+void setear_modo();
+void setear_segmentacion_simple();
+void setear_paginacion_invertida();
+void setear_segmentacion_paginada();
+
 void deserializar(void* buffer, int tamanio);
 void serializar(void* buffer_envio);
 
