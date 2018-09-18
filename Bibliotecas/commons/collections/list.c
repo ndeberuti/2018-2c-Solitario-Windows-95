@@ -259,6 +259,12 @@ void list_sort(t_list *self, bool (*comparator)(void *, void *)) {
 
 }
 
+t_list* list_sorted(t_list* self, bool (*comparator)(void *, void *)) {
+	t_list* duplicated = list_duplicate(self);
+	list_sort(duplicated, comparator);
+	return duplicated;
+}
+
 int list_count_satisfying(t_list* self, bool(*condition)(void*)){
 	t_list *satisfying = list_filter(self, condition);
 	int result = satisfying->elements_count;
@@ -272,6 +278,26 @@ bool list_any_satisfy(t_list* self, bool(*condition)(void*)){
 
 bool list_all_satisfy(t_list* self, bool(*condition)(void*)){
 	return list_count_satisfying(self, condition) == self->elements_count;
+}
+
+t_list* list_duplicate(t_list* self) {
+	t_list* duplicated = list_create();
+	list_add_all(duplicated, self);
+	return duplicated;
+}
+
+void* list_fold(t_list* self, void* seed, void*(*operation)(void*, void*))
+{
+	t_link_element* element = self->head;
+	void* result = seed;
+
+	while(element != NULL)
+	{
+		result = operation(result, element->data);
+		element = element->next;
+	}
+
+	return result;
 }
 
 /********* PRIVATE FUNCTIONS **************/
