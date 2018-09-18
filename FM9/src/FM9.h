@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <math.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
@@ -48,6 +49,13 @@ typedef struct {
 	uint32_t cant_params;
 } console_t;
 
+/*enum MODOS_EJECUCION {
+	SEGMENTACION_SIMPLE= "SEG",
+	PAGINACION_INVERTIDA = "TPI",
+	SEGMENTACION_PAGINADA = "SPI"
+};*/
+
+
 // variables
 t_log *log_consola;
 t_log *log_fm9;
@@ -55,11 +63,22 @@ config_t config;
 pthread_t thread_servidor;
 pthread_t thread_consola;
 uint32_t diego;
+void* memory_pointer; //puntero a primer direccion de FM9
+//prueba_t *prueba;
+
 
 // funciones
 config_t load_config();
 void server();
 void command_handler(uint32_t command, uint32_t socket);
 void consola();
+void setear_modo();
+void setear_segmentacion_simple();
+void setear_paginacion_invertida();
+void setear_segmentacion_paginada();
+
+void deserializar(void* buffer, int tamanio);
+void serializar(void* buffer_envio);
+
 
 #endif /* SRC_FM9_H_ */
