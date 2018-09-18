@@ -224,6 +224,9 @@ void recibir_proceso(int socket){
 
 	recv(socket, &pid, sizeof(int), MSG_WAITALL);
 	recv(socket, &longitud_paquete, sizeof(int), MSG_WAITALL);
+
+	buffer_recepcion = malloc(longitud_paquete);
+
 	recv(socket, buffer_recepcion, longitud_paquete, MSG_WAITALL);
 
 	guardar_proceso(pid, longitud_paquete, buffer_recepcion);

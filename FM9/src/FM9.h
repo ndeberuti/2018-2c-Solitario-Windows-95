@@ -76,9 +76,10 @@ void setear_modo();
 void setear_segmentacion_simple();
 void setear_paginacion_invertida();
 void setear_segmentacion_paginada();
+void inicializar_memoria();
+void guardar_proceso();
+void recibir_proceso();
 
-void deserializar(void* buffer, int tamanio);
-void serializar(void* buffer_envio);
 
 
 #endif /* SRC_FM9_H_ */
