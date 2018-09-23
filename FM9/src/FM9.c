@@ -235,10 +235,7 @@ void recibir_proceso(int socket){
 void guardar_proceso(int pid ,int longitud_paquete, void * buffer_recepcion){
 
 	int offset = 0 ;
-
-#warning REDONDEAR PARA ARRIBA!!!!
-	//TODO REDONDEAR PARA ARRIBA!!!!
-	int cantidad_lineas_proceso= longitud_paquete / config.MAX_LINEA;
+	int cantidad_lineas = obtener_cantidad_lineas(longitud_paquete);
 
 	//TODO verificar que haya memoria disponible
 	//TODO guardar pid, linea y asociar la estructura administrativa
@@ -246,6 +243,34 @@ void guardar_proceso(int pid ,int longitud_paquete, void * buffer_recepcion){
 		memcpy(memory_pointer, buffer_recepcion + offset,config.MAX_LINEA);
 		offset+= config.MAX_LINEA;
 	}
+}
+
+void devolver_proceso(int pid, int transfer_size, int longitud_paquete){
+
+	int offset = sizeof(int)*2;
+	int cantidad_lineas = obtener_cantidad_lineas(longitud_paquete);
+	void * buffer_envio = malloc((cantidad_lineas * config.MAX_LINEA) + sizeof(int)*2);
+
+	memcpy(buffer_envio, &pid, sizeof(int));
+	memcpy(buffer_envio + sizeof(int), &longitud_paquete, sizeof(int));
+
+	int lineas_copiadas = 0;
+	while (lineas_copiadas != cantidad_lineas) {
+		memcpy(buffer_envio + offset, memory_pointer, config.MAX_LINEA);
+		offset += config.MAX_LINEA;
+		lineas_copiadas++;
+	}
+
+	send(diego, buffer_envio, (cantidad_lineas * config.MAX_LINEA) + sizeof(int)*2, MSG_WAITALL);
+	//TODO Enviar el proceso de a partes con tamaño transfer_size
+	//TODO Descomentar esto cuando se implemente el transfer_size en ElDiego
+	//send(diego, buffer_envio, transfer_size, MSG_WAITALL);
+	free(buffer_envio);
+}
+
+int obtener_cantidad_lineas(int longitud_paquete){
+	//TODO REDONDEAR PARA ARRIBA!!!!
+	return (longitud_paquete / config.MAX_LINEA);
 }
 
 

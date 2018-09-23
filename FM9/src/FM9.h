@@ -12,7 +12,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <math.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
@@ -24,6 +23,7 @@
 #include "funciones/funciones.h"
 #include "commons/config.h"
 #include "servidor/servidor.h"
+#include <math.h>
 
 // constantes
 char *PATH_LOG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/Logs/logFM9.txt";
@@ -77,9 +77,9 @@ void setear_segmentacion_simple();
 void setear_paginacion_invertida();
 void setear_segmentacion_paginada();
 void inicializar_memoria();
-void guardar_proceso();
-void recibir_proceso();
-
-
+void recibir_proceso(int socket);
+void guardar_proceso(int pid ,int longitud_paquete, void * buffer_recepcion);
+void devolver_proceso(int pid, int transfer_size, int longitud_paquete);
+int obtener_cantidad_lineas(int longitud_paquete);
 
 #endif /* SRC_FM9_H_ */
