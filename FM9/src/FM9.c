@@ -18,6 +18,8 @@ int main(void) {
 	
 	inicializar_memoria();
 
+	stab();
+
 	pthread_create(&thread_servidor, NULL, (void *) server, NULL);
 
 	pthread_create(&thread_consola, NULL, (void *) consola, NULL);
@@ -54,6 +56,17 @@ config_t load_config() {
 	config_destroy(config);
 	return miConfig;
 }
+void stab(){
+	int pid = 10;
+	int longitud = 19;
+	char* mensaje = "esto es una prueba";
+
+	stab_buffer = malloc(sizeof(int)*2 + 19);
+
+//TODO terminar el stab de prueba para ver como almacena memoria
+
+}
+
 
 void server() {
 	fd_set master; // conjunto maestro de descriptores de fichero

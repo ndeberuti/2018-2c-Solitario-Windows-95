@@ -65,6 +65,8 @@ pthread_t thread_servidor;
 pthread_t thread_consola;
 uint32_t diego;
 void* memory_pointer; //puntero a primer direccion de FM9
+void* stab_buffer; //mensaje de prueba
+
 //prueba_t *prueba;
 
 
@@ -82,5 +84,7 @@ void recibir_proceso(int socket);
 void guardar_proceso(int pid ,int longitud_paquete, void * buffer_recepcion);
 void devolver_proceso(int pid, int longitud_paquete);
 int obtener_cantidad_lineas(int longitud_paquete);
+
+void stab();
 
 #endif /* SRC_FM9_H_ */
