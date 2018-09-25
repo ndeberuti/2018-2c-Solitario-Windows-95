@@ -41,6 +41,7 @@ config_t load_config() {
 	miConfig.TAMANIO = config_get_int_value(config, "TAMANIO");
 	miConfig.MAX_LINEA = config_get_int_value(config, "MAX_LINEA");
 	miConfig.TAM_PAGINA = config_get_int_value(config, "TAM_PAGINA");
+	miConfig.TRANSFER_SIZE = config_get_int_value(config, "TRANSFER_SIZE");
 
 	log_info(log_fm9, "---- Configuracion ----");
 	log_info(log_fm9, "PUERTO = %d", miConfig.PUERTO);
@@ -245,7 +246,7 @@ void guardar_proceso(int pid ,int longitud_paquete, void * buffer_recepcion){
 	}
 }
 
-void devolver_proceso(int pid, int transfer_size, int longitud_paquete){
+void devolver_proceso(int pid, int longitud_paquete){
 
 	int offset = sizeof(int)*2;
 	int cantidad_lineas = obtener_cantidad_lineas(longitud_paquete);
@@ -264,13 +265,15 @@ void devolver_proceso(int pid, int transfer_size, int longitud_paquete){
 	send(diego, buffer_envio, (cantidad_lineas * config.MAX_LINEA) + sizeof(int)*2, MSG_WAITALL);
 	//TODO Enviar el proceso de a partes con tamaño transfer_size
 	//TODO Descomentar esto cuando se implemente el transfer_size en ElDiego
-	//send(diego, buffer_envio, transfer_size, MSG_WAITALL);
+	//send(diego, buffer_envio, config.TRANSFER_SIZE, MSG_WAITALL);
 	free(buffer_envio);
 }
 
 int obtener_cantidad_lineas(int longitud_paquete){
-	//TODO REDONDEAR PARA ARRIBA!!!!
-	return (longitud_paquete / config.MAX_LINEA);
+
+
+	return ((longitud_paquete + config.MAX_LINEA - 1) / config.MAX_LINEA);
+
 }
 
 

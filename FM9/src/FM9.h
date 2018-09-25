@@ -41,6 +41,7 @@ typedef struct {
 	uint32_t TAMANIO;
 	uint32_t MAX_LINEA;
 	uint32_t TAM_PAGINA;
+	uint32_t TRANSFER_SIZE;
 } config_t;
 
 typedef struct {
@@ -79,7 +80,7 @@ void setear_segmentacion_paginada();
 void inicializar_memoria();
 void recibir_proceso(int socket);
 void guardar_proceso(int pid ,int longitud_paquete, void * buffer_recepcion);
-void devolver_proceso(int pid, int transfer_size, int longitud_paquete);
+void devolver_proceso(int pid, int longitud_paquete);
 int obtener_cantidad_lineas(int longitud_paquete);
 
 #endif /* SRC_FM9_H_ */
