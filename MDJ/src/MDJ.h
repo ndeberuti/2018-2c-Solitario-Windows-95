@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <errno.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -40,6 +41,12 @@ typedef struct {
 } config_t;
 
 typedef struct {
+	uint32_t TAMANIO_BLOQUES;
+	uint32_t CANTIDAD_BLOQUES;
+	char *MAGIC_NUMBER;
+} config_fs;
+
+typedef struct {
 	char *comando;
 	char *param[MAX_PARAMS];
 	uint32_t cant_params;
@@ -49,11 +56,15 @@ typedef struct {
 t_log *log_consola;
 t_log *log_mdj;
 config_t config;
+config_fs fs_config;
 pthread_t thread_servidor;
 pthread_t thread_consola;
+char *pathActual;
+char *pathConsola;
 
 // funciones
 config_t load_config();
+void crear_estructura_directorios();
 void server();
 void command_handler(uint32_t command);
 void consola();

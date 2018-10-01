@@ -15,6 +15,9 @@ int main(void) {
 	log_info(log_mdj, "Inicio del proceso");
 
 	config = load_config();
+	crear_estructura_directorios();
+	pathActual = strdup(config.PUNTO_MONTAJE);
+	pathConsola = strdup("/");
 
 	pthread_create(&thread_servidor, NULL, (void *) server, NULL);
 
@@ -28,12 +31,13 @@ int main(void) {
 }
 
 config_t load_config() {
-	t_config *config = config_create(PATH_CONFIG);
+	t_config *aux_config = config_create(PATH_CONFIG);
 
 	config_t miConfig;
-	miConfig.PUERTO = config_get_int_value(config, "PUERTO");
-	miConfig.PUNTO_MONTAJE = strdup(config_get_string_value(config, "PUNTO_MONTAJE"));
-	miConfig.RETARDO = config_get_int_value(config, "RETARDO");
+	miConfig.PUERTO = config_get_int_value(aux_config, "PUERTO");
+	miConfig.PUNTO_MONTAJE = strdup(config_get_string_value(aux_config, "PUNTO_MONTAJE"));
+	miConfig.RETARDO = config_get_int_value(aux_config, "RETARDO");
+	config_destroy(aux_config);
 
 	log_info(log_mdj, "---- Configuracion ----");
 	log_info(log_mdj, "PUERTO = %d", miConfig.PUERTO);
@@ -41,8 +45,78 @@ config_t load_config() {
 	log_info(log_mdj, "RETARDO = %d milisegundos", miConfig.RETARDO);
 	log_info(log_mdj, "-----------------------");
 
-	config_destroy(config);
 	return miConfig;
+}
+
+void crear_estructura_directorios() {
+	if (mkdir(config.PUNTO_MONTAJE, 0755) != 0)
+		if (errno != EEXIST) {
+			log_error(log_mdj, "Permiso denegado al intentar montar el FS en %s", config.PUNTO_MONTAJE);
+			exit(EXIT_FAILURE);
+		}
+
+	char *path;
+	int largo_mnt = strlen(config.PUNTO_MONTAJE);
+	if ((path = malloc(sizeof(char) * (largo_mnt + 10))) == NULL) {
+		log_error(log_mdj, "Error al intentar crear la estructura de directorios");
+		exit(EXIT_FAILURE);
+	}
+
+	strcpy(path, config.PUNTO_MONTAJE);
+	strcat(path, "Metadata/");
+	mkdir(path, 0755);
+	free(path);
+
+	if ((path = malloc(sizeof(char) * (largo_mnt + 22))) == NULL) {
+		log_error(log_mdj, "Error al intentar crear la estructura de directorios");
+		exit(EXIT_FAILURE);
+	}
+
+	strcpy(path, config.PUNTO_MONTAJE);
+	strcat(path, "Metadata/");
+	strcat(path, "Metadata.bin");
+
+	t_config *aux_config;
+	if ((aux_config = config_create(path)) == NULL) {
+		aux_config = malloc(sizeof(t_config));
+		aux_config->path = strdup(path);
+		aux_config->properties = dictionary_create();
+		config_set_value(aux_config, "TAMANIO_BLOQUES", "64");
+		config_set_value(aux_config, "CANTIDAD_BLOQUES", "5192");
+		config_set_value(aux_config, "MAGIC_NUMBER", "FIFA");
+		config_save(aux_config);
+	}
+
+	fs_config.TAMANIO_BLOQUES = config_get_int_value(aux_config, "TAMANIO_BLOQUES");
+	fs_config.CANTIDAD_BLOQUES = config_get_int_value(aux_config, "CANTIDAD_BLOQUES");
+	fs_config.MAGIC_NUMBER = strdup(config_get_string_value(aux_config, "MAGIC_NUMBER"));
+	config_destroy(aux_config);
+
+	log_info(log_mdj, "----- File System -----");
+	log_info(log_mdj, "TAMANIO_BLOQUES = %d", fs_config.TAMANIO_BLOQUES);
+	log_info(log_mdj, "CANTIDAD_BLOQUES = %d", fs_config.CANTIDAD_BLOQUES);
+	log_info(log_mdj, "MAGIC_NUMBER = %s", fs_config.MAGIC_NUMBER);
+	log_info(log_mdj, "-----------------------");
+
+	if ((path = malloc(sizeof(char) * (largo_mnt + 10))) == NULL) {
+		log_error(log_mdj, "Error al intentar crear la estructura de directorios");
+		exit(EXIT_FAILURE);
+	}
+
+	strcpy(path, config.PUNTO_MONTAJE);
+	strcat(path, "Archivos/");
+	mkdir(path, 0755);
+	free(path);
+
+	if ((path = malloc(sizeof(char) * (largo_mnt + 9))) == NULL) {
+		log_error(log_mdj, "Error al intentar crear la estructura de directorios");
+		exit(EXIT_FAILURE);
+	}
+
+	strcpy(path, config.PUNTO_MONTAJE);
+	strcat(path, "Bloques/");
+	mkdir(path, 0755);
+	free(path);
 }
 
 void server() {
@@ -123,7 +197,7 @@ void consola() {
 	console_t *consola;
 
 	while (true) {
-		linea = readline("MDJ> ");
+		linea = readline(pathConsola);
 
 		if (strlen(linea) > 0) {
 			add_history(linea);
@@ -141,32 +215,46 @@ void consola() {
 					system("clear");
 
 				else if (str_eq(consola->comando, "ls")) {
-					// TODO: comando ls
+					//TODO: comando ls
+					char *aux;
+					if (consola->cant_params < 1) {
+						aux = malloc(sizeof(char) * (strlen(pathActual) + 7));
+						strcpy(aux, "ls -l ");
+						strcat(aux, pathActual);
+					}
+					else {
+						aux = malloc(sizeof(char) * (strlen(consola->param[0]) + strlen(pathActual) + 7));
+						strcpy(aux, "ls -l ");
+						strcat(aux, pathActual);
+						strcat(aux, consola->param[0]);
+					}
+					system(aux);
+					free(aux);
 				}
 
 				else if (str_eq(consola->comando, "cd"))
 					if (consola->cant_params < 1)
-						print_c(log_consola, "%s: falta el parametro <directorio>\n", consola->comando);
+						print_c(log_consola, "%s: falta el parametro <directorio>", consola->comando);
 					else {
 						// TODO: comando cd
 					}
 
 				else if (str_eq(consola->comando, "md5"))
 					if (consola->cant_params < 1)
-						print_c(log_consola, "%s: falta el parametro <archivo>\n", consola->comando);
+						print_c(log_consola, "%s: falta el parametro <archivo>", consola->comando);
 					else {
 						// TODO: comando md5
 					}
 
 				else if (str_eq(consola->comando, "cat"))
 					if (consola->cant_params < 1)
-						print_c(log_consola, "%s: falta el parametro <archivo>\n", consola->comando);
+						print_c(log_consola, "%s: falta el parametro <archivo>", consola->comando);
 					else {
 						// TODO: comando cat
 					}
 
 				else
-					print_c(log_consola, "%s: Comando incorrecto\n", consola->comando);
+					print_c(log_consola, "%s: Comando incorrecto", consola->comando);
 
 				free(consola->comando);
 				for (uint32_t i = 0; i < consola->cant_params; i++)
