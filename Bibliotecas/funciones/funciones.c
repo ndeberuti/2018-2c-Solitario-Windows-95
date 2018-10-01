@@ -17,6 +17,6 @@ void print_c(t_log *log_file, char *message_template, ...) {
 	char *message = string_from_vformat(message_template, arguments);
 	va_end(arguments);
 	log_info(log_file, message);
-	printf("%s", message);
+	printf("%s\n", message);
 	free(message);
 }
