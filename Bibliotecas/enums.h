@@ -22,6 +22,11 @@ enum conexiones
 	MSJ_DESDE_SAFA = 10
 };
 
+enum exit_codes
+{
+	ExitCode_CONFIGNOTFOUND = -10
+};
+
 enum tareas
 {
 
