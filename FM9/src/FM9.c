@@ -14,21 +14,32 @@ int main(void) {
 	system("clear");
 	puts("PROCESO FM9\n");
 
+	log_consola = init_log(PATH_LOG, "Consola FM9", false, LOG_LEVEL_INFO);
 	log_fm9 = init_log(PATH_LOG, "Proceso FM9", true, LOG_LEVEL_INFO);
 	log_info(log_fm9, "Inicio del proceso");
 
 	config = load_config();
+	
+	inicializar_memoria();
+
+	stab();
 
 	inicializar_memoria();
 
 	//serializar(buffer_envio);
 
-	pthread_create(&thread_servidor, NULL, (void *) server, NULL);
+
+	pthread_create(&thread_consola, NULL, (void *) consola, NULL);
+
+	pthread_join(thread_consola, NULL);
+
 	pthread_join(thread_servidor, NULL);
 
 	exit(EXIT_SUCCESS);
-
+	
 	free(memory_pointer);
+
+
 }
 
 config_t load_config() {
@@ -40,6 +51,7 @@ config_t load_config() {
 	miConfig.TAMANIO = config_get_int_value(config, "TAMANIO");
 	miConfig.MAX_LINEA = config_get_int_value(config, "MAX_LINEA");
 	miConfig.TAM_PAGINA = config_get_int_value(config, "TAM_PAGINA");
+	miConfig.TRANSFER_SIZE = config_get_int_value(config, "TRANSFER_SIZE");
 
 	log_info(log_fm9, "---- Configuracion ----");
 	log_info(log_fm9, "PUERTO = %d", miConfig.PUERTO);
@@ -52,6 +64,17 @@ config_t load_config() {
 	config_destroy(config);
 	return miConfig;
 }
+void stab(){
+	int pid = 10;
+	int longitud = 19;
+	char* mensaje = "esto es una prueba";
+
+	stab_buffer = malloc(sizeof(int)*2 + 19);
+
+//TODO terminar el stab de prueba para ver como almacena memoria
+
+}
+
 
 void server() {
 	fd_set master; // conjunto maestro de descriptores de fichero
@@ -66,7 +89,7 @@ void server() {
 	FD_ZERO(&read_fds);
 
 	// obtener socket a la escucha
-	uint32_t servidor = build_server(config.PUERTO, log_fm9);
+	uint32_t servidor = build_server(config.PUERTO, log_consola);
 
 	// añadir listener al conjunto maestro
 	FD_SET(servidor, &master);
@@ -77,7 +100,7 @@ void server() {
 	while (true) {
 		read_fds = master; // cópialo
 		if (select(fdmax + 1, &read_fds, NULL, NULL, NULL) == -1) {
-			log_error(log_fm9, "select");
+			log_error(log_consola, "select");
 			exit(EXIT_FAILURE);
 		}
 		// explorar conexiones existentes en busca de datos que leer
@@ -87,12 +110,12 @@ void server() {
 					// gestionar nuevas conexiones
 					addrlen = sizeof(remoteaddr);
 					if ((newfd = accept(servidor, (struct sockaddr *) &remoteaddr, &addrlen)) == -1)
-						log_error(log_fm9, "accept");
+						log_error(log_consola, "accept");
 					else {
 						FD_SET(newfd, &master); // añadir al conjunto maestro
 						if (newfd > fdmax) // actualizar el máximo
 							fdmax = newfd;
-						log_info(log_fm9, "Nueva conexion desde %s en el socket %d", inet_ntoa(remoteaddr.sin_addr), newfd);
+						//log_info(log_consola, "Nueva conexion desde %s en el socket %d", inet_ntoa(remoteaddr.sin_addr), newfd);
 					}
 				}
 				else
@@ -101,27 +124,121 @@ void server() {
 						// error o conexión cerrada por el cliente
 						if (nbytes == 0)
 							// conexión cerrada
-							log_info(log_fm9, "Socket %d colgado", i);
+							if (i == diego)
+								log_info(log_consola, "Se desconecto El Diego");
+							else
+								log_info(log_consola, "CPU desconectada");
 						else
-							log_error(log_fm9, "recv (comando)");
+							log_error(log_consola, "recv (comando)");
 
 						close(i); // ¡Hasta luego!
 						FD_CLR(i, &master); // eliminar del conjunto maestro
 					}
 					else
 						// tenemos datos de algún cliente
-						command_handler(command);
+						command_handler(command, i);
 			} // if (FD_ISSET(i, &read_fds))
 	} // while (true)
 }
 
-void command_handler(uint32_t command) {
+void command_handler(uint32_t command, uint32_t socket) {
 	switch (command) {
-
+	case NUEVA_CONEXION_DIEGO:
+		log_info(log_consola, "Nueva conexion desde El Diego");
+		diego = socket;
+		break;
+	case NUEVA_CONEXION_CPU:
+		log_info(log_consola, "Nueva conexion de CPU");
+		break;
 	default:
-		log_warning(log_fm9, "%d: Comando recibido incorrecto", command);
+		log_warning(log_consola, "%d: Comando recibido incorrecto", command);
 	}
 }
+
+void consola() {
+	char *linea;
+	char *token;
+	console_t *consola;
+
+	while (true) {
+		linea = readline("FM9> ");
+
+		if (strlen(linea) > 0) {
+			add_history(linea);
+			log_info(log_consola, "Linea leida: %s", linea);
+			consola = malloc(sizeof(console_t));
+
+			if (consola != NULL) {
+				consola->comando = strdup(strtok(linea, " "));
+				consola->cant_params = 0;
+
+				while (consola->cant_params < MAX_PARAMS && (token = strtok(NULL, " ")) != NULL)
+					consola->param[consola->cant_params++] = strdup(token);
+
+				if (str_eq(consola->comando, "clear"))
+					system("clear");
+
+				else if (str_eq(consola->comando, "dump"))
+					if (consola->cant_params < 1)
+						print_c(log_consola, "%s: falta el parametro ID del DTB\n", consola->comando);
+					else {
+						// TODO: comando dump
+					}
+
+				else
+					print_c(log_consola, "%s: Comando incorrecto\n", consola->comando);
+
+				free(consola->comando);
+				for (uint32_t i = 0; i < consola->cant_params; i++)
+					free(consola->param[i]);
+				free(consola);
+			}
+		}
+		free(linea);
+	}
+}
+
+void inicializar_memoria(){
+	//alocacion de memoria
+
+	memory_pointer  = malloc(config.TAMANIO);
+
+	if(memory_pointer == NULL){
+		log_error(log_fm9, "Puntero de memoria a NULL");
+	}
+
+	log_info(log_fm9, "Alocacion exitosa");
+
+	setear_modo();
+}
+
+void setear_modo(){
+	if(strcmp("SEG", config.MODO)== 0){
+		setear_segmentacion_simple();
+	}
+	else if(strcmp("TPI", config.MODO)== 0){
+		setear_paginacion_invertida();
+	}
+	else if(strcmp("SPI", config.MODO)== 0){
+		setear_segmentacion_paginada();
+	}
+	else {
+		log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
+	}
+}
+
+void setear_segmentacion_simple(){
+	log_info(log_fm9, "Segmentación Simple seteada");
+}
+
+void setear_paginacion_invertida(){
+	log_info(log_fm9, "Tablas de Paginación Invertida seteada");
+}
+
+void setear_segmentacion_paginada(){
+	log_info(log_fm9, "Segmentación Paginada seteada");
+}
+
 
 
 void inicializar_memoria(){
@@ -167,12 +284,18 @@ void setear_segmentacion_paginada(){
 }
 
 
+
 void recibir_proceso(int socket){
 	int pid,longitud_paquete= 0;
 	void * buffer_recepcion;
 
 	recv(socket, &pid, sizeof(int), MSG_WAITALL);
 	recv(socket, &longitud_paquete, sizeof(int), MSG_WAITALL);
+
+
+	buffer_recepcion = malloc(longitud_paquete);
+
+
 	recv(socket, buffer_recepcion, longitud_paquete, MSG_WAITALL);
 
 	guardar_proceso(pid, longitud_paquete, buffer_recepcion);
@@ -182,9 +305,8 @@ void guardar_proceso(int pid ,int longitud_paquete, void * buffer_recepcion){
 
 	int offset = 0 ;
 
-#warning REDONDEAR PARA ARRIBA!!!!
-	//TODO REDONDEAR PARA ARRIBA!!!!
-	int cantidad_lineas_proceso= longitud_paquete / config.MAX_LINEA;
+	int cantidad_lineas = obtener_cantidad_lineas(longitud_paquete);
+
 
 	//TODO verificar que haya memoria disponible
 	//TODO guardar pid, linea y asociar la estructura administrativa
@@ -192,6 +314,37 @@ void guardar_proceso(int pid ,int longitud_paquete, void * buffer_recepcion){
 		memcpy(memory_pointer, buffer_recepcion + offset,config.MAX_LINEA);
 		offset+= config.MAX_LINEA;
 	}
+}
+
+
+void devolver_proceso(int pid, int longitud_paquete){
+
+	int offset = sizeof(int)*2;
+	int cantidad_lineas = obtener_cantidad_lineas(longitud_paquete);
+	void * buffer_envio = malloc((cantidad_lineas * config.MAX_LINEA) + sizeof(int)*2);
+
+	memcpy(buffer_envio, &pid, sizeof(int));
+	memcpy(buffer_envio + sizeof(int), &longitud_paquete, sizeof(int));
+
+	int lineas_copiadas = 0;
+	while (lineas_copiadas != cantidad_lineas) {
+		memcpy(buffer_envio + offset, memory_pointer, config.MAX_LINEA);
+		offset += config.MAX_LINEA;
+		lineas_copiadas++;
+	}
+
+	send(diego, buffer_envio, (cantidad_lineas * config.MAX_LINEA) + sizeof(int)*2, MSG_WAITALL);
+	//TODO Enviar el proceso de a partes con tamaño transfer_size
+	//TODO Descomentar esto cuando se implemente el transfer_size en ElDiego
+	//send(diego, buffer_envio, config.TRANSFER_SIZE, MSG_WAITALL);
+	free(buffer_envio);
+}
+
+int obtener_cantidad_lineas(int longitud_paquete){
+
+
+	return ((longitud_paquete + config.MAX_LINEA - 1) / config.MAX_LINEA);
+
 }
 
 

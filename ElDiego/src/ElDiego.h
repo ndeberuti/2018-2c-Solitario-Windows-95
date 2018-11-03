@@ -26,6 +26,9 @@
 char *PATH_LOG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/Logs/logDiego.txt";
 char *PATH_CONFIG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/ElDiego/config.txt";
 
+#define CONEXION_DIEGO 1
+#define NUEVA_CONEXION_CPU 4
+
 // estructuras
 typedef struct {
 	uint32_t PUERTO;

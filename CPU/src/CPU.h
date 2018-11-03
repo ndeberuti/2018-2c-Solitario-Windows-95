@@ -26,6 +26,8 @@
 char *PATH_LOG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/Logs/logCPU.txt";
 char *PATH_CONFIG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/CPU/config.txt";
 
+#define CONEXION_CPU 4
+
 // estructuras
 typedef struct {
 	char *IP_SAFA;

@@ -19,13 +19,21 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <pthread.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 #include "funciones/funciones.h"
 #include "commons/config.h"
 #include "servidor/servidor.h"
+#include <math.h>
 
 // constantes
 char *PATH_LOG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/Logs/logFM9.txt";
 char *PATH_CONFIG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/FM9/config.txt";
+
+#define MAX_PARAMS 1
+
+#define NUEVA_CONEXION_DIEGO 1
+#define NUEVA_CONEXION_CPU 4
 
 // estructuras
 typedef struct {
@@ -34,14 +42,16 @@ typedef struct {
 	uint32_t TAMANIO;
 	uint32_t MAX_LINEA;
 	uint32_t TAM_PAGINA;
+	uint32_t TRANSFER_SIZE;
 } config_t;
 
 
-
 typedef struct {
-	int numero;
-	char* palabra;
-} prueba_t;
+	char *comando;
+	char *param[MAX_PARAMS];
+	uint32_t cant_params;
+} console_t;
+
 
 /*enum MODOS_EJECUCION {
 	SEGMENTACION_SIMPLE= "SEG",
@@ -52,24 +62,40 @@ typedef struct {
 
 
 // variables
+t_log *log_consola;
 t_log *log_fm9;
 config_t config;
 pthread_t thread_servidor;
+
+pthread_t thread_consola;
+uint32_t diego;
 void* memory_pointer; //puntero a primer direccion de FM9
+void* stab_buffer; //mensaje de prueba
+
+
 //prueba_t *prueba;
 
 
 // funciones
 config_t load_config();
 void server();
-void command_handler(uint32_t command);
-void inicializar_memoria();
+
+void command_handler(uint32_t command, uint32_t socket);
+void consola();
+
+
 void setear_modo();
 void setear_segmentacion_simple();
 void setear_paginacion_invertida();
 void setear_segmentacion_paginada();
 
-void deserializar(void* buffer, int tamanio);
-void serializar(void* buffer_envio);
+void inicializar_memoria();
+void recibir_proceso(int socket);
+void guardar_proceso(int pid ,int longitud_paquete, void * buffer_recepcion);
+void devolver_proceso(int pid, int longitud_paquete);
+int obtener_cantidad_lineas(int longitud_paquete);
+
+void stab();
+
 
 #endif /* SRC_FM9_H_ */

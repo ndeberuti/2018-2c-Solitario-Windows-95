@@ -15,9 +15,28 @@ int main(void) {
 
 	config = load_config();
 
-	safa = connect_server(config.IP_SAFA, config.PUERTO_SAFA, log_cpu);
-	diego = connect_server(config.IP_DIEGO, config.PUERTO_DIEGO, log_cpu);
-	fm9 = connect_server(config.IP_FM9, config.PUERTO_FM9, log_cpu);
+	if ((safa = connect_server(config.IP_SAFA, config.PUERTO_SAFA, CONEXION_CPU, log_cpu)) == 0) {
+		log_error(log_cpu, "Error al conectar con S-AFA");
+		exit(EXIT_FAILURE);
+	}
+
+	log_info(log_cpu, "Conexion con S-AFA exitosa");
+
+	if ((diego = connect_server(config.IP_DIEGO, config.PUERTO_DIEGO, CONEXION_CPU, log_cpu)) == 0) {
+		log_error(log_cpu, "Error al conectar con El Diego");
+		exit(EXIT_FAILURE);
+	}
+
+	log_info(log_cpu, "Conexion con El Diego exitosa");
+
+	if ((fm9 = connect_server(config.IP_FM9, config.PUERTO_FM9, CONEXION_CPU, log_cpu)) == 0) {
+		log_error(log_cpu, "Error al conectar con FM9");
+		exit(EXIT_FAILURE);
+	}
+
+	log_info(log_cpu, "Conexion con FM9 exitosa");
+
+	while(true);
 
 	exit(EXIT_SUCCESS);
 }
