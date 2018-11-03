@@ -7,6 +7,10 @@
 #include "FM9.h"
 
 int main(void) {
+	//simulacion de serializacion/deserializacion
+	void* buffer_envio;
+
+
 	system("clear");
 	puts("PROCESO FM9\n");
 
@@ -20,7 +24,10 @@ int main(void) {
 
 	stab();
 
-	pthread_create(&thread_servidor, NULL, (void *) server, NULL);
+	inicializar_memoria();
+
+	//serializar(buffer_envio);
+
 
 	pthread_create(&thread_consola, NULL, (void *) consola, NULL);
 
@@ -31,6 +38,7 @@ int main(void) {
 	exit(EXIT_SUCCESS);
 	
 	free(memory_pointer);
+
 
 }
 
@@ -232,6 +240,51 @@ void setear_segmentacion_paginada(){
 }
 
 
+
+void inicializar_memoria(){
+	//alocacion de memoria
+
+	memory_pointer  = malloc(config.TAMANIO);
+
+	if(memory_pointer == NULL){
+		log_error(log_fm9, "Puntero de memoria a NULL");
+	}
+
+	log_info(log_fm9, "Alocacion exitosa");
+
+	setear_modo();
+}
+
+
+void setear_modo(){
+	if(strcmp("SEG", config.MODO)== 0){
+		setear_segmentacion_simple();
+	}
+	else if(strcmp("TPI", config.MODO)== 0){
+		setear_paginacion_invertida();
+	}
+	else if(strcmp("SPI", config.MODO)== 0){
+		setear_segmentacion_paginada();
+	}
+	else {
+		log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
+	}
+}
+
+void setear_segmentacion_simple(){
+	log_info(log_fm9, "Segmentación Simple seteada");
+}
+
+void setear_paginacion_invertida(){
+	log_info(log_fm9, "Tablas de Paginación Invertida seteada");
+}
+
+void setear_segmentacion_paginada(){
+	log_info(log_fm9, "Segmentación Paginada seteada");
+}
+
+
+
 void recibir_proceso(int socket){
 	int pid,longitud_paquete= 0;
 	void * buffer_recepcion;
@@ -239,7 +292,9 @@ void recibir_proceso(int socket){
 	recv(socket, &pid, sizeof(int), MSG_WAITALL);
 	recv(socket, &longitud_paquete, sizeof(int), MSG_WAITALL);
 
+
 	buffer_recepcion = malloc(longitud_paquete);
+
 
 	recv(socket, buffer_recepcion, longitud_paquete, MSG_WAITALL);
 
@@ -249,7 +304,9 @@ void recibir_proceso(int socket){
 void guardar_proceso(int pid ,int longitud_paquete, void * buffer_recepcion){
 
 	int offset = 0 ;
+
 	int cantidad_lineas = obtener_cantidad_lineas(longitud_paquete);
+
 
 	//TODO verificar que haya memoria disponible
 	//TODO guardar pid, linea y asociar la estructura administrativa
@@ -258,6 +315,7 @@ void guardar_proceso(int pid ,int longitud_paquete, void * buffer_recepcion){
 		offset+= config.MAX_LINEA;
 	}
 }
+
 
 void devolver_proceso(int pid, int longitud_paquete){
 
