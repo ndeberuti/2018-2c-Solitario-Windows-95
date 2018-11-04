@@ -11,6 +11,7 @@ int main(void) {
 	void* buffer_envio;
 
 
+
 	system("clear");
 	puts("PROCESO FM9\n");
 
@@ -20,11 +21,10 @@ int main(void) {
 
 	config = load_config();
 	
+	setear_modo();
 	inicializar_memoria();
 
-	stab();
 
-	inicializar_memoria();
 
 	//serializar(buffer_envio);
 
@@ -37,7 +37,7 @@ int main(void) {
 
 	exit(EXIT_SUCCESS);
 	
-	free(memory_pointer);
+	//free();
 
 
 }
@@ -63,16 +63,6 @@ config_t load_config() {
 
 	config_destroy(config);
 	return miConfig;
-}
-void stab(){
-	int pid = 10;
-	int longitud = 19;
-	char* mensaje = "esto es una prueba";
-
-	stab_buffer = malloc(sizeof(int)*2 + 19);
-
-//TODO terminar el stab de prueba para ver como almacena memoria
-
 }
 
 
@@ -198,37 +188,36 @@ void consola() {
 	}
 }
 
-void inicializar_memoria(){
+void inicializar_memoria_segmentacion_pura(){
 	//alocacion de memoria
+	int numero_lineas = obtener_cantidad_lineas(config.TAMANIO);
 
-	memory_pointer  = malloc(config.TAMANIO);
+	char **puntero_memoria = malloc(sizeof *puntero_memoria * numero_lineas);
+	if (puntero_memoria){
+	  size_t i;
+	  for (i = 0; i < numero_lineas; i++)
+	  {
+	    puntero_memoria[i] = malloc(sizeof *puntero_memoria[i] * (config.MAX_LINEA));
 
-	if(memory_pointer == NULL){
+	  }
+	}
+
+
+
+
+	if(puntero_memoria == NULL){
 		log_error(log_fm9, "Puntero de memoria a NULL");
 	}
 
 	log_info(log_fm9, "Alocacion exitosa");
 
-	setear_modo();
+
 }
 
-void setear_modo(){
-	if(strcmp("SEG", config.MODO)== 0){
-		setear_segmentacion_simple();
-	}
-	else if(strcmp("TPI", config.MODO)== 0){
-		setear_paginacion_invertida();
-	}
-	else if(strcmp("SPI", config.MODO)== 0){
-		setear_segmentacion_paginada();
-	}
-	else {
-		log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
-	}
-}
 
 void setear_segmentacion_simple(){
 	log_info(log_fm9, "Segmentación Simple seteada");
+	inicializar_memoria_segmentacion_pura();
 }
 
 void setear_paginacion_invertida(){
@@ -241,19 +230,6 @@ void setear_segmentacion_paginada(){
 
 
 
-void inicializar_memoria(){
-	//alocacion de memoria
-
-	memory_pointer  = malloc(config.TAMANIO);
-
-	if(memory_pointer == NULL){
-		log_error(log_fm9, "Puntero de memoria a NULL");
-	}
-
-	log_info(log_fm9, "Alocacion exitosa");
-
-	setear_modo();
-}
 
 
 void setear_modo(){
@@ -269,18 +245,6 @@ void setear_modo(){
 	else {
 		log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
 	}
-}
-
-void setear_segmentacion_simple(){
-	log_info(log_fm9, "Segmentación Simple seteada");
-}
-
-void setear_paginacion_invertida(){
-	log_info(log_fm9, "Tablas de Paginación Invertida seteada");
-}
-
-void setear_segmentacion_paginada(){
-	log_info(log_fm9, "Segmentación Paginada seteada");
 }
 
 
@@ -301,20 +265,36 @@ void recibir_proceso(int socket){
 	guardar_proceso(pid, longitud_paquete, buffer_recepcion);
 }
 
-void guardar_proceso(int pid ,int longitud_paquete, void * buffer_recepcion){
-
-	int offset = 0 ;
-
-	int cantidad_lineas = obtener_cantidad_lineas(longitud_paquete);
+void guardar_proceso_segmentacion_pura(int pid ,int longitud_paquete, void * buffer_recepcion){
+	int offset = 0;
+	segmento_offset_t paquete;
 
 
-	//TODO verificar que haya memoria disponible
-	//TODO guardar pid, linea y asociar la estructura administrativa
-	while(offset <= longitud_paquete){
-		memcpy(memory_pointer, buffer_recepcion + offset,config.MAX_LINEA);
-		offset+= config.MAX_LINEA;
+
+	paquete.segmento = pid;
+	paquete.offset = obtener_cantidad_lineas(longitud_paquete);
+
+	 //TODO Matchear PID en la tabla de segmentacion de procesos para sacar el limite
+/*
+	if(paquete.offset > limite){
+
+		log_error(log_fm9, "Segmentation Fault. El offset es mas grande que el limite");
 	}
+		else{
+
+
+
+
+
+			while(offset <= longitud_paquete){
+				memcpy(memory_pointer, buffer_recepcion + offset,config.MAX_LINEA);
+				offset+= config.MAX_LINEA;
+
+			}
+		}
+  */
 }
+
 
 
 void devolver_proceso(int pid, int longitud_paquete){
@@ -328,7 +308,7 @@ void devolver_proceso(int pid, int longitud_paquete){
 
 	int lineas_copiadas = 0;
 	while (lineas_copiadas != cantidad_lineas) {
-		memcpy(buffer_envio + offset, memory_pointer, config.MAX_LINEA);
+		//memcpy(buffer_envio + offset, memory_pointer, config.MAX_LINEA);
 		offset += config.MAX_LINEA;
 		lineas_copiadas++;
 	}
@@ -347,20 +327,10 @@ int obtener_cantidad_lineas(int longitud_paquete){
 
 }
 
-int validar_segmentation_fault(int offset, int limite){
-
-	if(limite < offset){
-
-		log_error(log_fm9, "Segmentation Fault. Offset supera limite de segmento.");
-		return 0;
-	}else{
-
-		return 1;
-
-	}
 
 
-}
+
+
 
 /*
 
