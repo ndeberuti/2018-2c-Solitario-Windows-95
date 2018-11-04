@@ -52,6 +52,26 @@ typedef struct {
 	uint32_t cant_params;
 } console_t;
 
+typedef struct {
+	int id;
+	int limite;
+	int base;
+
+}segmento_tabla_t;
+
+
+typedef struct {
+	int segmento;
+	int offset;
+
+}segmento_offset_t;
+
+typedef struct {
+	int base;
+	int offset;
+
+}segmento_base_t;
+
 
 /*enum MODOS_EJECUCION {
 	SEGMENTACION_SIMPLE= "SEG",
@@ -69,8 +89,7 @@ pthread_t thread_servidor;
 
 pthread_t thread_consola;
 uint32_t diego;
-void* memory_pointer; //puntero a primer direccion de FM9
-void* stab_buffer; //mensaje de prueba
+
 
 
 //prueba_t *prueba;
@@ -91,7 +110,7 @@ void setear_segmentacion_paginada();
 
 void inicializar_memoria();
 void recibir_proceso(int socket);
-void guardar_proceso(int pid ,int longitud_paquete, void * buffer_recepcion);
+void guardar_proceso_segmentacion_pura(int pid ,int longitud_paquete, void * buffer_recepcion);
 void devolver_proceso(int pid, int longitud_paquete);
 int obtener_cantidad_lineas(int longitud_paquete);
 
