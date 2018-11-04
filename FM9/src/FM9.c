@@ -347,6 +347,20 @@ int obtener_cantidad_lineas(int longitud_paquete){
 
 }
 
+int validar_segmentation_fault(int offset, int limite){
+
+	if(limite < offset){
+
+		log_error(log_fm9, "Segmentation Fault. Offset supera limite de segmento.");
+		return 0;
+	}else{
+
+		return 1;
+
+	}
+
+
+}
 
 /*
 

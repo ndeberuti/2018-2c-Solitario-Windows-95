@@ -52,6 +52,26 @@ typedef struct {
 	uint32_t cant_params;
 } console_t;
 
+typedef struct {
+	int id;
+	int limite;
+	int base;
+
+}segmento_tabla_t;
+
+
+typedef struct {
+	int segmento;
+	int offset;
+
+}segmento_offset_t;
+
+typedef struct {
+	int base;
+	int offset;
+
+}segmento_base_t;
+
 
 /*enum MODOS_EJECUCION {
 	SEGMENTACION_SIMPLE= "SEG",
