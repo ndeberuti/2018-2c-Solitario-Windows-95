@@ -1,3 +1,8 @@
+#define LIM_INF_TAREAS_CPU 6
+#define LIM_SUP_TAREAS_CPU 15
+#define LIM_INF_TAREAS_DMA 16
+#define LIM_SUP_TAREAS_DMA 20
+
 #include "Scheduler.h"
 
 void server()
@@ -29,7 +34,7 @@ void server()
 			exit(EXIT_FAILURE);
 		}
 
-		//Check existent xonnections to see if there is any data to read
+		//Check existent connections to see if there is any data to read
 		for (uint32_t i = 0; i <= fdmax; i++)
 		{
 			if (FD_ISSET(i, &read_fds))
@@ -80,13 +85,14 @@ void server()
 
 void moduleHandler(uint32_t command, uint32_t socket)
 {
-	switch (command)
+	if(command == NEW_DMA_CONNECTION)
 	{
-		case NUEVA_CONEXION_DMA:
+						  
 			log_info(consoleLog, "Nueva conexion desde el DMA\n");
 			dmaSocket = socket;
-			break;
-		case NUEVA_CONEXION_CPU:
+	}
+	else if(command == NEW_CPU_CONNECTION)
+	{
 			log_info(consoleLog, "Nueva conexion de CPU\n");
 
 			cpu_t* cpuConnection = calloc(1, sizeof(cpu_t));
@@ -96,20 +102,28 @@ void moduleHandler(uint32_t command, uint32_t socket)
 			cpuConnection->socket = socket;
 
 			list_add(connectedCPUs, cpuConnection);
-			break;
-		case MSJ_DESDE_CPU:
-			log_info(consoleLog, "Mensaje desde CPU\n"); //TODO: Maybe I should inform which cpu sends the message
-			taskHandler("CPU desconectada", socket, cpuTaskHandler); //TODO: Maybe I should inform which cpu died
-			break;
-		case MSJ_DESDE_DMA:
-			log_info(consoleLog, "Mensaje desde DMA\n");
-			taskHandler("DMA desconectado", socket, dmaTaskHandler);
-			break;
-		default:
-			log_warning(consoleLog, "%d: Comando recibido incorrecto\n", command);
+		 
+					 
+																										 
+																										
+		 
+					 
+											   
+														   
+		 
+		  
+																		 
 	}
-}
+	else if((command >= LIM_INF_TAREAS_CPU) && (command <= LIM_SUP_TAREAS_CPU)) //The CPU task codes range from 3 to 12
+		cpuTaskHandler();
 
+	else if((command >= LIM_INF_TAREAS_DMA) && (command <= LIM_SUP_TAREAS_DMA)) //The DMA task codes range from 13 to 18
+		dmaTaskHandler();
+
+	else
+		log_error(consoleLog, "ServerThread - La tarea recibida, con codigo %d, es incorrecta\n", command);
+}
+/*
 void taskHandler(char* errorMsg, int socket, void (*taskHandler)(uint32_t, uint32_t))
 {
 	uint32_t nbytes;
@@ -126,7 +140,7 @@ void taskHandler(char* errorMsg, int socket, void (*taskHandler)(uint32_t, uint3
 		close(socket);
 		FD_CLR(socket, &master); //Remove from master set
 
-		////TODO: Check if anything else is missing here
+		////Check if anything else is missing here
 	}
 	else
 	{
@@ -134,14 +148,34 @@ void taskHandler(char* errorMsg, int socket, void (*taskHandler)(uint32_t, uint3
 		taskHandler(task, socket);
 	}
 }
+*/
 
 void dmaTaskHandler(uint32_t task, uint32_t socket)
 {
+	uint32_t processId;
+	uint32_t nbytes;
+
 	switch(task)
 	{
-		//TODO
+		case UNLOCK_PROCESS:
+
+			if((nbytes = receive_int(socket, &processId)) <= 0)
+			{
+				if(nbytes == 0)
+					log_error(consoleLog, "ServerThread - El DMA fue desconectado\n");
+				else
+					log_error(consoleLog, "ServerThread - Error al recibir datos del DMA\n");
+
+				close(socket);
+				FD_CLR(socket, &master);
+			}
+			else
+				unblockProcess(processId);
+		break;
+
 		default:
-			log_warning(consoleLog, "La tarea %d es incorrecta\n", task);
+			log_error(consoleLog, "ServerThread - Se recibio una tarea incorrecta del DMA (codigo = %d)\n", task);
+		break;
 	}
 }
 
@@ -149,8 +183,84 @@ void cpuTaskHandler(uint32_t task, uint32_t socket)
 {
 	switch(task)
 	{
-		//TODO
+		case COMPLETED_INSTRUCTION:
+			executedInstructions++;
+		break;
+
+		case BLOCK_PROCESS_INIT:
+			blockProcessInit();
+		break;
+
+		case BLOCK_PROCESS:
+			blockProcess();
+		break;
+
+		case PROCESS_ERROR:
+			killProcess();
+		break;
+
+		case QUANTUM_END:
+			//TODO - Recibo el pcb del proceso para el cual finalizo el quantum, para ver los cambios
+			//		 mando el pcb a la cola de listos
+			//haria recvPCB, una funcion para actualizarlo, y despues lo muevo a la cola de listos (hay una funcion para eso)
+		break;
+
 		default:
-			log_warning(consoleLog, "La tarea %d es incorrecta\n", task);
+			log_error(consoleLog, "ServerThread - Se recibio una tarea incorrecta de la CPU (codigo = %d)\n", task);
+		break;
+
 	}
+}
+
+void blockProcessInit()
+{
+	uint32_t pid, nbytes;
+
+	if((nbytes = receive_int(socket, &pid)) <= 0)
+	{
+		if(nbytes == 0)
+			log_error(consoleLog, "ServerThread - La CPU fue desconectada\n");
+		else
+			log_error(consoleLog, "ServerThread - Error al recibir datos de la CPU\n");
+
+		close(socket);
+		FD_CLR(socket, &master);
+
+		//TODO - If a CPU disconnects while executing a process, it should tell all the other
+		//		 modules and they should roll back all the changes that were made for that process
+		//		 that was executing in the dead CPU.
+		//		 Something like that should happen with all the other modules...
+		//		 To achieve this, a module should have a signal catch (to avoid it closing without notice)
+		//		 and when a module knows it will die (or another module died), it should tell all
+		//		 te other modules...
+	}
+	else
+		_blockProcess(pid);
+}
+
+void blockProcess()
+{
+	//TODO - se hace un recvPCB; si el flag que indica que fue inicializado esta en cero, se
+	//		 bloquea el proceso (verificar por las dudas, es un caso que aparece en el enunciado)
+	//		 sino, solo se bloquea el proceso en ejecucion (buscarlo en la lista de ejecucion)
+
+}
+
+void _blockProcess(uint32_t pid)
+{
+	bool _process_has_given_id(PCB_t* pcb)
+	{
+		return pcb->pid == pid;
+	}
+
+	PCB_t* process = list_remove_by_condition(readyQueue, _process_has_given_id);
+}
+
+void killProcess()
+{
+	//TODO - Se mata el proceso y se manda a la cola de exit
+	//	     Se setea la variable "normalTermination" del pcb en false
+	//		 (para indicar que termino por un error y no normalmente)
+	//		 Esto se puede dar por Errores de acceso al FS, error de acceso a memoria, o si
+	//		 no hay espacio suficiente en la memoria para aljoar un archivo o script
 }

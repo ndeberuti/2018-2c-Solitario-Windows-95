@@ -55,7 +55,14 @@ void console()
 
 				else if (str_eq(console->command, "metricas"))
 				{
-					// TODO: metrics command
+					if (console->paramsQty == 1)
+						getProcessMetrics(console->param[0]);
+
+					else if (console->paramsQty == 0)
+						getSystemMetrics();
+
+					else
+						log_info(consoleLog, "%s: numero incorrecto de argumentos. Recuerde que puede ingresar solo el id de proceso o ningun argumento\n", console->command);
 				}
 
 				else
@@ -79,7 +86,7 @@ void executeScript(char* script)
 
 	if(process == NULL)
 	{
-		log_error("Ocurrio un problema al intentar crear el PCB para el nuevo proceso\n");
+		log_error(schedulerLog, "Ocurrio un problema al intentar crear el PCB para el nuevo proceso\n");
 		return;
 	}
 
@@ -88,3 +95,13 @@ void executeScript(char* script)
 	pthread_mutex_unlock(&newQueueMutex);
 }
 
+void getProcessMetrics()
+{
+	//TODO - Se obtienen metricas 1 y 4 del enunciado (las otras dice que son de sistema) y se imprimen
+	//los procesos que van a exit por una instruccion es por terminacion anormal (errores, lo mataron, etc.. o sea, lo que escapa a una terminacion normal)
+}
+
+void getSystemMetrics()
+{
+	//TODO - Se obtienen metricas 2, 3 y 5 del enunciado y se imprimen
+}

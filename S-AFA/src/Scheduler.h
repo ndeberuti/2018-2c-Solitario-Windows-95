@@ -1,20 +1,9 @@
-/*
- * S-AFA.h
- *
- *  Created on: 1 sep. 2018
- *      Author: Solitario Windows 95
- */
-
 #ifndef SRC_SCHEDULER_H_
 #define SRC_SCHEDULER_H_
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <pthread.h>
@@ -22,15 +11,15 @@
 #include <readline/history.h>
 #include "funciones/funciones.h"
 #include "commons/config.h"
-#include "commons/collections/list.h"
 #include "servidor/servidor.h"
+#include "PCB.h"				
 #include "enums.h"
 #include <stdint.h>
 #include <semaphore.h>
 
 // constantes
-char *PATH_LOG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/Logs/logSAFA.txt";
-char *PATH_CONFIG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/S-AFA/config.txt";
+char *PATH_LOG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/Files/Logs/logSAFA.txt";
+char *PATH_CONFIG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/Files/Configs/config.txt";
 
 #define MAX_PARAMS 1
 
@@ -135,7 +124,7 @@ void roundRobinScheduler();
 void virtualRoundRobinScheduler();
 void customScheduler();
 void fifoScheduler();
-void sendPCB(PCB_t*, uint32_t);
+void unblockProcess(uint32_t);
 
 
 #endif /* SRC_SCHEDULER_H_ */

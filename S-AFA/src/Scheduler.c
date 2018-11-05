@@ -10,7 +10,7 @@ void shortTermSchedulerThread()
 		sem_wait(&shortTermScheduler);	//Wait until this scheduler is needed
 		sem_wait(&schedulerNotRunning);	//Extra security measure to avoid 2 the schedulers running at the same time and thus, producing unexpected behavior
 
-		//TODO: Review that last semaphore wait
+		//TODO: Review that last semaphore wait?
 
 		STSAlreadyExecuting = true;
 
@@ -48,12 +48,6 @@ void longTermSchedulingThread()
 
 		LTSAlreadyExecuting = true;
 
-		sleep(5); //Wait 5 seconds for any additional processes that may be need to be created after the one that called the LTS
-					//This sleep is used for the case that, after a process is created, more need to be created after that first one
-
-		//TODO: Review the above sleep; it may be removed using a function that pauses both schedulers
-		//	 	(maybe issuing a wait on the "schedulerNotRunning" semaphore, before requesting several scripts execution)
-
 		pthread_mutex_lock(&newQueueMutex);		//Need to prevent the threads accessing the readyQueue/newQueue
 		pthread_mutex_lock(&readyQueueMutex); 	//at the same time. Otherwise, unexpected things may happen...
 
@@ -63,10 +57,8 @@ void longTermSchedulingThread()
 
 			if(list_size(readyQueue) == 0)
 				log_info(schedulerLog, "LTS: No hay procesos para planificar\n");
-			//Not sure of the following -> if, after calling the LTS, there are no new processes but there are ready ones, call the STS
-
 			else
-				_checkExecProc_and_algorithm();
+				_checkExecProc_and_algorithm(); //Call the STS if there are no new processes to add, but there are ready ones
 		}
 		else
 		{
@@ -74,6 +66,16 @@ void longTermSchedulingThread()
 			{
 				processToAccept = list_remove(newQueue, 0);
 				processAccepted = addProcessToReadyQueue(processToAccept);
+
+				//TODO
+				//lo tengo que agregar a la cola de listos para guardar el espacio, pero en realidad
+				//no deberia estar ahi hasta que la cpu no me confirma que se inicializo el PCB
+				//correctamente (es decir que se cargo el script en memoria y eso)
+				//entonces, para evitar que el planificador me planifique un proceso que esta condicional
+				//en la cola de listos, le tengo que agregar una variable al PCB para indicar si es
+				//planificable... cuando la CPU me confirma que se inicializo el proceso, se cambia
+				//la variable de ese proceso en la cola de listos a planificable... si hubo un error
+				//en lka inicializacion, tengo que sacar el PCB de la cola de listos
 
 				if(!processAccepted)
 					break;
@@ -97,7 +99,7 @@ void _checkExecProc_and_algorithm()
 
 	log_info(schedulerLog, "LTS: Se encontraron procesos en la cola de listos. Se intentara activar el STS\n");
 
-	if((list_size(executingQueue) == 0) || (getFreeCpusQty() > 0))
+	if((list_size(executionQueue) == 0) || (getFreeCpusQty() > 0))
 	{
 		sem_getvalue(&shortTermScheduler, &semaphoreValue);
 
@@ -123,7 +125,7 @@ void initializeVariables()
 	newQueue = list_create();
 	readyQueue = list_create();
 	blockedQueue = list_create();
-	executingQueue = list_create();
+	executionQueue = list_create();
 	finishedQueue = list_create();
 	connectedCPUs = list_create();
 	ioReadyQueue = list_create();

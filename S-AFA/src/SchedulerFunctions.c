@@ -109,11 +109,6 @@ void checkAlgorithm()
 	}
 }
 
-void removeProcessFromExecutingQueue(PCB_t* process)
-{
-	//TODO
-}
-
 void addProcessToNewQueue(PCB_t *process)
 {
 	uint32_t semaphoreValue;
@@ -124,12 +119,19 @@ void addProcessToNewQueue(PCB_t *process)
 
 	log_info(schedulerLog, "Se creo un proceso con id %d!\n", process->pid);
 
+	/*
 	sem_getvalue(&longTermScheduler, &semaphoreValue);
 
 	if((semaphoreValue == 0) && !LTSAlreadyExecuting) //Semaphore may be 0, but the scheduler may or may not be running
 		sem_post(&longTermScheduler);
+	*/
 
-	//TODO: What if a process gets added to the new queue while the LTS is running?
+	sem_post(&longTermScheduler);
+
+	// If a process gets added to the new queue, just signal the LTS semaphore, no need to
+	// sleep the LTS when it starts. It does not matter if you pause scheduling, the
+	// first time the LTS starts it gets all the processes, and then it runs several times
+	// after that without adding processes (and it prints messages telling it has no new processes)
 }
 
 uint32_t addProcessToReadyQueue(PCB_t *process)
@@ -156,6 +158,23 @@ uint32_t addProcessToReadyQueue(PCB_t *process)
 	return 1;
 }
 
+void moveProcessToReadyQueue(PCB_t* process, bool addToIoReadyQueue) //To add to the real ReadyQueue, or the idReadyQueue
+{
+	process->executionState = READY;
+
+	if(addToIoReadyQueue)
+	{
+		list_add(readyQueue, process);
+		log_info(schedulerLog, "El proceso con id %d fue movido a la cola de listos\n", process->pid);
+	}
+	else
+	{
+		list_add(ioReadyQueue, process);
+		log_info(schedulerLog, "El proceso con id %d fue movido a la cola auxiliar de listos\n", process->pid);
+	}
+
+}
+
 void addProcessToBlockedQueue(PCB_t* process)
 {
 	process->executionState = BLOCKED;
@@ -169,33 +188,69 @@ PCB_t* createProcess(char* scriptName)
 	if(process == NULL)	//no se pudo reservar memoria
 		return NULL;
 
-	process->fileTable = list_create();
-	process->newQueueArrivalTime = executedInstructions;
+									
+		process->newQueueArrivalTime = executedInstructions;
 	process->newQueueLeaveTime = 0;
 	process->pid = ++totalProcesses;
 	process->programCounter = NULL;
-	process->script = strdup(scriptName); // scriptName es parte de una estructura que va a ser liberada
+	process->scriptName = strdup(scriptName); // scriptName es parte de una estructura que va a ser liberada
 	process->wasInitialized = false;
+	process->canBeScheduled = false;
 	process->executionState = SYSTEM_PROCESS;
 	process->cpuProcessIsAssignedTo = 0;
+	process->readyQueueArrivalTime = 0;
+	process->dmaCalls = 0;
+	process->instructionsExecuted = 0;
+	process->firstExecutionTime = 0;
+	process->normalTermination = true;
 
 	return process;
 }
 
-void terminateProcess(PCB_t* process)
+void terminateExecutingProcess(uint32_t processId)
 {
+	bool _process_has_given_id(PCB_t* pcb)
+	{
+		return pcb->pid == processId;
+	}
+
 	uint32_t semaphoreValue;
+	PCB_t* process = list_remove_by_condition(executionQueue, _process_has_given_id);
 
 	process->executionState = TERMINATED;
 
 	list_add(finishedQueue, process);
-	removeProcessFromExecutingQueue(process);
+										  
 
 	activeProcesses--;
+
+	/*
 	sem_getvalue(&longTermScheduler, &semaphoreValue);
 
 	if((semaphoreValue == 0) && !LTSAlreadyExecuting) //Semaphore may be 0, but the scheduler may or may not be running
 		sem_post(&longTermScheduler); //Always let the LTS accept new processes before running the STS
+	*/
+
+	sem_post(&longTermScheduler); //Post the LITS semaphore; it does not matter if it got
+								  //posted several times by new processes, and it runs several times
+
+
+void unblockProcess(uint32_t processId)
+{
+	bool _process_has_given_id(PCB_t* pcb)
+	{
+		return pcb->pid == processId;
+	}
+
+	PCB_t* process = list_remove_by_condition(blockedQueue, _process_has_given_id);
+
+	process->wasInitialized = true;	//If the process was not initialized and the DMA told me to unblock it, its initialization completed succesfully
+	//Need to do something else?
+
+	if(config.schedulingAlgorithmCode == VRR)
+		moveProcessToReadyQueue(process, true);
+	else
+		moveProcessToReadyQueue(process, false);
 }
 
 uint32_t getFreeCPUsQty()
@@ -221,10 +276,10 @@ t_list* getFreeCPUs()
 	return freeCPUs;
 }
 
-void sendPCB(PCB_t* process, uint32_t socket)
-{
-	//TODO
-}
+											 
+ 
+	   
+ 
 
-//TODO: regarding the sts, if a new cpu connects, and there are ready processes, it must be activated
-//(that new cpu will be selected anyways, no need to specify one for the STS to assign a process to it)l
+//TODO: If a new CPU connects, check if there are any ready processes and schedule
+//		them to the new CPU
