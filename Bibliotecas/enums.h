@@ -29,7 +29,7 @@ enum exit_codes
 
 enum tareas
 {
-
+ hola = 99,
 };
 
 #endif /* ENUMS_H_ */
