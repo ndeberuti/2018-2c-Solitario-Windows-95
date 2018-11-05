@@ -22,7 +22,7 @@ int main(void) {
 	config = load_config();
 	
 	setear_modo();
-	inicializar_memoria();
+	//inicializar_memoria();
 
 
 
@@ -262,7 +262,7 @@ void recibir_proceso(int socket){
 
 	recv(socket, buffer_recepcion, longitud_paquete, MSG_WAITALL);
 
-	guardar_proceso(pid, longitud_paquete, buffer_recepcion);
+	//guardar_proceso(pid, longitud_paquete, buffer_recepcion);
 }
 
 void guardar_proceso_segmentacion_pura(int pid ,int longitud_paquete, void * buffer_recepcion){
