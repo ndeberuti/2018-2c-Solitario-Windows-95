@@ -25,6 +25,7 @@
 #include "commons/config.h"
 #include "servidor/servidor.h"
 #include <math.h>
+#include "PCB.h"
 
 // constantes
 char *PATH_LOG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/Logs/logFM9.txt";
@@ -80,6 +81,10 @@ typedef struct {
 };*/
 
 
+//listas
+
+t_list* tabla_de_segmentos;
+
 
 // variables
 t_log *log_consola;
@@ -90,9 +95,9 @@ pthread_t thread_servidor;
 pthread_t thread_consola;
 uint32_t diego;
 
+char* puntero_memoria_segmentada;
 
 
-//prueba_t *prueba;
 
 
 // funciones
@@ -108,13 +113,16 @@ void setear_segmentacion_simple();
 void setear_paginacion_invertida();
 void setear_segmentacion_paginada();
 
-void inicializar_memoria();
+void inicializar_memoria_segmentacion_simple();
 void recibir_proceso(int socket);
-void guardar_proceso_segmentacion_pura(int pid ,int longitud_paquete, void * buffer_recepcion);
+void guardar_proceso_segmentacion_simple(int pid ,int longitud_paquete, char* buffer_recepcion);
 void devolver_proceso(int pid, int longitud_paquete);
 int obtener_cantidad_lineas(int longitud_paquete);
 
-void stab();
+int obtener_limite_de_tabla(int pid);
+int obtener_base_de_tabla(int pid);
+
+
 
 
 #endif /* SRC_FM9_H_ */

@@ -188,24 +188,21 @@ void consola() {
 	}
 }
 
-void inicializar_memoria_segmentacion_pura(){
+void inicializar_memoria_segmentacion_simple(){
+	//tabla de segmentos
+
+	tabla_de_segmentos = list_create();
+
 	//alocacion de memoria
 	int numero_lineas = obtener_cantidad_lineas(config.TAMANIO);
 
-	char **puntero_memoria = malloc(sizeof *puntero_memoria * numero_lineas);
-	if (puntero_memoria){
-	  size_t i;
-	  for (i = 0; i < numero_lineas; i++)
-	  {
-	    puntero_memoria[i] = malloc(sizeof *puntero_memoria[i] * (config.MAX_LINEA));
-
-	  }
-	}
+	puntero_memoria_segmentada = malloc(config.TAMANIO);
 
 
 
 
-	if(puntero_memoria == NULL){
+
+	if(puntero_memoria_segmentada == NULL){
 		log_error(log_fm9, "Puntero de memoria a NULL");
 	}
 
@@ -214,10 +211,66 @@ void inicializar_memoria_segmentacion_pura(){
 
 }
 
+void guardar_proceso_segmentacion_simple(int pid ,int longitud_paquete, char* buffer_recepcion){
+
+	segmento_offset_t* segmento = malloc(sizeof(segmento_offset_t));
+	segmento_tabla_t* entrada_tabla = malloc(sizeof(segmento_tabla_t));
+
+
+
+
+	segmento->segmento = pid;
+	segmento->offset = obtener_cantidad_lineas(longitud_paquete);
+
+	if(list_size(tabla_de_segmentos) == 0){
+
+							entrada_tabla->id = 0;
+							entrada_tabla->base = 0;
+							entrada_tabla->limite = segmento->offset;
+						 	list_add(tabla_de_segmentos, entrada_tabla);
+							}
+
+	entrada_tabla->limite = obtener_limite_de_tabla(segmento->segmento); //segmento = pid
+	entrada_tabla->base = obtener_base_de_tabla(segmento->segmento);
+
+
+
+	if(segmento->offset > entrada_tabla->limite){
+
+		log_error(log_fm9, "Segmentation Fault. El offset es mas grande que el limite");}
+
+		else{
+
+
+			while(segmento->offset / config.MAX_LINEA <= longitud_paquete){
+				memcpy(puntero_memoria_segmentada+ entrada_tabla->base, buffer_recepcion,config.MAX_LINEA);
+				entrada_tabla->base+= config.MAX_LINEA;
+
+			}
+	}
+
+}
+
+	int obtener_limite_de_tabla(int pid){
+		int limite;
+
+		//TODO
+		return limite;
+	}
+
+
+	int obtener_base_de_tabla(int pid){
+		int base;
+		//TODO
+		return base;
+	}
+
+
+
 
 void setear_segmentacion_simple(){
 	log_info(log_fm9, "Segmentación Simple seteada");
-	inicializar_memoria_segmentacion_pura();
+	inicializar_memoria_segmentacion_simple();
 }
 
 void setear_paginacion_invertida(){
@@ -247,8 +300,13 @@ void setear_modo(){
 	}
 }
 
+int obtener_cantidad_lineas(int longitud_paquete){
 
 
+	return (longitud_paquete + config.MAX_LINEA - 1) / config.MAX_LINEA;
+
+}
+/*
 void recibir_proceso(int socket){
 	int pid,longitud_paquete= 0;
 	void * buffer_recepcion;
@@ -265,35 +323,7 @@ void recibir_proceso(int socket){
 	//guardar_proceso(pid, longitud_paquete, buffer_recepcion);
 }
 
-void guardar_proceso_segmentacion_pura(int pid ,int longitud_paquete, void * buffer_recepcion){
-	int offset = 0;
-	segmento_offset_t paquete;
 
-
-
-	paquete.segmento = pid;
-	paquete.offset = obtener_cantidad_lineas(longitud_paquete);
-
-	 //TODO Matchear PID en la tabla de segmentacion de procesos para sacar el limite
-/*
-	if(paquete.offset > limite){
-
-		log_error(log_fm9, "Segmentation Fault. El offset es mas grande que el limite");
-	}
-		else{
-
-
-
-
-
-			while(offset <= longitud_paquete){
-				memcpy(memory_pointer, buffer_recepcion + offset,config.MAX_LINEA);
-				offset+= config.MAX_LINEA;
-
-			}
-		}
-  */
-}
 
 
 
@@ -320,15 +350,10 @@ void devolver_proceso(int pid, int longitud_paquete){
 	free(buffer_envio);
 }
 
-int obtener_cantidad_lineas(int longitud_paquete){
-
-
-	return ((longitud_paquete + config.MAX_LINEA - 1) / config.MAX_LINEA);
-
-}
 
 
 
+*/
 
 
 
