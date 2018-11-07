@@ -194,7 +194,7 @@ void inicializar_memoria_segmentacion_simple(){
 	tabla_de_segmentos = list_create();
 
 	//alocacion de memoria
-	int numero_lineas = obtener_cantidad_lineas(config.TAMANIO);
+	numero_lineas_memoria = obtener_cantidad_lineas(config.TAMANIO);
 
 	puntero_memoria_segmentada = malloc(config.TAMANIO);
 
@@ -228,36 +228,54 @@ void guardar_proceso_segmentacion_simple(int pid ,int longitud_paquete, char* bu
 							entrada_tabla->base = 0;
 							entrada_tabla->limite = segmento->offset;
 						 	list_add(tabla_de_segmentos, entrada_tabla);
-							}
+							}else{
 
-	entrada_tabla->limite = obtener_limite_de_tabla(segmento->segmento); //segmento = pid
-	entrada_tabla->base = obtener_base_de_tabla(segmento->segmento);
-
-
-
-	if(segmento->offset > entrada_tabla->limite){
-
-		log_error(log_fm9, "Segmentation Fault. El offset es mas grande que el limite");}
-
-		else{
+							entrada_tabla->limite = obtener_limite_de_tabla(segmento->segmento); //segmento = pid
+							entrada_tabla->base = obtener_base_de_tabla(segmento->segmento);
+							entrada_tabla->id = obtener_id_de_tabla();
 
 
-			while(segmento->offset / config.MAX_LINEA <= longitud_paquete){
-				memcpy(puntero_memoria_segmentada+ entrada_tabla->base, buffer_recepcion,config.MAX_LINEA);
-				entrada_tabla->base+= config.MAX_LINEA;
+								if(segmento->offset > entrada_tabla->limite){
 
-			}
-	}
+								log_error(log_fm9, "Segmentation Fault. El offset es mas grande que el limite");}
+
+								else{
+
+
+									while(segmento->offset * config.MAX_LINEA <= longitud_paquete){
+									memcpy(puntero_memoria_segmentada+ entrada_tabla->base, buffer_recepcion,config.MAX_LINEA);
+									entrada_tabla->base+= config.MAX_LINEA;
+
+												}
+										}
+
+									}
 
 }
 
 	int obtener_limite_de_tabla(int pid){
 		int limite;
+		segmento_tabla_t* buffer = malloc(sizeof(segmento_tabla_t));
 
-		//TODO
+		buffer = list_find(tabla_de_segmentos,  pid_segmento(segmento, pid_segmento));
+		limite = buffer->limite;
+
+
 		return limite;
 	}
 
+	int pid_segmento(segmento_tabla_t segmento, int pid_segmento){
+		if (pid_segmento == segmento.id){
+
+			return 1;
+
+		}else{
+
+			return 0;
+
+		}
+
+	}
 
 	int obtener_base_de_tabla(int pid){
 		int base;

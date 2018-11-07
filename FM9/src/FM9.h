@@ -96,7 +96,7 @@ pthread_t thread_consola;
 uint32_t diego;
 
 char* puntero_memoria_segmentada;
-
+int numero_lineas_memoria;
 
 
 
