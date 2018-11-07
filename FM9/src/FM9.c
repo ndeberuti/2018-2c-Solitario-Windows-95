@@ -220,36 +220,43 @@ void guardar_proceso_segmentacion_simple(int pid ,int longitud_paquete, char* bu
 
 
 	segmento->segmento = pid;
-	segmento->offset = obtener_cantidad_lineas(longitud_paquete);
+	segmento->offset = longitud_paquete;
+
+	if(segmento->offset > entrada_tabla->limite){
+	log_error(log_fm9, "Segmentation Fault. El offset es mas grande que el limite");
+	}
 
 	if(list_size(tabla_de_segmentos) == 0){
 
+
+
+							entrada_tabla->pid = segmento->segmento;
 							entrada_tabla->id = 0;
 							entrada_tabla->base = 0;
 							entrada_tabla->limite = segmento->offset;
 						 	list_add(tabla_de_segmentos, entrada_tabla);
-							}else{
+	}else{
 
-							entrada_tabla->limite = obtener_limite_de_tabla(segmento->segmento); //segmento = pid
-							entrada_tabla->base = obtener_base_de_tabla(segmento->segmento);
+							entrada_tabla->pid = segmento->segmento;
+							entrada_tabla->limite = segmento->offset;
+							entrada_tabla->base = obtener_base_de_tabla(segmento->offset);
 							entrada_tabla->id = obtener_id_de_tabla();
+							list_add(tabla_de_segmentos, entrada_tabla);
 
 
-								if(segmento->offset > entrada_tabla->limite){
-
-								log_error(log_fm9, "Segmentation Fault. El offset es mas grande que el limite");}
-
-								else{
 
 
-									while(segmento->offset * config.MAX_LINEA <= longitud_paquete){
-									memcpy(puntero_memoria_segmentada+ entrada_tabla->base, buffer_recepcion,config.MAX_LINEA);
-									entrada_tabla->base+= config.MAX_LINEA;
 
-												}
-										}
 
-									}
+
+							while(segmento->offset * config.MAX_LINEA <= longitud_paquete){
+							memcpy(puntero_memoria_segmentada+ entrada_tabla->base, buffer_recepcion,config.MAX_LINEA);
+							entrada_tabla->base+= config.MAX_LINEA;
+
+							}
+	}
+
+
 
 }
 

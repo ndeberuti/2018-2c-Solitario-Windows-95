@@ -54,6 +54,7 @@ typedef struct {
 } console_t;
 
 typedef struct {
+	int pid;
 	int id;
 	int limite;
 	int base;
