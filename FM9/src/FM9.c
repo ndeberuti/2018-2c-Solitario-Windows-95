@@ -294,7 +294,7 @@ free(entrada_vacia);
 
 int buscar_id_linea_vacia(){
 	int id;
-	segmento_tabla_t* entrada_id = malloc(sizeof(segmento_tabla_t));
+	segmento_tabla_t* entrada_id;
 
 
 	bool es_linea_vacia(segmento_tabla_t* linea){
@@ -302,7 +302,7 @@ int buscar_id_linea_vacia(){
 		linea = malloc(sizeof(segmento_tabla_t));
 		limite = linea->limite;
 
-		free(linea);
+
 
 		return (limite == 0);
 	}
@@ -312,7 +312,7 @@ int buscar_id_linea_vacia(){
 
 	id = entrada_id->id;
 
-	free(entrada_id);
+
 
 	return id;
 
