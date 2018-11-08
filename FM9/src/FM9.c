@@ -8,7 +8,7 @@
 
 int main(void) {
 	//simulacion de serializacion/deserializacion
-	void* buffer_envio;
+
 
 
 
@@ -127,7 +127,7 @@ void server() {
 					else
 						// tenemos datos de algún cliente
 						command_handler(command, i);
-			} // if (FD_ISSET(i, &read_fds))
+			} // Si, ahí está bien, pero si por ejemplo querés que ese valor contra el que comparas sea dinámico en base a un valor que recibis en la función, tenés que hacer referencia a esa variable y poner la función condicional en la función que hace el list_findif (FD_ISSET(i, &read_fds))
 	} // while (true)
 }
 
@@ -194,7 +194,9 @@ void inicializar_memoria_segmentacion_simple(){
 	tabla_de_segmentos = list_create();
 
 	//alocacion de memoria
-	numero_lineas_memoria = obtener_cantidad_lineas(config.TAMANIO);
+	//numero_lineas_memoria = obtener_cantidad_lineas(config.TAMANIO);
+
+	inicializar_tabla_de_paginas(numero_lineas_memoria);
 
 	puntero_memoria_segmentada = malloc(config.TAMANIO);
 
@@ -213,35 +215,36 @@ void inicializar_memoria_segmentacion_simple(){
 
 void guardar_proceso_segmentacion_simple(int pid ,int longitud_paquete, char* buffer_recepcion){
 
-	segmento_offset_t* segmento = malloc(sizeof(segmento_offset_t));
-	segmento_tabla_t* entrada_tabla = malloc(sizeof(segmento_tabla_t));
+segmento_offset_t* segmento = malloc(sizeof(segmento_offset_t));
+segmento_tabla_t* entrada_tabla = malloc(sizeof(segmento_tabla_t));
 
-
-
-
-	segmento->segmento = pid;
-	segmento->offset = longitud_paquete;
+segmento->segmento = pid;
+segmento->offset = longitud_paquete;
 
 	if(segmento->offset > entrada_tabla->limite){
 	log_error(log_fm9, "Segmentation Fault. El offset es mas grande que el limite");
 	}
 
-	if(list_size(tabla_de_segmentos) == 0){
+	if(list_is_empty(tabla_de_segmentos)){
 
 
 
-							entrada_tabla->pid = segmento->segmento;
+
 							entrada_tabla->id = 0;
-							entrada_tabla->base = 0;
+							entrada_tabla->base = entrada_tabla->id * config.MAX_LINEA ;
 							entrada_tabla->limite = segmento->offset;
-						 	list_add(tabla_de_segmentos, entrada_tabla);
+
+							list_add(tabla_de_segmentos, entrada_tabla);
 	}else{
 
-							entrada_tabla->pid = segmento->segmento;
+
+							entrada_tabla->id = buscar_id_linea_vacia();
+							entrada_tabla->base = entrada_tabla->id * config.MAX_LINEA;
 							entrada_tabla->limite = segmento->offset;
-							entrada_tabla->base = obtener_base_de_tabla(segmento->offset);
-							entrada_tabla->id = obtener_id_de_tabla();
-							list_add(tabla_de_segmentos, entrada_tabla);
+
+//TODO saber a que proceso corresponde la linea
+
+							list_replace(tabla_de_segmentos, entrada_tabla->id, entrada_tabla);
 
 
 
@@ -249,47 +252,72 @@ void guardar_proceso_segmentacion_simple(int pid ,int longitud_paquete, char* bu
 
 
 
-							while(segmento->offset * config.MAX_LINEA <= longitud_paquete){
-							memcpy(puntero_memoria_segmentada+ entrada_tabla->base, buffer_recepcion,config.MAX_LINEA);
-							entrada_tabla->base+= config.MAX_LINEA;
+
+			memcpy(puntero_memoria_segmentada + entrada_tabla->base, buffer_recepcion,entrada_tabla->limite);
+
 
 							}
-	}
-
-
+free(segmento);
+free(entrada_tabla);
 
 }
 
-	int obtener_limite_de_tabla(int pid){
+
+
+
+
+
+
+
+
+
+void inicializar_tabla_de_paginas(int numero_lineas_memoria){
+	segmento_tabla_t* entrada_vacia = malloc(sizeof(segmento_tabla_t));
+
+	entrada_vacia->base=0;
+	entrada_vacia->limite=0;
+
+
+
+	for(int i=0; i < numero_lineas_memoria; i++){
+		int j= 0;
+
+		entrada_vacia->id = j;
+		list_add(tabla_de_segmentos, entrada_vacia);
+		j++;
+
+	}
+
+free(entrada_vacia);
+
+}
+
+int buscar_id_linea_vacia(){
+	int id;
+	segmento_tabla_t* entrada_id = malloc(sizeof(segmento_tabla_t));
+
+
+	bool es_linea_vacia(segmento_tabla_t* linea){
 		int limite;
-		segmento_tabla_t* buffer = malloc(sizeof(segmento_tabla_t));
+		linea = malloc(sizeof(segmento_tabla_t));
+		limite = linea->limite;
 
-		buffer = list_find(tabla_de_segmentos,  pid_segmento(segmento, pid_segmento));
-		limite = buffer->limite;
+		free(linea);
 
-
-		return limite;
+		return (limite == 0);
 	}
 
-	int pid_segmento(segmento_tabla_t segmento, int pid_segmento){
-		if (pid_segmento == segmento.id){
+//TODO que es esto??????
+	entrada_id = list_find(tabla_de_segmentos, es_linea_vacia);
 
-			return 1;
+	id = entrada_id->id;
 
-		}else{
+	free(entrada_id);
 
-			return 0;
+	return id;
 
-		}
 
-	}
-
-	int obtener_base_de_tabla(int pid){
-		int base;
-		//TODO
-		return base;
-	}
-
+}
 
 
 

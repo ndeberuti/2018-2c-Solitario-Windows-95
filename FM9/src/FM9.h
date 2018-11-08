@@ -54,7 +54,7 @@ typedef struct {
 } console_t;
 
 typedef struct {
-	int pid;
+
 	int id;
 	int limite;
 	int base;
@@ -96,6 +96,7 @@ pthread_t thread_servidor;
 pthread_t thread_consola;
 uint32_t diego;
 
+void* buffer_envio;
 char* puntero_memoria_segmentada;
 int numero_lineas_memoria;
 
@@ -115,13 +116,16 @@ void setear_paginacion_invertida();
 void setear_segmentacion_paginada();
 
 void inicializar_memoria_segmentacion_simple();
+void inicializar_tabla_de_paginas(int numero_lineas_memoria);
+
 void recibir_proceso(int socket);
 void guardar_proceso_segmentacion_simple(int pid ,int longitud_paquete, char* buffer_recepcion);
 void devolver_proceso(int pid, int longitud_paquete);
 int obtener_cantidad_lineas(int longitud_paquete);
 
-int obtener_limite_de_tabla(int pid);
-int obtener_base_de_tabla(int pid);
+int buscar_id__linea_vacia();
+
+
 
 
 
