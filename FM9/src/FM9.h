@@ -123,7 +123,9 @@ void guardar_proceso_segmentacion_simple(int pid ,int longitud_paquete, char* bu
 void devolver_proceso(int pid, int longitud_paquete);
 int obtener_cantidad_lineas(int longitud_paquete);
 
-int buscar_id__linea_vacia();
+int buscar_id();
+int buscar_base(int offset);
+int validar_limite(int offset);
 
 
 

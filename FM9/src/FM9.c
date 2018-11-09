@@ -196,7 +196,7 @@ void inicializar_memoria_segmentacion_simple(){
 	//alocacion de memoria
 	//numero_lineas_memoria = obtener_cantidad_lineas(config.TAMANIO);
 
-	inicializar_tabla_de_paginas(numero_lineas_memoria);
+	//inicializar_tabla_de_paginas(numero_lineas_memoria);
 
 	puntero_memoria_segmentada = malloc(config.TAMANIO);
 
@@ -231,17 +231,19 @@ segmento->offset = longitud_paquete;
 
 
 							entrada_tabla->id = 0;
-							entrada_tabla->base = entrada_tabla->id * config.MAX_LINEA ;
+							entrada_tabla->base = 0 ;
 							entrada_tabla->limite = segmento->offset;
 
 							list_add(tabla_de_segmentos, entrada_tabla);
 	}else{
+					if(validar_limite(segmento->offset) == 1){
 
-
-							entrada_tabla->id = buscar_id_linea_vacia();
-							entrada_tabla->base = entrada_tabla->id * config.MAX_LINEA;
+							entrada_tabla->id = buscar_id();
+							entrada_tabla->base = buscar_base(segmento->offset);
 							entrada_tabla->limite = segmento->offset;
-
+					}else{
+						log_error(log_fm9, "No hay espacio en memoria para el segmento");
+					}
 //TODO saber a que proceso corresponde la linea
 
 							list_replace(tabla_de_segmentos, entrada_tabla->id, entrada_tabla);
@@ -262,37 +264,24 @@ free(entrada_tabla);
 
 }
 
+int buscar_base(int offset){
 
-
-
-
-
-
-
-
-
-void inicializar_tabla_de_paginas(int numero_lineas_memoria){
-	segmento_tabla_t* entrada_vacia = malloc(sizeof(segmento_tabla_t));
-
-	entrada_vacia->base=0;
-	entrada_vacia->limite=0;
-
-
-
-	for(int i=0; i < numero_lineas_memoria; i++){
-		int j= 0;
-
-		entrada_vacia->id = j;
-		list_add(tabla_de_segmentos, entrada_vacia);
-		j++;
-
-	}
-
-free(entrada_vacia);
+	//TODO
 
 }
 
-int buscar_id_linea_vacia(){
+
+int validar_limite(int offset){
+
+
+	//TODO
+return 1;
+}
+
+
+int buscar_id(){
+
+	//TODO
 	int id;
 	segmento_tabla_t* entrada_id;
 
@@ -319,6 +308,29 @@ int buscar_id_linea_vacia(){
 
 }
 
+
+/*
+void inicializar_tabla_de_paginas(int numero_lineas_memoria){
+	segmento_tabla_t* entrada_vacia = malloc(sizeof(segmento_tabla_t));
+
+	entrada_vacia->base=0;
+	entrada_vacia->limite=0;
+
+
+
+	for(int i=0; i < numero_lineas_memoria; i++){
+		int j= 0;
+
+		entrada_vacia->id = j;
+		list_add(tabla_de_segmentos, entrada_vacia);
+		j++;
+
+	}
+
+free(entrada_vacia);
+
+}
+*/
 
 
 void setear_segmentacion_simple(){
