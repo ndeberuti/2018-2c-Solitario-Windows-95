@@ -218,8 +218,9 @@ void guardar_proceso_segmentacion_simple(int pid ,int longitud_paquete, char* bu
 segmento_offset_t* segmento = malloc(sizeof(segmento_offset_t));
 segmento_tabla_t* entrada_tabla = malloc(sizeof(segmento_tabla_t));
 
+char* longitud linea;
 segmento->segmento = pid;
-segmento->offset = longitud_paquete;
+segmento->offset = longitud_linea;
 
 	if(segmento->offset > entrada_tabla->limite){
 	log_error(log_fm9, "Segmentation Fault. El offset es mas grande que el limite");
@@ -265,9 +266,18 @@ free(entrada_tabla);
 }
 
 int buscar_base(int offset){
+int base;
+int otra_base;
 
-	//TODO
+//TODO
 
+	if(base + offset > config.TAMANIO || base + offset >= otra_base) {
+
+
+	log_error(log_fm9, "Segmentation Fault");
+
+	}
+return base;
 }
 
 
