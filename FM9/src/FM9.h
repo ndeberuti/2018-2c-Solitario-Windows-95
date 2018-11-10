@@ -98,10 +98,14 @@ pthread_t thread_consola;
 uint32_t diego;
 
 void* buffer_envio;
+
+//variables memoria segmentada
+
 char* puntero_memoria_segmentada;
+char* b_m_s;
 t_bitarray* bitarray_memoria_segmentada;
 int numero_lineas_memoria;
-
+int id_segmento=0;
 
 
 // funciones
@@ -125,9 +129,10 @@ void guardar_proceso_segmentacion_simple(int pid ,int longitud_paquete, char* bu
 void devolver_proceso(int pid, int longitud_paquete);
 int obtener_cantidad_lineas(int longitud_paquete);
 
-int buscar_id();
+int asignar_id();
 int buscar_base(int offset);
 int validar_limite(int offset);
+void reservar_bitarray(t_bitarray* bitarray_memoria_segmentada, int base, int limite);
 
 
 

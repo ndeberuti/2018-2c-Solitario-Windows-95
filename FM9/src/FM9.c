@@ -199,10 +199,10 @@ void inicializar_memoria_segmentacion_simple(){
 	//inicializar_tabla_de_paginas(numero_lineas_memoria);
 
 	puntero_memoria_segmentada = malloc(config.TAMANIO);
-	bitarray_create(bitarray_memoria_segmentada,config.TAMANIO);
+	bitarray_memoria_segmentada = bitarray_create(b_m_s,config.TAMANIO);
 
 	for(int i = 0; i < config.TAMANIO; i++){
-	bitarray_set_bit(bitarray_memoria_segmentada,  i);
+	bitarray_clean_bit(bitarray_memoria_segmentada,  i);
 	}
 
 	if(puntero_memoria_segmentada == NULL){
@@ -219,12 +219,12 @@ void guardar_proceso_segmentacion_simple(int pid ,int longitud_paquete, char* bu
 segmento_offset_t* segmento = malloc(sizeof(segmento_offset_t));
 segmento_tabla_t* entrada_tabla = malloc(sizeof(segmento_tabla_t));
 
-char* longitud linea;
+
 segmento->segmento = pid;
-segmento->offset = longitud_linea;
+segmento->offset = longitud_paquete;
 
 
-//TODO QUE NO SE PASE DEL LIMITE DE LA MEMORIA
+
 
 	if(segmento->offset > entrada_tabla->limite){
 	log_error(log_fm9, "Segmentation Fault. El offset es mas grande que el limite");
@@ -239,20 +239,20 @@ segmento->offset = longitud_linea;
 							entrada_tabla->base = 0 ;
 							entrada_tabla->limite = segmento->offset;
 
+
+							reservar_bitarray(bitarray_memoria_segmentada, entrada_tabla->base, entrada_tabla->limite);
+
 							list_add(tabla_de_segmentos, entrada_tabla);
 	}else{
-					if(validar_limite(segmento->offset) == 1){
 
-							entrada_tabla->id = buscar_id();
+
+							entrada_tabla->id = asignar_id();
 							entrada_tabla->base = buscar_base(segmento->offset);
 							entrada_tabla->limite = segmento->offset;
-					}else{
-						log_error(log_fm9, "No hay espacio en memoria para el segmento");
-					}
-//TODO saber a que proceso corresponde la linea
 
-							list_replace(tabla_de_segmentos, entrada_tabla->id, entrada_tabla);
 
+							reservar_bitarray(bitarray_memoria_segmentada, entrada_tabla->base, entrada_tabla->limite);
+							list_add(tabla_de_segmentos, entrada_tabla);
 
 
 
@@ -270,54 +270,78 @@ free(entrada_tabla);
 }
 
 int buscar_base(int offset){
-int base;
-int otra_base;
 
-//TODO
-
-	if(base + offset > config.TAMANIO || base + offset >= otra_base) {
+int base=0;
+int acierto=0;
 
 
-	log_error(log_fm9, "Segmentation Fault");
+
+
+while(acierto==0){
+
+
+
+	int otra_base;
+
+
+
+	while (bitarray_test_bit(bitarray_memoria_segmentada, base)){
+
+
+	base++;
 
 	}
+
+	otra_base = base;
+
+	while(bitarray_test_bit(bitarray_memoria_segmentada, base)){
+
+	otra_base++;
+
+
+	}
+
+	if(base+offset >= config.TAMANIO){
+		log_error(log_fm9, "El proceso no entra en memoria");
+	}
+
+	if(base+offset < otra_base){
+		acierto=1;
+
+	}
+
+
+
+
+
+
+
+
+
+
+
+}
+
 return base;
 }
 
 
-int validar_limite(int offset){
+int asignar_id(){
+	id_segmento++;
 
-
-	//TODO
-return 1;
+	return id_segmento;
 }
 
 
-int buscar_id(){
-
-	//TODO
-	int id;
-	segmento_tabla_t* entrada_id;
 
 
-	bool es_linea_vacia(segmento_tabla_t* linea){
-		int limite;
-		linea = malloc(sizeof(segmento_tabla_t));
-		limite = linea->limite;
+void reservar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limite){
 
+	for(int i= 0; i <= limite; i++){
 
+		bitarray_set_bit(bitarray_memoria_segmentada, base + i);
 
-		return (limite == 0);
 	}
-
-//TODO que es esto??????
-	entrada_id = list_find(tabla_de_segmentos, es_linea_vacia);
-
-	id = entrada_id->id;
-
-
-
-	return id;
 
 
 }
