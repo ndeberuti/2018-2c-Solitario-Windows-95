@@ -294,7 +294,7 @@ while(acierto==0){
 
 	otra_base = base;
 
-	while(bitarray_test_bit(bitarray_memoria_segmentada, base)){
+	while(!(bitarray_test_bit(bitarray_memoria_segmentada, base))){
 
 	otra_base++;
 
