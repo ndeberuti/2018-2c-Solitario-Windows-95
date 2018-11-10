@@ -26,6 +26,7 @@
 #include "servidor/servidor.h"
 #include <math.h>
 #include "PCB.h"
+#include "commons/bitarray.h"
 
 // constantes
 char *PATH_LOG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/Logs/logFM9.txt";
@@ -98,6 +99,7 @@ uint32_t diego;
 
 void* buffer_envio;
 char* puntero_memoria_segmentada;
+t_bitarray* bitarray_memoria_segmentada;
 int numero_lineas_memoria;
 
 

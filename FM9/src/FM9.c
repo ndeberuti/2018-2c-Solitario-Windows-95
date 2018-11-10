@@ -199,20 +199,21 @@ void inicializar_memoria_segmentacion_simple(){
 	//inicializar_tabla_de_paginas(numero_lineas_memoria);
 
 	puntero_memoria_segmentada = malloc(config.TAMANIO);
+	bitarray_create(bitarray_memoria_segmentada,config.TAMANIO);
 
-
-
-
-
-	if(puntero_memoria_segmentada == NULL){
-		log_error(log_fm9, "Puntero de memoria a NULL");
+	for(int i = 0; i < config.TAMANIO; i++){
+	bitarray_set_bit(bitarray_memoria_segmentada,  i);
 	}
 
-	log_info(log_fm9, "Alocacion exitosa");
+	if(puntero_memoria_segmentada == NULL){
 
+		log_error(log_fm9, "No se pudo inicializar la memoria");
+	}else{
+
+		log_info(log_fm9, "Inicialización de memoria exitosa");
+	}
 
 }
-
 void guardar_proceso_segmentacion_simple(int pid ,int longitud_paquete, char* buffer_recepcion){
 
 segmento_offset_t* segmento = malloc(sizeof(segmento_offset_t));
@@ -221,6 +222,9 @@ segmento_tabla_t* entrada_tabla = malloc(sizeof(segmento_tabla_t));
 char* longitud linea;
 segmento->segmento = pid;
 segmento->offset = longitud_linea;
+
+
+//TODO QUE NO SE PASE DEL LIMITE DE LA MEMORIA
 
 	if(segmento->offset > entrada_tabla->limite){
 	log_error(log_fm9, "Segmentation Fault. El offset es mas grande que el limite");
