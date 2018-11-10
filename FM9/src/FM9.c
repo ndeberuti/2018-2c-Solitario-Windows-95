@@ -272,6 +272,7 @@ free(entrada_tabla);
 int buscar_base(int offset){
 
 int base=0;
+int otra_base;
 int acierto=0;
 
 
@@ -281,7 +282,7 @@ while(acierto==0){
 
 
 
-	int otra_base;
+
 
 
 
