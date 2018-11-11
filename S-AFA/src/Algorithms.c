@@ -13,7 +13,7 @@ void roundRobinScheduler()
 		return;
 	}
 
-	scheduledProcess = list_remove(readyQueue, 0);
+	scheduledProcess = list_remove_by_condition(readyQueue, processCanBeScheduled); //The ready queue has processes which cannot be scheduled (script not yet loaded in memory)
 	selectedCPU = list_get(freeCPUs, 0);
 
 	dispatchProcess(scheduledProcess, selectedCPU);
@@ -66,6 +66,10 @@ void dispatchProcess(PCB_t* process, cpu_t* selectedCPU)
 	log_info(schedulerLog, "El proceso con id %d fue seleccionado para ejecutar en la CPU con id %d\n", process->pid,  selectedCPU->cpuId);
 }
 
+bool processCanBeScheduled(PCB_t* pcb)
+{
+	return pcb->canBeScheduled;
+}
 
 //TODO: When I receive the PCB back from the CPU, I have to remove the one with the same pid
 //		from the executionQueue

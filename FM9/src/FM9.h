@@ -25,6 +25,8 @@
 #include "commons/config.h"
 #include "servidor/servidor.h"
 #include <math.h>
+#include "PCB.h"
+#include "commons/bitarray.h"
 
 // constantes
 char *PATH_LOG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/Logs/logFM9.txt";
@@ -52,7 +54,13 @@ typedef struct {
 	uint32_t cant_params;
 } console_t;
 
+typedef struct{
+	int pid;
+	int id;
+}entrada_administrativa_segmentacion_t;
+
 typedef struct {
+
 	int id;
 	int limite;
 	int base;
@@ -80,6 +88,10 @@ typedef struct {
 };*/
 
 
+//listas
+
+t_list* tabla_de_segmentos;
+t_list* tabla_administrativa_segmentacion;
 
 // variables
 t_log *log_consola;
@@ -90,9 +102,15 @@ pthread_t thread_servidor;
 pthread_t thread_consola;
 uint32_t diego;
 
+void* buffer_envio;
 
+//variables memoria segmentada
 
-//prueba_t *prueba;
+char* puntero_memoria_segmentada;
+char* b_m_s;
+t_bitarray* bitarray_memoria_segmentada;
+int numero_lineas_memoria;
+int id_segmento=0;
 
 
 // funciones
@@ -108,13 +126,29 @@ void setear_segmentacion_simple();
 void setear_paginacion_invertida();
 void setear_segmentacion_paginada();
 
-void inicializar_memoria();
-void recibir_proceso(int socket);
-void guardar_proceso_segmentacion_pura(int pid ,int longitud_paquete, void * buffer_recepcion);
-void devolver_proceso(int pid, int longitud_paquete);
-int obtener_cantidad_lineas(int longitud_paquete);
+void inicializar_memoria_segmentacion_simple();
+void inicializar_tabla_de_paginas(int numero_lineas_memoria);
 
-void stab();
+//void recibir_proceso(int socket);
+
+void guardar_proceso_segmentacion_simple(int pid ,int longitud_paquete, char* buffer_recepcion);
+
+
+
+//void devolver_proceso(int pid, int longitud_paquete);
+//int obtener_cantidad_lineas(int longitud_paquete);
+
+int asignar_id();
+int buscar_base(int offset);
+char* buscar_proceso_segmentacion_simple(int pid);
+int validar_limite(int offset);
+
+void reservar_bitarray(t_bitarray* bitarray_memoria_segmentada, int base, int limite);
+void liberar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limite);
+
+
+
+
 
 
 #endif /* SRC_FM9_H_ */
