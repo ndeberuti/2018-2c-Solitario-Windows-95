@@ -54,6 +54,11 @@ typedef struct {
 	uint32_t cant_params;
 } console_t;
 
+typedef struct{
+	int pid;
+	int id;
+}entrada_administrativa_segmentacion_t;
+
 typedef struct {
 
 	int id;
@@ -86,7 +91,7 @@ typedef struct {
 //listas
 
 t_list* tabla_de_segmentos;
-
+t_list* tabla_administrativa_segmentacion;
 
 // variables
 t_log *log_consola;
@@ -124,15 +129,22 @@ void setear_segmentacion_paginada();
 void inicializar_memoria_segmentacion_simple();
 void inicializar_tabla_de_paginas(int numero_lineas_memoria);
 
-void recibir_proceso(int socket);
+//void recibir_proceso(int socket);
+
 void guardar_proceso_segmentacion_simple(int pid ,int longitud_paquete, char* buffer_recepcion);
-void devolver_proceso(int pid, int longitud_paquete);
-int obtener_cantidad_lineas(int longitud_paquete);
+
+
+
+//void devolver_proceso(int pid, int longitud_paquete);
+//int obtener_cantidad_lineas(int longitud_paquete);
 
 int asignar_id();
 int buscar_base(int offset);
+char* buscar_proceso_segmentacion_simple(int pid);
 int validar_limite(int offset);
+
 void reservar_bitarray(t_bitarray* bitarray_memoria_segmentada, int base, int limite);
+void liberar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limite);
 
 
 

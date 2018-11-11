@@ -214,16 +214,64 @@ void inicializar_memoria_segmentacion_simple(){
 	}
 
 }
+
+
+char* buscar_proceso_segmentacion_simple(int pid){
+	char* buffer_proceso;
+
+
+	segmento_tabla_t* entrada_tabla_segmentos = malloc(sizeof(segmento_tabla_t));
+
+
+	bool id_pid(entrada_administrativa_segmentacion_t* entrada){
+		int id;
+		entrada = malloc(sizeof(entrada_administrativa_segmentacion_t));
+		id = entrada->id;
+		free(entrada);
+
+		return (pid == id);
+	}
+
+
+
+	entrada_tabla_segmentos= list_find(tabla_de_segmentos, id_pid);
+
+
+	buffer_proceso = malloc(entrada_tabla_segmentos->limite);
+
+	memcpy(buffer_proceso, puntero_memoria_segmentada+entrada_tabla_segmentos->base, entrada_tabla_segmentos->limite);
+
+
+
+	liberar_bitarray(bitarray_memoria_segmentada, entrada_tabla_segmentos->base, entrada_tabla_segmentos->limite);
+
+	bool es_pid(entrada_administrativa_segmentacion_t entrada_administrativa){
+
+
+		return (entrada_administrativa.pid == pid);
+	}
+
+
+
+	list_remove_by_condition(tabla_de_segmentos, id_pid);
+	list_remove_by_condition(tabla_administrativa_segmentacion, es_pid);
+
+	return buffer_proceso;
+}
+
+
+
+
 void guardar_proceso_segmentacion_simple(int pid ,int longitud_paquete, char* buffer_recepcion){
 
 segmento_offset_t* segmento = malloc(sizeof(segmento_offset_t));
 segmento_tabla_t* entrada_tabla = malloc(sizeof(segmento_tabla_t));
-
+entrada_administrativa_segmentacion_t* entrada_administrativa = malloc(sizeof(entrada_administrativa_segmentacion_t));
 
 segmento->segmento = pid;
 segmento->offset = longitud_paquete;
 
-
+entrada_administrativa->pid = segmento->segmento;
 
 
 	if(segmento->offset > entrada_tabla->limite){
@@ -234,6 +282,7 @@ segmento->offset = longitud_paquete;
 
 
 
+							entrada_administrativa->id = 0;
 
 							entrada_tabla->id = 0;
 							entrada_tabla->base = 0 ;
@@ -242,17 +291,22 @@ segmento->offset = longitud_paquete;
 
 							reservar_bitarray(bitarray_memoria_segmentada, entrada_tabla->base, entrada_tabla->limite);
 
+							list_add(tabla_administrativa_segmentacion, entrada_administrativa);
 							list_add(tabla_de_segmentos, entrada_tabla);
 	}else{
+
 
 
 							entrada_tabla->id = asignar_id();
 							entrada_tabla->base = buscar_base(segmento->offset);
 							entrada_tabla->limite = segmento->offset;
 
+							entrada_administrativa->id = entrada_tabla->id;
 
 							reservar_bitarray(bitarray_memoria_segmentada, entrada_tabla->base, entrada_tabla->limite);
+
 							list_add(tabla_de_segmentos, entrada_tabla);
+							list_add(tabla_administrativa_segmentacion, entrada_administrativa);
 
 
 
@@ -340,14 +394,23 @@ void reservar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limi
 
 	for(int i= 0; i <= limite; i++){
 
-		bitarray_set_bit(bitarray_memoria_segmentada, base + i);
+		bitarray_set_bit(bitarray_memoria_segmentada, base);
 
 	}
 
 
 }
 
+void liberar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limite){
 
+	for(int i= 0; i <= limite; i++){
+
+		bitarray_clean_bit(bitarray_memoria_segmentada, base);
+
+	}
+
+
+}
 /*
 void inicializar_tabla_de_paginas(int numero_lineas_memoria){
 	segmento_tabla_t* entrada_vacia = malloc(sizeof(segmento_tabla_t));
