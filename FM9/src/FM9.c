@@ -7,7 +7,7 @@
 #include "FM9.h"
 
 int main(void) {
-	//simulacion de serializacion/deserializacion
+
 
 
 
@@ -22,11 +22,6 @@ int main(void) {
 	config = load_config();
 	
 	setear_modo();
-	//inicializar_memoria();
-
-
-
-	//serializar(buffer_envio);
 
 
 	pthread_create(&thread_consola, NULL, (void *) consola, NULL);
@@ -304,49 +299,7 @@ void inicializar_memoria_segmentacion_simple(){
 }
 
 
-char* buscar_proceso_segmentacion_simple(int pid){
-	char* buffer_proceso;
 
-
-	segmento_tabla_t* entrada_tabla_segmentos;
-
-
-	bool id_pid(entrada_administrativa_segmentacion_t* entrada){
-		int id;
-		entrada = malloc(sizeof(entrada_administrativa_segmentacion_t));
-		id = entrada->id;
-		free(entrada);
-
-		return pid == id;
-	}
-
-
-
-	entrada_tabla_segmentos = list_find(tabla_de_segmentos, id_pid);
-
-
-
-	buffer_proceso = malloc(entrada_tabla_segmentos->limite);
-
-	memcpy(buffer_proceso, puntero_memoria_segmentada+entrada_tabla_segmentos->base, entrada_tabla_segmentos->limite);
-
-
-
-	liberar_bitarray(bitarray_memoria_segmentada, entrada_tabla_segmentos->base, entrada_tabla_segmentos->limite);
-
-	bool es_pid(entrada_administrativa_segmentacion_t* entrada_administrativa){
-
-
-		return entrada_administrativa->pid == pid;
-	}
-
-
-
-	list_remove_by_condition(tabla_de_segmentos, id_pid);
-	list_remove_by_condition(tabla_administrativa_segmentacion, es_pid);
-
-	return buffer_proceso;
-}
 
 
 
@@ -418,14 +371,14 @@ void devolver_proceso_segmentacion_simple(int socket_diego, int pid){
 
 	buscar_segmento(pid, segmento_envio);
 
-	buffer_envio = malloc(segmento_envio->limite + (sizeof(int)*2));
+	buffer_envio = malloc(segmento_envio->limite + (sizeof(int)*2+ sizeof(char*)));
 
 	//serializo PID
-	memcpy(buffer_envio + offset, &pid, sizeof(int));
+	memcpy(buffer_envio + offset, pid, sizeof(int));
 	offset += sizeof(int);
 	//serializo longitud
 
-	memcpy(buffer_envio + offset , &(segmento_envio->limite), sizeof(int));
+	memcpy(buffer_envio + offset , segmento_envio->limite, sizeof(int));
 	offset += sizeof(int);
 
 	//serializo segmento
@@ -450,12 +403,8 @@ void liberar_segmento(int pid, int base, int limite){
 
 
 	bool id_pid(entrada_administrativa_segmentacion_t* entrada){
-				int pid_entrada;
 
-				pid_entrada = entrada->pid;
-
-
-				return pid_entrada == pid;
+				return entrada->pid == pid;
 			}
 
 
@@ -512,33 +461,7 @@ void buscar_segmento(int pid, segmento_tabla_t* segmento){
 
 }
 
-/*
-		buffer_proceso = malloc(segmento_envio->limite);
 
-		memcpy(buffer_proceso, puntero_memoria_segmentada+entrada_tabla_segmentos->base, entrada_tabla_segmentos->limite);
-
-
-
-		liberar_bitarray(bitarray_memoria_segmentada, entrada_tabla_segmentos->base, entrada_tabla_segmentos->limite);
-
-		bool es_pid(entrada_administrativa_segmentacion_t* entrada_administrativa){
-
-
-			return entrada_administrativa->pid == pid;
-		}
-
-
-
-		list_remove_by_condition(tabla_de_segmentos, id_pid);
-		list_remove_by_condition(tabla_administrativa_segmentacion, es_pid);
-
-		return buffer_proceso;
-
-
-
-
-}
-*/
 int buscar_base(int offset){
 
 int base=0;
@@ -691,94 +614,6 @@ int obtener_cantidad_lineas(int longitud_paquete){
 	return (longitud_paquete + config.MAX_LINEA - 1) / config.MAX_LINEA;
 
 }
-/*
-void recibir_proceso(int socket){
-	int pid,longitud_paquete= 0;
-	void * buffer_recepcion;
-
-	recv(socket, &pid, sizeof(int), MSG_WAITALL);
-	recv(socket, &longitud_paquete, sizeof(int), MSG_WAITALL);
-
-
-	buffer_recepcion = malloc(longitud_paquete);
-
-
-	recv(socket, buffer_recepcion, longitud_paquete, MSG_WAITALL);
-
-	//guardar_proceso(pid, longitud_paquete, buffer_recepcion);
-}
-
-
-
-
-
-void devolver_proceso(int pid, int longitud_paquete){
-
-	int offset = sizeof(int)*2;
-	int cantidad_lineas = obtener_cantidad_lineas(longitud_paquete);
-	void * buffer_envio = malloc((cantidad_lineas * config.MAX_LINEA) + sizeof(int)*2);
-
-	memcpy(buffer_envio, &pid, sizeof(int));
-	memcpy(buffer_envio + sizeof(int), &longitud_paquete, sizeof(int));
-
-	int lineas_copiadas = 0;
-	while (lineas_copiadas != cantidad_lineas) {
-		//memcpy(buffer_envio + offset, memory_pointer, config.MAX_LINEA);
-		offset += config.MAX_LINEA;
-		lineas_copiadas++;
-	}
-
-	send(diego, buffer_envio, (cantidad_lineas * config.MAX_LINEA) + sizeof(int)*2, MSG_WAITALL);
-	//TODO Enviar el proceso de a partes con tamaño transfer_size
-	//TODO Descomentar esto cuando se implemente el transfer_size en ElDiego
-	//send(diego, buffer_envio, config.TRANSFER_SIZE, MSG_WAITALL);
-	free(buffer_envio);
-}
-
-
-
-
-*/
-
-
-
-/*
-
-void serializar(void * buffer_envio){
-
-	int longitud = 5;
-	char * palabra = "hola";
-
-
-
-	buffer_envio = malloc(sizeof(int)+ 5);
-
-	memcpy(buffer_envio, &longitud, sizeof(int));
-
-	memcpy(buffer_envio + sizeof(int), &palabra, 5);
-
-}
-
-void deserializar(void* buffer, int tamanio){
-int offset = 0;
-void* buffer_envio;
-
-
-serializar(buffer_envio);
-
-memcpy(&prueba->numero, buffer_envio, sizeof(int));
-
-offset =+ sizeof(int);
-
-memcpy(&prueba->palabra, buffer_envio + offset, prueba->numero);
-
-free(buffer_envio);
-
-log_info(log_fm9,"%d", prueba->numero);
-
-}
-
-*/
 
 
 
