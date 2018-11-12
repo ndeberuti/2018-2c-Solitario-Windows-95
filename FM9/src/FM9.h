@@ -36,6 +36,9 @@ char *PATH_CONFIG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/FM9/c
 
 #define NUEVA_CONEXION_DIEGO 1
 #define NUEVA_CONEXION_CPU 4
+#define GUARDAR_PROCESO 5
+#define ABRIR_PROCESO 6
+#define DEVOLVER_PROCESO 7
 
 // estructuras
 typedef struct {
@@ -113,7 +116,7 @@ int numero_lineas_memoria;
 int id_segmento=0;
 
 
-// funciones
+//funciones globales
 config_t load_config();
 void server();
 
@@ -129,26 +132,41 @@ void setear_segmentacion_paginada();
 void inicializar_memoria_segmentacion_simple();
 void inicializar_tabla_de_paginas(int numero_lineas_memoria);
 
-//void recibir_proceso(int socket);
+void recibir_proceso(int socket);
+void devolver_proceso(int socket);
 
 void guardar_proceso_segmentacion_simple(int pid ,int longitud_paquete, char* buffer_recepcion);
+void guardar_proceso_paginas_invertidas(int pid ,int longitud_paquete, char* buffer_recepcion);
+void guardar_proceso_segmentacion_paginada(int pid ,int longitud_paquete, char* buffer_recepcion);
 
+void devolver_proceso_segmentacion_simple(int socket_diego, int pid);
+void devolver_proceso_paginas_invertidas(int socket_diego,int pid);
+void devolver_proceso_segmentacion_paginada(int socket_diego,int pid);
 
-
+char* buscar_proceso_segmentacion_simple(int pid);
+void liberar_segmento(int pid,int base, int limite);
 //void devolver_proceso(int pid, int longitud_paquete);
 //int obtener_cantidad_lineas(int longitud_paquete);
 
+
+//segmentacion simple
 int asignar_id();
 int buscar_base(int offset);
-char* buscar_proceso_segmentacion_simple(int pid);
-int validar_limite(int offset);
+void buscar_segmento(int pid, segmento_tabla_t* segmento_envio);
 
+
+
+//bitarray
 void reservar_bitarray(t_bitarray* bitarray_memoria_segmentada, int base, int limite);
 void liberar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limite);
 
 
 
+void guardar_proceso(int socket);
 
 
+//comunicacion
+char* recibir_char(int socket, int longitud_paquete);
+int recibir_int(int socket);
 
 #endif /* SRC_FM9_H_ */
