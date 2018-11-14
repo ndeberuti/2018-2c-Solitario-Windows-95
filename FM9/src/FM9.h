@@ -57,6 +57,20 @@ typedef struct {
 	uint32_t cant_params;
 } console_t;
 
+
+typedef struct {
+	int frame;
+	int pid;
+	int nroPag;
+} t_tablaPaginaInvertida;
+
+typedef struct{
+	t_tablaPaginaInvertida *estructura_administrativa;
+	char* frames;
+	char* memoria;
+} t_memoria_principal;
+
+
 typedef struct{
 	int pid;
 	int id;
@@ -110,6 +124,7 @@ void* buffer_envio;
 //variables memoria segmentada
 
 char* puntero_memoria_segmentada;
+
 char* b_m_s;
 t_bitarray* bitarray_memoria_segmentada;
 int numero_lineas_memoria;
@@ -130,6 +145,7 @@ void setear_paginacion_invertida();
 void setear_segmentacion_paginada();
 
 void inicializar_memoria_segmentacion_simple();
+void inicializar_memoria_paginacion_invertida();
 void inicializar_tabla_de_paginas(int numero_lineas_memoria);
 
 void recibir_proceso(int socket);
@@ -154,6 +170,11 @@ int asignar_id();
 int buscar_base(int offset);
 void buscar_segmento(int pid, segmento_tabla_t* segmento_envio);
 
+
+//paginas invertidas
+
+void crearMemoriaPrincipal(int frames,int tamanio_pagina);
+t_memoria_principal* puntero_memoria_paginada;
 
 
 //bitarray

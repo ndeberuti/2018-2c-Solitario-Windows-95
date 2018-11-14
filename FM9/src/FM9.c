@@ -269,7 +269,30 @@ if(resultado == -1){
 
 }
 
+void inicializar_memoria_paginacion_invertida(){
+	//Logear que inicializamos
+	int frames = config.TAMANIO / config.TAM_PAGINA;
+	crearMemoriaPrincipal(frames, config.TAM_PAGINA);
+	crearEstructurasAdministrativas(frames);
+	//Necesito una estructura que me guarde la ultima pagina de cada proceso
+	inicializarEstructuraAdicional();
 
+}
+
+void crearMemoriaPrincipal(int frames,int tamanio_pagina){
+
+
+
+
+	puntero_memoria_paginada = malloc(sizeof(t_memoria_principal));
+
+	puntero_memoria_paginada->memoria=malloc(config.TAMANIO);
+	puntero_memoria_paginada->estructura_administrativa= puntero_memoria_paginada->memoria; // hito en la humanida'
+	puntero_memoria_paginada->frames= puntero_memoria_paginada->memoria;
+
+
+
+}
 
 void inicializar_memoria_segmentacion_simple(){
 	//tabla de segmentos
@@ -404,12 +427,12 @@ void liberar_segmento(int pid, int base, int limite){
 
 	bool id_pid(entrada_administrativa_segmentacion_t* entrada){
 
-				return entrada->pid == pid;
+				return entrada_admin->pid == pid;
 			}
 
 
 
-	entrada_admin = list_find(tabla_administrativa_segmentacion, id_pid);
+	entrada_admin = list_find(tabla_administrativa_segmentacion,(void*)id_pid);
 	id_segmento = entrada_admin->id;
 	free(entrada_admin);
 
@@ -581,7 +604,7 @@ void setear_segmentacion_simple(){
 
 void setear_paginacion_invertida(){
 	log_info(log_fm9, "Tablas de Paginación Invertida seteada");
-	//TODO inicializar_memoria_paginacion_invertida();
+	inicializar_memoria_paginacion_invertida();
 }
 
 void setear_segmentacion_paginada(){
