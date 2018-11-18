@@ -344,7 +344,7 @@ segmento_tabla_t* entrada_tabla = malloc(sizeof(segmento_tabla_t));
 entrada_administrativa_segmentacion_t* entrada_administrativa = malloc(sizeof(entrada_administrativa_segmentacion_t));
 
 
-segmento->offset = cantidad_lineas;
+
 
 entrada_administrativa->pid = pid;
 
@@ -359,13 +359,15 @@ entrada_administrativa->pid = pid;
 
 							entrada_tabla->id = 0;
 							entrada_tabla->base = 0 ;
-							entrada_tabla->limite = segmento->offset;
+							entrada_tabla->limite = cantidad_lineas;
 
 
 							reservar_bitarray(bitarray_memoria, entrada_tabla->base, entrada_tabla->limite);
 
 							list_add(tabla_administrativa_segmentacion, entrada_administrativa);
 							list_add(tabla_de_segmentos, entrada_tabla);
+
+							memcpy(puntero_memoria_segmentada, buffer_recepcion, cantidad_lineas * config.MAX_LINEA);
 	}else{
 
 				if(entra_en_memoria(cantidad_lineas) == 1){
@@ -418,7 +420,8 @@ entrada_administrativa->pid = pid;
 
 					}log_error(log_fm9, "Archivo no entra en memoria");
 
-free(segmento);
+free(entrada_administrativa);
+free(segmento_nuevo);
 free(entrada_tabla);
 
 }
@@ -548,9 +551,9 @@ void buscar_segmento_2(int pid, segmento_tabla_t* segmento){
 }
 
 
-segmento_offset_t buscar_segmento(){
+segmento_offset_t* buscar_segmento(){
 
-segmento_offset_t segmento;
+segmento_offset_t* segmento;
 
 
 
@@ -575,8 +578,8 @@ int otra_base;
 
 	}
 
-	segmento.segmento = base;
-	segmento.offset = otra_base;
+	segmento->segmento = base;
+	segmento->offset = otra_base;
 
 return segmento;
 }
