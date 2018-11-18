@@ -40,7 +40,7 @@ char *PATH_CONFIG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/FM9/c
 #define ABRIR_PROCESO 6
 #define DEVOLVER_PROCESO 7
 
-// estructuras
+//ESTRUCTURAS
 typedef struct {
 	uint32_t PUERTO;
 	char *MODO;
@@ -97,6 +97,8 @@ typedef struct {
 
 }segmento_base_t;
 
+t_list* tabla_de_segmentos;
+t_list* tabla_administrativa_segmentacion;
 
 /*enum MODOS_EJECUCION {
 	SEGMENTACION_SIMPLE= "SEG",
@@ -104,11 +106,11 @@ typedef struct {
 	SEGMENTACION_PAGINADA = "SPI"
 };*/
 
+//-------------------------------------------------------------------------------------------------------------------
 
 //listas
 
-t_list* tabla_de_segmentos;
-t_list* tabla_administrativa_segmentacion;
+
 
 // variables
 t_log *log_consola;
@@ -140,41 +142,57 @@ void consola();
 
 
 void setear_modo();
-void setear_segmentacion_simple();
+
 void setear_paginacion_invertida();
 void setear_segmentacion_paginada();
 
-void inicializar_memoria_segmentacion_simple();
+
 void inicializar_memoria_paginacion_invertida();
+void inicializar_memoria_segmentacion_paginada();
+
 void inicializar_tabla_de_paginas(int numero_lineas_memoria);
 
 void recibir_proceso(int socket);
 void devolver_proceso(int socket);
 
-void guardar_proceso_segmentacion_simple(int pid ,int longitud_paquete, char* buffer_recepcion);
+
 void guardar_proceso_paginas_invertidas(int pid ,int longitud_paquete, char* buffer_recepcion);
 void guardar_proceso_segmentacion_paginada(int pid ,int longitud_paquete, char* buffer_recepcion);
 
-void devolver_proceso_segmentacion_simple(int socket_diego, int pid);
+
 void devolver_proceso_paginas_invertidas(int socket_diego,int pid);
 void devolver_proceso_segmentacion_paginada(int socket_diego,int pid);
 
-char* buscar_proceso_segmentacion_simple(int pid);
-void liberar_segmento(int pid,int base, int limite);
-//void devolver_proceso(int pid, int longitud_paquete);
-//int obtener_cantidad_lineas(int longitud_paquete);
 
 
-//segmentacion simple
+
+
+//SEGMENTACION SIMPLE
 int asignar_id();
 int buscar_base(int offset);
+
+
+void setear_segmentacion_simple();
+void inicializar_memoria_segmentacion_simple();
+void guardar_proceso_segmentacion_simple(int pid ,int longitud_paquete, char* buffer_recepcion);
+void devolver_proceso_segmentacion_simple(int socket_diego, int pid);
+char* buscar_proceso_segmentacion_simple(int pid);
+
+int obtener_cantidad_lineas(int longitud_paquete);
+
 void buscar_segmento(int pid, segmento_tabla_t* segmento_envio);
+void liberar_segmento(int pid,int base, int limite);
 
-
-//paginas invertidas
+//PAGINACION
 
 void crearMemoriaPrincipal(int frames,int tamanio_pagina);
 t_memoria_principal* puntero_memoria_paginada;
+
+
+//SEGMENTACION PAGINADA
+
+
+
 
 
 //bitarray

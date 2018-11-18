@@ -191,6 +191,47 @@ void consola() {
 	}
 }
 
+void setear_segmentacion_simple(){
+	log_info(log_fm9, "Segmentación Simple seteada");
+	inicializar_memoria_segmentacion_simple();
+}
+
+void setear_paginacion_invertida(){
+	log_info(log_fm9, "Tablas de Paginación Invertida seteada");
+	inicializar_memoria_paginacion_invertida();
+}
+
+void setear_segmentacion_paginada(){
+	log_info(log_fm9, "Segmentación Paginada seteada");
+	inicializar_memoria_segmentacion_paginada();
+}
+
+
+
+
+
+void setear_modo(){
+	if(strcmp("SEG", config.MODO)== 0){
+		setear_segmentacion_simple();
+	}
+	else if(strcmp("TPI", config.MODO)== 0){
+		setear_paginacion_invertida();
+	}
+	else if(strcmp("SPI", config.MODO)== 0){
+		setear_segmentacion_paginada();
+	}
+	else {
+		log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
+	}
+}
+
+int obtener_cantidad_lineas(int longitud_paquete){
+
+
+	return (longitud_paquete + config.MAX_LINEA - 1) / config.MAX_LINEA;
+
+}
+
 void guardar_proceso(int socket_diego){
 
 	int pid = recibir_int(socket_diego);
@@ -269,40 +310,14 @@ if(resultado == -1){
 
 }
 
-void inicializar_memoria_paginacion_invertida(){
-	//Logear que inicializamos
-	int frames = config.TAMANIO / config.TAM_PAGINA;
-	crearMemoriaPrincipal(frames, config.TAM_PAGINA);
-	crearEstructurasAdministrativas(frames);
-	//Necesito una estructura que me guarde la ultima pagina de cada proceso
-	inicializarEstructuraAdicional();
-
-}
-
-void crearMemoriaPrincipal(int frames,int tamanio_pagina){
-
-
-
-
-	puntero_memoria_paginada = malloc(sizeof(t_memoria_principal));
-
-	puntero_memoria_paginada->memoria=malloc(config.TAMANIO);
-	puntero_memoria_paginada->estructura_administrativa= puntero_memoria_paginada->memoria; // hito en la humanida'
-	puntero_memoria_paginada->frames= puntero_memoria_paginada->memoria;
-
-
-
-}
+//---------------------------------------------------------------------------------------------------------
+//SEGMENTACION SIMPLE
 
 void inicializar_memoria_segmentacion_simple(){
 	//tabla de segmentos
 
 	tabla_de_segmentos = list_create();
 
-	//alocacion de memoria
-	//numero_lineas_memoria = obtener_cantidad_lineas(config.TAMANIO);
-
-	//inicializar_tabla_de_paginas(numero_lineas_memoria);
 
 	puntero_memoria_segmentada = malloc(config.TAMANIO);
 	bitarray_memoria_segmentada = bitarray_create(b_m_s,config.TAMANIO);
@@ -320,12 +335,6 @@ void inicializar_memoria_segmentacion_simple(){
 	}
 
 }
-
-
-
-
-
-
 
 void guardar_proceso_segmentacion_simple(int pid ,int longitud_paquete, char* buffer_recepcion){
 
@@ -386,36 +395,6 @@ free(entrada_tabla);
 
 }
 
-void devolver_proceso_segmentacion_simple(int socket_diego, int pid){
-
-	int offset = 0;
-	void* buffer_envio;
-	segmento_tabla_t* segmento_envio = malloc(sizeof(segmento_tabla_t));
-
-	buscar_segmento(pid, segmento_envio);
-
-	buffer_envio = malloc(segmento_envio->limite + (sizeof(int)*2+ sizeof(char*)));
-
-	//serializo PID
-	memcpy(buffer_envio + offset, pid, sizeof(int));
-	offset += sizeof(int);
-	//serializo longitud
-
-	memcpy(buffer_envio + offset , segmento_envio->limite, sizeof(int));
-	offset += sizeof(int);
-
-	//serializo segmento
-
-	memcpy(buffer_envio + offset, puntero_memoria_segmentada + segmento_envio->base, segmento_envio->limite);
-
-	//TODO enviar
-	liberar_segmento(pid, segmento_envio->base, segmento_envio->limite);
-
-	free(segmento_envio);
-	free(buffer_envio);
-
-}
-
 void liberar_segmento(int pid, int base, int limite){
 	int id_segmento;
 
@@ -444,11 +423,44 @@ void liberar_segmento(int pid, int base, int limite){
 
 
 
-	list_remove_by_condition(tabla_de_segmentos, id_pid);
-	list_remove_by_condition(tabla_administrativa_segmentacion, es_pid);
+	list_remove_by_condition(tabla_de_segmentos,(void*) id_pid);
+	list_remove_by_condition(tabla_administrativa_segmentacion, (void*)es_pid);
 
 	liberar_bitarray(bitarray_memoria_segmentada, base, limite);
 }
+
+
+void devolver_proceso_segmentacion_simple(int socket_diego, int pid){
+
+	int offset = 0;
+	void* buffer_envio;
+	segmento_tabla_t* segmento_envio;
+
+	buscar_segmento(pid, segmento_envio);
+
+	buffer_envio = malloc(segmento_envio->limite + (sizeof(int)*2+ sizeof(char*)));
+
+	//serializo PID
+	memcpy(buffer_envio + offset, &pid, sizeof(int));
+	offset += sizeof(int);
+	//serializo longitud
+
+	memcpy(buffer_envio + offset , &segmento_envio->limite, sizeof(int));
+	offset += sizeof(int);
+
+	//serializo segmento
+
+	memcpy(buffer_envio + offset, puntero_memoria_segmentada + segmento_envio->base, segmento_envio->limite);
+
+	//TODO enviar
+	liberar_segmento(pid, segmento_envio->base, segmento_envio->limite);
+
+
+	free(buffer_envio);
+
+}
+
+
 
 void buscar_segmento(int pid, segmento_tabla_t* segmento){
 
@@ -469,7 +481,7 @@ void buscar_segmento(int pid, segmento_tabla_t* segmento){
 
 
 
-		entrada_administrativa = list_find(tabla_administrativa_segmentacion, id_pid);
+		entrada_administrativa = list_find(tabla_administrativa_segmentacion, (void*)id_pid);
 		id_segmento = entrada_administrativa->id;
 		free(entrada_administrativa);
 
@@ -478,7 +490,7 @@ void buscar_segmento(int pid, segmento_tabla_t* segmento){
 
 					return entrada_segmento->id == id_segmento;
 				}
-		segmento = list_find(tabla_de_segmentos, es_pid);
+		segmento = list_find(tabla_de_segmentos, (void*)es_pid);
 
 
 
@@ -552,29 +564,47 @@ int asignar_id(){
 
 
 
-void reservar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limite){
 
-	for(int i= 0; i <= limite; i++){
+//-------------------------------------------------------------------------------------------------------------------------
+//PAGINACION INVERTIDA
 
-		bitarray_set_bit(bitarray_memoria_segmentada, base);
 
-	}
+
+void inicializar_memoria_paginacion_invertida(){
+	//Logear que inicializamos
+	int frames = config.TAMANIO / config.TAM_PAGINA;
+	crearMemoriaPrincipal(frames, config.TAM_PAGINA);
+	crearEstructurasAdministrativas(frames);
+	//Necesito una estructura que me guarde la ultima pagina de cada proceso
+	inicializarEstructuraAdicional();
+
+}
+
+void crearMemoriaPrincipal(int frames,int tamanio_pagina){
+
+
+
+
+	puntero_memoria_paginada = malloc(sizeof(t_memoria_principal));
+
+	puntero_memoria_paginada->memoria=malloc(config.TAMANIO);
+	puntero_memoria_paginada->estructura_administrativa= puntero_memoria_paginada->memoria; // hito en la humanida'
+	puntero_memoria_paginada->frames= puntero_memoria_paginada->memoria;
+
 
 
 }
 
-void liberar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limite){
-
-	for(int i= 0; i <= limite; i++){
-
-		bitarray_clean_bit(bitarray_memoria_segmentada, base);
-
-	}
 
 
-}
+
+
+
+
+
 /*
-void inicializar_tabla_de_paginas(int numero_lineas_memoria){
+void inicializar_ta---------------------------------------------------------------------------
+//SEbla_de_paginas(int numero_lineas_memoria){
 	segmento_tabla_t* entrada_vacia = malloc(sizeof(segmento_tabla_t));
 
 	entrada_vacia->base=0;
@@ -597,46 +627,38 @@ free(entrada_vacia);
 */
 
 
-void setear_segmentacion_simple(){
-	log_info(log_fm9, "Segmentación Simple seteada");
-	//TODO inicializar_memoria_segmentacion_simple();
+
+//-------------------------------------------------------------------------------------------------------------------
+//SEGMENTACION PAGINADA
+
+void inicializar_memoria_segmentacion_paginada(){
+
+	puntero_memoria_segmentada = malloc(config.TAMANIO);
+
+
 }
 
-void setear_paginacion_invertida(){
-	log_info(log_fm9, "Tablas de Paginación Invertida seteada");
-	inicializar_memoria_paginacion_invertida();
-}
+//-------------------------------------------------------------------------------------------------------------------
+//BITARRAY
 
-void setear_segmentacion_paginada(){
-	log_info(log_fm9, "Segmentación Paginada seteada");
-	//TODO inicializar_memoria_segmentacion_paginada();
-}
+void reservar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limite){
 
+	for(int i= 0; i <= limite; i++){
 
+		bitarray_set_bit(bitarray_memoria_segmentada, base);
 
-
-
-void setear_modo(){
-	if(strcmp("SEG", config.MODO)== 0){
-		setear_segmentacion_simple();
 	}
-	else if(strcmp("TPI", config.MODO)== 0){
-		setear_paginacion_invertida();
-	}
-	else if(strcmp("SPI", config.MODO)== 0){
-		setear_segmentacion_paginada();
-	}
-	else {
-		log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
-	}
-}
 
-int obtener_cantidad_lineas(int longitud_paquete){
-
-
-	return (longitud_paquete + config.MAX_LINEA - 1) / config.MAX_LINEA;
 
 }
 
+void liberar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limite){
+
+	for(int i= 0; i <= limite; i++){
+
+		bitarray_clean_bit(bitarray_memoria_segmentada, base);
+
+	}
 
 
+}
