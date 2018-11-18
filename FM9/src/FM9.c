@@ -235,13 +235,13 @@ int obtener_cantidad_lineas(int longitud_paquete){
 void guardar_proceso(int socket_diego){
 
 	int pid = recibir_int(socket_diego);
-	int longitud_paquete = recibir_int(socket_diego);
-	char* buffer_recepcion = malloc(longitud_paquete);
-	buffer_recepcion= recibir_char(socket_diego, longitud_paquete);
+	int cantidad_lineas = recibir_int(socket_diego);
+	char* buffer_recepcion = malloc(cantidad_lineas * config.MAX_LINEA);
+	buffer_recepcion= recibir_char(socket_diego, cantidad_lineas * config.MAX_LINEA);
 
 
 	if(strcmp("SEG", config.MODO)== 0){
-		guardar_proceso_segmentacion_simple(pid ,longitud_paquete,buffer_recepcion);
+		guardar_proceso_segmentacion_simple(pid ,cantidad_lineas,buffer_recepcion);
 		}
 		else if(strcmp("TPI", config.MODO)== 0){
 		//TODO guardar_proceso_paginas_invertidas(pid ,longitud_paquete,buffer_recepcion);
@@ -320,10 +320,10 @@ void inicializar_memoria_segmentacion_simple(){
 
 
 	puntero_memoria_segmentada = malloc(config.TAMANIO);
-	bitarray_memoria_segmentada = bitarray_create(b_m_s,config.TAMANIO);
+	bitarray_memoria = bitarray_create(b_m_s,config.TAMANIO / config.MAX_LINEA);
 
-	for(int i = 0; i < config.TAMANIO; i++){
-	bitarray_clean_bit(bitarray_memoria_segmentada,  i);
+	for(int i = 0; i < config.TAMANIO / config.MAX_LINEA; i++){
+	bitarray_clean_bit(bitarray_memoria,  i);
 	}
 
 	if(puntero_memoria_segmentada == NULL){
@@ -336,16 +336,17 @@ void inicializar_memoria_segmentacion_simple(){
 
 }
 
-void guardar_proceso_segmentacion_simple(int pid ,int longitud_paquete, char* buffer_recepcion){
+void guardar_proceso_segmentacion_simple(int pid ,int cantidad_lineas, char* buffer_recepcion){
 
 segmento_offset_t* segmento = malloc(sizeof(segmento_offset_t));
+segmento_offset_t* segmento_nuevo = malloc(sizeof(segmento_offset_t));
 segmento_tabla_t* entrada_tabla = malloc(sizeof(segmento_tabla_t));
 entrada_administrativa_segmentacion_t* entrada_administrativa = malloc(sizeof(entrada_administrativa_segmentacion_t));
 
-segmento->segmento = pid;
-segmento->offset = longitud_paquete;
 
-entrada_administrativa->pid = segmento->segmento;
+segmento->offset = cantidad_lineas;
+
+entrada_administrativa->pid = pid;
 
 
 
@@ -361,39 +362,89 @@ entrada_administrativa->pid = segmento->segmento;
 							entrada_tabla->limite = segmento->offset;
 
 
-							reservar_bitarray(bitarray_memoria_segmentada, entrada_tabla->base, entrada_tabla->limite);
+							reservar_bitarray(bitarray_memoria, entrada_tabla->base, entrada_tabla->limite);
 
 							list_add(tabla_administrativa_segmentacion, entrada_administrativa);
 							list_add(tabla_de_segmentos, entrada_tabla);
 	}else{
 
+				if(entra_en_memoria(cantidad_lineas) == 1){
+					int corrimiento = 0;
+
+					while( cantidad_lineas != 0){
 
 
-							entrada_tabla->id = asignar_id();
-							entrada_tabla->base = buscar_base(segmento->offset);
-							entrada_tabla->limite = segmento->offset;
+					entrada_tabla->id = asignar_id();
 
-							entrada_administrativa->id = entrada_tabla->id;
-
-							reservar_bitarray(bitarray_memoria_segmentada, entrada_tabla->base, entrada_tabla->limite);
-
-							list_add(tabla_de_segmentos, entrada_tabla);
-							list_add(tabla_administrativa_segmentacion, entrada_administrativa);
+					entrada_administrativa->id = entrada_tabla->id;
 
 
+					segmento_nuevo = buscar_segmento();
+					entrada_tabla->base = segmento_nuevo->segmento;
+
+								if((segmento_nuevo->segmento - segmento_nuevo->offset) > cantidad_lineas){
+
+
+									entrada_tabla->limite = cantidad_lineas;
+
+								}else{
+
+									entrada_tabla->limite = segmento_nuevo->offset;
+								}
+
+					memcpy(puntero_memoria_segmentada + entrada_tabla->base * config.MAX_LINEA, buffer_recepcion + corrimiento,entrada_tabla->limite * config.MAX_LINEA);
+
+
+
+					reservar_bitarray(bitarray_memoria, entrada_tabla->base, entrada_tabla->limite);
+
+
+					list_add(tabla_de_segmentos, entrada_tabla);
+					list_add(tabla_administrativa_segmentacion, entrada_administrativa);
+
+					cantidad_lineas =- entrada_tabla ->limite;
+
+					corrimiento =+ entrada_tabla->limite;
+					}
 
 
 
 
 
-			memcpy(puntero_memoria_segmentada + entrada_tabla->base, buffer_recepcion,entrada_tabla->limite);
 
 
-							}
+					}else{
+
+
+					}log_error(log_fm9, "Archivo no entra en memoria");
+
 free(segmento);
 free(entrada_tabla);
 
 }
+
+}
+
+int entra_en_memoria(int cantidad_lineas){
+int espacio_libre = 0;
+
+
+	for(int j = 0; j < config.TAMANIO; j++){
+
+		if(bitarray_test_bit(bitarray_memoria, j))
+			espacio_libre++;
+
+	}
+		if( espacio_libre < cantidad_lineas ){
+
+		return 0;
+		}else{
+
+			return 1;
+		}
+}
+
+
 
 void liberar_segmento(int pid, int base, int limite){
 	int id_segmento;
@@ -401,7 +452,7 @@ void liberar_segmento(int pid, int base, int limite){
 	entrada_administrativa_segmentacion_t* entrada_admin;
 
 
-	liberar_bitarray(bitarray_memoria_segmentada, base, limite);
+	liberar_bitarray(bitarray_memoria, base, limite);
 
 
 	bool id_pid(entrada_administrativa_segmentacion_t* entrada){
@@ -426,7 +477,7 @@ void liberar_segmento(int pid, int base, int limite){
 	list_remove_by_condition(tabla_de_segmentos,(void*) id_pid);
 	list_remove_by_condition(tabla_administrativa_segmentacion, (void*)es_pid);
 
-	liberar_bitarray(bitarray_memoria_segmentada, base, limite);
+	liberar_bitarray(bitarray_memoria, base, limite);
 }
 
 
@@ -436,7 +487,7 @@ void devolver_proceso_segmentacion_simple(int socket_diego, int pid){
 	void* buffer_envio;
 	segmento_tabla_t* segmento_envio;
 
-	buscar_segmento(pid, segmento_envio);
+	buscar_segmento_2(pid, segmento_envio);
 
 	buffer_envio = malloc(segmento_envio->limite + (sizeof(int)*2+ sizeof(char*)));
 
@@ -462,7 +513,7 @@ void devolver_proceso_segmentacion_simple(int socket_diego, int pid){
 
 
 
-void buscar_segmento(int pid, segmento_tabla_t* segmento){
+void buscar_segmento_2(int pid, segmento_tabla_t* segmento){
 
 	entrada_administrativa_segmentacion_t* entrada_administrativa = malloc(sizeof(entrada_administrativa_segmentacion_t));
 	int id_segmento;
@@ -497,24 +548,18 @@ void buscar_segmento(int pid, segmento_tabla_t* segmento){
 }
 
 
-int buscar_base(int offset){
+segmento_offset_t buscar_segmento(){
+
+segmento_offset_t segmento;
+
+
 
 int base=0;
 int otra_base;
-int acierto=0;
 
 
 
-
-while(acierto==0){
-
-
-
-
-
-
-
-	while (!(bitarray_test_bit(bitarray_memoria_segmentada, base)) && base < config.TAMANIO ){
+	while (!(bitarray_test_bit(bitarray_memoria, base)) && base < config.TAMANIO ){
 
 
 	base++;
@@ -523,35 +568,17 @@ while(acierto==0){
 
 	otra_base = base;
 
-	while(bitarray_test_bit(bitarray_memoria_segmentada, base) &&  base < config.TAMANIO ){
+	while(bitarray_test_bit(bitarray_memoria, base) &&  base < config.TAMANIO ){
 
 	otra_base++;
 
 
 	}
 
-	if(base+offset >= config.TAMANIO){
-		log_error(log_fm9, "El proceso no entra en memoria");
-	}
+	segmento.segmento = base;
+	segmento.offset = otra_base;
 
-	if(base+offset < otra_base){
-		acierto=1;
-
-	}
-
-
-
-
-
-
-
-
-
-
-
-}
-
-return base;
+return segmento;
 }
 
 
@@ -633,7 +660,6 @@ free(entrada_vacia);
 
 void inicializar_memoria_segmentacion_paginada(){
 
-	puntero_memoria_segmentada = malloc(config.TAMANIO);
 
 
 }
@@ -645,7 +671,7 @@ void reservar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limi
 
 	for(int i= 0; i <= limite; i++){
 
-		bitarray_set_bit(bitarray_memoria_segmentada, base);
+		bitarray_set_bit(bitarray_memoria_segmentada, i);
 
 	}
 
@@ -656,9 +682,12 @@ void liberar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limit
 
 	for(int i= 0; i <= limite; i++){
 
-		bitarray_clean_bit(bitarray_memoria_segmentada, base);
+		bitarray_clean_bit(bitarray_memoria_segmentada, i);
 
 	}
 
-
 }
+
+
+
+
