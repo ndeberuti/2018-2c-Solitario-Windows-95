@@ -36,9 +36,9 @@
 
 	#define NUEVA_CONEXION_DIEGO 1
 	#define NUEVA_CONEXION_CPU 4
-	#define GUARDAR_PROCESO 5
-	#define ABRIR_PROCESO 6
-	#define DEVOLVER_PROCESO 7
+	#define CARGAR_PROCESO 6
+	#define ABRIR_LINEA 7
+	#define MODIFICAR_LINEA 8
 
 	//ESTRUCTURAS
 	typedef struct {
@@ -95,8 +95,6 @@
 
 
 
-	t_list* tabla_de_segmentos;
-	t_list* tabla_administrativa_segmentacion;
 
 	/*enum MODOS_EJECUCION {
 		SEGMENTACION_SIMPLE= "SEG",
@@ -141,6 +139,10 @@
 
 	void setear_modo();
 
+	void guardar_proceso(int socket);
+	void abrir_linea(int socket);
+	void modificar_linea(int socket);
+
 	void setear_paginacion_invertida();
 	void setear_segmentacion_paginada();
 
@@ -151,7 +153,7 @@
 	void inicializar_tabla_de_paginas(int numero_lineas_memoria);
 
 	void recibir_proceso(int socket);
-	void devolver_proceso(int socket);
+
 
 
 	void guardar_proceso_paginas_invertidas(int pid ,int longitud_paquete, char* buffer_recepcion);
@@ -165,18 +167,26 @@
 
 
 
-	//SEGMENTACION SIMPLE
+//SEGMENTACION SIMPLE
+	t_list* tabla_de_segmentos;
+	t_list* tabla_administrativa_segmentacion;
+
+
 	int asignar_id();
 
 	int entra_en_memoria(int cantidad_lineas);
 
-	segmento_offset_t* buscar_segmento();
+	segmento_offset_t* buscar_segmento_vacio();
 
 
 	void setear_segmentacion_simple();
 	void inicializar_memoria_segmentacion_simple();
+
 	void guardar_proceso_segmentacion_simple(int pid ,int cantidad_lineas, char* buffer_recepcion);
-	void devolver_proceso_segmentacion_simple(int socket_diego, int pid);
+	void abrir_linea_segmentacion_simple(int socket_diego, int pid, int numero_linea);
+	void modificar_linea_segmentacion_simple(int socket_cpu,int pid, int numero_linea, char* linea_nueva);
+
+	segmento_offset_t* obtener_segmento_linea(int id, int numero_linea);
 	char* buscar_proceso_segmentacion_simple(int pid);
 
 	int obtener_cantidad_lineas(int longitud_paquete);
@@ -202,7 +212,7 @@
 
 
 
-	void guardar_proceso(int socket);
+
 
 
 	//comunicacion
