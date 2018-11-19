@@ -7,7 +7,7 @@
 #include "FM9.h"
 
 int main(void) {
-	//simulacion de serializacion/deserializacion
+
 
 
 
@@ -22,11 +22,6 @@ int main(void) {
 	config = load_config();
 	
 	setear_modo();
-	//inicializar_memoria();
-
-
-
-	//serializar(buffer_envio);
 
 
 	pthread_create(&thread_consola, NULL, (void *) consola, NULL);
@@ -139,6 +134,20 @@ void command_handler(uint32_t command, uint32_t socket) {
 		break;
 	case NUEVA_CONEXION_CPU:
 		log_info(log_consola, "Nueva conexion de CPU");
+
+		break;
+	case CARGAR_PROCESO:
+		log_info(log_consola, "Cargando proceso en memoria");
+		guardar_proceso(socket);
+		break;
+	case ABRIR_LINEA:
+		log_info(log_consola, ".");
+		abrir_linea(socket);
+		break;
+	case MODIFICAR_LINEA:
+		modificar_linea(socket);
+		log_info(log_consola, ".");
+
 		break;
 	default:
 		log_warning(log_consola, "%d: Comando recibido incorrecto", command);
@@ -188,253 +197,6 @@ void consola() {
 	}
 }
 
-void inicializar_memoria_segmentacion_simple(){
-	//tabla de segmentos
-
-	tabla_de_segmentos = list_create();
-
-	//alocacion de memoria
-	//numero_lineas_memoria = obtener_cantidad_lineas(config.TAMANIO);
-
-	//inicializar_tabla_de_paginas(numero_lineas_memoria);
-
-	puntero_memoria_segmentada = malloc(config.TAMANIO);
-	bitarray_memoria_segmentada = bitarray_create(b_m_s,config.TAMANIO);
-
-	for(int i = 0; i < config.TAMANIO; i++){
-	bitarray_clean_bit(bitarray_memoria_segmentada,  i);
-	}
-
-	if(puntero_memoria_segmentada == NULL){
-
-		log_error(log_fm9, "No se pudo inicializar la memoria");
-	}else{
-
-		log_info(log_fm9, "Inicialización de memoria exitosa");
-	}
-
-}
-
-
-char* buscar_proceso_segmentacion_simple(int pid){
-	char* buffer_proceso;
-
-
-	segmento_tabla_t* entrada_tabla_segmentos = malloc(sizeof(segmento_tabla_t));
-
-
-	bool id_pid(entrada_administrativa_segmentacion_t* entrada){
-		int id;
-		entrada = malloc(sizeof(entrada_administrativa_segmentacion_t));
-		id = entrada->id;
-		free(entrada);
-
-		return (pid == id);
-	}
-
-
-
-	entrada_tabla_segmentos= list_find(tabla_de_segmentos, id_pid);
-
-
-	buffer_proceso = malloc(entrada_tabla_segmentos->limite);
-
-	memcpy(buffer_proceso, puntero_memoria_segmentada+entrada_tabla_segmentos->base, entrada_tabla_segmentos->limite);
-
-
-
-	liberar_bitarray(bitarray_memoria_segmentada, entrada_tabla_segmentos->base, entrada_tabla_segmentos->limite);
-
-	bool es_pid(entrada_administrativa_segmentacion_t entrada_administrativa){
-
-
-		return (entrada_administrativa.pid == pid);
-	}
-
-
-
-	list_remove_by_condition(tabla_de_segmentos, id_pid);
-	list_remove_by_condition(tabla_administrativa_segmentacion, es_pid);
-
-	return buffer_proceso;
-}
-
-
-
-
-void guardar_proceso_segmentacion_simple(int pid ,int longitud_paquete, char* buffer_recepcion){
-
-segmento_offset_t* segmento = malloc(sizeof(segmento_offset_t));
-segmento_tabla_t* entrada_tabla = malloc(sizeof(segmento_tabla_t));
-entrada_administrativa_segmentacion_t* entrada_administrativa = malloc(sizeof(entrada_administrativa_segmentacion_t));
-
-segmento->segmento = pid;
-segmento->offset = longitud_paquete;
-
-entrada_administrativa->pid = segmento->segmento;
-
-
-	if(segmento->offset > entrada_tabla->limite){
-	log_error(log_fm9, "Segmentation Fault. El offset es mas grande que el limite");
-	}
-
-	if(list_is_empty(tabla_de_segmentos)){
-
-
-
-							entrada_administrativa->id = 0;
-
-							entrada_tabla->id = 0;
-							entrada_tabla->base = 0 ;
-							entrada_tabla->limite = segmento->offset;
-
-
-							reservar_bitarray(bitarray_memoria_segmentada, entrada_tabla->base, entrada_tabla->limite);
-
-							list_add(tabla_administrativa_segmentacion, entrada_administrativa);
-							list_add(tabla_de_segmentos, entrada_tabla);
-	}else{
-
-
-
-							entrada_tabla->id = asignar_id();
-							entrada_tabla->base = buscar_base(segmento->offset);
-							entrada_tabla->limite = segmento->offset;
-
-							entrada_administrativa->id = entrada_tabla->id;
-
-							reservar_bitarray(bitarray_memoria_segmentada, entrada_tabla->base, entrada_tabla->limite);
-
-							list_add(tabla_de_segmentos, entrada_tabla);
-							list_add(tabla_administrativa_segmentacion, entrada_administrativa);
-
-
-
-
-
-
-
-			memcpy(puntero_memoria_segmentada + entrada_tabla->base, buffer_recepcion,entrada_tabla->limite);
-
-
-							}
-free(segmento);
-free(entrada_tabla);
-
-}
-
-int buscar_base(int offset){
-
-int base=0;
-int otra_base;
-int acierto=0;
-
-
-
-
-while(acierto==0){
-
-
-
-
-
-
-
-	while (bitarray_test_bit(bitarray_memoria_segmentada, base)){
-
-
-	base++;
-
-	}
-
-	otra_base = base;
-
-	while(!(bitarray_test_bit(bitarray_memoria_segmentada, base))){
-
-	otra_base++;
-
-
-	}
-
-	if(base+offset >= config.TAMANIO){
-		log_error(log_fm9, "El proceso no entra en memoria");
-	}
-
-	if(base+offset < otra_base){
-		acierto=1;
-
-	}
-
-
-
-
-
-
-
-
-
-
-
-}
-
-return base;
-}
-
-
-int asignar_id(){
-	id_segmento++;
-
-	return id_segmento;
-}
-
-
-
-
-void reservar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limite){
-
-	for(int i= 0; i <= limite; i++){
-
-		bitarray_set_bit(bitarray_memoria_segmentada, base);
-
-	}
-
-
-}
-
-void liberar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limite){
-
-	for(int i= 0; i <= limite; i++){
-
-		bitarray_clean_bit(bitarray_memoria_segmentada, base);
-
-	}
-
-
-}
-/*
-void inicializar_tabla_de_paginas(int numero_lineas_memoria){
-	segmento_tabla_t* entrada_vacia = malloc(sizeof(segmento_tabla_t));
-
-	entrada_vacia->base=0;
-	entrada_vacia->limite=0;
-
-
-
-	for(int i=0; i < numero_lineas_memoria; i++){
-		int j= 0;
-
-		entrada_vacia->id = j;
-		list_add(tabla_de_segmentos, entrada_vacia);
-		j++;
-
-	}
-
-free(entrada_vacia);
-
-}
-*/
-
-
 void setear_segmentacion_simple(){
 	log_info(log_fm9, "Segmentación Simple seteada");
 	inicializar_memoria_segmentacion_simple();
@@ -442,10 +204,12 @@ void setear_segmentacion_simple(){
 
 void setear_paginacion_invertida(){
 	log_info(log_fm9, "Tablas de Paginación Invertida seteada");
+	//inicializar_memoria_paginacion_invertida();
 }
 
 void setear_segmentacion_paginada(){
 	log_info(log_fm9, "Segmentación Paginada seteada");
+	inicializar_memoria_segmentacion_paginada();
 }
 
 
@@ -473,94 +237,544 @@ int obtener_cantidad_lineas(int longitud_paquete){
 	return (longitud_paquete + config.MAX_LINEA - 1) / config.MAX_LINEA;
 
 }
-/*
-void recibir_proceso(int socket){
-	int pid,longitud_paquete= 0;
-	void * buffer_recepcion;
 
-	recv(socket, &pid, sizeof(int), MSG_WAITALL);
-	recv(socket, &longitud_paquete, sizeof(int), MSG_WAITALL);
+void guardar_proceso(int socket_diego){
 
-
-	buffer_recepcion = malloc(longitud_paquete);
+	int pid = recibir_int(socket_diego);
+	int cantidad_lineas = recibir_int(socket_diego);
+	char* buffer_recepcion = malloc(cantidad_lineas * config.MAX_LINEA);
+	buffer_recepcion= recibir_char(socket_diego, cantidad_lineas * config.MAX_LINEA);
 
 
-	recv(socket, buffer_recepcion, longitud_paquete, MSG_WAITALL);
+	if(strcmp("SEG", config.MODO)== 0){
+		guardar_proceso_segmentacion_simple(pid ,cantidad_lineas,buffer_recepcion);
+		}
+		else if(strcmp("TPI", config.MODO)== 0){
+		//TODO guardar_proceso_paginas_invertidas(pid ,longitud_paquete,buffer_recepcion);
+		}
+		else if(strcmp("SPI", config.MODO)== 0){
+		//TODO guardar_proceso_segmentacion_paginada(pid ,longitud_paquete, buffer_recepcion);
+		}
+		else {
+			log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
+		}
 
-	//guardar_proceso(pid, longitud_paquete, buffer_recepcion);
+}
+
+void abrir_linea(int socket_cpu){
+
+
+	int pid = recibir_int(socket_cpu);
+	int numero_linea = recibir_int(socket_cpu);
+
+
+	if(strcmp("SEG", config.MODO)== 0){
+			abrir_linea_segmentacion_simple(socket_cpu, pid, numero_linea);
+			}
+			else if(strcmp("TPI", config.MODO)== 0){
+			//TODO devolver_proceso_paginas_invertidas(socket_diego, pid);
+			}
+			else if(strcmp("SPI", config.MODO)== 0){
+			//TODO  devolver_proceso_segmentacion_paginada(socket_diego, pid);
+			}
+			else {
+			//TODO  log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
+			}
+
+
+}
+
+void modificar_linea(int socket_cpu){
+
+
+	int pid = recibir_int(socket_cpu);
+	int numero_linea = recibir_int(socket_cpu);
+	int longitud_linea = recibir_int(socket_cpu);
+	char* nueva_linea = calloc(1, longitud_linea);
+	nueva_linea = recibir_char(socket_cpu, longitud_linea);
+	char* linea_tratada = malloc(config.MAX_LINEA);
+
+	memcpy(linea_tratada, nueva_linea, config.MAX_LINEA);
+
+	free(nueva_linea);
+
+	if(strcmp("SEG", config.MODO)== 0){
+			modificar_linea_segmentacion_simple(socket_cpu, pid,numero_linea, linea_tratada);
+			}
+			else if(strcmp("TPI", config.MODO)== 0){
+			//TODO devolver_proceso_paginas_invertidas(socket_diego, pid);
+			}
+			else if(strcmp("SPI", config.MODO)== 0){
+			//TODO  devolver_proceso_segmentacion_paginada(socket_diego, pid);
+			}
+			else {
+			//TODO  log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
+			}
+
+free(linea_tratada);
 }
 
 
+int recibir_int(int socket){
+int buffer;
 
+int resultado_recv = recv(socket, &buffer, sizeof(int), MSG_WAITALL);
 
+if(resultado_recv == -1){
 
-void devolver_proceso(int pid, int longitud_paquete){
+	log_error(log_fm9, "Error en la repcecepción de mensaje");
+	return -1;
+}else{
+return buffer;
+}
 
-	int offset = sizeof(int)*2;
-	int cantidad_lineas = obtener_cantidad_lineas(longitud_paquete);
-	void * buffer_envio = malloc((cantidad_lineas * config.MAX_LINEA) + sizeof(int)*2);
+}
 
-	memcpy(buffer_envio, &pid, sizeof(int));
-	memcpy(buffer_envio + sizeof(int), &longitud_paquete, sizeof(int));
+char* recibir_char(int socket, int longitud_paquete){
+char* buffer_recepcion = malloc(longitud_paquete);
 
-	int lineas_copiadas = 0;
-	while (lineas_copiadas != cantidad_lineas) {
-		//memcpy(buffer_envio + offset, memory_pointer, config.MAX_LINEA);
-		offset += config.MAX_LINEA;
-		lineas_copiadas++;
+int resultado = recv(socket, buffer_recepcion, longitud_paquete, MSG_WAITALL);
+
+if(resultado == -1){
+
+	log_error(log_fm9, "Error en la repcecepción de mensaje");
+	return "Error";}
+
+	else{
+
+		return buffer_recepcion;
 	}
 
-	send(diego, buffer_envio, (cantidad_lineas * config.MAX_LINEA) + sizeof(int)*2, MSG_WAITALL);
-	//TODO Enviar el proceso de a partes con tamaño transfer_size
-	//TODO Descomentar esto cuando se implemente el transfer_size en ElDiego
-	//send(diego, buffer_envio, config.TRANSFER_SIZE, MSG_WAITALL);
-	free(buffer_envio);
+
+}
+
+//---------------------------------------------------------------------------------------------------------
+//SEGMENTACION SIMPLE
+
+void inicializar_memoria_segmentacion_simple(){
+	//tabla de segmentos
+
+	tabla_de_segmentos = list_create();
+	tabla_administrativa_segmentacion = list_create();
+
+	puntero_memoria_segmentada = malloc(config.TAMANIO);
+	bitarray_memoria = bitarray_create(b_m_s,config.TAMANIO / config.MAX_LINEA);
+
+	/*for(int i = 0; i < config.TAMANIO / config.MAX_LINEA; i++){
+	bitarray_clean_bit(bitarray_memoria,  i);
+	}
+*/
+	if(puntero_memoria_segmentada == NULL){
+
+		log_error(log_fm9, "No se pudo inicializar la memoria");
+	}else{
+
+		log_info(log_fm9, "Inicialización de memoria exitosa");
+	}
+
+}
+
+void guardar_proceso_segmentacion_simple(int pid ,int cantidad_lineas, char* buffer_recepcion){
+
+
+segmento_offset_t* segmento_nuevo = malloc(sizeof(segmento_offset_t));
+segmento_tabla_t* entrada_tabla = malloc(sizeof(segmento_tabla_t));
+entrada_administrativa_segmentacion_t* entrada_administrativa = malloc(sizeof(entrada_administrativa_segmentacion_t));
+
+
+
+
+entrada_administrativa->pid = pid;
+
+
+
+
+	if(list_is_empty(tabla_de_segmentos)){
+
+
+
+							entrada_administrativa->id = 0;
+
+							entrada_tabla->id = 0;
+							entrada_tabla->base = 0 ;
+							entrada_tabla->limite = cantidad_lineas;
+
+
+							reservar_bitarray(bitarray_memoria, entrada_tabla->base, entrada_tabla->limite);
+
+							list_add(tabla_administrativa_segmentacion, entrada_administrativa);
+							list_add(tabla_de_segmentos, entrada_tabla);
+
+							memcpy(puntero_memoria_segmentada, buffer_recepcion, cantidad_lineas * config.MAX_LINEA);
+	}else{
+
+				if(entra_en_memoria(cantidad_lineas) == 1){
+					int corrimiento = 0;
+
+					while( cantidad_lineas != 0){
+
+
+					entrada_tabla->id = asignar_id();
+
+					entrada_administrativa->id = entrada_tabla->id;
+
+
+					segmento_nuevo = buscar_segmento_vacio();
+					entrada_tabla->base = segmento_nuevo->segmento;
+
+								if((segmento_nuevo->offset) > cantidad_lineas){
+
+
+									entrada_tabla->limite = cantidad_lineas;
+
+								}else{
+
+									entrada_tabla->limite = segmento_nuevo->offset;
+								}
+
+					memcpy(puntero_memoria_segmentada + entrada_tabla->base * config.MAX_LINEA, buffer_recepcion + corrimiento,entrada_tabla->limite * config.MAX_LINEA);
+
+
+
+					reservar_bitarray(bitarray_memoria, entrada_tabla->base, entrada_tabla->limite);
+
+
+					list_add(tabla_de_segmentos, entrada_tabla);
+					list_add(tabla_administrativa_segmentacion, entrada_administrativa);
+
+					cantidad_lineas =- entrada_tabla ->limite;
+
+					corrimiento =+ entrada_tabla->limite;
+					}
+
+
+
+
+
+
+
+					}else{
+
+
+					}log_error(log_fm9, "Archivo no entra en memoria");
+
+free(entrada_administrativa);
+free(segmento_nuevo);
+free(entrada_tabla);
+
+}
+
+}
+
+int entra_en_memoria(int cantidad_lineas){
+int espacio_libre = 0;
+
+
+	for(int j = 0; j < config.TAMANIO; j++){
+
+		if(!bitarray_test_bit(bitarray_memoria, j))
+			espacio_libre++;
+
+	}
+		if( espacio_libre < cantidad_lineas ){
+
+		return 0;
+		}else{
+
+			return 1;
+		}
+}
+
+void abrir_linea_segmentacion_simple(int socket_cpu,int pid,int numero_linea){
+	entrada_administrativa_segmentacion_t* elemento_busqueda;
+	segmento_offset_t* segmento_linea;
+	t_list* lista_busqueda_pid_id;
+
+	char* buffer_envio = malloc(config.MAX_LINEA);
+
+	int lineas_encontradas= 0;
+	int corrimiento = 0;
+
+	//busco la lista de segmentos con ese PID
+
+	bool id_pid(entrada_administrativa_segmentacion_t* entrada){
+		entrada_administrativa_segmentacion_t* entrada_admin;
+				return entrada_admin->pid == pid;
+
+	}
+
+	lista_busqueda_pid_id = list_filter(tabla_administrativa_segmentacion, (void*)id_pid);
+
+	//busco la linea que tienen esos segmentos
+
+   while(lineas_encontradas < numero_linea)   {
+	   int k = 0;
+
+
+	   elemento_busqueda = list_get(lista_busqueda_pid_id, k);
+
+
+
+	   segmento_linea = obtener_segmento_linea(elemento_busqueda->id, numero_linea);
+
+	   lineas_encontradas =+ segmento_linea->offset;
+
+	   k++;
+   }
+
+   corrimiento = lineas_encontradas - numero_linea;
+
+   memcpy(buffer_envio,puntero_memoria_segmentada + segmento_linea->segmento + corrimiento, config.MAX_LINEA );
+
+
+   //VER TAMAÑO DE TRANSF
+   send(socket_cpu, config.MAX_LINEA, sizeof(int), MSG_WAITALL);
+   send(socket_cpu, buffer_envio, config.MAX_LINEA, MSG_WAITALL);
+
+}
+
+void modificar_linea_segmentacion_simple(int socket_cpu,int pid,int numero_linea, char* linea_nueva){
+	entrada_administrativa_segmentacion_t* elemento_busqueda;
+	segmento_offset_t* segmento_linea;
+	t_list* lista_busqueda_pid_id;
+
+	linea_nueva = malloc(config.MAX_LINEA);
+
+
+	int lineas_encontradas= 0;
+	int corrimiento = 0;
+
+	//busco la lista de segmentos con ese PID
+
+	bool id_pid(entrada_administrativa_segmentacion_t* entrada){
+		entrada_administrativa_segmentacion_t* entrada_admin;
+				return entrada_admin->pid == pid;
+
+	}
+
+	lista_busqueda_pid_id = list_filter(tabla_administrativa_segmentacion, (void*)id_pid);
+
+	//busco la linea que tienen esos segmentos
+
+   while(lineas_encontradas < numero_linea)   {
+	   int k = 0;
+
+
+	   elemento_busqueda = list_get(lista_busqueda_pid_id, k);
+
+
+
+	   segmento_linea = obtener_segmento_linea(elemento_busqueda->id, numero_linea);
+
+	   lineas_encontradas =+ segmento_linea->offset;
+
+	   k++;
+   }
+
+   corrimiento = lineas_encontradas - numero_linea;
+
+    memcpy(puntero_memoria_segmentada + segmento_linea->segmento + corrimiento, linea_nueva , config.MAX_LINEA );
+
+    //TODO ver resultado
+    int resultado;
+
+   //VER TAMAÑO DE TRANSF
+   send(socket_cpu, &resultado, config.MAX_LINEA, MSG_WAITALL);
+
+}
+
+
+segmento_offset_t* obtener_segmento_linea(int id, int numnero_linea){
+	segmento_tabla_t* segmento;
+	t_list* lista_busqueda_segmento;
+
+	bool es_id(segmento_tabla_t* entrada_segmento){
+
+
+							return entrada_segmento->id == id;
+						}
+
+
+	segmento = list_find(tabla_de_segmentos, (void*) es_id);
+
+
+
+	return segmento;
+}
+
+//--
+void liberar_segmento(int pid, int base, int limite){
+	int id_segmento;
+
+	entrada_administrativa_segmentacion_t* entrada_admin;
+
+
+	liberar_bitarray(bitarray_memoria, base, limite);
+
+
+	bool id_pid(entrada_administrativa_segmentacion_t* entrada){
+
+				return entrada_admin->pid == pid;
+			}
+
+
+
+	entrada_admin = list_find(tabla_administrativa_segmentacion,(void*)id_pid);
+	id_segmento = entrada_admin->id;
+	free(entrada_admin);
+
+	bool es_pid(segmento_tabla_t* entrada_segmento){
+
+
+						return entrada_segmento->id == id_segmento;
+					}
+
+
+
+	list_remove_by_condition(tabla_de_segmentos,(void*) id_pid);
+	list_remove_by_condition(tabla_administrativa_segmentacion, (void*)es_pid);
+
+	liberar_bitarray(bitarray_memoria, base, limite);
 }
 
 
 
 
-*/
+
+
+
+segmento_offset_t* buscar_segmento_vacio(){
+
+segmento_offset_t* segmento;
+
+
+
+int base=0;
+int otra_base;
+
+
+
+	while (!(bitarray_test_bit(bitarray_memoria, base)) && base < config.TAMANIO ){
+
+
+	base++;
+
+	}
+
+	otra_base = base;
+
+	while(bitarray_test_bit(bitarray_memoria, base) &&  base < config.TAMANIO ){
+
+	otra_base++;
+
+
+	}
+
+	segmento->segmento = base;
+	segmento->offset = otra_base - base;
+
+return segmento;
+}
+
+
+int asignar_id(){
+	id_segmento++;
+
+	return id_segmento;
+}
+
+
+
+
+
+//-------------------------------------------------------------------------------------------------------------------------
+//PAGINACION INVERTIDA
+
+
+
+
+
+void crearMemoriaPrincipal(int frames,int tamanio_pagina){
+
+
+
+
+	puntero_memoria_paginada = malloc(sizeof(t_memoria_principal));
+
+	puntero_memoria_paginada->memoria=malloc(config.TAMANIO);
+	puntero_memoria_paginada->estructura_administrativa= puntero_memoria_paginada->memoria; // hito en la humanida'
+	puntero_memoria_paginada->frames= puntero_memoria_paginada->memoria;
+
+
+
+}
+
+
+
+
+
 
 
 
 /*
+void inicializar_ta---------------------------------------------------------------------------
+//SEbla_de_paginas(int numero_lineas_memoria){
+	segmento_tabla_t* entrada_vacia = malloc(sizeof(segmento_tabla_t));
 
-void serializar(void * buffer_envio){
-
-	int longitud = 5;
-	char * palabra = "hola";
-
-
-
-	buffer_envio = malloc(sizeof(int)+ 5);
-
-	memcpy(buffer_envio, &longitud, sizeof(int));
-
-	memcpy(buffer_envio + sizeof(int), &palabra, 5);
-
-}
-
-void deserializar(void* buffer, int tamanio){
-int offset = 0;
-void* buffer_envio;
+	entrada_vacia->base=0;
+	entrada_vacia->limite=0;
 
 
-serializar(buffer_envio);
 
-memcpy(&prueba->numero, buffer_envio, sizeof(int));
+	for(int i=0; i < numero_lineas_memoria; i++){
+		int j= 0;
 
-offset =+ sizeof(int);
+		entrada_vacia->id = j;
+		list_add(tabla_de_segmentos, entrada_vacia);
+		j++;
 
-memcpy(&prueba->palabra, buffer_envio + offset, prueba->numero);
+	}
 
-free(buffer_envio);
-
-log_info(log_fm9,"%d", prueba->numero);
+free(entrada_vacia);
 
 }
-
 */
+
+
+
+//-------------------------------------------------------------------------------------------------------------------
+//SEGMENTACION PAGINADA
+
+void inicializar_memoria_segmentacion_paginada(){
+
+
+
+}
+
+//-------------------------------------------------------------------------------------------------------------------
+//BITARRAY
+
+void reservar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limite){
+
+	for(int i= 0; i <= limite; i++){
+
+		bitarray_set_bit(bitarray_memoria_segmentada, i);
+
+	}
+
+
+}
+
+void liberar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limite){
+
+	for(int i= 0; i <= limite; i++){
+
+		bitarray_clean_bit(bitarray_memoria_segmentada, i);
+
+	}
+
+}
+
 
 
 
