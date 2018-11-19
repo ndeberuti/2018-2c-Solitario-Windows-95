@@ -204,7 +204,7 @@ void setear_segmentacion_simple(){
 
 void setear_paginacion_invertida(){
 	log_info(log_fm9, "Tablas de Paginación Invertida seteada");
-	inicializar_memoria_paginacion_invertida();
+	//inicializar_memoria_paginacion_invertida();
 }
 
 void setear_segmentacion_paginada(){
@@ -360,10 +360,10 @@ void inicializar_memoria_segmentacion_simple(){
 	puntero_memoria_segmentada = malloc(config.TAMANIO);
 	bitarray_memoria = bitarray_create(b_m_s,config.TAMANIO / config.MAX_LINEA);
 
-	for(int i = 0; i < config.TAMANIO / config.MAX_LINEA; i++){
+	/*for(int i = 0; i < config.TAMANIO / config.MAX_LINEA; i++){
 	bitarray_clean_bit(bitarray_memoria,  i);
 	}
-
+*/
 	if(puntero_memoria_segmentada == NULL){
 
 		log_error(log_fm9, "No se pudo inicializar la memoria");
@@ -692,15 +692,7 @@ int asignar_id(){
 
 
 
-void inicializar_memoria_paginacion_invertida(){
-	//Logear que inicializamos
-	int frames = config.TAMANIO / config.TAM_PAGINA;
-	crearMemoriaPrincipal(frames, config.TAM_PAGINA);
-	crearEstructurasAdministrativas(frames);
-	//Necesito una estructura que me guarde la ultima pagina de cada proceso
-	inicializarEstructuraAdicional();
 
-}
 
 void crearMemoriaPrincipal(int frames,int tamanio_pagina){
 
