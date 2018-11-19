@@ -595,7 +595,7 @@ segmento_offset_t* obtener_segmento_linea(int id, int numnero_linea){
 						}
 
 
-	segmento = list_find(tabla_de_segmentos, (void*) es_pid);
+	segmento = list_find(tabla_de_segmentos, (void*) es_id);
 
 
 
