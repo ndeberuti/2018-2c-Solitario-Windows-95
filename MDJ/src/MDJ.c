@@ -49,7 +49,7 @@ config_t load_config() {
 }
 
 void crear_estructura_directorios() {
-	if (mkdir(config.PUNTO_MONTAJE, 0755) != 0)
+	if (mkdir(config.PUNTO_MONTAJE, 0777) != 0)
 		if (errno != EEXIST) {
 			log_error(log_mdj, "Permiso denegado al intentar montar el FS en %s", config.PUNTO_MONTAJE);
 			exit(EXIT_FAILURE);
@@ -64,7 +64,7 @@ void crear_estructura_directorios() {
 
 	strcpy(path, config.PUNTO_MONTAJE);
 	strcat(path, "Metadata/");
-	mkdir(path, 0755);
+	mkdir(path, 0777);
 	free(path);
 
 	if ((path = malloc(sizeof(char) * (largo_mnt + 22))) == NULL) {
@@ -105,7 +105,7 @@ void crear_estructura_directorios() {
 
 	strcpy(path, config.PUNTO_MONTAJE);
 	strcat(path, "Archivos/");
-	mkdir(path, 0755);
+	mkdir(path, 0777);
 	free(path);
 
 	if ((path = malloc(sizeof(char) * (largo_mnt + 9))) == NULL) {
@@ -115,7 +115,7 @@ void crear_estructura_directorios() {
 
 	strcpy(path, config.PUNTO_MONTAJE);
 	strcat(path, "Bloques/");
-	mkdir(path, 0755);
+	mkdir(path, 0777);
 	free(path);
 }
 
@@ -176,19 +176,51 @@ void server() {
 					}
 					else
 						// tenemos datos de algún cliente
-						command_handler(command);
+						command_handler(i, command);
 			} // if (FD_ISSET(i, &read_fds))
 	} // while (true)
 }
 
-void command_handler(uint32_t command) {
+void command_handler(uint32_t socket, uint32_t command) {
 	switch (command) {
 	case NUEVA_CONEXION_DIEGO:
 		log_info(log_consola, "Nueva conexion desde El Diego");
 		break;
+	case VALIDAR_ARCHIVO:
+		log_info(log_consola, "Operacion VALIDAR_ARCHIVO recibida");
+		validar_archivo(socket);
+		break;
 	default:
 		log_warning(log_consola, "%d: Comando recibido incorrecto", command);
 	}
+}
+
+void validar_archivo(uint32_t socket) {
+	char *path;
+	uint32_t int_rta;
+
+	if (receive_string(socket, &path) <= 0) {
+		log_error(log_consola, "recv (validar_archivo)");
+		int_rta = 99;
+	}
+	else {
+		char *aux_path = malloc(sizeof(char) * (strlen(pathActual) + strlen(path) + 1));
+		strcpy(aux_path, pathActual);
+		strcat(aux_path, path);
+		if (isFileExists(aux_path)) {
+			log_info(log_consola, "Existe el archivo %s", path);
+			int_rta = 11;
+		}
+		else {
+			log_info(log_consola, "No existe el archivo %s", path);
+			int_rta = 10;
+		}
+		free(aux_path);
+		free(path);
+	}
+
+	if (send_int(socket, int_rta) == -1)
+		log_error(log_consola, "send (validar_archivo)");
 }
 
 void consola() {
@@ -211,24 +243,37 @@ void consola() {
 				while (consola->cant_params < MAX_PARAMS && (token = strtok(NULL, " ")) != NULL)
 					consola->param[consola->cant_params++] = strdup(token);
 
+				if (consola->cant_params > 0) {
+					//TODO: Formatear path teniendo en cuenta el . y el ..
+					//char *pathFormateado = formatearPath(consola->param[0]);
+				}
+
 				if (str_eq(consola->comando, "clear"))
 					system("clear");
 
 				else if (str_eq(consola->comando, "ls")) {
-					//TODO: comando ls
 					char *aux;
-					if (consola->cant_params < 1) {
+					if (consola->cant_params == 0) {
 						aux = malloc(sizeof(char) * (strlen(pathActual) + 7));
 						strcpy(aux, "ls -l ");
 						strcat(aux, pathActual);
+						system(aux);
 					}
 					else {
-						aux = malloc(sizeof(char) * (strlen(consola->param[0]) + strlen(pathActual) + 7));
-						strcpy(aux, "ls -l ");
-						strcat(aux, pathActual);
+						aux = malloc(sizeof(char) * (strlen(consola->param[0]) + strlen(pathActual) + 1));
+						strcpy(aux, pathActual);
 						strcat(aux, consola->param[0]);
+						if (isDirectoryExists(aux)) {
+							free(aux);
+							aux = malloc(sizeof(char) * (strlen(consola->param[0]) + strlen(pathActual) + 7));
+							strcpy(aux, "ls -l ");
+							strcat(aux, pathActual);
+							strcat(aux, consola->param[0]);
+							system(aux);
+						}
+						else
+							print_c(log_consola, "%s: No existe el directorio %s", consola->comando, consola->param[0]);
 					}
-					system(aux);
 					free(aux);
 				}
 

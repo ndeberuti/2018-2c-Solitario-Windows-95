@@ -32,6 +32,7 @@ char *PATH_CONFIG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/MDJ/c
 #define MAX_PARAMS 1
 
 #define NUEVA_CONEXION_DIEGO 1
+#define VALIDAR_ARCHIVO 2
 
 // estructuras
 typedef struct {
@@ -66,7 +67,8 @@ char *pathConsola;
 config_t load_config();
 void crear_estructura_directorios();
 void server();
-void command_handler(uint32_t command);
+void command_handler(uint32_t socket, uint32_t command);
+void validar_archivo(uint32_t socket);
 void consola();
 
 #endif /* SRC_MDJ_H_ */
