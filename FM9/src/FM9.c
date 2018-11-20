@@ -378,9 +378,12 @@ void inicializar_memoria_segmentacion_simple(){
 	puntero_memoria_segmentada = malloc(config.TAMANIO);
 	bitarray_memoria = bitarray_create(b_m_s,config.TAMANIO / config.MAX_LINEA);
 
+	/* VER PORQUE LE GUSTA ROMPER
 	for(int i = 0; i < config.TAMANIO / config.MAX_LINEA; i++){
 	bitarray_clean_bit(bitarray_memoria,  i);
 	}
+
+*/
 
 	if(puntero_memoria_segmentada == NULL){
 
