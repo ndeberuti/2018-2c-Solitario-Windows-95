@@ -49,7 +49,7 @@ config_t load_config() {
 }
 
 void crear_estructura_directorios() {
-	if (mkdir(config.PUNTO_MONTAJE, 0777) != 0)
+	if (mkdir(config.PUNTO_MONTAJE, 0755) != 0)
 		if (errno != EEXIST) {
 			log_error(log_mdj, "Permiso denegado al intentar montar el FS en %s", config.PUNTO_MONTAJE);
 			exit(EXIT_FAILURE);
@@ -64,7 +64,7 @@ void crear_estructura_directorios() {
 
 	strcpy(path, config.PUNTO_MONTAJE);
 	strcat(path, "Metadata/");
-	mkdir(path, 0777);
+	mkdir(path, 0755);
 	free(path);
 
 	if ((path = malloc(sizeof(char) * (largo_mnt + 22))) == NULL) {
@@ -97,6 +97,33 @@ void crear_estructura_directorios() {
 	log_info(log_mdj, "CANTIDAD_BLOQUES = %d", fs_config.CANTIDAD_BLOQUES);
 	log_info(log_mdj, "MAGIC_NUMBER = %s", fs_config.MAGIC_NUMBER);
 	log_info(log_mdj, "-----------------------");
+	free(path);
+
+	if ((path = malloc(sizeof(char) * (largo_mnt + 20))) == NULL) {
+		log_error(log_mdj, "Error al intentar crear la estructura de directorios");
+		exit(EXIT_FAILURE);
+	}
+
+	if ((bitmap = malloc(sizeof(char) * (fs_config.CANTIDAD_BLOQUES + 1))) == NULL) {
+		log_error(log_mdj, "Error al intentar crear la estructura de directorios");
+		exit(EXIT_FAILURE);
+	}
+
+	strcpy(path, config.PUNTO_MONTAJE);
+	strcat(path, "Metadata/");
+	strcat(path, "Bitmap.bin");
+
+	FILE *fptr = fopen(path, "r");
+	if (fptr == NULL) {
+		fptr = fopen(path, "w");
+		memset(bitmap, '0', fs_config.CANTIDAD_BLOQUES);
+		fputs(bitmap, fptr);
+	}
+	else
+		fgets(bitmap, fs_config.CANTIDAD_BLOQUES + 1, fptr);
+
+	fclose(fptr);
+	free(path);
 
 	if ((path = malloc(sizeof(char) * (largo_mnt + 10))) == NULL) {
 		log_error(log_mdj, "Error al intentar crear la estructura de directorios");
@@ -105,7 +132,7 @@ void crear_estructura_directorios() {
 
 	strcpy(path, config.PUNTO_MONTAJE);
 	strcat(path, "Archivos/");
-	mkdir(path, 0777);
+	mkdir(path, 0755);
 	free(path);
 
 	if ((path = malloc(sizeof(char) * (largo_mnt + 9))) == NULL) {
@@ -115,7 +142,7 @@ void crear_estructura_directorios() {
 
 	strcpy(path, config.PUNTO_MONTAJE);
 	strcat(path, "Bloques/");
-	mkdir(path, 0777);
+	mkdir(path, 0755);
 	free(path);
 }
 
@@ -190,6 +217,10 @@ void command_handler(uint32_t socket, uint32_t command) {
 		log_info(log_consola, "Operacion VALIDAR_ARCHIVO recibida");
 		validar_archivo(socket);
 		break;
+	case CREAR_ARCHIVO:
+		log_info(log_consola, "Operacion CREAR_ARCHIVO recibida");
+		crear_archivo(socket);
+		break;
 	default:
 		log_warning(log_consola, "%d: Comando recibido incorrecto", command);
 	}
@@ -197,11 +228,11 @@ void command_handler(uint32_t socket, uint32_t command) {
 
 void validar_archivo(uint32_t socket) {
 	char *path;
-	uint32_t int_rta;
+	uint32_t rta;
 
 	if (receive_string(socket, &path) <= 0) {
 		log_error(log_consola, "recv (validar_archivo)");
-		int_rta = 99;
+		rta = ERROR_OPERACION;
 	}
 	else {
 		char *aux_path = malloc(sizeof(char) * (strlen(pathActual) + strlen(path) + 1));
@@ -209,18 +240,34 @@ void validar_archivo(uint32_t socket) {
 		strcat(aux_path, path);
 		if (isFileExists(aux_path)) {
 			log_info(log_consola, "Existe el archivo %s", path);
-			int_rta = 11;
+			rta = RTA_TRUE;
 		}
 		else {
 			log_info(log_consola, "No existe el archivo %s", path);
-			int_rta = 10;
+			rta = RTA_FALSE;
 		}
 		free(aux_path);
 		free(path);
 	}
 
-	if (send_int(socket, int_rta) == -1)
+	if (send_int(socket, rta) == -1)
 		log_error(log_consola, "send (validar_archivo)");
+}
+
+void crear_archivo(uint32_t socket) {
+	char *path;
+	uint32_t rta;
+
+	if (receive_string(socket, &path) <= 0) {
+		log_error(log_consola, "recv (crear_archivo)");
+		rta = ERROR_OPERACION;
+	}
+	else {
+
+	}
+
+	if (send_int(socket, rta) == -1)
+		log_error(log_consola, "send (crear_archivo)");
 }
 
 void consola() {

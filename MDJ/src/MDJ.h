@@ -33,6 +33,12 @@ char *PATH_CONFIG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/MDJ/c
 
 #define NUEVA_CONEXION_DIEGO 1
 #define VALIDAR_ARCHIVO 2
+#define CREAR_ARCHIVO 3
+
+#define RTA_FALSE 10
+#define RTA_TRUE 11
+
+#define ERROR_OPERACION 99
 
 // estructuras
 typedef struct {
@@ -62,6 +68,7 @@ pthread_t thread_servidor;
 pthread_t thread_consola;
 char *pathActual;
 char *pathConsola;
+char *bitmap;
 
 // funciones
 config_t load_config();
@@ -69,6 +76,7 @@ void crear_estructura_directorios();
 void server();
 void command_handler(uint32_t socket, uint32_t command);
 void validar_archivo(uint32_t socket);
+void crear_archivo(uint32_t socket);
 void consola();
 
 #endif /* SRC_MDJ_H_ */
