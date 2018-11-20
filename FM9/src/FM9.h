@@ -58,17 +58,7 @@
 	} console_t;
 
 
-	typedef struct {
-		int frame;
-		int pid;
-		int nroPag;
-	} t_tablaPaginaInvertida;
 
-	typedef struct{
-		t_tablaPaginaInvertida *estructura_administrativa;
-		char* frames;
-		char* memoria;
-	} t_memoria_principal;
 
 
 	typedef struct{
@@ -196,8 +186,60 @@
 
 	//PAGINACION
 
+	#define FRAME_ADM -1
+	#define PAGINALIBRE -2
+	#define FRAMELIBRE -3
+
+	int ESTRUCTURA_ADM_SIZE;
+	int ESTRUCTURA_ADM_CANT_FRAMES;
+	int MARCOS;
+	int MARCO_SIZE;
+	int CANTIDADLINEASxPAG;
+
+	typedef struct {
+		int frame;
+		int pid;
+		int nroPag;
+	} t_tablaPaginaInvertida;
+
+	typedef struct memoria_principal{
+		t_tablaPaginaInvertida *estructura_administrativa;
+		char* frames;
+		char* memoria;
+	} t_memoria_principal;
+
+	typedef struct ultimaPagina{
+		int pid;
+		int ultPag;
+	} t_ultimaPagina;
+
+	
+	
+	t_ultimaPagina* ultimasPaginas;
+	t_tablaPaginaInvertida * tablaInvertida;
+	t_memoria_principal* memoria; // nuevo
+
+	
+	void inicializarMEMpaginada();
+
+	void inicializarEstructuraAdicional();
+	void grabarUltpagina (int pid,int pagina);
+	int retornarUltPag(int pid);
+	void crearMemoriaPrincipalPaginacion(int marcos, int marco_size);
+	int leer_pagina(char*, char**);
+	int crearEstructurasAdministrativas();
+	int calcularPosicion(int frame);
+	int buscarFrame(int unPid, int pagina);
+	int asignarPaginasIniciales(int unPid, int paginas) ;
+	int almacenarLinea(int unPid, int pagina, int offset, int tamanio, char * buffer);
+	int solicitarLinea(int unPid, int pagina, int offset, int tamanio, char *buffer);
+	int hash(int unPid, int pagina) ;
+	int asignarPaginas(int pid, int paginas);
+	void crearPid(int pid,int paginas);
+	int eliminarPid(int pid);
+	void eliminarPagina(int unPid, int nroPag);
 	void crearMemoriaPrincipal(int frames,int tamanio_pagina);
-	t_memoria_principal* puntero_memoria_paginada;
+	
 
 
 	//SEGMENTACION PAGINADA
