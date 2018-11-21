@@ -20,6 +20,7 @@
 	#define DEFAULT_DICTIONARY_INITIAL_SIZE 20
 
 	#include "node.h"
+	#include "list.h"
 	#include <stdbool.h>
 
 	typedef struct {
@@ -27,6 +28,7 @@
 		int table_max_size;
 		int table_current_size;
 		int elements_amount;
+		t_list* keys;
 	} t_dictionary;
 
 	/**
@@ -109,5 +111,11 @@
 	* @DESC: Destruye el diccionario y destruye sus elementos
 	*/
 	void 		  dictionary_destroy_and_destroy_elements(t_dictionary *, void(*data_destroyer)(void*));
+
+	/**
+	* @NAME: dictionary_get_keys
+	* @DESC: Devuelve la lista de claves del diccionario
+	*/
+	t_list* 	  dictionary_get_keys(t_dictionary *);
 
 #endif /* DICTIONARY_H_ */
