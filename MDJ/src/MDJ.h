@@ -23,6 +23,7 @@
 #include <readline/history.h>
 #include "funciones/funciones.h"
 #include "commons/config.h"
+#include "commons/bitarray.h"
 #include "servidor/servidor.h"
 
 // constantes
@@ -35,8 +36,8 @@ char *PATH_CONFIG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/MDJ/c
 #define VALIDAR_ARCHIVO 2
 #define CREAR_ARCHIVO 3
 
-#define RTA_FALSE 10
-#define RTA_TRUE 11
+#define OPERACION_FAIL 10
+#define OPERACION_OK 11
 
 #define ERROR_OPERACION 99
 
@@ -64,11 +65,15 @@ t_log *log_consola;
 t_log *log_mdj;
 config_t config;
 config_fs fs_config;
-pthread_t thread_servidor;
-pthread_t thread_consola;
+char *path_bitmap;
+char *bitmap;
+t_bitarray *bitarray;
+char *carpeta_archivos;
+char *carpeta_bloques;
 char *pathActual;
 char *pathConsola;
-char *bitmap;
+pthread_t thread_servidor;
+pthread_t thread_consola;
 
 // funciones
 config_t load_config();
@@ -77,6 +82,8 @@ void server();
 void command_handler(uint32_t socket, uint32_t command);
 void validar_archivo(uint32_t socket);
 void crear_archivo(uint32_t socket);
+void *proximo_bloque_libre(uint32_t bloque_inicial);
+void set_bitarray(uint32_t posicion);
 void consola();
 
 #endif /* SRC_MDJ_H_ */

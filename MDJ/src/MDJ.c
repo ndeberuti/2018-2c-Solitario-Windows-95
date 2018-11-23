@@ -56,7 +56,7 @@ void crear_estructura_directorios() {
 		}
 
 	char *path;
-	int largo_mnt = strlen(config.PUNTO_MONTAJE);
+	uint32_t largo_mnt = strlen(config.PUNTO_MONTAJE);
 	if ((path = malloc(sizeof(char) * (largo_mnt + 10))) == NULL) {
 		log_error(log_mdj, "Error al intentar crear la estructura de directorios");
 		exit(EXIT_FAILURE);
@@ -112,16 +112,19 @@ void crear_estructura_directorios() {
 	strcpy(path, config.PUNTO_MONTAJE);
 	strcat(path, "Metadata/");
 	strcat(path, "Bitmap.bin");
+	path_bitmap = strdup(path);
 
 	FILE *fptr = fopen(path, "r");
 	if (fptr == NULL) {
 		fptr = fopen(path, "w");
+		memset(bitmap, '\0', fs_config.CANTIDAD_BLOQUES + 1);
 		memset(bitmap, '0', fs_config.CANTIDAD_BLOQUES);
 		fputs(bitmap, fptr);
 	}
 	else
 		fgets(bitmap, fs_config.CANTIDAD_BLOQUES + 1, fptr);
 
+	bitarray = bitarray_create(bitmap, strlen(bitmap));
 	fclose(fptr);
 	free(path);
 
@@ -132,6 +135,7 @@ void crear_estructura_directorios() {
 
 	strcpy(path, config.PUNTO_MONTAJE);
 	strcat(path, "Archivos/");
+	carpeta_archivos = strdup(path);
 	mkdir(path, 0755);
 	free(path);
 
@@ -142,6 +146,7 @@ void crear_estructura_directorios() {
 
 	strcpy(path, config.PUNTO_MONTAJE);
 	strcat(path, "Bloques/");
+	carpeta_bloques = strdup(path);
 	mkdir(path, 0755);
 	free(path);
 }
@@ -240,11 +245,11 @@ void validar_archivo(uint32_t socket) {
 		strcat(aux_path, path);
 		if (isFileExists(aux_path)) {
 			log_info(log_consola, "Existe el archivo %s", path);
-			rta = RTA_TRUE;
+			rta = OPERACION_OK;
 		}
 		else {
 			log_info(log_consola, "No existe el archivo %s", path);
-			rta = RTA_FALSE;
+			rta = OPERACION_FAIL;
 		}
 		free(aux_path);
 		free(path);
@@ -257,17 +262,120 @@ void validar_archivo(uint32_t socket) {
 void crear_archivo(uint32_t socket) {
 	char *path;
 	uint32_t rta;
+	uint32_t bytes;
 
-	if (receive_string(socket, &path) <= 0) {
-		log_error(log_consola, "recv (crear_archivo)");
+	if (receive_string(socket, &path) <= 0)
 		rta = ERROR_OPERACION;
-	}
-	else {
 
+	if (receive_int(socket, &bytes) <= 0)
+		rta = ERROR_OPERACION;
+
+	if (rta == ERROR_OPERACION)
+		log_error(log_consola, "recv (crear_archivo)");
+	else {
+		log_info(log_consola, "Crear archivo %s de %d bytes", path, bytes);
+
+		uint32_t cant_bloques = bytes / fs_config.TAMANIO_BLOQUES;
+		if (bytes % fs_config.TAMANIO_BLOQUES > 0)
+			cant_bloques++;
+
+		uint32_t *prox_bloque;
+		uint32_t pos_actual = 0;
+		uint32_t bloque_inicial = 0;
+		uint32_t bloques[cant_bloques];
+
+		while (pos_actual < cant_bloques && (prox_bloque = proximo_bloque_libre(bloque_inicial)) != NULL) {
+			bloques[pos_actual] = *prox_bloque;
+			bloque_inicial = *prox_bloque + 1;
+			pos_actual++;
+		}
+
+		if (prox_bloque == NULL) {
+			log_warning(log_consola, "No hay suficientes bloques libres para guardar el archivo");
+			rta = OPERACION_FAIL;
+		}
+		else {
+			uint32_t bytes_del_bloque;
+			uint32_t bytes_restantes = bytes;
+			char *relleno;
+			char *nro_bloque;
+			uint32_t largo_lista_bloques = 1;
+			char *nombre_bloque;
+
+			for (uint32_t i = 0; i < cant_bloques; i++) {
+				//CREAR EL BLOQUE
+				bytes_del_bloque = bytes_restantes > fs_config.TAMANIO_BLOQUES ? fs_config.TAMANIO_BLOQUES : bytes_restantes;
+				relleno = malloc(sizeof(char) * (bytes_del_bloque + 1));
+				bytes_restantes -= fs_config.TAMANIO_BLOQUES;
+
+				nro_bloque = string_itoa(bloques[i]);
+				largo_lista_bloques += strlen(nro_bloque) + 1;
+				nombre_bloque = malloc(sizeof(char) * (strlen(carpeta_bloques) + strlen(nro_bloque) + 5));
+				strcpy(nombre_bloque, carpeta_bloques);
+				strcat(nombre_bloque, nro_bloque);
+				strcat(nombre_bloque, ".bin");
+
+				FILE *fptr = fopen(nombre_bloque, "w");
+				memset(relleno, '\0', bytes_del_bloque + 1);
+				memset(relleno, '\n', bytes_del_bloque);
+				fputs(relleno, fptr);
+				fclose(fptr);
+				free(relleno);
+				free(nro_bloque);
+				free(nombre_bloque);
+
+				//ACTUALIZAR BITARRAY
+				set_bitarray(bloques[i]);
+			}
+			//CREAR EL ARCHIVO
+			char *lista_bloques = malloc(sizeof(char) * (largo_lista_bloques + 1));
+
+			strcpy(lista_bloques, "[");
+			for (uint32_t i = 0; i < cant_bloques; i++) {
+				strcat(lista_bloques, string_itoa(bloques[i]));
+				if (i < cant_bloques - 1)
+					strcat(lista_bloques, ",");
+			}
+			strcat(lista_bloques, "]");
+
+			char *path_archivo = malloc(sizeof(char) * (strlen(carpeta_archivos) + strlen(path) + 1));
+			strcpy(path_archivo, carpeta_archivos);
+			strcat(path_archivo, path);
+//OJO aca porque si path_archivo tiene subcarpetas y no existen, el fopen no las crea. Voy a tener que crearlas aca antes de seguir.
+			t_config *aux_config = malloc(sizeof(t_config));
+			aux_config->path = strdup(path_archivo);
+			aux_config->properties = dictionary_create();
+			config_set_value(aux_config, "TAMANIO", string_itoa(bytes));
+			config_set_value(aux_config, "BLOQUES", lista_bloques);
+			config_save(aux_config);
+			config_destroy(aux_config);
+			free(path_archivo);
+			free(lista_bloques);
+
+			log_info(log_consola, "Operacion finalizada con exito");
+			rta = OPERACION_OK;
+		}
 	}
 
 	if (send_int(socket, rta) == -1)
 		log_error(log_consola, "send (crear_archivo)");
+}
+
+void *proximo_bloque_libre(uint32_t bloque_inicial) {
+	uint32_t i = bloque_inicial;
+
+	while (i < bitarray->size && bitarray_test_bit(bitarray, i * CHAR_BIT))
+		i++;
+
+	return i >= bitarray->size ? NULL : &i;
+}
+
+void set_bitarray(uint32_t posicion) {
+	bitarray_set_bit(bitarray, posicion * CHAR_BIT);
+
+	FILE *fptr = fopen(path_bitmap, "w");
+	fputs(bitarray->bitarray, fptr);
+	fclose(fptr);
 }
 
 void consola() {
