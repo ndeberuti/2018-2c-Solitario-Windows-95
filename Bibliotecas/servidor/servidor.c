@@ -64,8 +64,8 @@ uint32_t connect_server(char *dest_ip, uint32_t port, uint32_t handshake, t_log 
 	return sockfd;
 }
 
-uint32_t receive_int(uint32_t socket, uint32_t *buf) {
-	return recv(socket, buf, sizeof(uint32_t), 0);
+uint32_t receive_int(uint32_t socket, int *buf) {
+	return recv(socket, buf, sizeof(int), 0);
 }
 
 uint32_t receive_string(uint32_t socket, char **buf) {

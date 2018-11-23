@@ -14,18 +14,20 @@ void shortTermSchedulerThread()
 
 		STSAlreadyExecuting = true;
 
+		pthread_mutex_lock(&readyQueueMutex);
+		pthread_mutex_lock(&ioReadyQueue);
+
 		if(list_size(readyQueue) == 0)
 		{
 			log_info(schedulerLog, "No es posible planificar ya que no hay procesos listos\nSe debe crear un nuevo proceso, o desbloquear uno ya existente, para poder planificar\n");
 		}
 		else
 		{
-			pthread_mutex_lock(&readyQueueMutex);	//To schedule, I need to access the readyQueue.
-													//Can not do so when it is being accessed by other thread
 			(*scheduleProcesses)();
-
-			pthread_mutex_unlock(&readyQueueMutex);
 		}
+
+		pthread_mutex_unlock(&readyQueueMutex);
+		pthread_mutex_unlock(&ioReadyQueue);
 
 		STSAlreadyExecuting = false;
 
@@ -33,13 +35,10 @@ void shortTermSchedulerThread()
 	}
 }
 
-void longTermSchedulingThread()
+void longTermSchedulerThread()
 {
-	PCB_t* processToAccept;
-	uint32_t processAccepted;
-	uint32_t semaphoreValue;
-
-
+	PCB_t* processToInitialize;
+	uint32_t processAccepted, semaphoreValue;
 
 	while(!killThreads)
 	{
@@ -64,18 +63,25 @@ void longTermSchedulingThread()
 		{
 			for(uint32_t i = 0; i < list_size(newQueue); i++)
 			{
-				processToAccept = list_remove(newQueue, 0);
-				processAccepted = addProcessToReadyQueue(processToAccept);
+				processToInitialize = list_remove(newQueue, 0);
+				processAccepted = addProcessToReadyQueue(processToInitialize);
 
-				//TODO
-				//lo tengo que agregar a la cola de listos para guardar el espacio, pero en realidad
-				//no deberia estar ahi hasta que la cpu no me confirma que se inicializo el PCB
-				//correctamente (es decir que se cargo el script en memoria y eso)
-				//entonces, para evitar que el planificador me planifique un proceso que esta condicional
-				//en la cola de listos, le tengo que agregar una variable al PCB para indicar si es
-				//planificable... cuando la CPU me confirma que se inicializo el proceso, se cambia
-				//la variable de ese proceso en la cola de listos a planificable... si hubo un error
-				//en lka inicializacion, tengo que sacar el PCB de la cola de listos
+				t_list* freeCPUs = getFreeCPUs();
+
+				if(list_size(freeCPUs) == 0)
+					log_info(schedulerLog, "No hay CPUs disponibles para inicializar el proceso con id %d. Se dejara en la cola de listos (sin poder ser planificado) a la espera de que se libere una CPU\n", processToInitialize->pid);
+				else
+				{
+					cpu_t* freeCPU = list_get(freeCPUs, 0);
+					executeProcess(processToInitialize, freeCPU);
+				}
+
+				//tengo que agregar el nuevo pcb a la cola de listos para guardar el espacio y despues a la cola de ejecucion, para poder mandar el proceso a la cola de bloqueados,
+				//en realidad se pasa a la cola de ejecucion y se asigna a una cpu, pero se le avisa a la cpu que es para inicializar, y no se hace pasar el proceso por el STS
+				//El problema es si no hay ninguna CPU libre para inicializar el proceso... en ese caso tendria que
+				//dejar el pcb en la cola de listos, y cuando se libera o se conecta una nueva cpu, se tiene que verificar si hay procesos pendientes de inicializacion e inicializarlos
+				//(para inicializar procesos, hacer una funcion que busque en la cola de listos todos los procesos que tengan el bool que indica que no se puede planificar, y luego se asigna
+				//cada uno de esos procesos a la cpu liberada/nueva; esto deberia llamarse cuando se libera una cpu y cuando se conecta una nueva)
 
 				if(!processAccepted)
 					break;
@@ -99,7 +105,7 @@ void _checkExecProc_and_algorithm()
 
 	log_info(schedulerLog, "LTS: Se encontraron procesos en la cola de listos. Se intentara activar el STS\n");
 
-	if((list_size(executionQueue) == 0) || (getFreeCpusQty() > 0))
+	if((list_size(executionQueue) == 0) || (getFreeCPUsQty() > 0))
 	{
 		sem_getvalue(&shortTermScheduler, &semaphoreValue);
 
@@ -115,13 +121,20 @@ void initializeVariables()
 	dma_executedInstructions = 0;
 	actualProcesses = 0;
 	totalProcesses = 0;
-	exit_executedInstructions = 0;
 	totalConnectedCpus =  0;
+	killProcessInstructions = 0;
+	systemResponseTime = 0;
+	configFileInotifyFD = 0;
 
 	killThreads = false;
 	STSAlreadyExecuting = false;
 	LTSAlreadyExecuting = false;
 
+	//Inotify
+	configFileInotifyFD = inotify_init();
+	inotify_add_watch(configFileInotifyFD, "../../Configs/Scheduler.cfg", IN_MODIFY);	//Watch the file and send an event when the file is modified
+																						//the event will be catched using a select in the "server()"
+																						//function (ServerThread.c file)
 	newQueue = list_create();
 	readyQueue = list_create();
 	blockedQueue = list_create();
@@ -130,15 +143,34 @@ void initializeVariables()
 	connectedCPUs = list_create();
 	ioReadyQueue = list_create();
 
+	fileTable = dictionary_create();
+	semaphoreList = dictionary_create();
+
 	sem_init(&shortTermScheduler, 0, 0);
 	sem_init(&longTermScheduler, 0, 0);
 	sem_init(&schedulerNotRunning, 0, 1);
 
-	consoleLog = init_log(PATH_LOG, "Consola S-AFA", false, LOG_LEVEL_INFO);
-	schedulerLog = init_log(PATH_LOG, "Proceso S-AFA", true, LOG_LEVEL_INFO);
-	config = getConfigs();
+	consoleLog = init_log("../../Logs/S-AFA_Consola.log", "Consola S-AFA", false, LOG_LEVEL_INFO);
+	schedulerLog = init_log("../../Logs/S-AFA_Planif.log", "Proceso S-AFA", true, LOG_LEVEL_INFO);
 
-	pthread_attr_t* threadAttributes;
+	int32_t result = getConfigs();
+
+	if(result < 0)
+	{
+		if(result == MALLOC_ERROR)
+		{
+			log_error(schedulerLog, "Se aborta el proceso por un error de malloc al intentar obtener las configuraciones...\n");
+		}
+		else if (result == CONFIG_PROPERTY_NOT_FOUND)
+		{
+			log_error(schedulerLog, "Se aborta el proceso debido a que no se encontro una propiedad requerida en el archivo de configuracion...\n");
+		}
+
+		log_error(consoleLog, "Ocurrio un error al intentar obtener los datos del archivo de configuracion. El proceso sera abortado...\n");
+		exit(CONFIG_LOAD_ERROR);
+	}
+
+	pthread_attr_t* threadAttributes = NULL;
 	pthread_attr_init(threadAttributes);
 	pthread_attr_setdetachstate(threadAttributes, PTHREAD_CREATE_DETACHED);
 
@@ -159,6 +191,8 @@ int main(void)
 	log_info(schedulerLog, "Inicio del proceso\n");
 
 	console();
+
+	free(config.schedulingAlgorithm);
 
 	exit(EXIT_SUCCESS);
 }
