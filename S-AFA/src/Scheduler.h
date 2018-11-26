@@ -70,7 +70,10 @@ typedef struct
 	uint32_t cpuId;
 	bool isFree;
 	uint32_t currentProcess; //the process that a cpu is executing; 0 if it is free
-	uint32_t socket;
+	uint32_t clientSocket;
+	uint32_t serverSocket;
+	uint32_t serverPort;
+	char* serverIp;
 	//maybe new fields?
 } cpu_t;
 
@@ -168,6 +171,7 @@ void closeSocketAndRemoveCPU(uint32_t);
 void checkAndFreeProcessFiles(uint32_t);
 void checkAndFreeProcessSemaphores(uint32_t);
 int32_t send_int_with_delay(uint32_t, uint32_t);
+void freeCpuElement(cpu_t*);
 
 //Algorithms
 void roundRobinScheduler();

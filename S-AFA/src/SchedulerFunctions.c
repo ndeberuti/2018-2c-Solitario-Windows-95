@@ -55,7 +55,7 @@ int32_t getConfigs()
 	}
 	else
 	{
-		log_error(schedulerLog, "No  se  definio ninguna propiedad para el 'Puerto' en el archivo de configuracion\n");
+		log_error(schedulerLog, "No se definio ninguna propiedad para el 'Puerto' en el archivo de configuracion\n");
 		free(configurationPath);
 		config_destroy(configFile);
 		return CONFIG_PROPERTY_NOT_FOUND;
@@ -413,16 +413,16 @@ void executeProcess(PCB_t* process, cpu_t* selectedCPU)
 
 	if(!process->wasInitialized)
 	{
-		send_int_with_delay(selectedCPU->socket, INITIALIZE_PROCESS);
+		send_int_with_delay(selectedCPU->clientSocket, INITIALIZE_PROCESS);
 		taskMessage = "inicializar";
 	}
 	else
 	{
-		send_int_with_delay(selectedCPU->socket, EXECUTE_PROCESS);
+		send_int_with_delay(selectedCPU->clientSocket, EXECUTE_PROCESS);
 		taskMessage = "ejecutar";
 	}
 
-	send_PCB_with_delay(process, selectedCPU->socket);
+	send_PCB_with_delay(process, selectedCPU->clientSocket);
 
 	log_info(schedulerLog, "El proceso con id %d fue enviado para %s en la CPU con id %d\n", taskMessage, process->pid,  selectedCPU->cpuId);
 
@@ -499,7 +499,7 @@ void closeSocketAndRemoveCPU(uint32_t cpuSocket)
 
 	bool _cpu_has_given_socket(cpu_t* cpu)
 	{
-		return cpu->socket == cpuSocket;
+		return cpu->clientSocket == cpuSocket;
 	}
 
 	pthread_mutex_lock(&cpuListMutex);

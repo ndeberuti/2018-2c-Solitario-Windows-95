@@ -35,6 +35,9 @@ enum tareas
 
 	//DMA-Scheduler Tasks
 	UNLOCK_PROCESS = 26,	//The DMA module informs the scheduler it finished sending a process' data to memory
+
+	//Misc messages
+	MESSAGE_RECEIVED = 27
 };
 
 enum exit_codes

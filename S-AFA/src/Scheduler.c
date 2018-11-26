@@ -150,8 +150,8 @@ void initializeVariables()
 	sem_init(&longTermScheduler, 0, 0);
 	sem_init(&schedulerNotRunning, 0, 1);
 
-	consoleLog = init_log("../../Logs/S-AFA_Consola.log", "Consola S-AFA", false, LOG_LEVEL_INFO);
-	schedulerLog = init_log("../../Logs/S-AFA_Planif.log", "Proceso S-AFA", true, LOG_LEVEL_INFO);
+	consoleLog = init_log("../../Logs/S-AFA_Consola.log", "Consola S-AFA", true, LOG_LEVEL_INFO);
+	schedulerLog = init_log("../../Logs/S-AFA_Planif.log", "Proceso S-AFA", false, LOG_LEVEL_INFO);
 
 	int32_t result = getConfigs();
 
@@ -193,6 +193,8 @@ int main(void)
 	console();
 
 	free(config.schedulingAlgorithm);
+	list_destroy_and_destroy_elements(connectedCPUs, freeCpuElement);
+
 
 	exit(EXIT_SUCCESS);
 }

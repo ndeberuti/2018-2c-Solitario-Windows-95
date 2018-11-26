@@ -315,7 +315,7 @@ void terminateProcess(uint32_t processId)
 
 	if(cpu != NULL)	//If there is a CPU executing the given process, tell it to issue a kill request (so the CPU can finish properly)
 	{
-		if((nbytes = send_int_with_delay(cpu->socket, KILL_PROCESS_CPU)) < 0)
+		if((nbytes = send_int_with_delay(cpu->clientSocket, KILL_PROCESS_CPU)) < 0)
 		{
 			log_error(consoleLog, "Console - Error al indicar a la CPU que debe terminar un proceso\n");
 			return;

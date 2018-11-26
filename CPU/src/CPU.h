@@ -19,34 +19,43 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 #include "funciones/funciones.h"
-#include "commons/config.h"
+#include <commons/config.h>
 #include "servidor/servidor.h"
-
-// constantes
-char *PATH_LOG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/Logs/logCPU.txt";
-char *PATH_CONFIG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/CPU/config.txt";
+#include "enums.h"
 
 #define CONEXION_CPU 4
 
-// estructuras
-typedef struct {
-	char *IP_SAFA;
-	uint32_t PUERTO_SAFA;
-	char *IP_DIEGO;
-	uint32_t PUERTO_DIEGO;
-	char *IP_FM9;
-	uint32_t PUERTO_FM9;
-	uint32_t RETARDO;
+typedef struct
+{
+	char *schedulerIp;
+	uint32_t schedulerPort;
+	char *dmaIp;
+	uint32_t dmaPort;
+	char *memoryIp;
+	uint32_t memoryPort;
+	char *cpuIp;	  //This is used to tell the other modules (in the handshake) this module's ip/port, so they can connect to this module's server if the want to
+	uint32_t cpuPort; //(for example, the scheduler needs to connect to this module's server in order to send special requests, like killing a process in execution)
+	uint32_t executionDelay;
+	//
 } config_t;
 
-// variables
-t_log *log_cpu;
-config_t config;
-uint32_t safa;
-uint32_t diego;
-uint32_t fm9;
 
-// funciones
-config_t load_config();
+t_log *cpuLog;
+config_t config;
+uint32_t schedulerServerSocket;
+uint32_t dmaServerSocket;
+uint32_t memoryServerSocket;
+uint32_t schedulerClientSocket;
+fd_set master; //Master File Descriptors Set
+pthread_t serverThread;
+
+//CPU.c Functions
+void initializeVariables();
+
+//ServerThread.c functions
+void server();
+int32_t handshakeProcess(uint32_t);
+void connectToServers();
+int32_t getConfigs();
 
 #endif /* SRC_CPU_H_ */

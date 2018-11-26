@@ -130,27 +130,11 @@ void moduleHandler(uint32_t command, uint32_t socket)
 	if(command == NEW_DMA_CONNECTION)
 	{
 						  
-			log_info(consoleLog, "Nueva conexion desde el DMA\n");
-			dmaSocket = socket;
+		log_info(consoleLog, "Nueva conexion desde el DMA\n");
+		dmaSocket = socket;
 	}
 	else if(command == NEW_CPU_CONNECTION)
-	{
-			log_info(consoleLog, "Nueva conexion de CPU\n");
-
-			cpu_t* cpuConnection = calloc(1, sizeof(cpu_t));
-			cpuConnection->cpuId = ++totalConnectedCpus;
-			cpuConnection->currentProcess = 0;
-			cpuConnection->isFree = true;
-			cpuConnection->socket = socket;
-
-			pthread_mutex_lock(&cpuListMutex);
-
-			list_add(connectedCPUs, cpuConnection);
-
-			checkAndInitializeProcesses(cpuConnection); //check if there are any processes left to inialize, and do it with the new CPU
-
-			pthread_mutex_unlock(&cpuListMutex);
-	}
+		handleCpuConnection(socket);
 	else if((command >= LIM_INF_TAREAS_CPU) && (command <= LIM_SUP_TAREAS_CPU)) //The CPU task codes range from 3 to 12
 		cpuTaskHandler(command, socket);
 
@@ -373,7 +357,7 @@ cpu_t* findCPUBySocket(uint32_t socket)
 {
 	bool _cpu_has_given_socket(cpu_t* cpu)
 	{
-		return cpu->socket == socket;
+		return cpu->clientSocket == socket;
 	}
 
 	return (cpu_t*) list_find(connectedCPUs, _cpu_has_given_socket);
@@ -878,4 +862,67 @@ void freeCPUBySocket(uint32_t socket)
 
 	cpuToFree->currentProcess = 0;
 	cpuToFree->isFree = true;
+}
+
+void handleCpuConnection(uint32_t socket)
+{
+	int32_t nbytes;
+	char* cpuIp;
+	uint32_t cpuPort;
+
+	log_info(consoleLog, "Nueva conexion de CPU\n");
+
+	if((nbytes = send_int_with_delay(socket, MESSAGE_RECEIVED)) < 0)
+	{
+		log_error(consoleLog, "ServerThread (handleCpuConnection) - Error al indicar a la CPU que el primer mensaje de handshake fue recibido\n");
+		return;
+		//TODO (Optional) - Send Error Handling
+	}
+
+	if((nbytes = receive_string(socket, &cpuIp)) <= 0)
+	{
+		if(nbytes == 0)
+			log_error(consoleLog, "ServerThread (checkIfFileOpen) - La CPU fue desconectada al intentar recibir su direccion ip\n");
+		else
+			log_error(consoleLog, "ServerThread (checkIfFileOpen) - Error al recibir la direccion ip de la CPU\n");
+
+		close(socket);
+		FD_CLR(socket, &master);
+		return;
+	}
+
+	if((nbytes = receive_int(socket, &cpuPort)) <= 0)
+	{
+		if(nbytes == 0)
+			log_error(consoleLog, "ServerThread (checkIfFileOpen) - La CPU fue desconectada al intentar recibir su puerto de servidor\n");
+		else
+			log_error(consoleLog, "ServerThread (checkIfFileOpen) - Error al recibir el puerto de servidor de la CPU\n");
+
+		close(socket);
+		FD_CLR(socket, &master);
+		return;
+	}
+
+	if((nbytes = send_int_with_delay(socket, MESSAGE_RECEIVED)) < 0)
+	{
+		log_error(consoleLog, "ServerThread (handleCpuConnection) - Error al indicar a la CPU que el primer mensaje de handshake fue recibido\n");
+		return;
+		//TODO (Optional) - Send Error Handling
+	}
+
+	cpu_t* cpuConnection = calloc(1, sizeof(cpu_t));
+	cpuConnection->cpuId = ++totalConnectedCpus;
+	cpuConnection->currentProcess = 0;
+	cpuConnection->isFree = true;
+	cpuConnection->clientSocket = socket;
+	cpuConnection->serverPort = cpuPort;
+	cpuConnection->serverIp = cpuIp;
+	cpuConnection->serverSocket = 0;
+
+	pthread_mutex_lock(&cpuListMutex);
+
+	list_add(connectedCPUs, cpuConnection);
+
+	checkAndInitializeProcesses(cpuConnection); //check if there are any processes left to inialize, and do it with the new CPU
+	pthread_mutex_unlock(&cpuListMutex);
 }
