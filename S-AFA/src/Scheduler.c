@@ -129,6 +129,7 @@ void initializeVariables()
 	killThreads = false;
 	STSAlreadyExecuting = false;
 	LTSAlreadyExecuting = false;
+	terminateModule = false;
 
 	//Inotify
 	configFileInotifyFD = inotify_init();
@@ -181,6 +182,25 @@ void initializeVariables()
 	pthread_create(ltsThread, threadAttributes, (void *)longTermSchedulerThread, NULL);
 }
 
+void freeResources()
+{
+	free(config.schedulingAlgorithm);
+
+	list_destroy_and_destroy_elements(connectedCPUs, freeCpuElement);
+	list_destroy_and_destroy_elements(newQueue, freePCB);
+	list_destroy_and_destroy_elements(readyQueue, freePCB);
+	list_destroy_and_destroy_elements(blockedQueue, freePCB);
+	list_destroy_and_destroy_elements(executionQueue, freePCB);
+	list_destroy_and_destroy_elements(finishedQueue, freePCB);
+	list_destroy_and_destroy_elements(ioReadyQueue, freePCB);
+
+	dictionary_destroy_and_destroy_elements(fileTable, freeFileTableData);
+	dictionary_destroy_and_destroy_elements(fileTable, freeSemaphoreListData);
+
+	log_destroy(consoleLog);
+	log_destroy(schedulerLog);
+}
+
 int main(void)
 {
 	system("clear");
@@ -192,9 +212,7 @@ int main(void)
 
 	console();
 
-	free(config.schedulingAlgorithm);
-	list_destroy_and_destroy_elements(connectedCPUs, freeCpuElement);
-
+	freeResources();
 
 	exit(EXIT_SUCCESS);
 }

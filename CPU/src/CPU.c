@@ -9,7 +9,8 @@
 void initializeVariables()
 {
 	cpuLog = init_log("../../Logs/CPU.log", "Proceso CPU", true, LOG_LEVEL_INFO);
-	log_info(cpuLog, "Inicio del proceso");
+
+	terminateModule = false;
 
 	getConfigs();
 
@@ -24,6 +25,38 @@ void initializeVariables()
 
 void executeProcesses()
 {
+	int32_t nbytes;
+	uint32_t task;
+
+	while(!terminateModule)
+	{
+		if((nbytes = receive_int(schedulerServerSocket, &task)) <= 0)
+		{
+			if(nbytes == 0)
+				log_error(cpuLog, "EL planificador fue desconectado al intentar recibir una tarea del mismo\n");
+			if(nbytes < 0)
+				log_error(cpuLog, "Error al intentar recibir una tarea del planificador\n");
+
+			log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+			exit(EXIT_FAILURE);
+		}
+
+		switch(task)
+		{
+			case INITIALIZE_PROCESS:
+				initializeProcess();
+			break;
+
+			case EXECUTE_PROCESS:
+				executeProcess();
+			break;
+
+			default:
+				log_error(cpuLog, "Se recibio un id de tarea incorrecto del planificador!\n");
+			break;
+		}
+	}
+
 	//TODO - main execution loop
 	//should use a "while(true)" wait for the scheduler to tell this module to execute or initialize a process and, in case the process is
 	//being executed, it should stop reading instructions from the script the memory sent if the serverThread set a boolean variable
@@ -37,6 +70,8 @@ int main(void)
 	puts("PROCESO CPU\n");
 
 	initializeVariables();
+
+	log_info(cpuLog, "Inicio del proceso\n");
 
 	executeProcesses();
 

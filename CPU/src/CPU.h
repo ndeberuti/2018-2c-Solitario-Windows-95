@@ -40,12 +40,13 @@ typedef struct
 } config_t;
 
 
-t_log *cpuLog;
+t_log* cpuLog;
 config_t config;
-uint32_t schedulerServerSocket;
+uint32_t schedulerServerSocket;	//The one obtained when this module connects to the scheduler
 uint32_t dmaServerSocket;
 uint32_t memoryServerSocket;
-uint32_t schedulerClientSocket;
+uint32_t schedulerClientSocket;	//The one obtained when the scheduler connects to this module's server
+bool terminateModule;
 fd_set master; //Master File Descriptors Set
 pthread_t serverThread;
 

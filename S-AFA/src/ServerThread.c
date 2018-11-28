@@ -34,7 +34,7 @@ void server()
 		fdmax = configFileInotifyFD;
 
 	//Main loop
-	while (true)
+	while (!terminateModule)
 	{
 		read_fds = master; //Copy the master set
 		if (select(fdmax + 1, &read_fds, NULL, NULL, NULL) == -1)

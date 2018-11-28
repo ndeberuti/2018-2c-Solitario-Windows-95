@@ -125,6 +125,7 @@ t_dictionary* semaphoreList;
 bool killThreads;
 bool STSAlreadyExecuting;
 bool LTSAlreadyExecuting;
+bool terminateModule;
 sem_t shortTermScheduler;
 sem_t schedulerNotRunning;
 sem_t longTermScheduler;
@@ -172,6 +173,9 @@ void checkAndFreeProcessFiles(uint32_t);
 void checkAndFreeProcessSemaphores(uint32_t);
 int32_t send_int_with_delay(uint32_t, uint32_t);
 void freeCpuElement(cpu_t*);
+void freePCB(PCB_t*);
+void freeFileTableData(fileTableData*);
+void freeSemaphoreListData(semaphoreData*);
 
 //Algorithms
 void roundRobinScheduler();

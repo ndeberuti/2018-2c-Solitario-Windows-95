@@ -1,5 +1,5 @@
 #include "Scheduler.h"
-
+#include <sys/mut.h>
 
 void console()
 {
@@ -7,7 +7,8 @@ void console()
 	char* token;
 	console_t* console;
 
-	while (true)
+
+	while (!terminateModule)
 	{
 		line = readline("S-AFA> ");
 
@@ -21,6 +22,7 @@ void console()
 			{
 				console->command = strdup(strtok(line, " "));
 				console->paramsQty = 0;
+				string_to_lower(console->command);
 
 				while (console->paramsQty < MAX_PARAMS && (token = strtok(NULL, " ")) != NULL)
 					console->param[console->paramsQty++] = strdup(token);
@@ -68,6 +70,11 @@ void console()
 						getSystemMetrics();
 					else
 						log_info(consoleLog, "%s: numero incorrecto de argumentos. Recuerde que puede ingresar solo un id de proceso o ningun argumento\n", console->command);
+				}
+				else if(str_eq(console->command, "salir"))
+				{
+					terminateModule = true;
+					//Should send a message to all the CPUs and the DMA to tell them this process will exit, if there are any modules connected to this one
 				}
 				else
 					print_c(consoleLog, "%s: Comando incorrecto\n", console->command);
@@ -315,7 +322,7 @@ void terminateProcess(uint32_t processId)
 
 	if(cpu != NULL)	//If there is a CPU executing the given process, tell it to issue a kill request (so the CPU can finish properly)
 	{
-		if((nbytes = send_int_with_delay(cpu->clientSocket, KILL_PROCESS_CPU)) < 0)
+		if((nbytes = send_int_with_delay(cpu->serverSocket, KILL_PROCESS_CPU)) < 0)
 		{
 			log_error(consoleLog, "Console - Error al indicar a la CPU que debe terminar un proceso\n");
 			return;

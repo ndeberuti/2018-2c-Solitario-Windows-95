@@ -219,12 +219,12 @@ void connectToServers()
 		log_info(cpuLog, "Conexion con S-AFA exitosa");
 	}
 
-	if ((socket = connect_server(config.dmaIp, config.dmaPort, -1, cpuLog)) == 0)
+	if ((socket = connect_server(config.dmaIp, config.dmaPort, NEW_CPU_CONNECTION, cpuLog)) == 0)
 	{
 		log_error(cpuLog, "Error al conectar con El Diego");
 		exit(EXIT_FAILURE);
 	}
-	else
+/*	else
 	{
 		if((result = handshakeProcess(socket)) < 0)		//Error receiving handshake messages (for example, a recv call took too long to receive messages)
 		{
@@ -235,14 +235,18 @@ void connectToServers()
 		dmaServerSocket = socket;
 
 		log_info(cpuLog, "Conexion con El Diego exitosa");
-	}
+	}*/
 
-	if ((socket = connect_server(config.memoryIp, config.memoryPort, -1, cpuLog)) == 0)
+	log_info(cpuLog, "Conexion con El Diego exitosa");
+
+	if ((socket = connect_server(config.memoryIp, config.memoryPort, NEW_CPU_CONNECTION, cpuLog)) == 0)
 	{
 		log_error(cpuLog, "Error al conectar con FM9");
 		exit(EXIT_FAILURE);
 	}
-	else
+
+	log_info(cpuLog, "Conexion con FM9 exitosa");
+/*	else
 	{
 		if((result = handshakeProcess(socket)) < 0)		//Error receiving handshake messages (for example, a recv call took too long to receive messages)
 		{
@@ -253,5 +257,20 @@ void connectToServers()
 			memoryServerSocket = socket;
 
 			log_info(cpuLog, "Conexion con FM9 exitosa");
-		}
+		}*/
+}
+
+void executeProcess()
+{
+	//TODO - Execute process - See the scheduler module to check the messages it needs to receive
+	//		 Should receive a pcb, ask the memory for the script for that pid and then parse the script lines into a list, and set an index
+	//		 variable from the pcb program counter; also use a variable to count how many instructions were executed and, if the execution
+	//		 ends without error (by quantum end or a blocking call), the pcb's program counter, quantum and executed instuctions should be updated
+	//		 that is to avoid losing information in case an error occurs (because all the instructions executed should be rollbacked in case of an error)
+
+}
+
+void initializeProcess()
+{
+	//TODO - Receive pid; check the scheduler to see what messages it needs to send and receive, and what to do with this part
 }

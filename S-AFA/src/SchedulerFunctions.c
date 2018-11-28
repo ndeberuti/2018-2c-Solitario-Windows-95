@@ -630,3 +630,28 @@ int32_t send_PCB_with_delay(PCB_t* pcb, uint32_t socket)
 
 	return nbytes;
 }
+
+void freeCpuElement(cpu_t* cpu)
+{
+	free(cpu->serverIp);
+	free(cpu);
+}
+
+void freePCB(PCB_t* pcb)
+{
+	free(pcb->scriptName);
+	free(pcb);
+}
+
+void freeFileTableData(fileTableData* data)
+{
+	list_destroy(data->processesWaitingForFile);
+	free(data);
+}
+
+void freeSemaphoreListData(semaphoreData* data)
+{
+	list_destroy(data->processesUsingTheSemaphore);
+	list_destroy(data->waitingProcesses);
+	free(data);
+}
