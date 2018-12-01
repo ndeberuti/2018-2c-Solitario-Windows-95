@@ -134,6 +134,7 @@
 	void abrir_linea(int socket);
 	void modificar_linea(int socket);
 	void flush (int socket);
+	void dump(int pid);
 
 	void setear_paginacion_invertida();
 	void setear_segmentacion_paginada();
@@ -161,23 +162,24 @@
 
 //SEGMENTACION SIMPLE
 	t_list* tabla_de_segmentos;
-	t_list* tabla_administrativa_segmentacion;
+
 
 
 
 
 	int entra_en_memoria(int cantidad_lineas);
 
-	segmento_offset_t* buscar_segmento_vacio(int cantidad_lineas);
+	void buscar_segmento_vacio(int cantidad_lineas, segmento_offset_t* segmento);
 
 
 	void setear_segmentacion_simple();
 	void inicializar_memoria_segmentacion_simple();
 
-	void guardar_proceso_segmentacion_simple(int pid ,int cantidad_lineas, char* buffer_recepcion);
+	int guardar_proceso_segmentacion_simple(int pid ,int cantidad_lineas, char* buffer_recepcion);
 	void abrir_linea_segmentacion_simple(int socket_diego, int pid, int numero_linea);
 	void modificar_linea_segmentacion_simple(int socket_cpu,int pid, int numero_linea, char* linea_nueva);
 	void flush_segmentacion_simple(int socket_diego,int pid);
+	void dump_segmentacion_simple(int pid);
 
 	segmento_tabla_t* obtener_segmento_linea(int id, int numero_linea);
 	char* buscar_proceso_segmentacion_simple(int pid);
@@ -229,7 +231,7 @@
 	int solicitarLinea(int unPid, int pagina, int offset, int tamanio, char *buffer);
 	int hash(int unPid, int pagina) ;
 	int asignarPaginas(int pid, int paginas,char *buffer);
-	void crearPid(int pid,int lineas,char *buffer);
+	int crearPid(int pid,int lineas,char *buffer);
 	int eliminarPid(int pid);
 	void eliminarPagina(int unPid, int nroPag);
 	void crearMemoriaPrincipal(int frames,int tamanio_pagina);
@@ -240,6 +242,9 @@
 
 	//SEGMENTACION PAGINADA
 
+	t_list* tabla_de_procesos_SP;
+	t_list* tabla_de_segmentos_SP;
+	t_list* tabla_de_paginas_SP;
 
 
 
