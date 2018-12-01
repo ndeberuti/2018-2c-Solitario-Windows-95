@@ -141,13 +141,16 @@ void command_handler(uint32_t command, uint32_t socket) {
 		guardar_proceso(socket);
 		break;
 	case ABRIR_LINEA:
-		log_info(log_consola, ".");
+		log_info(log_consola, "Abriendo linea");
 		abrir_linea(socket);
 		break;
 	case MODIFICAR_LINEA:
 		modificar_linea(socket);
-		log_info(log_consola, ".");
-
+		log_info(log_consola, "Modificando linea");
+		break;
+	case FLUSH:
+			flush(socket);
+			log_info(log_consola, "Flushing");
 		break;
 	default:
 		log_warning(log_consola, "%d: Comando recibido incorrecto", command);
@@ -332,6 +335,24 @@ void modificar_linea(int socket_cpu){
 free(linea_tratada);
 }
 
+void flush(int socket_diego){
+
+	int pid = recibir_int(socket_diego);
+
+	if(strcmp("SEG", config.MODO)== 0){
+				flush_segmentacion_simple(socket_diego, pid);
+				}
+				else if(strcmp("TPI", config.MODO)== 0){
+			//TODO		flush_paginacion(socket_diego, pid);
+				}
+				else if(strcmp("SPI", config.MODO)== 0){
+				//TODO  flush_segmentacion_paginada(socket_diego,pid);
+				}
+				else {
+				//TODO  log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
+				}
+
+}
 
 int recibir_int(int socket){
 int buffer;
@@ -576,14 +597,14 @@ void modificar_linea_segmentacion_simple(int socket_cpu,int pid,int numero_linea
 }
 
 
-segmento_offset_t* obtener_segmento_linea(int pid, int numnero_linea){
+segmento_offset_t* obtener_segmento_linea(int pid, int numero_linea){
 	segmento_tabla_t* segmento;
 	t_list* lista_busqueda_segmento;
 
 	bool es_id(segmento_tabla_t* entrada_segmento){
 
 
-							return entrada_segmento->id == id;
+							return entrada_segmento->id == pid;
 						}
 
 
@@ -596,37 +617,21 @@ segmento_offset_t* obtener_segmento_linea(int pid, int numnero_linea){
 
 //--
 void liberar_segmento(int pid, int base, int limite){
-	int id_segmento;
 
-	entrada_administrativa_segmentacion_t* entrada_admin;
 
 
 	liberar_bitarray(bitarray_memoria, base, limite);
 
 
-	bool id_pid(entrada_administrativa_segmentacion_t* entrada){
+	bool es_pid(segmento_tabla_t* entrada){
 
-				return entrada_admin->pid == pid;
+				return entrada->id == pid;
 			}
 
 
-
-	entrada_admin = list_find(tabla_administrativa_segmentacion,(void*)id_pid);
-	id_segmento = entrada_admin->id;
-	free(entrada_admin);
-
-	bool es_pid(segmento_tabla_t* entrada_segmento){
+	list_remove_by_condition(tabla_de_segmentos,(void*) es_pid);
 
 
-						return entrada_segmento->id == id_segmento;
-					}
-
-
-
-	list_remove_by_condition(tabla_de_segmentos,(void*) id_pid);
-	list_remove_by_condition(tabla_administrativa_segmentacion, (void*)es_pid);
-
-	liberar_bitarray(bitarray_memoria, base, limite);
 }
 
 

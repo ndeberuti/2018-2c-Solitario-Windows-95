@@ -42,6 +42,7 @@
 	#define MODIFICAR_LINEA 8
 	#define OK 10
 	#define ERROR 11
+	#define FLUSH 12
 
 	//ESTRUCTURAS
 	typedef struct {
@@ -63,11 +64,6 @@
 
 
 
-
-	typedef struct{
-		int pid;
-		int id;
-	}entrada_administrativa_segmentacion_t;
 
 	typedef struct {
 
@@ -109,6 +105,7 @@
 
 	pthread_t thread_consola;
 	uint32_t diego;
+	uint32_t cpu;
 
 	void* buffer_envio;
 
