@@ -17,5 +17,7 @@
 t_log *init_log(char *file, char *program_name, bool is_active_console, t_log_level level);
 bool str_eq(const char *s1, const char *s2);
 void print_c(t_log *log_file, char *message_template, ...);
+bool isDirectoryExists(const char *path);
+bool isFileExists(const char *path);
 
 #endif

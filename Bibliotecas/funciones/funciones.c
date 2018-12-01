@@ -20,3 +20,19 @@ void print_c(t_log *log_file, char *message_template, ...) {
 	printf("%s\n", message);
 	free(message);
 }
+
+bool isDirectoryExists(const char *path) {
+    struct stat stats;
+    stat(path, &stats);
+    return S_ISDIR(stats.st_mode);
+}
+
+bool isFileExists(const char *path) {
+	FILE *fptr = fopen(path, "r");
+
+	if (fptr == NULL)
+		return false;
+
+	fclose(fptr);
+	return true;
+}

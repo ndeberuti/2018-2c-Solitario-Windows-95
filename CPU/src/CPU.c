@@ -6,63 +6,74 @@
  */
 #include "CPU.h"
 
-int main(void) {
+void initializeVariables()
+{
+	cpuLog = init_log("../../Logs/CPU.log", "Proceso CPU", true, LOG_LEVEL_INFO);
+
+	terminateModule = false;
+
+	getConfigs();
+
+	pthread_attr_t* threadAttributes = NULL;
+	pthread_attr_init(threadAttributes);
+	pthread_attr_setdetachstate(threadAttributes, PTHREAD_CREATE_DETACHED);
+
+	pthread_create(&serverThread, threadAttributes, (void *)server, NULL);
+
+	connectToServers();
+}
+
+void executeProcesses()
+{
+	int32_t nbytes;
+	uint32_t task;
+
+	while(!terminateModule)
+	{
+		if((nbytes = receive_int(schedulerServerSocket, &task)) <= 0)
+		{
+			if(nbytes == 0)
+				log_error(cpuLog, "EL planificador fue desconectado al intentar recibir una tarea del mismo\n");
+			if(nbytes < 0)
+				log_error(cpuLog, "Error al intentar recibir una tarea del planificador\n");
+
+			log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+			exit(EXIT_FAILURE);
+		}
+
+		switch(task)
+		{
+			case INITIALIZE_PROCESS:
+				initializeProcess();
+			break;
+
+			case EXECUTE_PROCESS:
+				executeProcess();
+			break;
+
+			default:
+				log_error(cpuLog, "Se recibio un id de tarea incorrecto del planificador!\n");
+			break;
+		}
+	}
+
+	//TODO - main execution loop
+	//should use a "while(true)" wait for the scheduler to tell this module to execute or initialize a process and, in case the process is
+	//being executed, it should stop reading instructions from the script the memory sent if the serverThread set a boolean variable
+	//telling this main thread to kil or block (one for each case) the process in execution
+
+}
+
+int main(void)
+{
 	system("clear");
 	puts("PROCESO CPU\n");
 
-	log_cpu = init_log(PATH_LOG, "Proceso CPU", true, LOG_LEVEL_INFO);
-	log_info(log_cpu, "Inicio del proceso");
+	initializeVariables();
 
-	config = load_config();
+	log_info(cpuLog, "Inicio del proceso\n");
 
-	if ((safa = connect_server(config.IP_SAFA, config.PUERTO_SAFA, CONEXION_CPU, log_cpu)) == 0) {
-		log_error(log_cpu, "Error al conectar con S-AFA");
-		exit(EXIT_FAILURE);
-	}
-
-	log_info(log_cpu, "Conexion con S-AFA exitosa");
-
-	if ((diego = connect_server(config.IP_DIEGO, config.PUERTO_DIEGO, CONEXION_CPU, log_cpu)) == 0) {
-		log_error(log_cpu, "Error al conectar con El Diego");
-		exit(EXIT_FAILURE);
-	}
-
-	log_info(log_cpu, "Conexion con El Diego exitosa");
-
-	if ((fm9 = connect_server(config.IP_FM9, config.PUERTO_FM9, CONEXION_CPU, log_cpu)) == 0) {
-		log_error(log_cpu, "Error al conectar con FM9");
-		exit(EXIT_FAILURE);
-	}
-
-	log_info(log_cpu, "Conexion con FM9 exitosa");
-
-	while(true);
+	executeProcesses();
 
 	exit(EXIT_SUCCESS);
-}
-
-config_t load_config() {
-	t_config *config = config_create(PATH_CONFIG);
-
-	config_t miConfig;
-	miConfig.IP_SAFA = strdup(config_get_string_value(config, "IP_SAFA"));
-	miConfig.PUERTO_SAFA = config_get_int_value(config, "PUERTO_SAFA");
-	miConfig.IP_DIEGO = strdup(config_get_string_value(config, "IP_DIEGO"));
-	miConfig.PUERTO_DIEGO = config_get_int_value(config, "PUERTO_DIEGO");
-	miConfig.IP_FM9 = strdup(config_get_string_value(config, "IP_FM9"));
-	miConfig.PUERTO_FM9 = config_get_int_value(config, "PUERTO_FM9");
-	miConfig.RETARDO = config_get_int_value(config, "RETARDO");
-
-	log_info(log_cpu, "---- Configuracion ----");
-	log_info(log_cpu, "IP_SAFA = %s", miConfig.IP_SAFA);
-	log_info(log_cpu, "PUERTO_SAFA = %d", miConfig.PUERTO_SAFA);
-	log_info(log_cpu, "IP_DIEGO = %s", miConfig.IP_DIEGO);
-	log_info(log_cpu, "PUERTO_DIEGO = %d", miConfig.PUERTO_DIEGO);
-	log_info(log_cpu, "IP_FM9 = %s", miConfig.IP_FM9);
-	log_info(log_cpu, "PUERTO_FM9 = %d", miConfig.PUERTO_FM9);
-	log_info(log_cpu, "RETARDO = %d milisegundos", miConfig.RETARDO);
-	log_info(log_cpu, "-----------------------");
-
-	config_destroy(config);
-	return miConfig;
 }
