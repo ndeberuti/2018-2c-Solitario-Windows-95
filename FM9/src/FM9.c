@@ -32,7 +32,7 @@ int main(void) {
 
 	exit(EXIT_SUCCESS);
 	
-	//free();
+	//TODO free() variables globales;
 
 
 }
@@ -253,7 +253,9 @@ void guardar_proceso(int socket_diego){
 		guardar_proceso_segmentacion_simple(pid ,cantidad_lineas,buffer_recepcion);
 		}
 		else if(strcmp("TPI", config.MODO)== 0){
-		//TODO guardar_proceso_paginas_invertidas(pid ,longitud_paquete,buffer_recepcion);
+
+		crearPid(pid,cantidad_lineas,buffer_recepcion); 
+
 		}
 		else if(strcmp("SPI", config.MODO)== 0){
 		//TODO guardar_proceso_segmentacion_paginada(pid ,longitud_paquete, buffer_recepcion);
@@ -261,7 +263,8 @@ void guardar_proceso(int socket_diego){
 		else {
 			log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
 		}
-
+	//TODO enviar resultado diego
+	free(buffer_recepcion);
 }
 
 void abrir_linea(int socket_cpu){
@@ -275,32 +278,17 @@ void abrir_linea(int socket_cpu){
 			abrir_linea_segmentacion_simple(socket_cpu, pid, numero_linea);
 			}
 			else if(strcmp("TPI", config.MODO)== 0){
-				int resto=0;
-				int pagina = numero_linea / CANTIDADLINEASxPAG ;
-				resto = numero_linea % CANTIDADLINEASxPAG;
-				if (resto >0){
-					pagina=pagina+1;
-				}				
-				int offset = numero_linea * config.MAX_LINEA;
-				int tamanio = config.MAX_LINEA;//yoha
-				char* buffer = malloc(tamanio); //TODO VALGRIND
-				if(solicitarLinea(pid, pagina, offset, tamanio, buffer)){
-					send(socket_cpu, config.MAX_LINEA, sizeof(int), MSG_WAITALL);
-					send(socket_cpu, buffer, config.MAX_LINEA, MSG_WAITALL);
-				}else{
-					//send(socket_cpu,FALLO_DE_MEMORIA);
-				}
-				free(buffer);
 			
-			//TODO devolver_proceso_paginas_invertidas(socket_diego, pid);
+			abrir_linea_paginas_invertidas(socket_cpu, pid, numero_linea);
 			
 			}
 			else if(strcmp("SPI", config.MODO)== 0){
 			//TODO  devolver_proceso_segmentacion_paginada(socket_diego, pid);
 			}
 			else {
-			//TODO  log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
+			log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
 			}
+	//TODO enviar resultado diego
 
 
 }
@@ -323,14 +311,15 @@ void modificar_linea(int socket_cpu){
 			modificar_linea_segmentacion_simple(socket_cpu, pid,numero_linea, linea_tratada);
 			}
 			else if(strcmp("TPI", config.MODO)== 0){
-			//TODO devolver_proceso_paginas_invertidas(socket_diego, pid);
+			modificar_linea_paginas_invertidas(socket_cpu, pid,numero_linea, linea_tratada);
 			}
 			else if(strcmp("SPI", config.MODO)== 0){
 			//TODO  devolver_proceso_segmentacion_paginada(socket_diego, pid);
 			}
 			else {
-			//TODO  log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
+			 log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
 			}
+	//TODO enviar resultado diego
 
 free(linea_tratada);
 }
@@ -549,7 +538,7 @@ void abrir_linea_segmentacion_simple(int socket_cpu,int pid,int numero_linea){
 	resultado = OK ;
 
 	send(socket_cpu, &resultado, sizeof(int), MSG_WAITALL);
-	send(socket_cpu, config.MAX_LINEA, sizeof(int), MSG_WAITALL);
+	send(socket_cpu, &config.MAX_LINEA, sizeof(int), MSG_WAITALL);
 	send(socket_cpu, buffer_envio, config.MAX_LINEA, MSG_WAITALL);
 
 	}else{
@@ -567,8 +556,8 @@ void modificar_linea_segmentacion_simple(int socket_cpu,int pid,int numero_linea
 	int resultado;
 
 		bool es_pid(segmento_tabla_t* entrada){
-				segmento_tabla_t* segmento;
-						return segmento->id == pid;
+
+						return entrada->id == pid;
 
 			}
 
@@ -597,9 +586,9 @@ void modificar_linea_segmentacion_simple(int socket_cpu,int pid,int numero_linea
 }
 
 
-segmento_offset_t* obtener_segmento_linea(int pid, int numero_linea){
-	segmento_tabla_t* segmento;
-	t_list* lista_busqueda_segmento;
+segmento_tabla_t* obtener_segmento_linea(int pid, int numero_linea){
+	segmento_tabla_t* segmento_obtenido;
+
 
 	bool es_id(segmento_tabla_t* entrada_segmento){
 
@@ -608,12 +597,33 @@ segmento_offset_t* obtener_segmento_linea(int pid, int numero_linea){
 						}
 
 
-	segmento = list_find(tabla_de_segmentos, (void*) es_id);
+	segmento_obtenido = list_find(tabla_de_segmentos, (void*) es_id);
 
 
 
-	return segmento;
+	return segmento_obtenido;
 }
+
+void flush_segmentacion_simple(int socket_diego, int pid){
+	segmento_tabla_t* segmento;
+
+
+	bool es_id(segmento_tabla_t* entrada_segmento){
+
+
+								return entrada_segmento->id == pid;
+							}
+
+
+		segmento = list_find(tabla_de_segmentos, (void*) es_id);
+
+		char* buffer_envio = malloc(segmento-> limite * config.MAX_LINEA);
+
+		memcpy(buffer_envio, puntero_memoria_segmentada + (segmento->base * config.MAX_LINEA), (segmento->limite * config.MAX_LINEA));
+
+		// TODO send(socket_diego, )
+}
+
 
 //--
 void liberar_segmento(int pid, int base, int limite){
@@ -725,6 +735,7 @@ void crearMemoriaPrincipalPaginacion(int frames,int tamanio_pagina){
     int Cant_Total = MARCOS*MARCO_SIZE;
     memoria = malloc(sizeof(t_memoria_principal)+ESTRUCTURA_ADM_SIZE);
     memoria->memoria=malloc(Cant_Total);
+   //va a tirar el warning igual
     memoria->estructura_administrativa= memoria->memoria; // hito en la humanida'
     memoria->frames= memoria->memoria+(ESTRUCTURA_ADM_CANT_FRAMES*MARCO_SIZE);
 
@@ -834,13 +845,19 @@ int calcularPosicion(int frame){
 
 
 //Pedido de Apertura de Archivo por parte de DMA 
-void crearPid(int unPid, int paginas) {
-//devuelvo el handshake cuando este asigno las paginas
-	asignarPaginasIniciales(unPid, paginas);
+void crearPid(int unPid, int lineas, char * buffer) {
+	
+	int paginas = lineas / CANTIDADLINEASxPAG;
+	int resto = lineas % CANTIDADLINEASxPAG;
+	if (resto >0){
+		paginas = paginas+1;
+				}
+	
+	asignarPaginasIniciales(unPid, paginas,buffer);
 	
 }
 
-int asignarPaginasIniciales(int unPid, int paginas) {
+int asignarPaginasIniciales(int unPid, int paginas,char * buffer) {
 	int ok = 1;
 	int encontre_frame = 0;
 	int cont_frame = 0;
@@ -884,12 +901,12 @@ int asignarPaginasIniciales(int unPid, int paginas) {
 				}
 			}
 	}
-//TODO BERU DEFINIR INTERFAZ DE MENSAJE
-		/*	if (ok) {
-					enviarHS(socket, INI_PROG_EXITOSO);
-				} else {
-					enviarHS(socket, INI_PROG_FALLIDO);
-				}*/
+	
+	int paginaInicial = 0;
+	int offset = 0;
+	int tamanio = sizeof(buffer);
+	
+	almacenarLinea(unPid,paginaInicial, offset,tamanio, buffer);
 
 	return 1;
 }
@@ -911,7 +928,7 @@ int eliminarPid(int pid) {
 }
 
 
-//Cuando cpu envia a eliminar una pagina del heap.
+
 void eliminarPagina(int pid, int nroPag){
 
 	int i;
@@ -929,15 +946,44 @@ void eliminarPagina(int pid, int nroPag){
 			}
 		}
 
-		/*
-		if (encontro != 1 ){
-				enviarHS(socket,ELIMINAR_PAGINA_MEM_FALLIDO);//structHilo->fd
-			//	return -1; // TODO asignar define
-		}else{
-		    	enviarHS(socket,ELIMINAR_PAGINA_MEM_EXITO);
-		}*/
 }
 
+
+void abrir_linea_paginas_invertidas(int socket_cpu,int pid,int numero_linea){
+
+				int resto=0;
+				int pagina = numero_linea / CANTIDADLINEASxPAG ;
+				resto = numero_linea % CANTIDADLINEASxPAG;
+				if (resto >0){
+					pagina=pagina+1;
+				}			
+				
+				int offset = resto * config.MAX_LINEA;//numero_linea * config.MAX_LINEA; 
+				int tamanio = config.MAX_LINEA;//yoha
+				char* buffer = malloc(tamanio); //TODO VALGRIND
+				if(solicitarLinea(pid, pagina, offset, tamanio, buffer)){
+					send(socket_cpu, config.MAX_LINEA, sizeof(int), MSG_WAITALL);
+					send(socket_cpu, buffer, config.MAX_LINEA, MSG_WAITALL);
+				}else{
+					//send(socket_cpu,FALLO_DE_MEMORIA);
+				}
+				free(buffer);
+}
+
+
+void modificar_linea_paginas_invertidas(int socket_cpu, int pid,int nroLinea,char* buffer){
+
+	int pagina = nroLinea / CANTIDADLINEASxPAG;
+	int resto = nroLinea % CANTIDADLINEASxPAG;
+	if (resto >0){
+		pagina = pagina+1;
+				}
+	int offset = resto * config.MAX_LINEA;
+	int tamanio = sizeof(buffer);
+	
+	almacenarLinea(pid,pagina, offset, tamanio,buffer);
+
+}
 
 /*
 void inicializar_ta---------------------------------------------------------------------------
