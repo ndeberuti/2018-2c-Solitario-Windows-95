@@ -23,6 +23,7 @@
 	#include <readline/history.h>
 	#include "funciones/funciones.h"
 	#include "commons/config.h"
+	#include "commons/collections/list.h"
 	#include "servidor/servidor.h"
 	#include <math.h>
 	#include "PCB.h"
@@ -39,6 +40,9 @@
 	#define CARGAR_PROCESO 6
 	#define ABRIR_LINEA 7
 	#define MODIFICAR_LINEA 8
+	#define OK 10
+	#define ERROR 11
+	#define FLUSH 12
 
 	//ESTRUCTURAS
 	typedef struct {
@@ -60,11 +64,6 @@
 
 
 
-
-	typedef struct{
-		int pid;
-		int id;
-	}entrada_administrativa_segmentacion_t;
 
 	typedef struct {
 
@@ -106,6 +105,7 @@
 
 	pthread_t thread_consola;
 	uint32_t diego;
+	uint32_t cpu;
 
 	void* buffer_envio;
 
@@ -162,11 +162,11 @@
 	t_list* tabla_administrativa_segmentacion;
 
 
-	int asignar_id();
+
 
 	int entra_en_memoria(int cantidad_lineas);
 
-	segmento_offset_t* buscar_segmento_vacio();
+	segmento_offset_t* buscar_segmento_vacio(int cantidad_lineas);
 
 
 	void setear_segmentacion_simple();
@@ -208,14 +208,7 @@
 		char* memoria;
 	} t_memoria_principal;
 
-	typedef struct ultimaPagina{
-		int pid;
-		int ultPag;
-	} t_ultimaPagina;
-
 	
-	
-	t_ultimaPagina* ultimasPaginas;
 	t_tablaPaginaInvertida * tablaInvertida;
 	t_memoria_principal* memoria; // nuevo
 
@@ -223,8 +216,6 @@
 	void inicializarMEMpaginada();
 
 	void inicializarEstructuraAdicional();
-	void grabarUltpagina (int pid,int pagina);
-	int retornarUltPag(int pid);
 	void crearMemoriaPrincipalPaginacion(int marcos, int marco_size);
 	int leer_pagina(char*, char**);
 	int crearEstructurasAdministrativas();

@@ -141,13 +141,16 @@ void command_handler(uint32_t command, uint32_t socket) {
 		guardar_proceso(socket);
 		break;
 	case ABRIR_LINEA:
-		log_info(log_consola, ".");
+		log_info(log_consola, "Abriendo linea");
 		abrir_linea(socket);
 		break;
 	case MODIFICAR_LINEA:
 		modificar_linea(socket);
-		log_info(log_consola, ".");
-
+		log_info(log_consola, "Modificando linea");
+		break;
+	case FLUSH:
+			flush(socket);
+			log_info(log_consola, "Flushing");
 		break;
 	default:
 		log_warning(log_consola, "%d: Comando recibido incorrecto", command);
@@ -332,6 +335,24 @@ void modificar_linea(int socket_cpu){
 free(linea_tratada);
 }
 
+void flush(int socket_diego){
+
+	int pid = recibir_int(socket_diego);
+
+	if(strcmp("SEG", config.MODO)== 0){
+				flush_segmentacion_simple(socket_diego, pid);
+				}
+				else if(strcmp("TPI", config.MODO)== 0){
+			//TODO		flush_paginacion(socket_diego, pid);
+				}
+				else if(strcmp("SPI", config.MODO)== 0){
+				//TODO  flush_segmentacion_paginada(socket_diego,pid);
+				}
+				else {
+				//TODO  log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
+				}
+
+}
 
 int recibir_int(int socket){
 int buffer;
@@ -400,12 +421,14 @@ void guardar_proceso_segmentacion_simple(int pid ,int cantidad_lineas, char* buf
 
 segmento_offset_t* segmento_nuevo = malloc(sizeof(segmento_offset_t));
 segmento_tabla_t* entrada_tabla = malloc(sizeof(segmento_tabla_t));
-entrada_administrativa_segmentacion_t* entrada_administrativa = malloc(sizeof(entrada_administrativa_segmentacion_t));
+
+int resultado;
+//entrada_administrativa_segmentacion_t* entrada_administrativa = malloc(sizeof(entrada_administrativa_segmentacion_t));
 
 
 
 
-entrada_administrativa->pid = pid;
+//entrada_administrativa->pid = pid;
 
 
 
@@ -414,46 +437,35 @@ entrada_administrativa->pid = pid;
 
 
 
-							entrada_administrativa->id = 0;
+							//entrada_administrativa->id = pid;
 
-							entrada_tabla->id = 0;
+							entrada_tabla->id = pid;
 							entrada_tabla->base = 0 ;
 							entrada_tabla->limite = cantidad_lineas;
 
 
 							reservar_bitarray(bitarray_memoria, entrada_tabla->base, entrada_tabla->limite);
 
-							list_add(tabla_administrativa_segmentacion, entrada_administrativa);
+							//list_add(tabla_administrativa_segmentacion, entrada_administrativa);
 							list_add(tabla_de_segmentos, entrada_tabla);
 
 							memcpy(puntero_memoria_segmentada, buffer_recepcion, cantidad_lineas * config.MAX_LINEA);
 	}else{
 
 				if(entra_en_memoria(cantidad_lineas) == 1){
-					int corrimiento = 0;
-
-					while( cantidad_lineas != 0){
 
 
-					entrada_tabla->id = asignar_id();
-
-					entrada_administrativa->id = entrada_tabla->id;
+					segmento_nuevo = buscar_segmento_vacio(cantidad_lineas);
 
 
-					segmento_nuevo = buscar_segmento_vacio();
+					entrada_tabla->id = pid;
+
+
 					entrada_tabla->base = segmento_nuevo->segmento;
 
-								if((segmento_nuevo->offset) > cantidad_lineas){
+					entrada_tabla->limite = segmento_nuevo->offset;
 
-
-									entrada_tabla->limite = cantidad_lineas;
-
-								}else{
-
-									entrada_tabla->limite = segmento_nuevo->offset;
-								}
-
-					memcpy(puntero_memoria_segmentada + entrada_tabla->base * config.MAX_LINEA, buffer_recepcion + corrimiento,entrada_tabla->limite * config.MAX_LINEA);
+					memcpy(puntero_memoria_segmentada + entrada_tabla->base * config.MAX_LINEA, buffer_recepcion, entrada_tabla->limite * config.MAX_LINEA);
 
 
 
@@ -461,25 +473,16 @@ entrada_administrativa->pid = pid;
 
 
 					list_add(tabla_de_segmentos, entrada_tabla);
-					list_add(tabla_administrativa_segmentacion, entrada_administrativa);
-
-					cantidad_lineas =- entrada_tabla ->limite;
-
-					corrimiento =+ entrada_tabla->limite;
-					}
-
-
-
-
-
+					//list_add(tabla_administrativa_segmentacion, entrada_administrativa);
 
 
 					}else{
 
 
 					}log_error(log_fm9, "Archivo no entra en memoria");
+					//TODO 10002 ESPACIO INSUFICIENTE
 
-free(entrada_administrativa);
+
 free(segmento_nuevo);
 free(entrada_tabla);
 
@@ -488,131 +491,120 @@ free(entrada_tabla);
 }
 
 int entra_en_memoria(int cantidad_lineas){
-int espacio_libre = 0;
+
+	int base=0;
+	int otra_base = 0;
+
+	while(base < config.TAMANIO && cantidad_lineas < (otra_base - base)){
+
+		base = otra_base;
+
+		while (bitarray_test_bit(bitarray_memoria, base) && base < config.TAMANIO){
 
 
-	for(int j = 0; j < config.TAMANIO; j++){
+		base++;
+		}
 
-		if(!bitarray_test_bit(bitarray_memoria, j))
-			espacio_libre++;
 
-	}
-		if( espacio_libre < cantidad_lineas ){
+		otra_base = base;
+
+		while(!(bitarray_test_bit(bitarray_memoria, otra_base)) && otra_base < config.TAMANIO){
+
+		otra_base++;
+
+
+		}
+
+		}
+	if(cantidad_lineas > otra_base - base){
 
 		return 0;
-		}else{
+	}else{
+		return 1;
+	}
 
-			return 1;
-		}
+
 }
 
 void abrir_linea_segmentacion_simple(int socket_cpu,int pid,int numero_linea){
-	entrada_administrativa_segmentacion_t* elemento_busqueda;
-	segmento_offset_t* segmento_linea;
-	t_list* lista_busqueda_pid_id;
+	segmento_tabla_t* segmento_linea;
+
+	int resultado;
+
+	bool es_pid(segmento_tabla_t* entrada){
+			segmento_tabla_t* segmento;
+					return segmento->id == pid;
+
+		}
+
+	segmento_linea = list_find(tabla_de_segmentos, (void*) es_pid);
+
 
 	char* buffer_envio = malloc(config.MAX_LINEA);
 
-	int lineas_encontradas= 0;
-	int corrimiento = 0;
+	if(segmento_linea != NULL){
 
-	//busco la lista de segmentos con ese PID
+	memcpy(buffer_envio,puntero_memoria_segmentada + segmento_linea->base + (numero_linea * config.MAX_LINEA), config.MAX_LINEA );
 
-	bool id_pid(entrada_administrativa_segmentacion_t* entrada){
-		entrada_administrativa_segmentacion_t* entrada_admin;
-				return entrada_admin->pid == pid;
+	resultado = OK ;
+
+	send(socket_cpu, &resultado, sizeof(int), MSG_WAITALL);
+	send(socket_cpu, config.MAX_LINEA, sizeof(int), MSG_WAITALL);
+	send(socket_cpu, buffer_envio, config.MAX_LINEA, MSG_WAITALL);
+
+	}else{
+
+   send(socket_cpu, &resultado, sizeof(int), MSG_WAITALL);
+   log_error(log_fm9, "No se encuentra la linea en memoria");
+   //TODO FALLO DE SEGMENTO
 
 	}
-
-	lista_busqueda_pid_id = list_filter(tabla_administrativa_segmentacion, (void*)id_pid);
-
-	//busco la linea que tienen esos segmentos
-
-   while(lineas_encontradas < numero_linea)   {
-	   int k = 0;
-
-
-	   elemento_busqueda = list_get(lista_busqueda_pid_id, k);
-
-
-
-	   segmento_linea = obtener_segmento_linea(elemento_busqueda->id, numero_linea);
-
-	   lineas_encontradas =+ segmento_linea->offset;
-
-	   k++;
-   }
-
-   corrimiento = lineas_encontradas - numero_linea;
-
-   memcpy(buffer_envio,puntero_memoria_segmentada + segmento_linea->segmento + corrimiento, config.MAX_LINEA );
-
-
-   //VER TAMAÑO DE TRANSF
-   send(socket_cpu, config.MAX_LINEA, sizeof(int), MSG_WAITALL);
-   send(socket_cpu, buffer_envio, config.MAX_LINEA, MSG_WAITALL);
-
+	free(buffer_envio);
 }
 
 void modificar_linea_segmentacion_simple(int socket_cpu,int pid,int numero_linea, char* linea_nueva){
-	entrada_administrativa_segmentacion_t* elemento_busqueda;
-	segmento_offset_t* segmento_linea;
-	t_list* lista_busqueda_pid_id;
+	segmento_tabla_t* segmento_linea;
+	int resultado;
 
-	linea_nueva = malloc(config.MAX_LINEA);
+		bool es_pid(segmento_tabla_t* entrada){
+				segmento_tabla_t* segmento;
+						return segmento->id == pid;
 
+			}
 
-	int lineas_encontradas= 0;
-	int corrimiento = 0;
+		segmento_linea = list_find(tabla_de_segmentos, (void*) es_pid);
 
-	//busco la lista de segmentos con ese PID
-
-	bool id_pid(entrada_administrativa_segmentacion_t* entrada){
-		entrada_administrativa_segmentacion_t* entrada_admin;
-				return entrada_admin->pid == pid;
-
-	}
-
-	lista_busqueda_pid_id = list_filter(tabla_administrativa_segmentacion, (void*)id_pid);
-
-	//busco la linea que tienen esos segmentos
-
-   while(lineas_encontradas < numero_linea)   {
-	   int k = 0;
+		if(segmento_linea != NULL){
 
 
-	   elemento_busqueda = list_get(lista_busqueda_pid_id, k);
+		memcpy(puntero_memoria_segmentada + segmento_linea->base + (numero_linea * config.MAX_LINEA), linea_nueva ,config.MAX_LINEA );
+		resultado = OK ;
+		}else{
+
+			log_error(log_fm9, "El segmento no se encuentra en memoria");
+			resultado = ERROR ;
+		}
+	free(linea_nueva);
 
 
 
-	   segmento_linea = obtener_segmento_linea(elemento_busqueda->id, numero_linea);
 
-	   lineas_encontradas =+ segmento_linea->offset;
 
-	   k++;
-   }
 
-   corrimiento = lineas_encontradas - numero_linea;
-
-    memcpy(puntero_memoria_segmentada + segmento_linea->segmento + corrimiento, linea_nueva , config.MAX_LINEA );
-
-    //TODO ver resultado
-    int resultado;
-
-   //VER TAMAÑO DE TRANSF
+   //TODO VER TAMAÑO DE TRANSF
    send(socket_cpu, &resultado, config.MAX_LINEA, MSG_WAITALL);
 
 }
 
 
-segmento_offset_t* obtener_segmento_linea(int id, int numnero_linea){
+segmento_offset_t* obtener_segmento_linea(int pid, int numero_linea){
 	segmento_tabla_t* segmento;
 	t_list* lista_busqueda_segmento;
 
 	bool es_id(segmento_tabla_t* entrada_segmento){
 
 
-							return entrada_segmento->id == id;
+							return entrada_segmento->id == pid;
 						}
 
 
@@ -625,37 +617,21 @@ segmento_offset_t* obtener_segmento_linea(int id, int numnero_linea){
 
 //--
 void liberar_segmento(int pid, int base, int limite){
-	int id_segmento;
 
-	entrada_administrativa_segmentacion_t* entrada_admin;
 
 
 	liberar_bitarray(bitarray_memoria, base, limite);
 
 
-	bool id_pid(entrada_administrativa_segmentacion_t* entrada){
+	bool es_pid(segmento_tabla_t* entrada){
 
-				return entrada_admin->pid == pid;
+				return entrada->id == pid;
 			}
 
 
-
-	entrada_admin = list_find(tabla_administrativa_segmentacion,(void*)id_pid);
-	id_segmento = entrada_admin->id;
-	free(entrada_admin);
-
-	bool es_pid(segmento_tabla_t* entrada_segmento){
+	list_remove_by_condition(tabla_de_segmentos,(void*) es_pid);
 
 
-						return entrada_segmento->id == id_segmento;
-					}
-
-
-
-	list_remove_by_condition(tabla_de_segmentos,(void*) id_pid);
-	list_remove_by_condition(tabla_administrativa_segmentacion, (void*)es_pid);
-
-	liberar_bitarray(bitarray_memoria, base, limite);
 }
 
 
@@ -664,45 +640,45 @@ void liberar_segmento(int pid, int base, int limite){
 
 
 
-segmento_offset_t* buscar_segmento_vacio(){
+segmento_offset_t* buscar_segmento_vacio(int cantidad_lineas){
 
 segmento_offset_t* segmento;
 
 
 
 int base=0;
-int otra_base;
+int otra_base = 0;
 
+while(base < config.TAMANIO && cantidad_lineas < (otra_base - base)){
 
+	base = otra_base;
 
-	while (!(bitarray_test_bit(bitarray_memoria, base)) && base < config.TAMANIO ){
+	while (bitarray_test_bit(bitarray_memoria, base) && base < config.TAMANIO){
 
 
 	base++;
-
 	}
+
 
 	otra_base = base;
 
-	while(bitarray_test_bit(bitarray_memoria, base) &&  base < config.TAMANIO ){
+	while(!(bitarray_test_bit(bitarray_memoria, otra_base)) && otra_base < config.TAMANIO){
 
 	otra_base++;
 
 
 	}
 
-	segmento->segmento = base;
-	segmento->offset = otra_base - base;
+	}
+
+segmento->offset = cantidad_lineas;
+segmento->segmento = base;
 
 return segmento;
 }
 
 
-int asignar_id(){
-	id_segmento++;
 
-	return id_segmento;
-}
 
 
 
@@ -724,8 +700,7 @@ void inicializar_memoria_paginacion_invertida(){
 	
 	crearEstructurasAdministrativas(frames);
 	
-	//Necesito una estructura que me guarde la ultima pagina de cada proceso
-	inicializarEstructuraAdicional();
+	
 
 }
 
@@ -776,14 +751,6 @@ int crearEstructurasAdministrativas() {
     return 0;
 }
 
-void inicializarEstructuraAdicional(){
-	ultimasPaginas = malloc(sizeof(t_ultimaPagina)*100) ;
-	int i;
-	for (i = 0; i < 100; i++) {
-	        ultimasPaginas[i].pid = FRAMELIBRE;
-	        ultimasPaginas[i].ultPag = FRAMELIBRE;
-	    }
-}
 
 //Leer 
 int solicitarLinea(int unPid, int pagina, int offset, int tamanio, char *buffer) {
@@ -865,52 +832,6 @@ int calcularPosicion(int frame){
 
 }
 
-int asignarPaginas(int pid, int pagina) {    	// pagina siempre siempre es un 1 asi q no esta mal jajaj por? que hdp
-	int ok = 1;
-	int frame;
-	int encontre_frame = 0;
-	int cont_frame = 1;
-
-	//busco la ultima pagina que tuvo este proceso, se lo asigno a pagina pq se que siempre viene un 1.
-	int paginaEncontrada = retornarUltPag(pid) + 1;    	//+ 1 ; //le sumo uno por la siguiente
-	//TODO AGREGAR A ESTRUCTURA
-	printf("Asignar pagina \n ");
-	frame = hash(pid, paginaEncontrada);
-
-
-	// me fijo si ese frame esta disponible
-	if (memoria->estructura_administrativa[frame].pid == PAGINALIBRE && memoria->estructura_administrativa[frame].nroPag == PAGINALIBRE) {
-		memoria->estructura_administrativa[frame].pid = pid;
-		memoria->estructura_administrativa[frame].nroPag = paginaEncontrada;
-		encontre_frame = 1;
-	} else {
-		// ciclo hasta encontrar un frame libre
-		while (encontre_frame < 1) {
-			if (cont_frame+frame > MARCOS) {
-				ok = -1;
-				encontre_frame = 1;
-			}
-			//TODO VALIDAR SI NO ESTAN ASIGNANDO UNA ESTRUCTURA ADMINISTRATIVA? CREAR ENUM ERROR
-			if (memoria->estructura_administrativa[frame + cont_frame].pid == PAGINALIBRE && memoria->estructura_administrativa[frame + cont_frame].nroPag == PAGINALIBRE) {
-				memoria->estructura_administrativa[frame + cont_frame].pid = pid;
-				memoria->estructura_administrativa[frame + cont_frame].nroPag = paginaEncontrada;
-				encontre_frame = 1;
-			} else {
-				cont_frame++;
-			}
-		}
-	}
-
-	// Deberiamos devolver algun tipo de OK.
-	/*if (ok==1) {
-		enviarHS(socket, PEDIR_PAG_EXITOSO);
-		grabarUltpagina(pid, paginaEncontrada);
-	} else {
-		enviarHS(socket, PEDIR_PAG_FALLIDO);
-	}*/
-
-	return 1;
-}
 
 //Pedido de Apertura de Archivo por parte de DMA 
 void crearPid(int unPid, int paginas) {
@@ -970,8 +891,6 @@ int asignarPaginasIniciales(int unPid, int paginas) {
 					enviarHS(socket, INI_PROG_FALLIDO);
 				}*/
 
-			//Grabo la ultima pagina en la estructura adicional
-			grabarUltpagina (unPid,paginas-1);
 	return 1;
 }
 
@@ -987,13 +906,6 @@ int eliminarPid(int pid) {
 			//TODO ELIMINAR ESTRUCTURA DE PROCESOS ACTIVOS DEFE
 		}
 	}
-	//Eliminar de la estructura adicional donde guardo la ultima pagina
-		for (procesoNro = 0; procesoNro < 100; procesoNro++) {
-				if (ultimasPaginas[procesoNro].pid == pid){
-					 ultimasPaginas[procesoNro].pid = FRAMELIBRE;
-				     ultimasPaginas[procesoNro].ultPag = FRAMELIBRE;
-								}
-			}
 
 	return 1;
 }
@@ -1025,51 +937,6 @@ void eliminarPagina(int pid, int nroPag){
 		    	enviarHS(socket,ELIMINAR_PAGINA_MEM_EXITO);
 		}*/
 }
-
-
-
-
-//Estructura que uso para saber la ultima pagina asignada a cada proceso
-
-
-//me devuelve la ultima pagina asignada a un pid
-int retornarUltPag(int pid) {
-	int procesoNro;
-	for (procesoNro = 0; procesoNro < 100; procesoNro++) {
-		if (ultimasPaginas[procesoNro].pid == pid) {
-			return ultimasPaginas[procesoNro].ultPag;
-		}
-	}
-	return -8;
-}
-
-//grabo en estructuras adicionales la ultima pagina asignada
-void grabarUltpagina(int pid, int pagina) {
-	int procesoNro;
-	//BUSCAR SI EXISTE
-	for (procesoNro = 0; procesoNro < 100; procesoNro++) {
-		if (ultimasPaginas[procesoNro].pid == pid) {
-			ultimasPaginas[procesoNro].ultPag = pagina;
-			return;
-		}
-	}
-	//NO EXISTE
-	for (procesoNro = 0; procesoNro < 100; procesoNro++) {
-		if (ultimasPaginas[procesoNro].pid == FRAMELIBRE && ultimasPaginas[procesoNro].ultPag == FRAMELIBRE) {
-			ultimasPaginas[procesoNro].pid = pid;
-			ultimasPaginas[procesoNro].ultPag = pagina;
-			return;
-		}
-	}
-}
-
-
-
-
-
-
-
-
 
 
 /*
