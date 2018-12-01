@@ -259,7 +259,7 @@ void guardar_proceso(int socket_diego){
 
 		}
 		else if(strcmp("SPI", config.MODO)== 0){
-		//TODO resultado = guardar_proceso_segmentacion_paginada(pid ,longitud_paquete, buffer_recepcion);
+		resultado = guardar_proceso_segmentacion_paginada(pid ,cantidad_lineas, buffer_recepcion);
 		}
 		else {
 			log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
@@ -1123,19 +1123,13 @@ free(entrada_vacia);
 
 void inicializar_memoria_segmentacion_paginada(){
 
-		tabla_de_segmentos_SP = list_create();
-		tabla_de_procesos_SP = list_create();
-		tabla_de_paginas_SP = list_create();
+		tabla_de_segmentos_sp = list_create();
 
-		puntero_memoria_segmentada = malloc(config.TAMANIO);
-		bitarray_memoria = bitarray_create(b_m_s,config.TAMANIO / config.MAX_LINEA);
 
-		/* VER PORQUE LE GUSTA ROMPER
-		for(int i = 0; i < config.TAMANIO / config.MAX_LINEA; i++){
-		bitarray_clean_bit(bitarray_memoria,  i);
-		}
+		puntero_memoria_sp = malloc(config.TAMANIO);
+		bitarray_memoria = bitarray_create(b_m_s,config.TAMANIO / config.TAM_PAGINA);
 
-	*/
+
 
 		if(puntero_memoria_segmentada == NULL){
 
@@ -1146,6 +1140,174 @@ void inicializar_memoria_segmentacion_paginada(){
 		}
 
 }
+
+guardar_proceso_segmentacion_paginada(pid ,cantidad_lineas, buffer_recepcion){
+	segmento_paginado_t* segmento_nuevo = malloc(sizeof(segmento_paginado_t));
+
+
+
+
+	int resultado;
+	//entrada_administrativa_segmentacion_t* entrada_administrativa = malloc(sizeof(entrada_administrativa_segmentacion_t));
+
+
+
+
+	//entrada_administrativa->pid = pid;
+
+
+
+
+		if(list_is_empty(tabla_de_segmentos_sp)){
+
+
+
+								paginar_segmento(pid, cantidad_lineas, buffer_recepcion);
+
+
+
+
+
+
+
+								segmento_nuevo->id = pid;
+								segmento_nuevo->pagina = 0 ;
+								segmento_nuevo->offset = cantidad_lineas;
+
+
+								reservar_bitarray(bitarray_memoria, entrada_tabla->base, entrada_tabla->limite);
+
+								//list_add(tabla_administrativa_segmentacion, entrada_administrativa);
+								list_add(tabla_de_segmentos_sp, segmento_nuevo);
+
+								memcpy(puntero_memoria_segmentada, buffer_recepcion, cantidad_lineas * config.MAX_LINEA);
+
+								resultado = OK;
+								log_info(log_fm9, "Se guardo el segmento en memoria");
+								return resultado;
+		}else{
+
+					if(entra_en_memoria(cantidad_lineas) == 1){
+
+
+						buscar_segmento_vacio(cantidad_lineas, segmento_nuevo);
+
+
+						entrada_tabla->id = pid;
+
+
+						entrada_tabla->base = segmento_nuevo->segmento;
+
+						entrada_tabla->limite = segmento_nuevo->offset;
+
+						memcpy(puntero_memoria_segmentada + entrada_tabla->base * config.MAX_LINEA, buffer_recepcion, entrada_tabla->limite * config.MAX_LINEA);
+
+
+
+						reservar_bitarray(bitarray_memoria, entrada_tabla->base, entrada_tabla->limite);
+
+
+						list_add(tabla_de_segmentos, entrada_tabla);
+
+						resultado = OK;
+						log_info(log_fm9, "Se guardo el segmento en memoria");
+						return resultado;
+
+
+						}else{
+
+							resultado = ERROR;
+							log_error(log_fm9, "Archivo no entra en memoria");
+							return resultado;
+						}
+
+
+		}
+	free(segmento_nuevo);
+	free(entrada_tabla);
+
+
+
+
+
+}
+
+int paginar_segmento(int id, int cantidad_lineas, char* buffer_recepecion){
+	segmento_paginado_t* segmento_nuevo = malloc(sizeof(segmento_paginado_t));
+	int cantidad_paginas;
+	int resultado;
+
+	segmento_nuevo->id;
+	segmento_nuevo->tabla_de_paginas_segmento = list_create();
+
+	list_add(tabla_de_segmentos_sp,segmento_nuevo);
+
+
+
+
+
+	cantidad_paginas = config.TAM_PAGINA / config.MAX_LINEA;
+
+	for(int i = 0; i <= cantidad_paginas; i++){
+
+		resultado = asignar_segmento_paginado_vacio(cantidad_paginas, segmento_nuevo);
+
+	}
+
+
+
+}
+
+int entra_memoria_sp(int cantidad_paginas){
+	int pagina = 0;
+
+	while (!bitarray_test_bit(bitarray_memoria, pagina) && pagina < config.TAMANIO){
+
+
+			pagina++;
+			}
+
+			if(pagina < cantidad_paginas){
+
+				log_error(log_fm9, "No hay espacio en memoria para el DTB");
+				return 0;
+			}else{
+
+				log_info(log_fm9, "Guardando el DTB en memoria real");
+				return 1;
+			}
+
+}
+int asignar_segmento_paginado_vacio(int cantidad_paginas,segmento_paginado_t* segmento_nuevo){
+
+	int numero_pagina= 0;
+
+
+
+
+		while(numero_pagina < config.TAMANIO && numero_pagina < cantidad_paginas ){
+
+			if(!(bitarray_test_bit(bitarray_memoria, numero_pagina))){
+
+
+				list_add(segmento_nuevo->tabla_de_paginas_segmento, &numero_pagina);
+				log_info(log_fm9,  "Guardando pagina");
+				numero_pagina++;
+			}
+
+
+
+		}
+
+
+return 1;
+}
+
+
+
+
+
+
 
 //-------------------------------------------------------------------------------------------------------------------
 //BITARRAY

@@ -81,7 +81,12 @@
 
 	}segmento_offset_t;
 
+	typedef struct {
+		int id;
+		t_list* tabla_de_paginas_segmento;
 
+
+	}segmento_paginado_t;
 
 
 
@@ -113,6 +118,7 @@
 	//variables memoria segmentada
 
 	char* puntero_memoria_segmentada;
+	char* puntero_memoria_sp;
 
 	char* b_m_s;
 	t_bitarray* bitarray_memoria;
@@ -150,7 +156,7 @@
 
 
 	void guardar_proceso_paginas_invertidas(int pid ,int longitud_paquete, char* buffer_recepcion);
-	void guardar_proceso_segmentacion_paginada(int pid ,int longitud_paquete, char* buffer_recepcion);
+	int guardar_proceso_segmentacion_paginada(int pid ,int longitud_paquete, char* buffer_recepcion);
 
 
 	void devolver_proceso_paginas_invertidas(int socket_diego,int pid);
@@ -181,7 +187,7 @@
 	void flush_segmentacion_simple(int socket_diego,int pid);
 	void dump_segmentacion_simple(int pid);
 
-	segmento_tabla_t* obtener_segmento_linea(int id, int numero_linea);
+
 	char* buscar_proceso_segmentacion_simple(int pid);
 
 	int obtener_cantidad_lineas(int longitud_paquete);
@@ -242,12 +248,12 @@
 
 	//SEGMENTACION PAGINADA
 
-	t_list* tabla_de_procesos_SP;
-	t_list* tabla_de_segmentos_SP;
-	t_list* tabla_de_paginas_SP;
+	t_list* tabla_de_procesos_sp;
+	t_list* tabla_de_segmentos_sp;
+	t_list* tabla_de_paginas_sp;
 
-
-
+	int asignar_segmento_paginado_vacio(int cantidad_paginas,segmento_paginado_t* segmento_nuevo);
+	int entra_memoria_sp(int cantidad_paginas);
 
 	//bitarray
 	void reservar_bitarray(t_bitarray* bitarray_memoria_segmentada, int base, int limite);
