@@ -84,6 +84,7 @@ void validar_archivo(uint32_t socket);
 void crear_archivo(uint32_t socket);
 void *proximo_bloque_libre(uint32_t bloque_inicial);
 void set_bitarray(uint32_t posicion);
+void crear_path_completo(char *path_completo);
 void consola();
 
 #endif /* SRC_MDJ_H_ */

@@ -49,7 +49,7 @@ config_t load_config() {
 }
 
 void crear_estructura_directorios() {
-	if (mkdir(config.PUNTO_MONTAJE, 0755) != 0)
+	if (mkdir(config.PUNTO_MONTAJE, 0777) != 0)
 		if (errno != EEXIST) {
 			log_error(log_mdj, "Permiso denegado al intentar montar el FS en %s", config.PUNTO_MONTAJE);
 			exit(EXIT_FAILURE);
@@ -64,7 +64,7 @@ void crear_estructura_directorios() {
 
 	strcpy(path, config.PUNTO_MONTAJE);
 	strcat(path, "Metadata/");
-	mkdir(path, 0755);
+	mkdir(path, 0777);
 	free(path);
 
 	if ((path = malloc(sizeof(char) * (largo_mnt + 22))) == NULL) {
@@ -136,7 +136,7 @@ void crear_estructura_directorios() {
 	strcpy(path, config.PUNTO_MONTAJE);
 	strcat(path, "Archivos/");
 	carpeta_archivos = strdup(path);
-	mkdir(path, 0755);
+	mkdir(path, 0777);
 	free(path);
 
 	if ((path = malloc(sizeof(char) * (largo_mnt + 9))) == NULL) {
@@ -147,7 +147,7 @@ void crear_estructura_directorios() {
 	strcpy(path, config.PUNTO_MONTAJE);
 	strcat(path, "Bloques/");
 	carpeta_bloques = strdup(path);
-	mkdir(path, 0755);
+	mkdir(path, 0777);
 	free(path);
 }
 
@@ -236,7 +236,7 @@ void validar_archivo(uint32_t socket) {
 	uint32_t rta;
 
 	if (receive_string(socket, &path) <= 0) {
-		log_error(log_consola, "recv (validar_archivo)");
+		log_error(log_consola, "recv path (validar_archivo)");
 		rta = ERROR_OPERACION;
 	}
 	else {
@@ -264,97 +264,102 @@ void crear_archivo(uint32_t socket) {
 	uint32_t rta;
 	uint32_t bytes;
 
-	if (receive_string(socket, &path) <= 0)
+	if (receive_string(socket, &path) <= 0) {
+		log_error(log_consola, "recv path (validar_archivo)");
 		rta = ERROR_OPERACION;
-
-	if (receive_int(socket, &bytes) <= 0)
-		rta = ERROR_OPERACION;
-
-	if (rta == ERROR_OPERACION)
-		log_error(log_consola, "recv (crear_archivo)");
+	}
 	else {
-		log_info(log_consola, "Crear archivo %s de %d bytes", path, bytes);
-
-		uint32_t cant_bloques = bytes / fs_config.TAMANIO_BLOQUES;
-		if (bytes % fs_config.TAMANIO_BLOQUES > 0)
-			cant_bloques++;
-
-		uint32_t *prox_bloque;
-		uint32_t pos_actual = 0;
-		uint32_t bloque_inicial = 0;
-		uint32_t bloques[cant_bloques];
-
-		while (pos_actual < cant_bloques && (prox_bloque = proximo_bloque_libre(bloque_inicial)) != NULL) {
-			bloques[pos_actual] = *prox_bloque;
-			bloque_inicial = *prox_bloque + 1;
-			pos_actual++;
-		}
-
-		if (prox_bloque == NULL) {
-			log_warning(log_consola, "No hay suficientes bloques libres para guardar el archivo");
-			rta = OPERACION_FAIL;
+		if (receive_int(socket, &bytes) <= 0) {
+			log_error(log_consola, "recv bytes (validar_archivo)");
+			rta = ERROR_OPERACION;
 		}
 		else {
-			uint32_t bytes_del_bloque;
-			uint32_t bytes_restantes = bytes;
-			char *relleno;
-			char *nro_bloque;
-			uint32_t largo_lista_bloques = 1;
-			char *nombre_bloque;
+			log_info(log_consola, "Crear archivo %s de %d bytes", path, bytes);
 
-			for (uint32_t i = 0; i < cant_bloques; i++) {
-				//CREAR EL BLOQUE
-				bytes_del_bloque = bytes_restantes > fs_config.TAMANIO_BLOQUES ? fs_config.TAMANIO_BLOQUES : bytes_restantes;
-				relleno = malloc(sizeof(char) * (bytes_del_bloque + 1));
-				bytes_restantes -= fs_config.TAMANIO_BLOQUES;
+			uint32_t cant_bloques = bytes / fs_config.TAMANIO_BLOQUES;
+			if (bytes % fs_config.TAMANIO_BLOQUES > 0)
+				cant_bloques++;
 
-				nro_bloque = string_itoa(bloques[i]);
-				largo_lista_bloques += strlen(nro_bloque) + 1;
-				nombre_bloque = malloc(sizeof(char) * (strlen(carpeta_bloques) + strlen(nro_bloque) + 5));
-				strcpy(nombre_bloque, carpeta_bloques);
-				strcat(nombre_bloque, nro_bloque);
-				strcat(nombre_bloque, ".bin");
+			uint32_t *prox_bloque;
+			uint32_t pos_actual = 0;
+			uint32_t bloque_inicial = 0;
+			uint32_t bloques[cant_bloques];
 
-				FILE *fptr = fopen(nombre_bloque, "w");
-				memset(relleno, '\0', bytes_del_bloque + 1);
-				memset(relleno, '\n', bytes_del_bloque);
-				fputs(relleno, fptr);
-				fclose(fptr);
-				free(relleno);
-				free(nro_bloque);
-				free(nombre_bloque);
-
-				//ACTUALIZAR BITARRAY
-				set_bitarray(bloques[i]);
+			while (pos_actual < cant_bloques && (prox_bloque = proximo_bloque_libre(bloque_inicial)) != NULL) {
+				bloques[pos_actual] = *prox_bloque;
+				bloque_inicial = *prox_bloque + 1;
+				pos_actual++;
 			}
-			//CREAR EL ARCHIVO
-			char *lista_bloques = malloc(sizeof(char) * (largo_lista_bloques + 1));
 
-			strcpy(lista_bloques, "[");
-			for (uint32_t i = 0; i < cant_bloques; i++) {
-				strcat(lista_bloques, string_itoa(bloques[i]));
-				if (i < cant_bloques - 1)
-					strcat(lista_bloques, ",");
+			if (prox_bloque == NULL) {
+				log_warning(log_consola, "No hay suficientes bloques libres para guardar el archivo");
+				rta = OPERACION_FAIL;
 			}
-			strcat(lista_bloques, "]");
+			else {
+				uint32_t bytes_del_bloque;
+				uint32_t bytes_restantes = bytes;
+				char *relleno;
+				char *nro_bloque;
+				uint32_t largo_lista_bloques = 1;
+				char *nombre_bloque;
 
-			char *path_archivo = malloc(sizeof(char) * (strlen(carpeta_archivos) + strlen(path) + 1));
-			strcpy(path_archivo, carpeta_archivos);
-			strcat(path_archivo, path);
-//OJO aca porque si path_archivo tiene subcarpetas y no existen, el fopen no las crea. Voy a tener que crearlas aca antes de seguir.
-			t_config *aux_config = malloc(sizeof(t_config));
-			aux_config->path = strdup(path_archivo);
-			aux_config->properties = dictionary_create();
-			config_set_value(aux_config, "TAMANIO", string_itoa(bytes));
-			config_set_value(aux_config, "BLOQUES", lista_bloques);
-			config_save(aux_config);
-			config_destroy(aux_config);
-			free(path_archivo);
-			free(lista_bloques);
+				for (uint32_t i = 0; i < cant_bloques; i++) {
+					//CREAR EL BLOQUE
+					bytes_del_bloque = bytes_restantes > fs_config.TAMANIO_BLOQUES ? fs_config.TAMANIO_BLOQUES : bytes_restantes;
+					relleno = malloc(sizeof(char) * (bytes_del_bloque + 1));
+					bytes_restantes -= fs_config.TAMANIO_BLOQUES;
 
-			log_info(log_consola, "Operacion finalizada con exito");
-			rta = OPERACION_OK;
+					nro_bloque = string_itoa(bloques[i]);
+					largo_lista_bloques += strlen(nro_bloque) + 1;
+					nombre_bloque = malloc(sizeof(char) * (strlen(carpeta_bloques) + strlen(nro_bloque) + 5));
+					strcpy(nombre_bloque, carpeta_bloques);
+					strcat(nombre_bloque, nro_bloque);
+					strcat(nombre_bloque, ".bin");
+
+					FILE *fptr = fopen(nombre_bloque, "w");
+					memset(relleno, '\0', bytes_del_bloque + 1);
+					memset(relleno, '\n', bytes_del_bloque);
+					fputs(relleno, fptr);
+					fclose(fptr);
+					free(relleno);
+					free(nro_bloque);
+					free(nombre_bloque);
+
+					//ACTUALIZAR BITARRAY
+					set_bitarray(bloques[i]);
+				}
+				//CREAR EL ARCHIVO
+				char *lista_bloques = malloc(sizeof(char) * (largo_lista_bloques + 1));
+
+				strcpy(lista_bloques, "[");
+				for (uint32_t i = 0; i < cant_bloques; i++) {
+					strcat(lista_bloques, string_itoa(bloques[i]));
+					if (i < cant_bloques - 1)
+						strcat(lista_bloques, ",");
+				}
+				strcat(lista_bloques, "]");
+
+				char *path_archivo = malloc(sizeof(char) * (strlen(carpeta_archivos) + strlen(path) + 1));
+				strcpy(path_archivo, carpeta_archivos);
+				strcat(path_archivo, path);
+
+				crear_path_completo(path_archivo);
+
+				t_config *aux_config = malloc(sizeof(t_config));
+				aux_config->path = strdup(path_archivo);
+				aux_config->properties = dictionary_create();
+				config_set_value(aux_config, "TAMANIO", string_itoa(bytes));
+				config_set_value(aux_config, "BLOQUES", lista_bloques);
+				config_save(aux_config);
+				config_destroy(aux_config);
+				free(path_archivo);
+				free(lista_bloques);
+
+				log_info(log_consola, "Operacion finalizada con exito");
+				rta = OPERACION_OK;
+			}
 		}
+		free(path);
 	}
 
 	if (send_int(socket, rta) == -1)
@@ -376,6 +381,35 @@ void set_bitarray(uint32_t posicion) {
 	FILE *fptr = fopen(path_bitmap, "w");
 	fputs(bitarray->bitarray, fptr);
 	fclose(fptr);
+}
+
+void crear_path_completo(char *path_completo) {
+	char *path = malloc(sizeof(char) * strlen(path_completo));
+	char *aux_path = strdup(path_completo);
+	char *sub_path1 = strdup(strtok(aux_path, "/"));
+	char *token = strtok(NULL, "/");
+	char *sub_path2;
+
+	if (token != NULL) {
+		sub_path2 = strdup(token);
+		strcpy(path, "/");
+
+		while (token != NULL) {
+			strcat(path, sub_path1);
+			strcat(path, "/");
+			free(sub_path1);
+			sub_path1 = strdup(sub_path2);
+			token = strtok(NULL, "/");
+			if (token != NULL)
+				sub_path2 = strdup(token);
+		}
+
+		mkdir(path, 0777);
+		free(sub_path2);
+	}
+	free(sub_path1);
+	free(aux_path);
+	free(path);
 }
 
 void consola() {
