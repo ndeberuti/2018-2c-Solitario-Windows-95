@@ -28,6 +28,7 @@
 	#include <math.h>
 	#include "PCB.h"
 	#include "commons/bitarray.h"
+	#include <stdint.h>
 
 	// constantes
 	char *PATH_LOG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/Logs/logFM9.txt";
@@ -80,7 +81,12 @@
 
 	}segmento_offset_t;
 
+	typedef struct {
+		int id;
+		t_list* tabla_de_paginas_segmento;
 
+
+	}segmento_paginado_t;
 
 
 
@@ -112,6 +118,7 @@
 	//variables memoria segmentada
 
 	char* puntero_memoria_segmentada;
+	char* puntero_memoria_sp;
 
 	char* b_m_s;
 	t_bitarray* bitarray_memoria;
@@ -132,6 +139,8 @@
 	void guardar_proceso(int socket);
 	void abrir_linea(int socket);
 	void modificar_linea(int socket);
+	void flush (int socket);
+	void dump(int pid);
 
 	void setear_paginacion_invertida();
 	void setear_segmentacion_paginada();
@@ -147,7 +156,7 @@
 
 
 	void guardar_proceso_paginas_invertidas(int pid ,int longitud_paquete, char* buffer_recepcion);
-	void guardar_proceso_segmentacion_paginada(int pid ,int longitud_paquete, char* buffer_recepcion);
+
 
 
 	void devolver_proceso_paginas_invertidas(int socket_diego,int pid);
@@ -159,24 +168,26 @@
 
 //SEGMENTACION SIMPLE
 	t_list* tabla_de_segmentos;
-	t_list* tabla_administrativa_segmentacion;
+
 
 
 
 
 	int entra_en_memoria(int cantidad_lineas);
 
-	segmento_offset_t* buscar_segmento_vacio(int cantidad_lineas);
+	void buscar_segmento_vacio(int cantidad_lineas, segmento_offset_t* segmento);
 
 
 	void setear_segmentacion_simple();
 	void inicializar_memoria_segmentacion_simple();
 
-	void guardar_proceso_segmentacion_simple(int pid ,int cantidad_lineas, char* buffer_recepcion);
+	int guardar_proceso_segmentacion_simple(int pid ,int cantidad_lineas, char* buffer_recepcion);
 	void abrir_linea_segmentacion_simple(int socket_diego, int pid, int numero_linea);
 	void modificar_linea_segmentacion_simple(int socket_cpu,int pid, int numero_linea, char* linea_nueva);
+	void flush_segmentacion_simple(int socket_diego,int pid);
+	void dump_segmentacion_simple(int pid);
 
-	segmento_offset_t* obtener_segmento_linea(int id, int numero_linea);
+
 	char* buscar_proceso_segmentacion_simple(int pid);
 
 	int obtener_cantidad_lineas(int longitud_paquete);
@@ -221,23 +232,36 @@
 	int crearEstructurasAdministrativas();
 	int calcularPosicion(int frame);
 	int buscarFrame(int unPid, int pagina);
-	int asignarPaginasIniciales(int unPid, int paginas) ;
+	int asignarPaginasIniciales(int unPid, int paginas, char * buffer) ;
 	int almacenarLinea(int unPid, int pagina, int offset, int tamanio, char * buffer);
 	int solicitarLinea(int unPid, int pagina, int offset, int tamanio, char *buffer);
 	int hash(int unPid, int pagina) ;
-	int asignarPaginas(int pid, int paginas);
-	void crearPid(int pid,int paginas);
+	int asignarPaginas(int pid, int paginas,char *buffer);
+	int crearPid(int pid,int lineas,char *buffer);
 	int eliminarPid(int pid);
 	void eliminarPagina(int unPid, int nroPag);
 	void crearMemoriaPrincipal(int frames,int tamanio_pagina);
+	void abrir_linea_paginas_invertidas(int socket_cpu,int pid,int numero_linea);
+	void modificar_linea_paginas_invertidas(int socket_cpu, int pid,int nroLinea,char* buffer);
 	
 
 
 	//SEGMENTACION PAGINADA
 
+	t_list* tabla_de_procesos_sp;
+	t_list* tabla_de_segmentos_sp;
+	t_list* tabla_de_paginas_sp;
+
+	int guardar_proceso_segmentacion_paginada(int pid ,int longitud_paquete, char* buffer_recepcion);
+	void abrir_linea_segmentacion_paginada(int socket_cpu, int pid, int numero_linea);
+	void modificar_linea_segmentacion_paginada(int socket_cpu,int pid,int numero_linea,char* linea_tratada);
+	void flush_segmentacion_paginada(int socket_diego,int pid);
+	void dump_segmentacion_paginada(int pid);
 
 
-
+	void asignar_segmento_paginado_vacio(int cantidad_paginas,segmento_paginado_t* segmento_nuevo, char* buffer_recepcion);
+	int entra_memoria_sp(int cantidad_paginas);
+	void paginar_segmento(int id, int cantidad_lineas, char* buffer_recepecion);
 
 	//bitarray
 	void reservar_bitarray(t_bitarray* bitarray_memoria_segmentada, int base, int limite);
