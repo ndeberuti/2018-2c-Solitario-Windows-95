@@ -156,7 +156,7 @@
 
 
 	void guardar_proceso_paginas_invertidas(int pid ,int longitud_paquete, char* buffer_recepcion);
-	int guardar_proceso_segmentacion_paginada(int pid ,int longitud_paquete, char* buffer_recepcion);
+
 
 
 	void devolver_proceso_paginas_invertidas(int socket_diego,int pid);
@@ -252,8 +252,16 @@
 	t_list* tabla_de_segmentos_sp;
 	t_list* tabla_de_paginas_sp;
 
-	int asignar_segmento_paginado_vacio(int cantidad_paginas,segmento_paginado_t* segmento_nuevo);
+	int guardar_proceso_segmentacion_paginada(int pid ,int longitud_paquete, char* buffer_recepcion);
+	void abrir_linea_segmentacion_paginada(int socket_cpu, int pid, int numero_linea);
+	void modificar_linea_segmentacion_paginada(int socket_cpu,int pid,int numero_linea,char* linea_tratada);
+	void flush_segmentacion_paginada(int socket_diego,int pid);
+	void dump_segmentacion_paginada(int pid);
+
+
+	void asignar_segmento_paginado_vacio(int cantidad_paginas,segmento_paginado_t* segmento_nuevo, char* buffer_recepcion);
 	int entra_memoria_sp(int cantidad_paginas);
+	void paginar_segmento(int id, int cantidad_lineas, char* buffer_recepecion);
 
 	//bitarray
 	void reservar_bitarray(t_bitarray* bitarray_memoria_segmentada, int base, int limite);
