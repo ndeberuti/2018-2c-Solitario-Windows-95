@@ -16,7 +16,7 @@ int main(void) {
 
 	config = load_config();
 	crear_estructura_directorios();
-	pathActual = strdup(config.PUNTO_MONTAJE);
+	pathActual = strdup(config->PUNTO_MONTAJE);
 	pathConsola = strdup("/");
 
 	pthread_create(&thread_servidor, NULL, (void *) server, NULL);
@@ -30,39 +30,39 @@ int main(void) {
 	exit(EXIT_SUCCESS);
 }
 
-config_t load_config() {
+config_t *load_config() {
 	t_config *aux_config = config_create(PATH_CONFIG);
 
-	config_t miConfig;
-	miConfig.PUERTO = config_get_int_value(aux_config, "PUERTO");
-	miConfig.PUNTO_MONTAJE = strdup(config_get_string_value(aux_config, "PUNTO_MONTAJE"));
-	miConfig.RETARDO = config_get_int_value(aux_config, "RETARDO");
+	config_t *miConfig = malloc(sizeof(config_t));
+	miConfig->PUERTO = config_get_int_value(aux_config, "PUERTO");
+	miConfig->PUNTO_MONTAJE = strdup(config_get_string_value(aux_config, "PUNTO_MONTAJE"));
+	miConfig->RETARDO = config_get_int_value(aux_config, "RETARDO");
 	config_destroy(aux_config);
 
 	log_info(log_mdj, "---- Configuracion ----");
-	log_info(log_mdj, "PUERTO = %d", miConfig.PUERTO);
-	log_info(log_mdj, "PUNTO_MONTAJE = %s", miConfig.PUNTO_MONTAJE);
-	log_info(log_mdj, "RETARDO = %d milisegundos", miConfig.RETARDO);
+	log_info(log_mdj, "PUERTO = %d", miConfig->PUERTO);
+	log_info(log_mdj, "PUNTO_MONTAJE = %s", miConfig->PUNTO_MONTAJE);
+	log_info(log_mdj, "RETARDO = %d milisegundos", miConfig->RETARDO);
 	log_info(log_mdj, "-----------------------");
 
 	return miConfig;
 }
 
 void crear_estructura_directorios() {
-	if (mkdir(config.PUNTO_MONTAJE, 0777) != 0)
+	if (mkdir(config->PUNTO_MONTAJE, 0777) != 0)
 		if (errno != EEXIST) {
-			log_error(log_mdj, "Permiso denegado al intentar montar el FS en %s", config.PUNTO_MONTAJE);
+			log_error(log_mdj, "Permiso denegado al intentar montar el FS en %s", config->PUNTO_MONTAJE);
 			exit(EXIT_FAILURE);
 		}
 
 	char *path;
-	uint32_t largo_mnt = strlen(config.PUNTO_MONTAJE);
+	uint32_t largo_mnt = strlen(config->PUNTO_MONTAJE);
 	if ((path = malloc(sizeof(char) * (largo_mnt + 10))) == NULL) {
 		log_error(log_mdj, "Error al intentar crear la estructura de directorios");
 		exit(EXIT_FAILURE);
 	}
 
-	strcpy(path, config.PUNTO_MONTAJE);
+	strcpy(path, config->PUNTO_MONTAJE);
 	strcat(path, "Metadata/");
 	mkdir(path, 0777);
 	free(path);
@@ -72,7 +72,7 @@ void crear_estructura_directorios() {
 		exit(EXIT_FAILURE);
 	}
 
-	strcpy(path, config.PUNTO_MONTAJE);
+	strcpy(path, config->PUNTO_MONTAJE);
 	strcat(path, "Metadata/");
 	strcat(path, "Metadata.bin");
 
@@ -87,15 +87,16 @@ void crear_estructura_directorios() {
 		config_save(aux_config);
 	}
 
-	fs_config.TAMANIO_BLOQUES = config_get_int_value(aux_config, "TAMANIO_BLOQUES");
-	fs_config.CANTIDAD_BLOQUES = config_get_int_value(aux_config, "CANTIDAD_BLOQUES");
-	fs_config.MAGIC_NUMBER = strdup(config_get_string_value(aux_config, "MAGIC_NUMBER"));
+	fs_config = malloc(sizeof(config_fs));
+	fs_config->TAMANIO_BLOQUES = config_get_int_value(aux_config, "TAMANIO_BLOQUES");
+	fs_config->CANTIDAD_BLOQUES = config_get_int_value(aux_config, "CANTIDAD_BLOQUES");
+	fs_config->MAGIC_NUMBER = strdup(config_get_string_value(aux_config, "MAGIC_NUMBER"));
 	config_destroy(aux_config);
 
 	log_info(log_mdj, "----- File System -----");
-	log_info(log_mdj, "TAMANIO_BLOQUES = %d", fs_config.TAMANIO_BLOQUES);
-	log_info(log_mdj, "CANTIDAD_BLOQUES = %d", fs_config.CANTIDAD_BLOQUES);
-	log_info(log_mdj, "MAGIC_NUMBER = %s", fs_config.MAGIC_NUMBER);
+	log_info(log_mdj, "TAMANIO_BLOQUES = %d", fs_config->TAMANIO_BLOQUES);
+	log_info(log_mdj, "CANTIDAD_BLOQUES = %d", fs_config->CANTIDAD_BLOQUES);
+	log_info(log_mdj, "MAGIC_NUMBER = %s", fs_config->MAGIC_NUMBER);
 	log_info(log_mdj, "-----------------------");
 	free(path);
 
@@ -104,12 +105,12 @@ void crear_estructura_directorios() {
 		exit(EXIT_FAILURE);
 	}
 
-	if ((bitmap = malloc(sizeof(char) * (fs_config.CANTIDAD_BLOQUES + 1))) == NULL) {
+	if ((bitmap = malloc(sizeof(char) * (fs_config->CANTIDAD_BLOQUES + 1))) == NULL) {
 		log_error(log_mdj, "Error al intentar crear la estructura de directorios");
 		exit(EXIT_FAILURE);
 	}
 
-	strcpy(path, config.PUNTO_MONTAJE);
+	strcpy(path, config->PUNTO_MONTAJE);
 	strcat(path, "Metadata/");
 	strcat(path, "Bitmap.bin");
 	path_bitmap = strdup(path);
@@ -117,12 +118,12 @@ void crear_estructura_directorios() {
 	FILE *fptr = fopen(path, "r");
 	if (fptr == NULL) {
 		fptr = fopen(path, "w");
-		memset(bitmap, '\0', fs_config.CANTIDAD_BLOQUES + 1);
-		memset(bitmap, '0', fs_config.CANTIDAD_BLOQUES);
+		memset(bitmap, '\0', fs_config->CANTIDAD_BLOQUES + 1);
+		memset(bitmap, '0', fs_config->CANTIDAD_BLOQUES);
 		fputs(bitmap, fptr);
 	}
 	else
-		fgets(bitmap, fs_config.CANTIDAD_BLOQUES + 1, fptr);
+		fgets(bitmap, fs_config->CANTIDAD_BLOQUES + 1, fptr);
 
 	bitarray = bitarray_create(bitmap, strlen(bitmap));
 	fclose(fptr);
@@ -133,7 +134,7 @@ void crear_estructura_directorios() {
 		exit(EXIT_FAILURE);
 	}
 
-	strcpy(path, config.PUNTO_MONTAJE);
+	strcpy(path, config->PUNTO_MONTAJE);
 	strcat(path, "Archivos/");
 	carpeta_archivos = strdup(path);
 	mkdir(path, 0777);
@@ -144,7 +145,7 @@ void crear_estructura_directorios() {
 		exit(EXIT_FAILURE);
 	}
 
-	strcpy(path, config.PUNTO_MONTAJE);
+	strcpy(path, config->PUNTO_MONTAJE);
 	strcat(path, "Bloques/");
 	carpeta_bloques = strdup(path);
 	mkdir(path, 0777);
@@ -164,7 +165,7 @@ void server() {
 	FD_ZERO(&read_fds);
 
 	// obtener socket a la escucha
-	uint32_t servidor = build_server(config.PUERTO, log_consola);
+	uint32_t servidor = build_server(config->PUERTO, log_consola);
 
 	// añadir listener al conjunto maestro
 	FD_SET(servidor, &master);
@@ -226,6 +227,10 @@ void command_handler(uint32_t socket, uint32_t command) {
 		log_info(log_consola, "Operacion CREAR_ARCHIVO recibida");
 		crear_archivo(socket);
 		break;
+	case OBTENER_DATOS:
+		log_info(log_consola, "Operacion OBTENER_DATOS recibida");
+		obtener_datos(socket);
+		break;
 	default:
 		log_warning(log_consola, "%d: Comando recibido incorrecto", command);
 	}
@@ -240,8 +245,8 @@ void validar_archivo(uint32_t socket) {
 		rta = ERROR_OPERACION;
 	}
 	else {
-		char *aux_path = malloc(sizeof(char) * (strlen(pathActual) + strlen(path) + 1));
-		strcpy(aux_path, pathActual);
+		char *aux_path = malloc(sizeof(char) * (strlen(carpeta_archivos) + strlen(path) + 1));
+		strcpy(aux_path, carpeta_archivos);
 		strcat(aux_path, path);
 		if (isFileExists(aux_path)) {
 			log_info(log_consola, "Existe el archivo %s", path);
@@ -276,9 +281,7 @@ void crear_archivo(uint32_t socket) {
 		else {
 			log_info(log_consola, "Crear archivo %s de %d bytes", path, bytes);
 
-			uint32_t cant_bloques = bytes / fs_config.TAMANIO_BLOQUES;
-			if (bytes % fs_config.TAMANIO_BLOQUES > 0)
-				cant_bloques++;
+			uint32_t cant_bloques = calcular_cant_bloques(bytes);
 
 			uint32_t *prox_bloque;
 			uint32_t pos_actual = 0;
@@ -302,12 +305,13 @@ void crear_archivo(uint32_t socket) {
 				char *nro_bloque;
 				uint32_t largo_lista_bloques = 1;
 				char *nombre_bloque;
+				FILE *fptr;
 
 				for (uint32_t i = 0; i < cant_bloques; i++) {
 					//CREAR EL BLOQUE
-					bytes_del_bloque = bytes_restantes > fs_config.TAMANIO_BLOQUES ? fs_config.TAMANIO_BLOQUES : bytes_restantes;
+					bytes_del_bloque = bytes_restantes > fs_config->TAMANIO_BLOQUES ? fs_config->TAMANIO_BLOQUES : bytes_restantes;
 					relleno = malloc(sizeof(char) * (bytes_del_bloque + 1));
-					bytes_restantes -= fs_config.TAMANIO_BLOQUES;
+					bytes_restantes -= fs_config->TAMANIO_BLOQUES;
 
 					nro_bloque = string_itoa(bloques[i]);
 					largo_lista_bloques += strlen(nro_bloque) + 1;
@@ -316,7 +320,7 @@ void crear_archivo(uint32_t socket) {
 					strcat(nombre_bloque, nro_bloque);
 					strcat(nombre_bloque, ".bin");
 
-					FILE *fptr = fopen(nombre_bloque, "w");
+					fptr = fopen(nombre_bloque, "w");
 					memset(relleno, '\0', bytes_del_bloque + 1);
 					memset(relleno, '\n', bytes_del_bloque);
 					fputs(relleno, fptr);
@@ -366,6 +370,73 @@ void crear_archivo(uint32_t socket) {
 		log_error(log_consola, "send (crear_archivo)");
 }
 
+void obtener_datos(uint32_t socket) {
+	char *path;
+	uint32_t rta;
+	uint32_t size;
+	uint32_t offset;
+	char *sub_datos;
+
+	if (receive_string(socket, &path) <= 0) {
+		log_error(log_consola, "recv path (obtener_datos)");
+		rta = ERROR_OPERACION;
+	}
+	else {
+		if (receive_int(socket, &offset) <= 0) {
+			log_error(log_consola, "recv offset (obtener_datos)");
+			rta = ERROR_OPERACION;
+		}
+		else {
+			if (receive_int(socket, &size) <= 0) {
+				log_error(log_consola, "recv size (obtener_datos)");
+				rta = ERROR_OPERACION;
+			}
+			else {
+				log_info(log_consola, "Obtener datos del archivo %s desde el byte %d y largo %d", path, offset, size);
+
+				char *path_archivo = malloc(sizeof(char) * (strlen(carpeta_archivos) + strlen(path) + 1));
+				strcpy(path_archivo, carpeta_archivos);
+				strcat(path_archivo, path);
+
+				char *datos = obtener_todo(path_archivo, offset);
+				free(path_archivo);
+
+				if (datos != NULL) {
+					sub_datos = string_substring(datos, offset, size);
+
+					log_info(log_consola, "Operacion finalizada con exito");
+					rta = OPERACION_OK;
+					free(datos);
+				}
+				else {
+					log_warning(log_consola, "El offset es mayor que el tamanio del archivo");
+					rta = OPERACION_FAIL;
+				}
+			}
+		}
+		free(path);
+	}
+
+	if (send_int(socket, rta) == -1)
+		log_error(log_consola, "send (obtener_datos)");
+
+	if (rta == OPERACION_OK) {
+		if (send_string(socket, sub_datos) == -1)
+			log_error(log_consola, "send datos (obtener_datos)");
+
+		free(sub_datos);
+	}
+}
+
+uint32_t calcular_cant_bloques(uint32_t bytes) {
+	uint32_t cant_bloques = bytes / fs_config->TAMANIO_BLOQUES;
+
+	if (bytes % fs_config->TAMANIO_BLOQUES > 0)
+		cant_bloques++;
+
+	return cant_bloques;
+}
+
 void *proximo_bloque_libre(uint32_t bloque_inicial) {
 	uint32_t i = bloque_inicial;
 
@@ -410,6 +481,53 @@ void crear_path_completo(char *path_completo) {
 	free(sub_path1);
 	free(aux_path);
 	free(path);
+}
+
+char *obtener_todo(char *path, uint32_t offset) {
+	t_config *aux_config = config_create(path);
+
+	config_arch *archConfig = malloc(sizeof(config_arch));
+	archConfig->TAMANIO = config_get_int_value(aux_config, "TAMANIO");
+	archConfig->BLOQUES = config_get_array_value(aux_config, "BLOQUES");
+	uint32_t cant_bloques = calcular_cant_bloques(archConfig->TAMANIO);
+	config_destroy(aux_config);
+	char *rta = NULL;
+
+	if (offset < archConfig->TAMANIO) {
+		rta = malloc(sizeof(char) * (archConfig->TAMANIO + 1));
+		char *contenido = malloc(sizeof(char) * (fs_config->TAMANIO_BLOQUES + 1));
+
+		char *nombre_bloque = malloc(sizeof(char) * (strlen(carpeta_bloques) + strlen(archConfig->BLOQUES[0]) + 5));
+		strcpy(nombre_bloque, carpeta_bloques);
+		strcat(nombre_bloque, archConfig->BLOQUES[0]);
+		strcat(nombre_bloque, ".bin");
+		FILE *fptr = fopen(nombre_bloque, "r");
+		fgets(contenido, fs_config->TAMANIO_BLOQUES + 1, fptr);
+		strcpy(rta, contenido);
+		free(nombre_bloque);
+		free(contenido);
+		fclose(fptr);
+
+		for (uint32_t i = 1; i < cant_bloques; i++) {
+			nombre_bloque = malloc(sizeof(char) * (strlen(carpeta_bloques) + strlen(archConfig->BLOQUES[i]) + 5));
+			strcpy(nombre_bloque, carpeta_bloques);
+			strcat(nombre_bloque, archConfig->BLOQUES[i]);
+			strcat(nombre_bloque, ".bin");
+			fptr = fopen(nombre_bloque, "r");
+			fgets(contenido, fs_config->TAMANIO_BLOQUES + 1, fptr);
+			strcat(rta, contenido);
+			free(nombre_bloque);
+			free(contenido);
+			fclose(fptr);
+		}
+	}
+
+	for (uint32_t i = 0; i < cant_bloques; i++)
+		free(archConfig->BLOQUES[i]);
+	free(archConfig->BLOQUES);
+	free(archConfig);
+
+	return rta;
 }
 
 void consola() {

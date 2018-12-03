@@ -35,6 +35,7 @@ char *PATH_CONFIG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/MDJ/c
 #define NUEVA_CONEXION_DIEGO 1
 #define VALIDAR_ARCHIVO 2
 #define CREAR_ARCHIVO 3
+#define OBTENER_DATOS 4
 
 #define OPERACION_FAIL 10
 #define OPERACION_OK 11
@@ -55,6 +56,11 @@ typedef struct {
 } config_fs;
 
 typedef struct {
+	uint32_t TAMANIO;
+	char **BLOQUES;
+} config_arch;
+
+typedef struct {
 	char *comando;
 	char *param[MAX_PARAMS];
 	uint32_t cant_params;
@@ -63,8 +69,8 @@ typedef struct {
 // variables
 t_log *log_consola;
 t_log *log_mdj;
-config_t config;
-config_fs fs_config;
+config_t *config;
+config_fs *fs_config;
 char *path_bitmap;
 char *bitmap;
 t_bitarray *bitarray;
@@ -76,15 +82,18 @@ pthread_t thread_servidor;
 pthread_t thread_consola;
 
 // funciones
-config_t load_config();
+config_t *load_config();
 void crear_estructura_directorios();
 void server();
 void command_handler(uint32_t socket, uint32_t command);
 void validar_archivo(uint32_t socket);
 void crear_archivo(uint32_t socket);
+void obtener_datos(uint32_t socket);
+uint32_t calcular_cant_bloques(uint32_t bytes);
 void *proximo_bloque_libre(uint32_t bloque_inicial);
 void set_bitarray(uint32_t posicion);
 void crear_path_completo(char *path_completo);
+char *obtener_todo(char *path, uint32_t offset);
 void consola();
 
 #endif /* SRC_MDJ_H_ */
