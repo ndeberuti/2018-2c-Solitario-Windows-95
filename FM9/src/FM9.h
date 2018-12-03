@@ -44,6 +44,7 @@
 	#define OK 10
 	#define ERROR 11
 	#define FLUSH 12
+	#define CLOSE 13
 
 	//ESTRUCTURAS
 	typedef struct {
@@ -141,6 +142,7 @@
 	void modificar_linea(int socket);
 	void flush (int socket);
 	void dump(int pid);
+	void close_file(int socket_diego);
 
 	void setear_paginacion_invertida();
 	void setear_segmentacion_paginada();
@@ -243,7 +245,8 @@
 	void crearMemoriaPrincipal(int frames,int tamanio_pagina);
 	void abrir_linea_paginas_invertidas(int socket_cpu,int pid,int numero_linea);
 	void modificar_linea_paginas_invertidas(int socket_cpu, int pid,int nroLinea,char* buffer);
-	
+	void dump_paginacion(int unPid);
+	void flush_paginacion(int socket_diego, int pid);
 
 
 	//SEGMENTACION PAGINADA
