@@ -142,7 +142,7 @@
 	void setear_modo();
 
 	void guardar_archivo(int socket);
-	void abrir_linea(int socket);
+	void abrir_archivo(int socket);
 	void modificar_linea(int socket);
 	void flush (int socket);
 	void dump(int pid);
@@ -189,7 +189,7 @@
 	void inicializar_memoria_segmentacion_simple();
 
 	int guardar_archivo_segmentacion_simple(int pid ,int id,int cantidad_lineas, char* buffer_recepcion);
-	void abrir_archivo_segmentacion_simple(int socket_diego, int id, int numero_linea);
+	void abrir_archivo_segmentacion_simple(int socket_diego, int id);
 	void modificar_linea_segmentacion_simple(int socket_cpu,int pid, int numero_linea, char* linea_nueva);
 	void flush_segmentacion_simple(int socket_diego,int id);
 	void dump_segmentacion_simple(int pid);
@@ -263,7 +263,7 @@
 	t_list* tabla_de_paginas_sp;
 
 	int guardar_proceso_segmentacion_paginada(int pid ,int id,int longitud_paquete, char* buffer_recepcion);
-	void abrir_linea_segmentacion_paginada(int socket_cpu, int id, int numero_linea);
+	void abrir_archivo_segmentacion_paginada(int socket_cpu, int id);
 	void modificar_linea_segmentacion_paginada(int socket_cpu,int id,int numero_linea,char* linea_tratada);
 	void flush_segmentacion_paginada(int socket_diego,int id);
 	void dump_segmentacion_paginada(int pid);

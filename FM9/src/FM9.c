@@ -284,7 +284,7 @@ void guardar_archivo(int socket_diego){
 	send(socket_diego, &resultado, sizeof(int), MSG_WAITALL);
 }
 
-void abrir_linea(int socket_cpu){
+void abrir_archivo(int socket_cpu){
 
 
 	int pid = recibir_int(socket_cpu);
@@ -293,7 +293,7 @@ void abrir_linea(int socket_cpu){
 //TODO diccionario
 
 	if(strcmp("SEG", config.MODO)== 0){
-			abrir_archivo_segmentacion_simple(socket_cpu, id, numero_linea);
+			abrir_archivo_segmentacion_simple(socket_cpu, id);
 			}
 			else if(strcmp("TPI", config.MODO)== 0){
 			
@@ -607,7 +607,7 @@ int entra_en_memoria(int cantidad_lineas){
 
 }
 
-void abrir_linea_segmentacion_simple(int socket_cpu,int id,int numero_linea){
+void abrir_archivo_segmentacion_simple(int socket_cpu,int id){
 	segmento_tabla_t* segmento_linea;
 
 	int resultado;
@@ -627,11 +627,11 @@ void abrir_linea_segmentacion_simple(int socket_cpu,int id,int numero_linea){
 	if(segmento_linea != NULL){
 	resultado = OK;
 
-	char* buffer_envio = malloc(config.MAX_LINEA + sizeof(int)*2);
+	char* buffer_envio = malloc(segmento_linea->limite * config.MAX_LINEA+ sizeof(int)*2);
 
 	memcpy(buffer_envio,&resultado, sizeof(int));
-	memcpy(buffer_envio+sizeof(int),&config.MAX_LINEA, config.MAX_LINEA );
-	memcpy(buffer_envio+ sizeof(int)*2,puntero_memoria_segmentada + segmento_linea->base + (numero_linea * config.MAX_LINEA), config.MAX_LINEA );
+	memcpy(buffer_envio+sizeof(int),&(segmento_linea->limite * config.MAX_LINEA), sizeof(int));
+	memcpy(buffer_envio+ sizeof(int)*2,puntero_memoria_segmentada + segmento_linea->base * config.MAX_LINEA , segmento_linea->limite * config.MAX_LINEA);
 
 
 
@@ -644,7 +644,7 @@ void abrir_linea_segmentacion_simple(int socket_cpu,int id,int numero_linea){
 		resultado = ERROR;
 
    send(socket_cpu, &resultado, sizeof(int), MSG_WAITALL);
-   log_error(log_fm9, "No se encuentra la linea en memoria");
+   log_error(log_fm9, "No se encuentra el archivo en memoria");
 
 
 	}
@@ -1447,23 +1447,25 @@ void asignar_segmento_paginado_vacio(int cantidad_paginas,segmento_paginado_t* s
 }
 
 
-void abrir_linea_segmentacion_paginada(int socket_cpu, int id, int numero_linea){
+void abrir_archivo_segmentacion_paginada(int socket_cpu, int id, int numero_linea){
 	segmento_paginado_t * segmento_buscado = malloc(sizeof(segmento_paginado_t));
-	int resultado, frame, resto;
+	int resultado, frame, resto, paginas;
+	int contador = 0;
+	int offset = 0;
 
-	int numero_pagina = numero_linea/ config.TAM_PAGINA / config.MAX_LINEA ;
+	//int numero_pagina = numero_linea/ config.TAM_PAGINA / config.MAX_LINEA ;
 
-	resto = numero_linea % config.TAM_PAGINA / config.MAX_LINEA;
+	//resto = numero_linea % config.TAM_PAGINA / config.MAX_LINEA;
 
-	if(resto > 0){
+	//if(resto > 0){
 
-		numero_pagina++;
+	//	numero_pagina++;
 
-	}
+	//}
 
 	int* puntero_frame = malloc(sizeof(int));
 
-	int corrimiento = numero_linea - (numero_pagina * config.TAM_PAGINA / config.MAX_LINEA);
+	//int corrimiento = numero_linea - (numero_pagina * config.TAM_PAGINA / config.MAX_LINEA);
 
 
 	bool es_id(segmento_paginado_t* entrada){
@@ -1480,19 +1482,32 @@ void abrir_linea_segmentacion_paginada(int socket_cpu, int id, int numero_linea)
 				log_error(log_fm9, "El segmento no se encuentra en la tabla");
 			}else{
 
+			paginas = list_size(segmento_buscado->tabla_de_paginas_segmento);
+
+
 			resultado = OK;
 
-			puntero_frame = list_get(segmento_buscado->tabla_de_paginas_segmento, numero_pagina);
+			char* buffer_envio = malloc(sizeof(int)* 2 + config.TAM_PAGINA * paginas);
+
+			memcpy(buffer_envio, &resultado, sizeof(int));
+			memcpy(buffer_envio + sizeof(int), &(config.TAM_PAGINA * paginas), sizeof(int));
+
+			while(contador < paginas){
+
+			puntero_frame = list_get(segmento_buscado->tabla_de_paginas_segmento, contador);
 
 			frame = *puntero_frame;
 
-			char* buffer_envio = malloc(sizeof(int)* 2 + config.MAX_LINEA);
 
-			memcpy(buffer_envio, &resultado, sizeof(int));
-			memcpy(buffer_envio + sizeof(int), &config.MAX_LINEA, sizeof(int));
-			memcpy(buffer_envio + sizeof(int)*2, puntero_memoria_sp + (frame * config.TAM_PAGINA)+ (corrimiento * config.MAX_LINEA), sizeof(config.MAX_LINEA));
 
-			send(socket_cpu, buffer_envio, sizeof(int)* 2 + config.MAX_LINEA, MSG_WAITALL);
+
+			memcpy(buffer_envio + sizeof(int)*2 + offset, puntero_memoria_sp + (frame * config.TAM_PAGINA), config.TAM_PAGINA);
+
+			offset += config.TAM_PAGINA
+			}
+
+
+			send(socket_cpu, buffer_envio, sizeof(int)* 2 + config.MAX_LINEA * paginas, MSG_WAITALL);
 
 
 
@@ -1591,16 +1606,16 @@ void flush_segmentacion_paginada(int socket_diego,int id){
 
 					while(numero_pagina <= paginas ){
 
-					puntero_frame = list_get(segmento_buscado->tabla_de_paginas_segmento, numero_pagina);
+						puntero_frame = list_get(segmento_buscado->tabla_de_paginas_segmento, numero_pagina);
 
-					frame = *puntero_frame;
+						frame = *puntero_frame;
 
-					memcpy(buffer_envio + sizeof(int) *2 + offset ,puntero_memoria_sp + (frame * config.TAM_PAGINA), sizeof(config.TAM_PAGINA));
+						memcpy(buffer_envio + sizeof(int) *2 + offset ,puntero_memoria_sp + (frame * config.TAM_PAGINA), sizeof(config.TAM_PAGINA));
 
 
 
-					numero_pagina++;
-					offset += config.TAM_PAGINA;
+						numero_pagina++;
+						offset += config.TAM_PAGINA;
 
 
 					}
