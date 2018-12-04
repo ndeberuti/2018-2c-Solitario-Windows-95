@@ -12,7 +12,7 @@
 	#include <stdlib.h>
 	#include <string.h>
 	#include <unistd.h>
-	#include <math.h>
+
 	#include <sys/types.h>
 	#include <sys/stat.h>
 	#include <sys/socket.h>
@@ -25,7 +25,7 @@
 	#include "commons/config.h"
 	#include "commons/collections/list.h"
 	#include "servidor/servidor.h"
-	#include <math.h>
+
 	#include "PCB.h"
 	#include "commons/bitarray.h"
 	#include <stdint.h>
@@ -291,6 +291,7 @@
 
 	//diccionario
 	void inicializar_diccionario();
+	int transformar_path(char* path);
 
 	int id_nuevo();
 	int id_global = 0;

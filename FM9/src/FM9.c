@@ -21,8 +21,13 @@ int main(void) {
 
 	config = load_config();
 	
+
+
 	inicializar_diccionario();
+
+
 	setear_modo();
+
 
 
 	pthread_create(&thread_consola, NULL, (void *) consola, NULL);
@@ -143,7 +148,7 @@ void command_handler(uint32_t command, uint32_t socket) {
 			break;
 	case ABRIR_ARCHIVO:
 		log_info(log_consola, "Abriendo linea");
-		abrir_linea(socket);
+		abrir_archivo(socket);
 			break;
 	case MODIFICAR_LINEA:
 		modificar_linea(socket);
@@ -247,6 +252,7 @@ void setear_modo(){
 	else {
 		log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
 	}
+
 }
 
 int obtener_cantidad_lineas(int longitud_paquete){
@@ -323,7 +329,7 @@ void abrir_archivo(int socket_cpu){
 			
 			}
 			else if(strcmp("SPI", config.MODO)== 0){
-			abrir_linea_segmentacion_paginada(socket_cpu, id, numero_linea);
+			//abrir_linea_segmentacion_paginada(socket_cpu, id, numero_linea);
 			}
 			else {
 			log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
@@ -508,11 +514,16 @@ if(resultado == -1){
 void inicializar_memoria_segmentacion_simple(){
 	//tabla de segmentos
 
+
+
+
+
+	//ERROR SEGMENTATION FAULT
+	puntero_memoria_segmentada = malloc(config.TAMANIO);
 	tabla_de_segmentos = list_create();
 
 
-	puntero_memoria_segmentada = malloc(config.TAMANIO);
-	bitarray_memoria = bitarray_create(b_m_s,config.TAMANIO / config.MAX_LINEA);
+	bitarray_memoria = bitarray_create(b_m_s, config.TAMANIO / config.MAX_LINEA);
 
 
 
