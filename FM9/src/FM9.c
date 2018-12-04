@@ -38,7 +38,7 @@ int main(void) {
 
 	exit(EXIT_SUCCESS);
 	
-	//TODO free() variables globales;
+	free(puntero_memoria_segmentada);
 
 
 }
@@ -317,7 +317,7 @@ void abrir_archivo(int socket_cpu){
 		int id = transformar_path(buffer);
 		free(buffer);
 
-		int numero_linea = recibir_int(socket_cpu);
+
 
 
 	if(strcmp("SEG", config.MODO)== 0){
