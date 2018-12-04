@@ -138,7 +138,7 @@
 	void command_handler(uint32_t command, uint32_t socket);
 	void consola();
 
-
+	void inicializar_diccionario();
 	void setear_modo();
 
 	void guardar_archivo(int socket);
@@ -287,5 +287,13 @@
 	//comunicacion
 	char* recibir_char(int socket, int longitud_paquete);
 	int recibir_int(int socket);
+
+
+	//diccionario
+	void inicializar_diccionario();
+
+	int id_nuevo();
+	int id_global = 0;
+	t_dictionary *diccionario;
 
 	#endif /* SRC_FM9_H_ */

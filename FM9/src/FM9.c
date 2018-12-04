@@ -21,6 +21,7 @@ int main(void) {
 
 	config = load_config();
 	
+	inicializar_diccionario();
 	setear_modo();
 
 
@@ -259,10 +260,26 @@ void guardar_archivo(int socket_diego){
 	int resultado;
 
 	int pid = recibir_int(socket_diego);
-	int id = diccionario;
+	int longitud_path = recibir_int(socket_diego);
+
+	char* buffer =  malloc(longitud_path);
+	buffer = recibir_char(socket_diego, longitud_path);
+
+
+	int id = transformar_path(buffer);
+	free(buffer);
+
 	int cantidad_lineas = recibir_int(socket_diego);
-	char* buffer_recepcion = malloc(cantidad_lineas * config.MAX_LINEA);
-	buffer_recepcion= recibir_char(socket_diego, cantidad_lineas * config.MAX_LINEA);
+
+	int longitud = recibir_int(socket_diego);
+	char* buffer_recepcion = malloc(longitud);
+
+
+
+
+
+
+
 
 
 	if(strcmp("SEG", config.MODO)== 0){
@@ -287,17 +304,22 @@ void guardar_archivo(int socket_diego){
 void abrir_archivo(int socket_cpu){
 
 
-	int pid = recibir_int(socket_cpu);
-	int id = diccionario;
-	int numero_linea = recibir_int(socket_cpu);
-//TODO diccionario
+
+		int longitud_path = recibir_int(socket_cpu);
+		char* buffer =  malloc(longitud_path);
+		buffer = recibir_char(socket_cpu, longitud_path);
+		int id = transformar_path(buffer);
+		free(buffer);
+
+		int numero_linea = recibir_int(socket_cpu);
+
 
 	if(strcmp("SEG", config.MODO)== 0){
 			abrir_archivo_segmentacion_simple(socket_cpu, id);
 			}
 			else if(strcmp("TPI", config.MODO)== 0){
 			
-			abrir_linea_paginas_invertidas(socket_cpu, pid, numero_linea);
+			//abrir_linea_paginas_invertidas(socket_cpu, pid, numero_linea);
 			
 			}
 			else if(strcmp("SPI", config.MODO)== 0){
@@ -312,9 +334,15 @@ void abrir_archivo(int socket_cpu){
 }
 
 void close_file(int socket_cpu){
+	int resultado;
 
-		int id = recibir_int(socket_cpu);
-		int resultado;
+	int longitud_path = recibir_int(socket_cpu);
+	char* buffer =  malloc(longitud_path);
+	buffer = recibir_char(socket_cpu, longitud_path);
+	int id = transformar_path(buffer);
+	free(buffer);
+
+
 
 		if(strcmp("SEG", config.MODO)== 0){
 				resultado = close_file_segmentacion_simple(socket_cpu, id);
@@ -363,7 +391,14 @@ void close_process(int socket_cpu){
 void modificar_linea(int socket_cpu){
 
 
-	int id = recibir_int(socket_cpu);
+
+
+
+	int longitud_path = recibir_int(socket_cpu);
+		char* buffer =  malloc(longitud_path);
+		buffer = recibir_char(socket_cpu, longitud_path);
+		int id = transformar_path(buffer);
+		free(buffer);
 	int numero_linea = recibir_int(socket_cpu);
 	int longitud_linea = recibir_int(socket_cpu);
 	char* nueva_linea = calloc(1, longitud_linea);
@@ -394,7 +429,11 @@ free(linea_tratada);
 
 void flush(int socket_diego){
 
-	int id = recibir_int(socket_diego);
+	int longitud_path = recibir_int(socket_diego);
+		char* buffer =  malloc(longitud_path);
+		buffer = recibir_char(socket_diego, longitud_path);
+		int id = transformar_path(buffer);
+		free(buffer);
 
 	if(strcmp("SEG", config.MODO)== 0){
 					flush_segmentacion_simple(socket_diego, id);
@@ -610,7 +649,7 @@ int entra_en_memoria(int cantidad_lineas){
 void abrir_archivo_segmentacion_simple(int socket_cpu,int id){
 	segmento_tabla_t* segmento_linea;
 
-	int resultado;
+	int resultado, tamanio;
 
 	bool es_id(segmento_tabla_t* entrada){
 
@@ -629,8 +668,10 @@ void abrir_archivo_segmentacion_simple(int socket_cpu,int id){
 
 	char* buffer_envio = malloc(segmento_linea->limite * config.MAX_LINEA+ sizeof(int)*2);
 
+	tamanio = segmento_linea->limite * config.MAX_LINEA;
+
 	memcpy(buffer_envio,&resultado, sizeof(int));
-	memcpy(buffer_envio+sizeof(int),&(segmento_linea->limite * config.MAX_LINEA), sizeof(int));
+	memcpy(buffer_envio+sizeof(int),&tamanio, sizeof(int));
 	memcpy(buffer_envio+ sizeof(int)*2,puntero_memoria_segmentada + segmento_linea->base * config.MAX_LINEA , segmento_linea->limite * config.MAX_LINEA);
 
 
@@ -1447,9 +1488,9 @@ void asignar_segmento_paginado_vacio(int cantidad_paginas,segmento_paginado_t* s
 }
 
 
-void abrir_archivo_segmentacion_paginada(int socket_cpu, int id, int numero_linea){
+void abrir_archivo_segmentacion_paginada(int socket_cpu, int id){
 	segmento_paginado_t * segmento_buscado = malloc(sizeof(segmento_paginado_t));
-	int resultado, frame, resto, paginas;
+	int resultado, frame, tamanio, paginas;
 	int contador = 0;
 	int offset = 0;
 
@@ -1484,13 +1525,14 @@ void abrir_archivo_segmentacion_paginada(int socket_cpu, int id, int numero_line
 
 			paginas = list_size(segmento_buscado->tabla_de_paginas_segmento);
 
+			tamanio = config.TAM_PAGINA * paginas;
 
 			resultado = OK;
 
-			char* buffer_envio = malloc(sizeof(int)* 2 + config.TAM_PAGINA * paginas);
+			char* buffer_envio = malloc(sizeof(int)* 2 + tamanio);
 
 			memcpy(buffer_envio, &resultado, sizeof(int));
-			memcpy(buffer_envio + sizeof(int), &(config.TAM_PAGINA * paginas), sizeof(int));
+			memcpy(buffer_envio + sizeof(int), &tamanio, sizeof(int));
 
 			while(contador < paginas){
 
@@ -1503,7 +1545,7 @@ void abrir_archivo_segmentacion_paginada(int socket_cpu, int id, int numero_line
 
 			memcpy(buffer_envio + sizeof(int)*2 + offset, puntero_memoria_sp + (frame * config.TAM_PAGINA), config.TAM_PAGINA);
 
-			offset += config.TAM_PAGINA
+			offset += config.TAM_PAGINA;
 			}
 
 
@@ -1912,5 +1954,47 @@ void liberar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limit
 }
 
 
+//---------------------------------------------------------------------------------------------------------------
+//DICCIONARIO
 
 
+void inicializar_diccionario(){
+
+
+	diccionario = dictionary_create();
+
+
+
+
+
+
+}
+
+int transformar_path(char* path){
+
+ int id;
+
+
+ if(dictionary_has_key(diccionario, path)){
+
+	id = dictionary_get(diccionario, path);
+
+ }else{
+
+	 id = id_nuevo();
+
+	dictionary_put(diccionario, path, id);
+
+ }
+
+return id;
+}
+
+int id_nuevo(){
+
+	id_global++;
+
+	return id_global;
+
+
+}
