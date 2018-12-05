@@ -21,12 +21,13 @@
 	#include <pthread.h>
 	#include <readline/readline.h>
 	#include <readline/history.h>
-	#include "funciones/funciones.h"
+
 	#include "commons/config.h"
 	#include "commons/collections/list.h"
 	#include "servidor/servidor.h"
+	#include "commons/collections/dictionary.h"
 
-	#include "PCB.h"
+
 	#include "commons/bitarray.h"
 	#include <stdint.h>
 

@@ -28,7 +28,9 @@ int main(void) {
 
 	setear_modo();
 
-
+	int diego = 9999;
+	guardar_archivo_segmentacion_simple(10 ,120,1, "hola\0");
+	abrir_archivo_segmentacion_simple(diego, 120);
 
 	pthread_create(&thread_consola, NULL, (void *) consola, NULL);
 
@@ -62,7 +64,7 @@ config_t load_config() {
 	log_info(log_fm9, "TAM_PAGINA = %d", miConfig.TAM_PAGINA);
 	log_info(log_fm9, "-----------------------");
 
-	config_destroy(config);
+	//config_destroy(config);
 	return miConfig;
 }
 
@@ -201,10 +203,10 @@ void consola() {
 					if (consola->cant_params < 1)
 						print_c(log_consola, "%s: falta el parametro ID del DTB\n", consola->comando);
 					else {
-					   pid_char = strdup(consola->param[0]);
-					   pid =  atoi(pid_char);
+					   //pid_char = strdup(consola->param[0]);
+					   //pid =  atoi(pid_char);
 
-						dump(pid);
+						//dump(pid);
 					}
 
 				else
@@ -520,10 +522,15 @@ void inicializar_memoria_segmentacion_simple(){
 
 	//ERROR SEGMENTATION FAULT
 	puntero_memoria_segmentada = malloc(config.TAMANIO);
+
 	tabla_de_segmentos = list_create();
 
+	b_m_s = calloc(0,config.TAMANIO / config.MAX_LINEA /8);
+	bitarray_memoria = bitarray_create(b_m_s, config.TAMANIO / config.MAX_LINEA /8);
 
-	bitarray_memoria = bitarray_create(b_m_s, config.TAMANIO / config.MAX_LINEA);
+
+
+
 
 
 
@@ -554,7 +561,7 @@ int resultado;
 
 
 
-	if(list_is_empty(tabla_de_segmentos)){
+	if(list_is_empty(tabla_de_segmentos) && entra_en_memoria(cantidad_lineas)){
 
 
 
@@ -626,11 +633,11 @@ int entra_en_memoria(int cantidad_lineas){
 	int base=0;
 	int otra_base = 0;
 
-	while(base < config.TAMANIO && cantidad_lineas < (otra_base - base)){
+	while((config.TAMANIO / config.MAX_LINEA / 8) && cantidad_lineas > (otra_base - base)){
 
 		base = otra_base;
 
-		while (bitarray_test_bit(bitarray_memoria, base) && base < config.TAMANIO){
+		while (bitarray_test_bit(bitarray_memoria, base) && base < (config.TAMANIO / config.MAX_LINEA / 8)){
 
 
 		base++;
@@ -639,7 +646,7 @@ int entra_en_memoria(int cantidad_lineas){
 
 		otra_base = base;
 
-		while(!(bitarray_test_bit(bitarray_memoria, otra_base)) && otra_base < config.TAMANIO){
+		while(!(bitarray_test_bit(bitarray_memoria, otra_base)) && otra_base < (config.TAMANIO / config.MAX_LINEA / 8)){
 
 		otra_base++;
 
@@ -649,7 +656,10 @@ int entra_en_memoria(int cantidad_lineas){
 		}
 	if(cantidad_lineas > otra_base - base){
 
-		return 0;
+	int numeroloco=	otra_base - base;
+
+	printf("numerooo :  %d", numeroloco);
+	return 0;
 	}else{
 		return 1;
 	}
@@ -685,12 +695,16 @@ void abrir_archivo_segmentacion_simple(int socket_cpu,int id){
 	memcpy(buffer_envio+sizeof(int),&tamanio, sizeof(int));
 	memcpy(buffer_envio+ sizeof(int)*2,puntero_memoria_segmentada + segmento_linea->base * config.MAX_LINEA , segmento_linea->limite * config.MAX_LINEA);
 
+	char* muestra = malloc(segmento_linea->base * config.MAX_LINEA);
+
+	memcpy(buffer_envio,puntero_memoria_segmentada + segmento_linea->base * config.MAX_LINEA , segmento_linea->limite * config.MAX_LINEA);
 
 
+	printf("RESULTADO %S", buffer_envio);
 
 	send(socket_cpu, buffer_envio, config.MAX_LINEA +sizeof(int)* 2, MSG_WAITALL);
 	free(buffer_envio);
-	log_info(log_fm9, "Se envió la linea al CPU");
+	log_info(log_fm9, "Se envió el archivo %d al CPU del proceso %d", segmento_linea->id, segmento_linea->pid);
 	}else{
 
 		resultado = ERROR;
@@ -1945,9 +1959,11 @@ int close_process_segmentacion_paginada(int socket_cpu,int pid){
 
 void reservar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limite){
 
-	for(int i= 0; i <= limite; i++){
 
-		bitarray_set_bit(bitarray_memoria_segmentada, i);
+
+	for(int i= 1; i <= limite; i++){
+
+	bitarray_set_bit(bitarray_memoria_segmentada, i);
 
 	}
 
