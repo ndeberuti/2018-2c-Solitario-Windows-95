@@ -10,7 +10,7 @@
 typedef struct
 {
 	uint32_t pid;
-	char* scriptName;											  
+	char* scriptPathInFS;
 	uint32_t programCounter;	//Contains the line number (in the script file) of the last executed instruction
 	bool wasInitialized;
 	bool canBeScheduled;
@@ -22,7 +22,9 @@ typedef struct
 	//Metrics
 	uint32_t newQueueArrivalTime;
 	uint32_t newQueueLeaveTime;
-	uint32_t instructionsExecuted;
+	uint32_t totalInstructionsExecuted;
+	uint32_t instructionsExecutedOnLastExecution;
+	uint32_t instructionsUntilIoOrEnd;
 
 	uint32_t completedDmaCalls;	//How many calls to the DMA were made; this is incremented when a process is unblocked by a request from the DMA
 	uint32_t lastIOStartTime;

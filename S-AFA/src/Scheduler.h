@@ -11,7 +11,7 @@
 #include <readline/history.h>
 #include "funciones/funciones.h"
 #include <commons/config.h>
-#include "commons/collections/dictionary.h" //I need to use a modified version of the dictionary provided by the teachers
+#include <commons/collections/dictionary.h>
 #include "servidor/servidor.h"
 #include "PCB.h"				
 #include "enums.h"
@@ -120,6 +120,10 @@ t_list* executionQueue;
 t_list* finishedQueue;
 t_list* connectedCPUs;
 t_list* ioReadyQueue;
+
+t_list* fileTableKeys;		//Because we could not add a keys list to the dictionary implementation provided by the teachers due to problems with
+t_list* semaphoreListKeys;	//what we tried to implement (adding a t_list* to the dictionary struct, and modifying the corresponding functions to
+							//add or remove keys from that list), to avoid problems we chose to create the key lists outside the dictionary
 t_dictionary* fileTable;
 t_dictionary* semaphoreList;
 bool killThreads;
@@ -176,11 +180,14 @@ void freeCpuElement(cpu_t*);
 void freePCB(PCB_t*);
 void freeFileTableData(fileTableData*);
 void freeSemaphoreListData(semaphoreData*);
+t_list* getSchedulableProcesses();
+void removeKeyFromList(t_list*, char*);
 
 //Algorithms
 void roundRobinScheduler();
 void virtualRoundRobinScheduler();
 void customScheduler();
+uint32_t countProcessInstructions(PCB_t*, cpu_t*);
 
 //Console functions (to avoid "conflicting types" error)
 void console();
@@ -189,7 +196,7 @@ void getProcessMetrics(uint32_t);
 void getSystemMetrics();
 void getProcessStatus(uint32_t);
 void getQueuesStatus();
-void terminateProcess(uint32_t);
+void terminateProcessConsole(uint32_t);
 PCB_t* getProcessFromSchedulingQueues(uint32_t, char*);
 
 //ServerThread functions
@@ -211,6 +218,8 @@ void unlockProcess(uint32_t);
 void signalResource(uint32_t);
 void waitResource(uint32_t);
 void freeCPUBySocket(uint32_t);
+cpu_t* findCPUBy_socket(uint32_t);
+void terminateProcess(uint32_t);
 
 
 #endif /* SRC_SCHEDULER_H_ */

@@ -226,7 +226,7 @@ void addProcessToBlockedQueue(PCB_t* process)
 	pthread_mutex_unlock(&blockedQueueMutex);
 }
 
-PCB_t* createProcess(char* scriptName)
+PCB_t* createProcess(char* scriptPathInFS)
 {
 	pthread_mutex_lock(&metricsGlobalvariablesMutex);
 
@@ -239,8 +239,8 @@ PCB_t* createProcess(char* scriptName)
 	process->newQueueArrivalTime = executedInstructions;
 	process->newQueueLeaveTime = 0;
 	process->pid = ++totalProcesses;
-	process->programCounter = NULL;
-	process->scriptName = strdup(scriptName); // scriptName es parte de una estructura que va a ser liberada
+	process->programCounter = 0;
+	process->scriptPathInFS = string_duplicate(scriptPathInFS); // scriptName es parte de una estructura que va a ser liberada
 	process->wasInitialized = false;
 	process->canBeScheduled = false;
 	process->executionState = SYSTEM_PROCESS;
@@ -248,7 +248,9 @@ PCB_t* createProcess(char* scriptName)
 	process->completedDmaCalls = 0;
 	process->responseTimes = 0;
 	process->lastIOStartTime = 0;
-	process->instructionsExecuted = 0;
+	process->totalInstructionsExecuted = 0;
+	process->instructionsExecutedOnLastExecution = 0;
+	process->instructionsUntilIoOrEnd = 0;
 
 	pthread_mutex_unlock(&metricsGlobalvariablesMutex);
 
@@ -286,11 +288,13 @@ void terminateExecutingProcess(uint32_t processId)
 		sem_post(&longTermScheduler); //Always let the LTS accept new processes before running the STS
 	*/
 
-	sem_post(&longTermScheduler); //Post the LITS semaphore; it does not matter if it got
-								  //posted several times by new processes, and it runs several times
-
 	checkAndFreeProcessFiles(processId);
 	checkAndFreeProcessSemaphores(processId);
+
+	log_info(schedulerLog, "El proceso con id %d fue movido a la cola FINISH, ya que se terminaron las instruccciones de su script\n", processId);
+
+	sem_post(&longTermScheduler); //Post the LITS semaphore; it does not matter if it got
+								  //posted several times by new processes and it runs several times
 }
 
 void unblockProcess(uint32_t processId, bool unblockedByDMA)
@@ -389,6 +393,8 @@ t_list* getFreeCPUs()
 
 void executeProcess(PCB_t* process, cpu_t* selectedCPU)
 {
+	int32_t nbytes;
+
 	pthread_mutex_lock(&configFileMutex);
 
 	char* taskMessage;
@@ -413,16 +419,35 @@ void executeProcess(PCB_t* process, cpu_t* selectedCPU)
 
 	if(!process->wasInitialized)
 	{
-		send_int_with_delay(selectedCPU->clientSocket, INITIALIZE_PROCESS);
+		if((nbytes = send_int_with_delay(selectedCPU->clientSocket, INITIALIZE_PROCESS)) < 0)
+		{
+			log_error(consoleLog, "executeProcess - Error al pedir a la CPU que inicialice un proceso\n");
+			return;
+			//TODO (Optional) - Send Error Handling
+		}
+
 		taskMessage = "inicializar";
 	}
 	else
 	{
-		send_int_with_delay(selectedCPU->clientSocket, EXECUTE_PROCESS);
+		if((nbytes = send_int_with_delay(selectedCPU->clientSocket, EXECUTE_PROCESS)) < 0)
+		{
+			log_error(consoleLog, "executeProcess - Error al pedir a la CPU que ejecute un proceso\n");
+			return;
+			//TODO (Optional) - Send Error Handling
+		}
+
 		taskMessage = "ejecutar";
 	}
 
-	send_PCB_with_delay(process, selectedCPU->clientSocket);
+	if((nbytes = send_PCB_with_delay(process, selectedCPU->clientSocket)) < 0)
+	{
+		log_error(consoleLog, "executeProcess - Error al pedir a la CPU que inicialice un archivo\n");
+		return;
+		//TODO (Optional) - Send Error Handling
+	}
+
+	//TODO - With send errors, which should appear if the selectedCPU disconnects or something like that, a new CPU should be selected, which has different id than the current one
 
 	log_info(schedulerLog, "El proceso con id %d fue enviado para %s en la CPU con id %d\n", taskMessage, process->pid,  selectedCPU->cpuId);
 
@@ -514,7 +539,7 @@ void closeSocketAndRemoveCPU(uint32_t cpuSocket)
 	   
 void checkAndFreeProcessFiles(uint32_t processId)	//Checks if there are any files locked by the process and frees them
 {
-	t_list* fileTableKeys = dictionary_get_keys(fileTable);
+	//t_list* fileTableKeys = dictionary_get_keys(fileTable);
 	uint32_t fileTableKeysQty = list_size(fileTableKeys);
 	char* currentKey;
 	fileTableData* data;
@@ -546,8 +571,8 @@ void checkAndFreeProcessFiles(uint32_t processId)	//Checks if there are any file
 
 void checkAndFreeProcessSemaphores(uint32_t processId)
 {
-	t_list* semaphores = dictionary_get_keys(semaphoreList);
-	uint32_t semaphoresQty = list_size(semaphores);
+	//t_list* semaphores = dictionary_get_keys(semaphoreList);
+	uint32_t semaphoresQty = list_size(semaphoreListKeys);
 	char* currentKey;
 	semaphoreData* data;
 	uint32_t processToUnblock;
@@ -564,7 +589,7 @@ void checkAndFreeProcessSemaphores(uint32_t processId)
 
 	for(uint32_t i = 0; i < semaphoresQty; i++)
 	{
-		currentKey = list_get(semaphores, i);
+		currentKey = list_get(semaphoreListKeys, i);
 		data = dictionary_get(fileTable, currentKey);
 		processWaitList = data->waitingProcesses;
 		usingProcessesList = data->processesUsingTheSemaphore;
@@ -587,7 +612,7 @@ void checkAndFreeProcessSemaphores(uint32_t processId)
 	pthread_mutex_unlock(&semaphoreListMutex);
 }
 
-int32_t send_int_with_delay(uint32_t socket, uint32_t messageCode)
+int32_t send_int_with_delay(uint32_t _socket, uint32_t messageCode)
 {
 	pthread_mutex_lock(&configFileMutex);
 
@@ -600,7 +625,7 @@ int32_t send_int_with_delay(uint32_t socket, uint32_t messageCode)
 	log_info(schedulerLog, "Delay de envio de mensaje...\n");
 	sleep(milisecondsSleep);
 
-	nbytes = send_int(socket, messageCode);
+	nbytes = send_int(_socket, messageCode);
 
 	log_info(schedulerLog, "Se ha finalizado el envio de un mensaje\n");
 
@@ -609,7 +634,7 @@ int32_t send_int_with_delay(uint32_t socket, uint32_t messageCode)
 	return nbytes;
 }
 
-int32_t send_PCB_with_delay(PCB_t* pcb, uint32_t socket)
+int32_t send_PCB_with_delay(PCB_t* pcb, uint32_t _socket)
 {
 	pthread_mutex_lock(&configFileMutex);
 
@@ -622,7 +647,7 @@ int32_t send_PCB_with_delay(PCB_t* pcb, uint32_t socket)
 	log_info(schedulerLog, "Delay de envio de mensaje...\n");
 	sleep(milisecondsSleep);
 
-	nbytes = sendPCB(pcb, socket);
+	nbytes = sendPCB(pcb, _socket);
 
 	log_info(schedulerLog, "Se ha finalizado el envio de un mensaje\n");
 
@@ -639,7 +664,7 @@ void freeCpuElement(cpu_t* cpu)
 
 void freePCB(PCB_t* pcb)
 {
-	free(pcb->scriptName);
+	free(pcb->scriptPathInFS);
 	free(pcb);
 }
 
@@ -654,4 +679,24 @@ void freeSemaphoreListData(semaphoreData* data)
 	list_destroy(data->processesUsingTheSemaphore);
 	list_destroy(data->waitingProcesses);
 	free(data);
+}
+
+void removeKeyFromList(t_list* table, char* key)
+{
+	bool _string_equals_given_one(char* string)
+	{
+		return string_equals_ignore_case(string, key);
+	}
+
+	list_remove_by_condition(table, _string_equals_given_one);
+}
+
+t_list* getSchedulableProcesses()
+{
+	bool processCanBeScheduled(PCB_t* pcb)
+	{
+		return pcb->canBeScheduled;
+	}
+
+	return list_filter(readyQueue, processCanBeScheduled);
 }

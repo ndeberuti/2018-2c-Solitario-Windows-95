@@ -1,9 +1,3 @@
-/*
- * CPU.c
- *
- *  Created on: 1 sep. 2018
- *      Author: Solitario Windows 95
- */
 #include "CPU.h"
 
 void initializeVariables()
@@ -11,6 +5,15 @@ void initializeVariables()
 	cpuLog = init_log("../../Logs/CPU.log", "Proceso CPU", true, LOG_LEVEL_INFO);
 
 	terminateModule = false;
+	stopExecution = false;
+	killExecutingProcess = false;
+	usingCustomSchedulingAlgorithm = false;
+	blockExecutingProcess = false;
+
+	processInExecutionPCB = NULL;
+	instructionsExecuted = 0;
+	currentProcessQuantum = 0;
+	currentProgramCounter = 0;
 
 	getConfigs();
 
@@ -49,6 +52,10 @@ void executeProcesses()
 
 			case EXECUTE_PROCESS:
 				executeProcess();
+			break;
+
+			case COUNT_INSTRUCTIONS:		 //Receives the scriptPath, program counter and pid from a PCB (No need to send the complete pcb), and
+				countProcessInstructions();	 //returns the number of instructions left before an IO instruction or the end of the script
 			break;
 
 			default:

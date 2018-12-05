@@ -1,7 +1,7 @@
 #include "CPU.h"
 
 #define SCHEDULER_MIN_TASK_NUMBER 6
-#define SCHEDULER_MAX_TASK_NUMBER 25
+#define SCHEDULER_MAX_TASK_NUMBER 29
 
 void server()
 {
@@ -80,30 +80,38 @@ void server()
 	} // while (true)
 }
 
-void moduleHandler(uint32_t command, uint32_t socket)
+void moduleHandler(uint32_t command, uint32_t _socket)
 {
 	if(command == NEW_SCHEDULER_CONNECTION)
 	{
 						  
 			log_info(cpuLog, "Nueva conexion desde el DMA\n");
-			schedulerClientSocket = socket;
+			schedulerClientSocket = _socket;
 	}
 	else if((command >= SCHEDULER_MIN_TASK_NUMBER) && (command <= SCHEDULER_MAX_TASK_NUMBER))
-		schedulerTaskHandler();
+		schedulerTaskHandler(command, _socket);
 	else
 		log_error(cpuLog, "ServerThread - La tarea recibida, con codigo %d, es incorrecta\n", command);
 }
 
-void schedulerTaskHandler(uint32_t task, uint32_t socket)
+void schedulerTaskHandler(uint32_t task, uint32_t _socket)
 {
 	switch(task)
 	{
 		case KILL_PROCESS_CPU:
-			killProcess(socket);	//Tells the main thread to stop process execution and order the scheduler to kill the process
+			killProcess(_socket);	//Tells the main thread to stop process execution and order the scheduler to kill the process
 		break;
 
 		case BLOCK_PROCESS_CPU:
-			blockProcess(socket);	//Tells the main thread to stop process execution and order the scheduler to block the process
+			blockProcess(_socket);	//Tells the main thread to stop process execution and order the scheduler to block the process
+		break;
+
+		case USE_CUSTOM_ALGORITHM:
+			usingCustomSchedulingAlgorithm = true;
+		break;
+
+		case USE_NORMAL_ALGORITHM:
+			usingCustomSchedulingAlgorithm = false;
 		break;
 
 		default:
@@ -112,12 +120,14 @@ void schedulerTaskHandler(uint32_t task, uint32_t socket)
 	}
 }
 
-void killProcess(uint32_t socket)
+void killProcess(uint32_t _socket)
 {
-	//TODO
+	stopExecution = true;
+	killExecutingProcess = true;
 }
 
-void blockProcess(uint32_t socket)
+void blockProcess(uint32_t _socket)
 {
-	//TODO
+	stopExecution = true;
+	blockExecutingProcess = true;
 }

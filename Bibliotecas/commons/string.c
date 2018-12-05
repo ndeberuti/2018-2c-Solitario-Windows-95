@@ -157,6 +157,45 @@ char** string_n_split(char *text, int n, char* separator) {
 	return _string_split(text, separator, _is_last_token);
 }
 
+t_list* string_split_to_list(char* text, char* separator)
+{
+	bool _is_last_token(char* next, int _)
+	{
+		return next[0] != '\0';
+	}
+
+	t_list* substrings = list_create();
+	int size = 0;
+
+	char *text_to_iterate = string_duplicate(text);
+
+	char *next = text_to_iterate;
+	char *str = text_to_iterate;
+
+	while(_is_last_token(next, size))
+	{
+		char* token = strtok_r(str, separator, &next);
+		if(token == NULL)
+		{
+			break;
+		}
+		str = NULL;
+		size++;
+		list_add(substrings, string_duplicate(token));
+	}
+
+	if (next[0] != '\0')
+	{
+		size++;
+		list_add(substrings, string_duplicate(next));
+	}
+
+	size++;
+
+	free(text_to_iterate);
+	return substrings;
+}
+
 char**  string_get_string_as_array(char* text) {
     int length_value = strlen(text) - 2;
     char* value_without_brackets = string_substring(text, 1, length_value);

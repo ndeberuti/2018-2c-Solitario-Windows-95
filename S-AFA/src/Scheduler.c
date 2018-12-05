@@ -3,7 +3,7 @@
 
 void shortTermSchedulerThread()
 {
-	uint32_t semaphoreValue;
+	t_list* schedulableProcesses;
 
 	while(!killThreads)
 	{
@@ -15,9 +15,11 @@ void shortTermSchedulerThread()
 		STSAlreadyExecuting = true;
 
 		pthread_mutex_lock(&readyQueueMutex);
-		pthread_mutex_lock(&ioReadyQueue);
+		pthread_mutex_lock(&ioReadyQueueMutex);
 
-		if(list_size(readyQueue) == 0)
+		schedulableProcesses = getSchedulableProcesses();
+
+		if(list_size(schedulableProcesses) == 0)
 		{
 			log_info(schedulerLog, "No es posible planificar ya que no hay procesos listos\nSe debe crear un nuevo proceso, o desbloquear uno ya existente, para poder planificar\n");
 		}
@@ -27,7 +29,7 @@ void shortTermSchedulerThread()
 		}
 
 		pthread_mutex_unlock(&readyQueueMutex);
-		pthread_mutex_unlock(&ioReadyQueue);
+		pthread_mutex_unlock(&ioReadyQueueMutex);
 
 		STSAlreadyExecuting = false;
 
@@ -38,7 +40,8 @@ void shortTermSchedulerThread()
 void longTermSchedulerThread()
 {
 	PCB_t* processToInitialize;
-	uint32_t processAccepted, semaphoreValue;
+	uint32_t processAccepted;
+	t_list* schedulableProcesses;
 
 	while(!killThreads)
 	{
@@ -54,7 +57,9 @@ void longTermSchedulerThread()
 		{
 			log_info(schedulerLog, "LTS: No hay procesos para aceptar\n");
 
-			if(list_size(readyQueue) == 0)
+			schedulableProcesses = getSchedulableProcesses();
+
+			if(list_size(schedulableProcesses) == 0)
 				log_info(schedulerLog, "LTS: No hay procesos para planificar\n");
 			else
 				_checkExecProc_and_algorithm(); //Call the STS if there are no new processes to add, but there are ready ones
@@ -143,6 +148,8 @@ void initializeVariables()
 	finishedQueue = list_create();
 	connectedCPUs = list_create();
 	ioReadyQueue = list_create();
+	fileTableKeys = list_create();
+	semaphoreListKeys = list_create();
 
 	fileTable = dictionary_create();
 	semaphoreList = dictionary_create();
@@ -196,6 +203,9 @@ void freeResources()
 
 	dictionary_destroy_and_destroy_elements(fileTable, freeFileTableData);
 	dictionary_destroy_and_destroy_elements(fileTable, freeSemaphoreListData);
+
+	list_destroy_and_destroy_elements(fileTableKeys, free);
+	list_destroy_and_destroy_elements(semaphoreListKeys, free);
 
 	log_destroy(consoleLog);
 	log_destroy(schedulerLog);
