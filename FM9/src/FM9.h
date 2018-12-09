@@ -39,14 +39,24 @@
 
 	#define NUEVA_CONEXION_DIEGO 1
 	#define NUEVA_CONEXION_CPU 4
-	#define CARGAR_PROCESO 6
-	#define ABRIR_ARCHIVO 7
-	#define MODIFICAR_LINEA 8
-	#define OK 10
-	#define ERROR 11
-	#define FLUSH 12
+	#define CARGAR_ARCHIVO 7000
+
+	#define ASIGNAR 7001
+
+	#define FLUSH 7002
+	#define LEER_ARCHIVO 7003
 	#define CLOSE_FILE 13
 	#define CLOSE_PROCESS 14
+
+	#define OK 9999
+	#define ERROR 9998
+
+
+	#define ESPACIO_INSUFICIENTE 10002
+
+
+ 	#define ARCHIVO_NO_ABIERTO 20001
+  #define PROCESO_NO_ABIERTO 20009
 
 
 	//ESTRUCTURAS
@@ -150,12 +160,14 @@
 	void close_file(int socket_cpu);
 	void close_process(int socket_cpu);
 
+	void setear_segmentacion_simple();
 	void setear_paginacion_invertida();
 	void setear_segmentacion_paginada();
 
-
+	void inicializar_memoria_segmentacion_simple();
 	void inicializar_memoria_paginacion_invertida();
 	void inicializar_memoria_segmentacion_paginada();
+
 
 	void inicializar_tabla_de_paginas(int numero_lineas_memoria);
 
@@ -186,8 +198,8 @@
 	void buscar_segmento_vacio(int cantidad_lineas, segmento_offset_t* segmento);
 
 
-	void setear_segmentacion_simple();
-	void inicializar_memoria_segmentacion_simple();
+
+
 
 	int guardar_archivo_segmentacion_simple(int pid ,int id,int cantidad_lineas, char* buffer_recepcion);
 	void abrir_archivo_segmentacion_simple(int socket_diego, int id);
@@ -205,8 +217,35 @@
 	void buscar_segmento_2(int pid, segmento_tabla_t* segmento_envio);
 	void liberar_segmento(int pid,int base, int limite);
 
-	//PAGINACION
+	//NUEVA PAGINACION
+	t_list* tabla_de_paginas;
 
+	typedef struct {
+
+			int pid;
+			int id;
+			int frame;
+		}entrada_tabla_invertida_t;
+
+
+
+	char* puntero_memoria_paginada;
+
+	int tamanio_bitarray_paginada;
+
+	int guardar_archivo_paginas_invertidas(int pid,int id,int cantidad_lineas,char* buffer_recepcion);
+	void abrir_archivo_paginacion(int socket_cpu,int id);
+	int close_file_paginacion(int socket_cpu,int id);
+	int close_process_paginacion(int socket_cpu,int pid);
+	void modificar_linea_paginacion(int socket_cpu,int id,int numero_linea,char* linea_tratada);
+	void flush_paginacion_invertida(int socket_diego,int id);
+	void dump_paginacion_invertida(int pid);
+
+	void paginar(int pid, int id, int cantidad_lineas, char* buffer_recepcion);
+	int entra_memoria_paginada(int cantidad_paginas);
+
+	//PAGINACION
+/*
 	#define FRAME_ADM -1
 	#define PAGINALIBRE -2
 	#define FRAMELIBRE -3
@@ -219,6 +258,7 @@
 
 	typedef struct {
 		int frame;
+		int id;
 		int pid;
 		int nroPag;
 	} t_tablaPaginaInvertida;
@@ -238,32 +278,30 @@
 
 	void inicializarEstructuraAdicional();
 	void crearMemoriaPrincipalPaginacion(int marcos, int marco_size);
-	int leer_pagina(char*, char**);
 	int crearEstructurasAdministrativas();
 	int calcularPosicion(int frame);
-	int buscarFrame(int unPid, int pagina);
-	int asignarPaginasIniciales(int unPid, int paginas, char * buffer) ;
-	int almacenarLinea(int unPid, int pagina, int offset, int tamanio, char * buffer);
-	int solicitarLinea(int unPid, int pagina, int offset, int tamanio, char *buffer);
-	int hash(int unPid, int pagina) ;
+	int buscarFrame(int id, int pagina);
+	int asignarPaginasIniciales(int unPid,int id, int paginas, char * buffer) ;
+	int almacenarLinea(int id, int pagina, int offset, int tamanio, char * buffer);
+	int hash(int id, int pagina) ;
 	int asignarPaginas(int pid, int paginas,char *buffer);
-	int crearPid(int pid,int lineas,char *buffer);
+	int crearPid(int pid,int id,int lineas,char *buffer);
 	int eliminarPid(int pid);
-	void eliminarPagina(int unPid, int nroPag);
-	void crearMemoriaPrincipal(int frames,int tamanio_pagina);
-	void abrir_linea_paginas_invertidas(int socket_cpu,int pid,int numero_linea);
-	void modificar_linea_paginas_invertidas(int socket_cpu, int pid,int nroLinea,char* buffer);
+	void modificar_linea_paginas_invertidas(int socket_cpu, int id,int nroLinea,char* buffer);
 	void dump_paginacion(int unPid);
-	void flush_paginacion(int socket_diego, int pid);
+	void flush_paginacion(int socket_diego, int id);
+	void abrir_archivo_paginas_invertidas(int socket_cpu,int id);
+	int close_file_paginas_invertidas(int socket_cpu,int id);
+	int close_process_paginas_invertidas(int socket_cpu,int pid);
 
-
+	*/
 	//SEGMENTACION PAGINADA
 
 	t_list* tabla_de_procesos_sp;
 	t_list* tabla_de_segmentos_sp;
 	t_list* tabla_de_paginas_sp;
 
-	int guardar_proceso_segmentacion_paginada(int pid ,int id,int longitud_paquete, char* buffer_recepcion);
+	int guardar_archivo_segmentacion_paginada(int pid ,int id,int longitud_paquete, char* buffer_recepcion);
 	void abrir_archivo_segmentacion_paginada(int socket_cpu, int id);
 	void modificar_linea_segmentacion_paginada(int socket_cpu,int id,int numero_linea,char* linea_tratada);
 	void flush_segmentacion_paginada(int socket_diego,int id);
@@ -272,7 +310,7 @@
 	int close_process_segmentacion_paginada(int socket_cpu,int pid);
 
 
-	void asignar_segmento_paginado_vacio(int cantidad_paginas,segmento_paginado_t* segmento_nuevo, char* buffer_recepcion);
+	void asignar_segmento_paginado_vacio(int cantidad_paginas,segmento_paginado_t* segmento_nuevo, char* buffer_envio);
 	int entra_memoria_sp(int cantidad_paginas);
 	void paginar_segmento(int pid,int id, int cantidad_lineas, char* buffer_recepecion);
 
@@ -280,10 +318,7 @@
 	void reservar_bitarray(t_bitarray* bitarray_memoria_segmentada, int base, int limite);
 	void liberar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limite);
 
-
-
-
-
+	int tamanio_bitarray_sp;
 
 	//comunicacion
 	char* recibir_char(int socket, int longitud_paquete);

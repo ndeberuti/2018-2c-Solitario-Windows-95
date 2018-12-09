@@ -11,7 +11,6 @@ int main(void) {
 
 
 
-
 	system("clear");
 	puts("PROCESO FM9\n");
 
@@ -28,9 +27,93 @@ int main(void) {
 
 	setear_modo();
 
-	int diego = 9999;
-	guardar_archivo_segmentacion_simple(10 ,120,1, "hola\0");
-	abrir_archivo_segmentacion_simple(diego, 120);
+
+
+
+
+
+
+	dump(10);
+	//	dump(10);
+	//close_process_segmentacion_paginada(diego, 10);
+	//guardar_archivo_segmentacion_paginada(11 ,222,8,"fallaaa\0");
+
+
+	for(int j = 0; j < 4; j++){
+
+			int muestra = bitarray_test_bit(bitarray_memoria, j);
+			printf("prueba bitarray : %d \n", muestra);
+		}
+
+
+
+	/*
+	bitarray_set_bit(bitarray_memoria, 1);
+	bitarray_set_bit(bitarray_memoria, 5);
+	bitarray_set_bit(bitarray_memoria, 15);
+	bitarray_set_bit(bitarray_memoria, 20);
+
+	printf("tamanio bitarray : %d \n", max_bit);
+
+
+
+
+
+	int max_bit = bitarray_get_max_bit(bitarray_memoria);
+	int largo = 1;
+
+
+
+	int base = 0;
+	int otra_base = 0;
+
+	while(base < max_bit && otra_base- base < largo ){
+
+		base=otra_base;
+		while(bitarray_test_bit(bitarray_memoria, base) && base < max_bit){
+
+			base++;
+
+		}
+
+		base++;
+		otra_base=base;
+		otra_base++;
+		while(!bitarray_test_bit(bitarray_memoria, otra_base) && otra_base < max_bit){
+
+			otra_base++;
+
+		}
+	}
+	for(int j = 0; j < 30; j++){
+
+		int muestra = bitarray_test_bit(bitarray_memoria, j);
+		printf("prueba bitarray : %d \n", muestra);
+	}
+
+printf("BASE: %d OTRABASE :%d", base, otra_base);
+/*
+		if(!bitarray_test_bit(bitarray_memoria, base)){
+
+
+			otra_base= base;
+			otra_base++;
+			while(!bitarray_test_bit(bitarray_memoria, otra_base) && otra_base < max_bit){
+
+				otra_base++;
+
+			}
+
+		}else{
+
+			base++;
+		}
+
+
+		base=otra_base;
+
+	}
+*/
 
 	pthread_create(&thread_consola, NULL, (void *) consola, NULL);
 
@@ -144,15 +227,15 @@ void command_handler(uint32_t command, uint32_t socket) {
 		log_info(log_consola, "Nueva conexion de CPU");
 
 			break;
-	case CARGAR_PROCESO:
-		log_info(log_consola, "Cargando proceso en memoria");
+	case CARGAR_ARCHIVO:
+		log_info(log_consola, "Cargando archivo en memoria");
 		guardar_archivo(socket);
 			break;
-	case ABRIR_ARCHIVO:
-		log_info(log_consola, "Abriendo linea");
+	case LEER_ARCHIVO:
+		log_info(log_consola, "Leyendo archivo linea");
 		abrir_archivo(socket);
 			break;
-	case MODIFICAR_LINEA:
+	case ASIGNAR:
 		modificar_linea(socket);
 		log_info(log_consola, "Modificando linea");
 			break;
@@ -165,6 +248,7 @@ void command_handler(uint32_t command, uint32_t socket) {
 		log_info(log_consola, "Closing file");
 			break;
 	case CLOSE_PROCESS:
+		close_process_segmentacion_simple(diego, 10);
 			close_file(socket);
 			log_info(log_consola, "Closing process");
 			break;
@@ -203,10 +287,10 @@ void consola() {
 					if (consola->cant_params < 1)
 						print_c(log_consola, "%s: falta el parametro ID del DTB\n", consola->comando);
 					else {
-					   //pid_char = strdup(consola->param[0]);
-					   //pid =  atoi(pid_char);
+					   pid_char = strdup(consola->param[0]);
+					   pid =  atoi(pid_char);
 
-						//dump(pid);
+						dump(pid);
 					}
 
 				else
@@ -236,10 +320,6 @@ void setear_segmentacion_paginada(){
 	log_info(log_fm9, "Segmentación Paginada seteada");
 	inicializar_memoria_segmentacion_paginada();
 }
-
-
-
-
 
 void setear_modo(){
 	if(strcmp("SEG", config.MODO)== 0){
@@ -283,23 +363,16 @@ void guardar_archivo(int socket_diego){
 	char* buffer_recepcion = malloc(longitud);
 
 
-
-
-
-
-
-
-
 	if(strcmp("SEG", config.MODO)== 0){
 		resultado = guardar_archivo_segmentacion_simple(pid ,id , cantidad_lineas,buffer_recepcion);
 		}
 		else if(strcmp("TPI", config.MODO)== 0){
 
-		resultado = crearPid(pid,cantidad_lineas,buffer_recepcion);
-
+		//resultado = crearPid(pid,id,cantidad_lineas,buffer_recepcion);
+		resultado = guardar_archivo_paginas_invertidas(pid, id, cantidad_lineas, buffer_recepcion);
 		}
 		else if(strcmp("SPI", config.MODO)== 0){
-		resultado = guardar_proceso_segmentacion_paginada(pid, id ,cantidad_lineas, buffer_recepcion);
+		resultado = guardar_archivo_segmentacion_paginada(pid, id ,cantidad_lineas, buffer_recepcion);
 		}
 		else {
 			log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
@@ -327,11 +400,11 @@ void abrir_archivo(int socket_cpu){
 			}
 			else if(strcmp("TPI", config.MODO)== 0){
 			
-			//abrir_linea_paginas_invertidas(socket_cpu, pid, numero_linea);
-			
+			//abrir_archivo_paginas_invertidas(socket_cpu, id);
+			abrir_archivo_paginacion(socket_cpu, id);
 			}
 			else if(strcmp("SPI", config.MODO)== 0){
-			//abrir_linea_segmentacion_paginada(socket_cpu, id, numero_linea);
+			abrir_archivo_segmentacion_paginada(socket_cpu, id);
 			}
 			else {
 			log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
@@ -357,7 +430,8 @@ void close_file(int socket_cpu){
 				}
 				else if(strcmp("TPI", config.MODO)== 0){
 
-				//resultado = close_file_paginas_invertidas(socket_cpu, pid, numero_linea);
+				//resultado = close_file_paginas_invertidas(socket_cpu, id);
+					resultado= close_file_paginacion(socket_cpu, id);
 
 				}
 				else if(strcmp("SPI", config.MODO)== 0){
@@ -383,8 +457,8 @@ void close_process(int socket_cpu){
 				}
 				else if(strcmp("TPI", config.MODO)== 0){
 
-				//resultado = close_process_paginas_invertidas(socket_cpu, pid, numero_linea);
-
+				//resultado = close_process_paginas_invertidas(socket_cpu, pid);
+					resultado = close_process_paginacion(socket_cpu, pid);
 				}
 				else if(strcmp("SPI", config.MODO)== 0){
 				resultado = close_process_segmentacion_paginada(socket_cpu,pid);
@@ -397,10 +471,6 @@ void close_process(int socket_cpu){
 
 
 void modificar_linea(int socket_cpu){
-
-
-
-
 
 	int longitud_path = recibir_int(socket_cpu);
 		char* buffer =  malloc(longitud_path);
@@ -421,7 +491,8 @@ void modificar_linea(int socket_cpu){
 			modificar_linea_segmentacion_simple(socket_cpu, id,numero_linea, linea_tratada);
 			}
 			else if(strcmp("TPI", config.MODO)== 0){
-			modificar_linea_paginas_invertidas(socket_cpu, id,numero_linea, linea_tratada);
+			//modificar_linea_paginas_invertidas(socket_cpu, id,numero_linea, linea_tratada);
+			modificar_linea_paginacion(socket_cpu, id, numero_linea, linea_tratada);
 			}
 			else if(strcmp("SPI", config.MODO)== 0){
 			modificar_linea_segmentacion_paginada(socket_cpu, id, numero_linea, linea_tratada);
@@ -447,7 +518,8 @@ void flush(int socket_diego){
 					flush_segmentacion_simple(socket_diego, id);
 				}
 				else if(strcmp("TPI", config.MODO)== 0){
-					flush_paginacion(socket_diego, id);
+					//flush_paginacion(socket_diego, id);
+					flush_paginacion_invertida(socket_diego, id);
 				}
 				else if(strcmp("SPI", config.MODO)== 0){
 					flush_segmentacion_paginada(socket_diego,id);
@@ -466,7 +538,8 @@ void dump(int pid){
 					dump_segmentacion_simple(pid);
 				}
 				else if(strcmp("TPI", config.MODO)== 0){
-					dump_paginacion(pid);
+					//dump_paginacion(pid);
+					dump_paginacion_invertida(pid);
 				}
 				else if(strcmp("SPI", config.MODO)== 0){
 					dump_segmentacion_paginada(pid);
@@ -520,7 +593,7 @@ void inicializar_memoria_segmentacion_simple(){
 
 
 
-	//ERROR SEGMENTATION FAULT
+
 	puntero_memoria_segmentada = malloc(config.TAMANIO);
 
 	tabla_de_segmentos = list_create();
@@ -529,7 +602,11 @@ void inicializar_memoria_segmentacion_simple(){
 	bitarray_memoria = bitarray_create(b_m_s, config.TAMANIO / config.MAX_LINEA /8);
 
 
+	int tamanio_bitarray = bitarray_get_max_bit(bitarray_memoria);
+	int tamanio_bitarray2 = config.TAMANIO / config.MAX_LINEA / 8 ;
 
+	log_info("Tamanio del bitarray = %d", tamanio_bitarray);
+	log_info("Tamanio del bitarray = %d", tamanio_bitarray2);
 
 
 
@@ -546,6 +623,7 @@ void inicializar_memoria_segmentacion_simple(){
 
 int guardar_archivo_segmentacion_simple(int pid ,int id,int cantidad_lineas, char* buffer_recepcion){
 
+int entra_memoria;
 
 segmento_offset_t* segmento_nuevo = malloc(sizeof(segmento_offset_t));
 segmento_tabla_t* entrada_tabla = malloc(sizeof(segmento_tabla_t));
@@ -558,11 +636,11 @@ int resultado;
 
 //entrada_administrativa->pid = pid;
 
+entra_memoria = entra_en_memoria(cantidad_lineas);
 
 
 
-	if(list_is_empty(tabla_de_segmentos) && entra_en_memoria(cantidad_lineas)){
-
+	if(list_is_empty(tabla_de_segmentos) && entra_memoria){
 
 
 							//entrada_administrativa->id = pid;
@@ -574,50 +652,56 @@ int resultado;
 
 							reservar_bitarray(bitarray_memoria, entrada_tabla->base, entrada_tabla->limite);
 
-							//list_add(tabla_administrativa_segmentacion, entrada_administrativa);
+
+
+
+
 							list_add(tabla_de_segmentos, entrada_tabla);
+
 
 							memcpy(puntero_memoria_segmentada, buffer_recepcion, cantidad_lineas * config.MAX_LINEA);
 
 							resultado = OK;
-							log_info(log_fm9, "Se guardo el segmento en memoria");
+							log_info(log_fm9, "Se guardo el segmento %d en memoria \n", id);
 							return resultado;
 	}else{
 
-				if(entra_en_memoria(cantidad_lineas) == 1){
 
 
-					buscar_segmento_vacio(cantidad_lineas, segmento_nuevo);
+			if(entra_memoria){
 
 
-					entrada_tabla->pid = pid;
-					entrada_tabla->id = id;
+								buscar_segmento_vacio(cantidad_lineas, segmento_nuevo);
 
 
-					entrada_tabla->base = segmento_nuevo->segmento;
-
-					entrada_tabla->limite = segmento_nuevo->offset;
-
-					memcpy(puntero_memoria_segmentada + entrada_tabla->base * config.MAX_LINEA, buffer_recepcion, entrada_tabla->limite * config.MAX_LINEA);
+								entrada_tabla->pid = pid;
+								entrada_tabla->id = id;
 
 
+								entrada_tabla->base = segmento_nuevo->segmento;
 
-					reservar_bitarray(bitarray_memoria, entrada_tabla->base, entrada_tabla->limite);
+								entrada_tabla->limite = segmento_nuevo->offset;
 
-
-					list_add(tabla_de_segmentos, entrada_tabla);
-
-					resultado = OK;
-					log_info(log_fm9, "Se guardo el segmento en memoria");
-					return resultado;
+								memcpy(puntero_memoria_segmentada + entrada_tabla->base * config.MAX_LINEA, buffer_recepcion, entrada_tabla->limite * config.MAX_LINEA);
 
 
-					}else{
 
-						resultado = ERROR;
-						log_error(log_fm9, "Archivo no entra en memoria");
-						return resultado;
-					}
+								reservar_bitarray(bitarray_memoria, entrada_tabla->base, entrada_tabla->limite);
+
+
+								list_add(tabla_de_segmentos, entrada_tabla);
+
+								resultado = OK;
+								log_info(log_fm9, "Se guardo el segmento %d en memoria \n", entrada_tabla->id);
+								return resultado;
+
+
+								}else{
+
+									resultado = ESPACIO_INSUFICIENTE;
+									log_error(log_fm9, "Archivo no entra en memoria \n");
+									return resultado;
+								}
 
 
 	}
@@ -630,38 +714,40 @@ free(entrada_tabla);
 
 int entra_en_memoria(int cantidad_lineas){
 
-	int base=0;
-	int otra_base = 0;
-
-	while((config.TAMANIO / config.MAX_LINEA / 8) && cantidad_lineas > (otra_base - base)){
-
-		base = otra_base;
-
-		while (bitarray_test_bit(bitarray_memoria, base) && base < (config.TAMANIO / config.MAX_LINEA / 8)){
+	int max_bit = bitarray_get_max_bit(bitarray_memoria);
 
 
-		base++;
+
+		int base = 0;
+		int otra_base = 0;
+
+		while(base < max_bit && otra_base- base < cantidad_lineas ){
+
+			base=otra_base;
+			while(bitarray_test_bit(bitarray_memoria, base) && base < max_bit){
+
+				base++;
+
+			}
+
+
+					otra_base=base;
+					otra_base++;
+			while(!bitarray_test_bit(bitarray_memoria, otra_base) && otra_base < max_bit){
+
+				otra_base++;
+
+			}
+
+
 		}
 
-
-		otra_base = base;
-
-		while(!(bitarray_test_bit(bitarray_memoria, otra_base)) && otra_base < (config.TAMANIO / config.MAX_LINEA / 8)){
-
-		otra_base++;
+	if(cantidad_lineas <= otra_base - base){
 
 
-		}
-
-		}
-	if(cantidad_lineas > otra_base - base){
-
-	int numeroloco=	otra_base - base;
-
-	printf("numerooo :  %d", numeroloco);
-	return 0;
+	return 1;
 	}else{
-		return 1;
+		return 0;
 	}
 
 
@@ -670,7 +756,7 @@ int entra_en_memoria(int cantidad_lineas){
 void abrir_archivo_segmentacion_simple(int socket_cpu,int id){
 	segmento_tabla_t* segmento_linea;
 
-	int resultado, tamanio;
+	int resultado, tamanio, resultado_envio;
 
 	bool es_id(segmento_tabla_t* entrada){
 
@@ -681,7 +767,10 @@ void abrir_archivo_segmentacion_simple(int socket_cpu,int id){
 
 	segmento_linea = list_find(tabla_de_segmentos, (void*) es_id);
 
-
+	printf("base: %d \n", segmento_linea->base);
+	printf("id: %d \n", segmento_linea->id);
+	printf("limite: %d \n", segmento_linea->limite);
+	printf("pid: %d \n", segmento_linea->pid);
 
 
 	if(segmento_linea != NULL){
@@ -692,24 +781,32 @@ void abrir_archivo_segmentacion_simple(int socket_cpu,int id){
 	tamanio = segmento_linea->limite * config.MAX_LINEA;
 
 	memcpy(buffer_envio,&resultado, sizeof(int));
+
+
 	memcpy(buffer_envio+sizeof(int),&tamanio, sizeof(int));
+
 	memcpy(buffer_envio+ sizeof(int)*2,puntero_memoria_segmentada + segmento_linea->base * config.MAX_LINEA , segmento_linea->limite * config.MAX_LINEA);
 
-	char* muestra = malloc(segmento_linea->base * config.MAX_LINEA);
 
-	memcpy(buffer_envio,puntero_memoria_segmentada + segmento_linea->base * config.MAX_LINEA , segmento_linea->limite * config.MAX_LINEA);
+	printf("MAGIA: %s\n", buffer_envio + sizeof(int)*2);
 
 
-	printf("RESULTADO %S", buffer_envio);
 
-	send(socket_cpu, buffer_envio, config.MAX_LINEA +sizeof(int)* 2, MSG_WAITALL);
+	resultado_envio = send(socket_cpu, buffer_envio, config.MAX_LINEA +sizeof(int)* 2, MSG_WAITALL);
 	free(buffer_envio);
-	log_info(log_fm9, "Se envió el archivo %d al CPU del proceso %d", segmento_linea->id, segmento_linea->pid);
+
+		if(resultado_envio != -1){
+		log_info(log_fm9, "Se envió el archivo %d al CPU del proceso %d", segmento_linea->id, segmento_linea->pid);
+		} else{
+
+			log_error(log_fm9, "Error en el envio del archivo %d, del proceso %d", segmento_linea->id, segmento_linea->pid);
+
+		}
 	}else{
 
-		resultado = ERROR;
+		resultado = ARCHIVO_NO_ABIERTO;
 
-   send(socket_cpu, &resultado, sizeof(int), MSG_WAITALL);
+  resultado_envio =  send(socket_cpu, &resultado, sizeof(int), MSG_WAITALL);
    log_error(log_fm9, "No se encuentra el archivo en memoria");
 
 
@@ -737,7 +834,7 @@ void modificar_linea_segmentacion_simple(int socket_cpu,int id,int numero_linea,
 		}else{
 
 			log_error(log_fm9, "El segmento %d no se encuentra en memoria", id);
-			resultado = ERROR ;
+			resultado = ARCHIVO_NO_ABIERTO ;
 		}
 	free(linea_nueva);
 
@@ -787,7 +884,7 @@ void flush_segmentacion_simple(int socket_diego, int id){
 		log_info(log_fm9, "Se completo el flush para el archivo %d" , id );
 }else{
 
-		resultado = ERROR;
+		resultado = ARCHIVO_NO_ABIERTO;
 		send(socket_diego, &resultado, sizeof(int), MSG_WAITALL);
 		log_error(log_fm9, "El archivo no está en memoria");
 }
@@ -801,7 +898,7 @@ void dump_segmentacion_simple(int pid){
 			t_list* lista_filtrada;
 			segmento_tabla_t* segmento;
 
-
+			if(list_size(tabla_de_segmentos) > 0){
 					bool es_pid(segmento_tabla_t* entrada_segmento){
 
 
@@ -812,6 +909,8 @@ void dump_segmentacion_simple(int pid){
 
 							lista_filtrada= list_filter(tabla_de_segmentos, (void*) es_pid);
 							aciertos = list_size(lista_filtrada);
+
+							printf("ACIERTOS DUMP: %d", aciertos);
 
 				if(aciertos > 0){
 
@@ -830,7 +929,7 @@ void dump_segmentacion_simple(int pid){
 								log_info(log_fm9, "LIMITE = %d", segmento->limite);
 
 								memcpy(buffer_muestra,puntero_memoria_segmentada + segmento->base * config.MAX_LINEA, segmento->limite * config.MAX_LINEA );
-								log_info(log_fm9, "DATOS EN MEMORIA REAL = %s", &buffer_muestra);
+								log_info(log_fm9, "DATOS EN MEMORIA REAL = %s", buffer_muestra);
 
 
 
@@ -852,6 +951,10 @@ void dump_segmentacion_simple(int pid){
 				}
 
 
+			}else{
+
+				log_error(log_fm9, "La tabla de segmentos y la memoria estan vacias");
+			}
 }
 
 
@@ -873,12 +976,12 @@ int close_file_segmentacion_simple(int socket_cpu, int id){
 				if(segmento != NULL){
 
 					liberar_segmento(segmento->id, segmento->base, segmento->limite);
-					log_info(log_fm9, "Se cerró el archivo en memoria");
+					log_info(log_fm9, "Se cerró el archivo ID: %d en memoria", id);
 					resultado = OK;
 				}else{
 
 					log_error(log_fm9, "El archivo no se encuentra en memoria");
-					resultado = ERROR;
+					resultado = ARCHIVO_NO_ABIERTO;
 
 				}
 
@@ -889,12 +992,10 @@ int close_file_segmentacion_simple(int socket_cpu, int id){
 }
 
 int close_process_segmentacion_simple(int socket_cpu,int pid){
-		int resultado;
-		int aciertos;
-		int contador = 0;
 		t_list* lista_filtrada;
 		segmento_tabla_t* segmento;
-
+		int aciertos;
+		int resultado;
 
 				bool es_pid(segmento_tabla_t* entrada_segmento){
 
@@ -909,31 +1010,22 @@ int close_process_segmentacion_simple(int socket_cpu,int pid){
 
 			if(aciertos > 0){
 
-				log_info(log_fm9, "Cerrando proceso...");
-					while(contador < aciertos){
+				log_info(log_fm9, "Cerrando proceso %d \n", pid);
 
-						segmento = list_get(tabla_de_segmentos, contador);
+				for(int i = 0; i < aciertos; i++){
 
-						if(segmento != NULL){
-								resultado = OK;
-												liberar_segmento(segmento->id, segmento->base, segmento->limite);
-												log_info(log_fm9, "Se cerró el archivo %d en memoria", segmento->id);
-												resultado = OK;
-											}else{
-												resultado = ERROR;
-												log_error(log_fm9, "El archivo %d no se encuentra en memoria", segmento->id);
-												resultado = ERROR;
+					segmento = list_get(lista_filtrada, i);
 
-											}
+					resultado = close_file_segmentacion_simple(socket_cpu, segmento->id);
 
-					contador++;
-					}
 
-			}else{
+				}
+				}else{
 
-				resultado = ERROR;
-				log_error(log_fm9, "El proceso %d no se encuentra en memoria", segmento->pid);
-			}
+					log_error(log_fm9, "El proceso %d no se encuentra en memoria \n", pid);
+					resultado = PROCESO_NO_ABIERTO;
+				}
+
 return resultado;
 }
 //--
@@ -963,34 +1055,41 @@ void liberar_segmento(int pid, int base, int limite){
 
 void buscar_segmento_vacio(int cantidad_lineas, segmento_offset_t* segmento){
 
+int max_bit = bitarray_get_max_bit(bitarray_memoria);
 
 
 
+	int base = 0;
+	int otra_base = 0;
 
-int base=0;
-int otra_base = 0;
+	while(base < max_bit && otra_base- base < cantidad_lineas ){
 
-while(base < config.TAMANIO && cantidad_lineas < (otra_base - base)){
+		base=otra_base;
+		while(bitarray_test_bit(bitarray_memoria, base) && base < max_bit){
 
-	base = otra_base;
+			base++;
 
-	while (bitarray_test_bit(bitarray_memoria, base) && base < config.TAMANIO){
+		}
 
 
-	base++;
+				otra_base=base;
+				otra_base++;
+		while(!bitarray_test_bit(bitarray_memoria, otra_base) && otra_base < max_bit){
+
+			otra_base++;
+
+		}
+
+
 	}
 
 
-	otra_base = base;
-
-	while(!(bitarray_test_bit(bitarray_memoria, otra_base)) && otra_base < config.TAMANIO){
-
-	otra_base++;
 
 
-	}
 
-	}
+
+
+
 
 segmento->offset = cantidad_lineas;
 segmento->segmento = base;
@@ -1008,10 +1107,13 @@ segmento->segmento = base;
 //-------------------------------------------------------------------------------------------------------------------------
 //PAGINACION INVERTIDA
 
+/*
 
 
-void inicializar_memoria_paginacion_invertida(){
-	//Logear que inicializamos
+
+
+	/*
+	 * //Logear que inicializamos
 	MARCO_SIZE = config.TAM_PAGINA;
 	MARCOS = config.TAMANIO / MARCO_SIZE;
 	CANTIDADLINEASxPAG = MARCO_SIZE / config.MAX_LINEA;
@@ -1021,10 +1123,10 @@ void inicializar_memoria_paginacion_invertida(){
 	
 	crearEstructurasAdministrativas(frames);
 	
-	
+	*/
 
-}
-
+//}
+/*
 void crearMemoriaPrincipalPaginacion(int frames,int tamanio_pagina){
 
 	 int resto=0;
@@ -1061,6 +1163,7 @@ int crearEstructurasAdministrativas() {
         memoria->estructura_administrativa[numeroDeFrame].frame = numeroDeFrame;
         memoria->estructura_administrativa[numeroDeFrame].nroPag = FRAME_ADM;
         memoria->estructura_administrativa[numeroDeFrame].pid = FRAME_ADM;
+		memoria->estructura_administrativa[numeroDeFrame].id = FRAME_ADM;
     }
 
     //inicializar frame
@@ -1068,34 +1171,16 @@ int crearEstructurasAdministrativas() {
         memoria->estructura_administrativa[numeroDeFrame].frame = numeroDeFrame;
         memoria->estructura_administrativa[numeroDeFrame].nroPag = PAGINALIBRE;
         memoria->estructura_administrativa[numeroDeFrame].pid = PAGINALIBRE;
+		memoria->estructura_administrativa[numeroDeFrame].id = PAGINALIBRE;
     }
 
     return 0;
 }
 
-
-//Leer 
-int solicitarLinea(int unPid, int pagina, int offset, int tamanio, char *buffer) {
-
-		int frame;
-		frame = buscarFrame(unPid, pagina);
-
-		if (frame > 0) {
-			int espacioEnMemoria = calcularPosicion(frame);
-			memcpy(buffer, memoria->frames + espacioEnMemoria + offset, tamanio);
-		} else {
-			log_info(log_fm9, "El pid PID %i no tiene la pagina asignada PG %i  ", unPid, pagina);
-			return 0;
-		}
-
-	return 1;
-}
-
-
-int hash(int unPid, int pagina) {
-	printf("pid %i, pagina %i\n",unPid,pagina);
+int hash(int id, int pagina) {
+	printf("id %d, pagina %d\n",id,pagina);
 	int frame;   //TODO funcion mas pro loco
-	frame = (((unPid * MARCO_SIZE)+(pagina*MARCOS))/MARCO_SIZE);
+	frame = (((id * MARCO_SIZE)+(pagina*MARCOS))/MARCO_SIZE);
 	if (frame > MARCOS){
 		frame = frame - MARCOS;
 	}
@@ -1103,12 +1188,12 @@ int hash(int unPid, int pagina) {
     return frame;
 }
 
-int buscarFrame(int unPid, int pagina) {
-	int frame = hash(unPid, pagina);
+int buscarFrame(int id, int pagina) {
+	int frame = hash(id, pagina);
 	int frameAux = frame;
 	int noEncontre = 1;
 	while (noEncontre) {
-		if (memoria->estructura_administrativa[frame].pid == unPid && memoria->estructura_administrativa[frame].nroPag == pagina) {
+		if (memoria->estructura_administrativa[frame].id == id && memoria->estructura_administrativa[frame].nroPag == pagina) {
 			return frame;
 		} else {
 			frame++;
@@ -1123,12 +1208,11 @@ int buscarFrame(int unPid, int pagina) {
 	return -1;
 }
 
-
 //ESCRIBIR
-int almacenarLinea(int unPid, int pagina, int offset, int tamanio, char * buffer) {
+int almacenarLinea(int id, int pagina, int offset, int tamanio, char * buffer) {
 
 	printf("almacenar Linea \n");
-    int frame = buscarFrame(unPid,pagina);
+    int frame = buscarFrame(id,pagina);
     int espacioEnMemoria = calcularPosicion(frame);
     printf("BUSCO FRAME: %i\n",frame);
 
@@ -1141,13 +1225,12 @@ int almacenarLinea(int unPid, int pagina, int offset, int tamanio, char * buffer
 
 	} else {
 //		log_info(memLog, "El pid PID %i no tiene la pagina asignada PG %i  ", unPid, pagina);
-		printf("El pid PID %i no tiene la pagina asignada PG %i  ", unPid, pagina);
+		printf("El id %d no tiene la pagina asignada PG %d  ", id, pagina);
 		//log_error(log_fm9,"El pid PID %i no tiene la pagina asignada PG %i  ", unPid, pagina);
-		return ERROR;
+		return ARCHIVO_NO_ABIERTO;
 
 	}
 }
-
 
 int calcularPosicion(int frame){
 
@@ -1158,7 +1241,7 @@ int calcularPosicion(int frame){
 
 
 //Pedido de Apertura de Archivo por parte de DMA 
-int crearPid(int unPid, int lineas, char * buffer) {
+int crearPid(int unPid,int id, int lineas, char * buffer) {
 
 int resultado;
 	
@@ -1168,33 +1251,40 @@ int resultado;
 		paginas = paginas+1;
 				}
 	
-	resultado = asignarPaginasIniciales(unPid, paginas,buffer);
+	resultado = asignarPaginasIniciales(unPid,id,paginas,buffer);
 	
 	return resultado;
 }
 
-int asignarPaginasIniciales(int unPid, int paginas,char * buffer) {
+int asignarPaginasIniciales(int unPid,int id, int paginas,char * buffer) {
 	int resultado = OK;
 	int encontre_frame = 0;
 	int cont_frame = 0;
+	int espacioEnMemoria =0;// -UPD- 08/12/18 Declaro
 
 	//seguro hay q hacer hs de nuevo?
 	//TODO AGREGAR ESTRUCTURAS PID CANT PAGINAS
 	int pag,frame;
 
-	for (pag = 0; pag < paginas; pag++){
+	for(pag = 1; pag <= paginas; pag++){ // -UPD- 08/12/18 cambio la inicializacion de pag y la condicion =<
 		    // me ofrece un frame
 			frame = hash(unPid,pag);
 			encontre_frame=0;
 			cont_frame=0;
 			// me fijo si ese frame esta disponible
 
-			if(memoria->estructura_administrativa[frame].pid== PAGINALIBRE && memoria->estructura_administrativa[frame].nroPag== PAGINALIBRE){
-				memoria->estructura_administrativa[frame].pid= unPid;
-			    memoria->estructura_administrativa[frame].nroPag=pag;
+			if(memoria->estructura_administrativa[frame].id == PAGINALIBRE && memoria->estructura_administrativa[frame].pid == PAGINALIBRE &&
+				memoria->estructura_administrativa[frame].nroPag == PAGINALIBRE){
+				memoria->estructura_administrativa[frame].pid = unPid;
+			    memoria->estructura_administrativa[frame].nroPag = pag;
+				memoria->estructura_administrativa[frame].id = id;
 			    //TODO se debera incluir la pagina a la lista de paginas del proceso
 			   
-			    printf("PID: %d | PG: %d | FRAME %d \n",unPid,pag,frame);
+			    printf("ID: %d |PID: %d | PG: %d | FRAME %d \n",id,unPid,pag,frame);
+
+				// -UPD- 08/12/18 Asigno y guardo sin funcion
+				espacioEnMemoria = calcularPosicion(frame);
+				memcpy(memoria->frames + espacioEnMemoria, buffer, MARCO_SIZE);
 			   	encontre_frame = 1;
 			}else{
 				// ciclo hasta encontrar un frame libre
@@ -1205,12 +1295,16 @@ int asignarPaginasIniciales(int unPid, int paginas,char * buffer) {
 						//TODO corto el flujo de procesamiento
 						encontre_frame = 1; //pq no tenia este ajaj
 					}
-				if (memoria->estructura_administrativa[frame + cont_frame].pid == PAGINALIBRE && memoria->estructura_administrativa[frame + cont_frame].nroPag == PAGINALIBRE) {
+				if (memoria->estructura_administrativa[frame].id == PAGINALIBRE && memoria->estructura_administrativa[frame + cont_frame].pid == PAGINALIBRE && memoria->estructura_administrativa[frame + cont_frame].nroPag == PAGINALIBRE) {
 					memoria->estructura_administrativa[frame + cont_frame].pid = unPid;
 					memoria->estructura_administrativa[frame + cont_frame].nroPag = pag;
+					memoria->estructura_administrativa[frame].id = id;
 					encontre_frame = 1;//TODO ACA
 					
-					printf("PID: %d | PG: %d | FRAME %d \n", unPid, pag, frame+cont_frame);
+					printf("ID: %d | PID: %d | PG: %d | FRAME %d \n", id,unPid, pag, frame+cont_frame);
+					// -UPD- 08/12/18 Asigno y guardo sin funcion
+					espacioEnMemoria = calcularPosicion(frame);
+					memcpy(memoria->frames + espacioEnMemoria, buffer, MARCO_SIZE);
 				} else {
 						cont_frame++;
 					}
@@ -1218,52 +1312,81 @@ int asignarPaginasIniciales(int unPid, int paginas,char * buffer) {
 			}
 	}
 	
-	int paginaInicial = 0;
-	int offset = 0;
-	int tamanio = sizeof(buffer);
-	
-	almacenarLinea(unPid,paginaInicial, offset,tamanio, buffer);
-
-	return ERROR;
+	return resultado;
 }
+
+int close_process_paginas_invertidas(int socket_cpu,int pid){
+int resultado;
+
+resultado = eliminarPid(pid);
+
+return resultado;
+
+
+}
+
+int close_file_paginas_invertidas(int socket_cpu,int id){
+	int frameNro,procesoNro,resultado;
+	for (frameNro = 0; frameNro < MARCOS; frameNro++) {
+		//verificar que el frame este vacio
+		if (memoria->estructura_administrativa[frameNro].id == id) {//[i]
+			memoria->estructura_administrativa[frameNro].id = PAGINALIBRE;
+			memoria->estructura_administrativa[frameNro].pid = PAGINALIBRE;
+			memoria->estructura_administrativa[frameNro].nroPag = PAGINALIBRE;
+			memoria->estructura_administrativa[frameNro].frame = PAGINALIBRE;
+			resultado = OK;
+		}else{
+			resultado = ARCHIVO_NO_ABIERTO;
+			}
+	}
+
+	return resultado ;
+}
+
 
 //Elimino todas las paginas de un pid
 int eliminarPid(int pid) {
-	int frameNro,procesoNro;
+	int frameNro,procesoNro,resultado;
 	for (frameNro = 0; frameNro < MARCOS; frameNro++) {
 		//verificar que el frame este vacio
 		if (memoria->estructura_administrativa[frameNro].pid == pid) {//[i]
+			memoria->estructura_administrativa[frameNro].id = PAGINALIBRE;
 			memoria->estructura_administrativa[frameNro].pid = PAGINALIBRE;
 			memoria->estructura_administrativa[frameNro].nroPag = PAGINALIBRE;
 			memoria->estructura_administrativa[frameNro].frame = PAGINALIBRE; 
-		}
+			resultado = OK;
+		}else{
+			resultado = PROCESO_NO_ABIERTO;
+			}
 	}
 
-	return 1;
+	return resultado ;
 }
+
 
 void dump_paginacion(int unPid){
 	for (int i=0; i < MARCOS; i++) {
 			if (memoria->estructura_administrativa[i].pid == unPid) {
-				log_info(log_fm9, "PID: %d | PG: %d | FRAME: %d", memoria->estructura_administrativa[i].pid, memoria->estructura_administrativa[i].nroPag, memoria->estructura_administrativa[i].frame);
+				log_info(log_fm9, "ID: %d |PID: %d | PG: %d | FRAME: %d",memoria->estructura_administrativa[i].id, memoria->estructura_administrativa[i].pid,
+				memoria->estructura_administrativa[i].nroPag, memoria->estructura_administrativa[i].frame);
 
 		}
 	}
 }
 
 
-void flush_paginacion(int socket_diego, int unPid){
+void flush_paginacion(int socket_diego, int id){
 	int cantidad_paginas = 0;
 	int i,resultado,j;
 	int offset = 0;
 	
 	//Cuento la cantidad de paginas que tiene el pid
 	for (i=0; i < MARCOS; i++) {
-			if (memoria->estructura_administrativa[i].pid == unPid) {
+			if (memoria->estructura_administrativa[i].id == id) {
 				cantidad_paginas++;
 				resultado = OK;
 			}else{
-				resultado = ERROR;
+				resultado = ARCHIVO_NO_ABIERTO;
 		}
 	}
 	
@@ -1278,7 +1401,7 @@ void flush_paginacion(int socket_diego, int unPid){
 		
 		//Preparo el buffer para el envio
 		for (j=0; j < cantidad_paginas; j++) {
-			if (memoria->estructura_administrativa[j].pid == unPid) {
+			if (memoria->estructura_administrativa[j].id == id) {
 				
 			memcpy(buffer_envio + sizeof(int) *2 + offset ,memoria->estructura_administrativa[j].frame, sizeof(config.TAM_PAGINA));
 			offset += config.TAM_PAGINA;
@@ -1301,46 +1424,52 @@ void flush_paginacion(int socket_diego, int unPid){
 	
 }
 
-void abrir_linea_paginas_invertidas(int socket_cpu,int pid,int numero_linea){
+
+void abrir_archivo_paginas_invertidas(int socket_cpu,int id){
 				int resultado;
-
-				int resto=0;
-				int pagina = numero_linea / CANTIDADLINEASxPAG ;
-				resto = numero_linea % CANTIDADLINEASxPAG;
-				if (resto >0){
-					pagina=pagina+1;
-				}			
-				
-				int offset = resto * config.MAX_LINEA;//numero_linea * config.MAX_LINEA; 
-				int tamanio = config.MAX_LINEA;//yoha
-				char* buffer = malloc(tamanio); //TODO VALGRIND
-				if(solicitarLinea(pid, pagina, offset, tamanio, buffer)){
-				resultado = OK;
-
-				char*buffer_envio= malloc(tamanio + sizeof(int)*2);
-
-				memcpy(buffer_envio, &resultado, sizeof(int));
-				memcpy(buffer_envio + sizeof(int), &config.MAX_LINEA, sizeof(int));
-				memcpy(buffer_envio + sizeof(int)*2 , buffer, tamanio);
-
-				send(socket_cpu, buffer_envio,tamanio + sizeof(int)*2, MSG_WAITALL);
-
-				free(buffer_envio);
-
-				log_info(log_fm9,"Se envio la linea al CPU");
-
+				int cantidad_paginas = 0;
+				int offset = 0;
+				//Cuento la cantidad de paginas que tiene el id
+				for (int i=0; i < MARCOS; i++) {
+					if (memoria->estructura_administrativa[i].id == id) {
+						cantidad_paginas++;
+						resultado = OK;
 				}else{
 					resultado = ERROR;
+					}
+				}
 
+				if (resultado == OK){
+					log_info(log_fm9, "Las paginas se encuentran en memoria");
+
+					int tamanio_paginas = cantidad_paginas * config.TAM_PAGINA;
+					char* buffer_envio = malloc(sizeof(int) * 2 + tamanio_paginas);
+
+					memcpy(buffer_envio, &resultado, sizeof(int));
+					memcpy(buffer_envio+ sizeof(int), &tamanio_paginas, sizeof(int));
+
+					//Preparo el buffer para el envio
+					for (int j=0; j < cantidad_paginas; j++) {
+						if (memoria->estructura_administrativa[j].id == id) {
+						memcpy(buffer_envio + sizeof(int) *2 + offset ,memoria->estructura_administrativa[j].frame, sizeof(config.TAM_PAGINA));
+						offset += config.TAM_PAGINA;
+						}
+					}
+
+					send(socket_cpu, buffer_envio, sizeof(int)*2 + cantidad_paginas* config.TAM_PAGINA, MSG_WAITALL);
+
+					free(buffer_envio);
+				}else{
+
+					log_error(log_fm9, "Las paginas no se encuentran en memoria");
 					send(socket_cpu, &resultado, sizeof(int), MSG_WAITALL);
 
-					log_error(log_fm9, "La linea no se encuentra en memoria");
-				}
-				free(buffer);
+					}
+
 }
 
 
-void modificar_linea_paginas_invertidas(int socket_cpu, int pid,int nroLinea,char* buffer){
+void modificar_linea_paginas_invertidas(int socket_cpu, int id,int nroLinea,char* buffer){
 	int resultado;
 
 	int pagina = nroLinea / CANTIDADLINEASxPAG;
@@ -1351,11 +1480,11 @@ void modificar_linea_paginas_invertidas(int socket_cpu, int pid,int nroLinea,cha
 	int offset = resto * config.MAX_LINEA;
 	int tamanio = sizeof(buffer);
 	
-	resultado =almacenarLinea(pid,pagina, offset, tamanio,buffer);
+	resultado =almacenarLinea(id,pagina, offset, tamanio,buffer);
 
 	send(socket_cpu, &resultado, sizeof(int), MSG_WAITALL);
 }
-
+*/
 /*
 void inicializar_ta---------------------------------------------------------------------------
 //SEbla_de_paginas(int numero_lineas_memoria){
@@ -1386,17 +1515,46 @@ free(entrada_vacia);
 //SEGMENTACION PAGINADA
 
 void inicializar_memoria_segmentacion_paginada(){
+int forzar_bitarray;
+
+tamanio_bitarray_sp = config.TAMANIO / config.TAM_PAGINA;
+
+
+if(tamanio_bitarray_sp % 8 > 0){
+
+				forzar_bitarray = (config.TAMANIO / config.TAM_PAGINA / 8) + 1;
+
+
+
+
+	}else{
+
+		if(config.TAMANIO / config.TAM_PAGINA == 0){
+
+				forzar_bitarray = 1;
+				tamanio_bitarray_sp = 1;
+			}else {
+
+				forzar_bitarray = config.TAMANIO / config.TAM_PAGINA / 8;
+			}
+
+	}
 
 		tabla_de_segmentos_sp = list_create();
 
-
 		puntero_memoria_sp = malloc(config.TAMANIO);
 
-		bitarray_memoria = bitarray_create(b_m_s,config.TAMANIO / config.TAM_PAGINA);
 
 
+		b_m_s = calloc(0,forzar_bitarray);
 
-		if(puntero_memoria_segmentada == NULL){
+		bitarray_memoria = bitarray_create(b_m_s,forzar_bitarray);
+
+		int max_bit = bitarray_get_max_bit(bitarray_memoria);
+		printf("Tamanio del bitarray: %d\n", max_bit);
+
+		printf("Cantidad de paginas: %d \n", tamanio_bitarray_sp);
+		if(puntero_memoria_sp == NULL){
 
 			log_error(log_fm9, "No se pudo inicializar la memoria");
 		}else{
@@ -1406,21 +1564,36 @@ void inicializar_memoria_segmentacion_paginada(){
 
 }
 
-int guardar_proceso_segmentacion_paginada(int pid ,int id,int cantidad_lineas,char* buffer_recepcion){
-
+int guardar_archivo_segmentacion_paginada(int pid ,int id,int cantidad_lineas,char* buffer_recepcion){
+int resultado;
 
 
 
 	int paginas = cantidad_lineas * config.MAX_LINEA / config.TAM_PAGINA;
 
-	int resultado = entra_memoria_sp(paginas);
 
+	if((cantidad_lineas * config.MAX_LINEA) % config.TAM_PAGINA > 0 ){
+		paginas++;
 
-		if(resultado == 1){
+	}
+
+	printf("CANTIDAD DE PAGINAS : %d \n", paginas);
+	int entra_memoria = entra_memoria_sp(paginas);
+
+	printf("ENTRA MEMORIA : %d\n", entra_memoria);
+
+		if(entra_memoria == 1){
 
 
 
 		paginar_segmento(pid, id, cantidad_lineas, buffer_recepcion);
+		log_info(log_fm9,"Se guardo el archivo ID: %d en memoria \n", id);
+		resultado = OK;
+
+		}else{
+
+			log_error(log_fm9, "El archivo ID: %d no entra en memoria \n", id);
+			resultado = ESPACIO_INSUFICIENTE;
 
 		}
 
@@ -1454,11 +1627,23 @@ void paginar_segmento(int pid, int id, int cantidad_lineas, char* buffer_recepci
 
 	cantidad_paginas = cantidad_lineas * config.MAX_LINEA / config.TAM_PAGINA  ;
 
-	for(int i = 0; i <= cantidad_paginas; i++){
 
-		asignar_segmento_paginado_vacio(cantidad_paginas, segmento_nuevo,  buffer_recepcion);
+	if((cantidad_lineas * config.MAX_LINEA) % config.TAM_PAGINA  > 0){
 
+		cantidad_paginas++;
 	}
+
+
+	printf("CANTIDAD DE PAGINAS %d :  ID %d \n", cantidad_paginas, id);
+
+
+	char*buffer_envio= malloc(cantidad_paginas * config.TAM_PAGINA);
+
+	memcpy(buffer_envio, buffer_recepcion, cantidad_lineas * config.MAX_LINEA);
+
+		asignar_segmento_paginado_vacio(cantidad_paginas, segmento_nuevo,  buffer_envio);
+
+
 
 
 
@@ -1466,45 +1651,53 @@ void paginar_segmento(int pid, int id, int cantidad_lineas, char* buffer_recepci
 
 int entra_memoria_sp(int cantidad_paginas){
 	int pagina = 0;
+	int espacios_vacios=0;
 
-	while (!bitarray_test_bit(bitarray_memoria, pagina) && pagina < config.TAMANIO){
+	while (pagina < tamanio_bitarray_sp){
 
+			if(!bitarray_test_bit(bitarray_memoria, pagina)){
+
+				espacios_vacios++;
+			}
 
 			pagina++;
 			}
 
-			if(pagina < cantidad_paginas){
+	printf("CANTIDAD DE PAGINAS LIBRES %d \n", espacios_vacios);
+			if(espacios_vacios < cantidad_paginas){
 
-				log_error(log_fm9, "No hay espacio en memoria para el DTB");
+
 				return 0;
 			}else{
 
-				log_info(log_fm9, "Guardando el DTB en memoria real");
+
 				return 1;
 			}
 
 }
-void asignar_segmento_paginado_vacio(int cantidad_paginas,segmento_paginado_t* segmento_nuevo, char* buffer_recepcion){
+void asignar_segmento_paginado_vacio(int cantidad_paginas,segmento_paginado_t* segmento_nuevo, char* buffer_envio){
 
-	int numero_pagina= 0;
+	int numero_frame= 0;
 	int offset = 0;
+	int acierto=0;
 
 
+		while(numero_frame < tamanio_bitarray_sp && acierto < cantidad_paginas){
 
-		while(numero_pagina < config.TAMANIO && numero_pagina < cantidad_paginas ){
+			if(!(bitarray_test_bit(bitarray_memoria, numero_frame))){
 
-			if(!(bitarray_test_bit(bitarray_memoria, numero_pagina))){
+				acierto++;
 
+				list_add(segmento_nuevo->tabla_de_paginas_segmento, numero_frame);
 
-				list_add(segmento_nuevo->tabla_de_paginas_segmento, &numero_pagina);
-				log_info(log_fm9,  "Guardando pagina: %d", numero_pagina);
-				bitarray_set_bit(bitarray_memoria, numero_pagina);
+				log_info(log_fm9,  "Guardando pagina: %d", numero_frame);
+				bitarray_set_bit(bitarray_memoria, numero_frame);
 
-				memcpy(puntero_memoria_sp + (numero_pagina) * config.TAM_PAGINA, buffer_recepcion + offset * config.TAM_PAGINA, config.TAM_PAGINA);
+				memcpy(puntero_memoria_sp + (numero_frame) * config.TAM_PAGINA, buffer_envio + config.TAM_PAGINA * offset, config.TAM_PAGINA);
 				offset++;
 			}
 
-			numero_pagina++;
+			numero_frame++;
 
 		}
 
@@ -1529,7 +1722,7 @@ void abrir_archivo_segmentacion_paginada(int socket_cpu, int id){
 
 	//}
 
-	int* puntero_frame = malloc(sizeof(int));
+
 
 	//int corrimiento = numero_linea - (numero_pagina * config.TAM_PAGINA / config.MAX_LINEA);
 
@@ -1544,11 +1737,13 @@ void abrir_archivo_segmentacion_paginada(int socket_cpu, int id){
 
 			if(segmento_buscado == NULL){
 
-				resultado = ERROR ;
+				resultado = ARCHIVO_NO_ABIERTO ;
 				log_error(log_fm9, "El segmento no se encuentra en la tabla");
 			}else{
 
+				log_info("Abriendo archivo %d", id);
 			paginas = list_size(segmento_buscado->tabla_de_paginas_segmento);
+
 
 			tamanio = config.TAM_PAGINA * paginas;
 
@@ -1561,17 +1756,20 @@ void abrir_archivo_segmentacion_paginada(int socket_cpu, int id){
 
 			while(contador < paginas){
 
-			puntero_frame = list_get(segmento_buscado->tabla_de_paginas_segmento, contador);
+			frame = list_get(segmento_buscado->tabla_de_paginas_segmento, contador);
 
-			frame = *puntero_frame;
+
 
 
 
 
 			memcpy(buffer_envio + sizeof(int)*2 + offset, puntero_memoria_sp + (frame * config.TAM_PAGINA), config.TAM_PAGINA);
 
+
 			offset += config.TAM_PAGINA;
+			contador++;
 			}
+
 
 
 			send(socket_cpu, buffer_envio, sizeof(int)* 2 + config.MAX_LINEA * paginas, MSG_WAITALL);
@@ -1599,7 +1797,7 @@ void modificar_linea_segmentacion_paginada(int socket_cpu,int id,int numero_line
 
 			}
 
-		int* puntero_frame = malloc(sizeof(int));
+
 
 		int corrimiento = numero_linea - (numero_pagina * config.TAM_PAGINA / config.MAX_LINEA);
 
@@ -1614,15 +1812,15 @@ void modificar_linea_segmentacion_paginada(int socket_cpu,int id,int numero_line
 
 				if(segmento_buscado == NULL){
 
-					resultado = ERROR ;
-					log_error(log_fm9, "El segmento no se encuentra en la tabla");
+					resultado = ARCHIVO_NO_ABIERTO ;
+					log_error(log_fm9, "El segmento ID: no se encuentra en la tabla\n");
 				}else{
 					resultado = OK;
 
 					log_info(log_fm9, "Modificando linea");
-				puntero_frame = list_get(segmento_buscado->tabla_de_paginas_segmento, numero_pagina);
+				frame = list_get(segmento_buscado->tabla_de_paginas_segmento, numero_pagina);
 
-				frame = *puntero_frame;
+
 
 				memcpy(puntero_memoria_sp + (frame * config.TAM_PAGINA)+ (corrimiento * config.MAX_LINEA),linea_tratada, sizeof(config.MAX_LINEA));
 
@@ -1654,7 +1852,7 @@ void flush_segmentacion_paginada(int socket_diego,int id){
 
 					if(segmento_buscado == NULL){
 
-						resultado = ERROR ;
+						resultado = ARCHIVO_NO_ABIERTO ;
 						log_error(log_fm9, "El segmento no se encuentra en la tabla");
 						send(socket_diego, &resultado, sizeof(int), MSG_WAITALL);
 
@@ -1703,16 +1901,17 @@ free(buffer_envio);
 }
 
 void dump_segmentacion_paginada(int pid){
-	segmento_paginado_t * segmento_buscado = malloc(sizeof(segmento_paginado_t));
+	segmento_paginado_t * segmento_buscado;
 		t_list* lista_filtrada;
 
-						int resultado, frame, aciertos;
+						int frame, aciertos;
 
 						int offset = 0;
 						int contador = 0;
+
 						int paginas;
-						int numero_pagina = 0;
-						int* puntero_frame = malloc(sizeof(int));
+						int numero_pagina;
+
 
 
 
@@ -1724,30 +1923,26 @@ void dump_segmentacion_paginada(int pid){
 
 						lista_filtrada = list_filter(tabla_de_segmentos_sp, (void*) es_pid);
 
+
 						aciertos = list_size(lista_filtrada);
 
+						if(aciertos >0){
+						log_info(log_fm9, "------DUMP------\n");
+
+						log_info(log_fm9, "PID PROCESO = %d\n", pid);
+
+						char * buffer_muestra =  malloc(config.TAM_PAGINA);
 
 						while(contador < aciertos){
 
 
 
 
-								segmento_buscado = list_get(tabla_de_segmentos_sp, contador);
-
-								if(segmento_buscado == NULL){
-
-
-									log_error(log_fm9, "El segmento %d no se encuentra en memoria", segmento_buscado->id);
-
-
-								}else{
-									log_info(log_fm9, "El segmento %d se encuentra en memoria", segmento_buscado->id);
+								segmento_buscado = list_get(lista_filtrada, contador);
 
 
 
-
-									log_info(log_fm9, "PID PROCESO = %d", segmento_buscado->pid);
-									log_info(log_fm9, "ID SEGMENTO = %d", segmento_buscado->id);
+								log_info(log_fm9, "ID ARCHIVO = %d\n", segmento_buscado->id);
 
 
 
@@ -1756,44 +1951,46 @@ void dump_segmentacion_paginada(int pid){
 
 
 
-								while(numero_pagina <= paginas ){
 
-								log_info(log_fm9, "PAGINA SEGMENTO = %d", numero_pagina);
 
-								puntero_frame = list_get(segmento_buscado->tabla_de_paginas_segmento, numero_pagina);
-
-								frame = *puntero_frame;
-
-								log_info(log_fm9, "FRAME SEGMENTO = %d", frame);
+								numero_pagina=0;
 
 
 
-								numero_pagina++;
+								while(numero_pagina < paginas){
 
-								char * buffer_muestra = config.TAM_PAGINA;
-								memcpy(buffer_muestra, puntero_memoria_segmentada + (frame * config.TAM_PAGINA), config.TAM_PAGINA);
-
-								log_info(log_fm9, "DATOS EN MEMORIA REAL = %s", &buffer_muestra);
-								free(buffer_muestra);
-
-								}
+											frame = list_get(segmento_buscado->tabla_de_paginas_segmento, numero_pagina);
 
 
 
 
+											log_info(log_fm9,"FRAME : %d de PAGINA %d \n", frame, numero_pagina);
+
+											memcpy(buffer_muestra, puntero_memoria_sp + (frame * config.TAM_PAGINA), config.TAM_PAGINA);
+
+
+											offset += config.TAM_PAGINA;
+											printf("offset: %d\n", offset);
+											log_info(log_fm9,"BUFFER PAGINA %d: %s \n",numero_pagina, buffer_muestra);
+											numero_pagina++;
+											}
 
 
 
-								}
-						contador++;
+
+								contador++;
+
+
 						}
 
+						}else{
 
-
-
-
+							log_error(log_fm9, "El proceso: %d no se encuentra en memoria\n", pid);
+						}
 
 }
+
+
 
 int close_file_segmentacion_paginada(int socket_cpu,int id){
 	segmento_paginado_t * segmento_buscado = malloc(sizeof(segmento_paginado_t));
@@ -1803,7 +2000,7 @@ int close_file_segmentacion_paginada(int socket_cpu,int id){
 				int offset = 0;
 				int paginas;
 				int numero_pagina = 0;
-				int* puntero_frame = malloc(sizeof(int));
+
 
 
 
@@ -1818,14 +2015,14 @@ int close_file_segmentacion_paginada(int socket_cpu,int id){
 
 						if(segmento_buscado == NULL){
 
-							resultado = ERROR ;
-							log_error(log_fm9, "El segmento no se encuentra en la tabla");
+							resultado = ARCHIVO_NO_ABIERTO;
+							log_error(log_fm9, "El archivo ID:%d no se encuentra en la tabla \n", id);
 							send(socket_cpu, &resultado, sizeof(int), MSG_WAITALL);
 
 						}else{
 							resultado = OK;
 
-							log_info(log_fm9, "El segmento se encuentra en memoria");
+							log_info(log_fm9, "Se ha cerrado el archivo ID:%d \n", id);
 
 						paginas = list_size(segmento_buscado->tabla_de_paginas_segmento);
 
@@ -1834,9 +2031,9 @@ int close_file_segmentacion_paginada(int socket_cpu,int id){
 
 						while(numero_pagina <= paginas ){
 
-						puntero_frame = list_get(segmento_buscado->tabla_de_paginas_segmento, numero_pagina);
+						frame = list_get(segmento_buscado->tabla_de_paginas_segmento, numero_pagina);
 
-						frame = *puntero_frame;
+
 
 
 						bitarray_clean_bit(bitarray_memoria, frame);
@@ -1871,13 +2068,11 @@ int close_process_segmentacion_paginada(int socket_cpu,int pid){
 	segmento_paginado_t * segmento_buscado = malloc(sizeof(segmento_paginado_t));
 	t_list* lista_filtrada;
 
-					int resultado, frame, aciertos;
+					int resultado, aciertos;
 
-					int offset = 0;
 					int contador = 0;
-					int paginas;
-					int numero_pagina = 0;
-					int* puntero_frame = malloc(sizeof(int));
+
+
 
 
 
@@ -1891,57 +2086,26 @@ int close_process_segmentacion_paginada(int socket_cpu,int pid){
 
 					aciertos = list_size(lista_filtrada);
 
+					if(aciertos == 0){
+						log_error(log_fm9,"El proceso PID: %d no se encuentra en memoria", pid);
+						resultado=ERROR;
 
-					while(contador < aciertos){
+					}else{
+						log_info(log_fm9, "Se ha cerrado el proceso PID: %d", pid );
 
+						while(contador < aciertos){
 
+						segmento_buscado = list_get(lista_filtrada, contador);
 
-
-							segmento_buscado = list_get(tabla_de_segmentos_sp, contador);
-
-							if(segmento_buscado == NULL){
-
-								resultado = ERROR ;
-								log_error(log_fm9, "El segmento %d no se encuentra en memoria", segmento_buscado->id);
-								send(socket_cpu, &resultado, sizeof(int), MSG_WAITALL);
-
-							}else{
-								resultado = OK;
-
-								log_info(log_fm9, "El segmento %d se encuentra en memoria", segmento_buscado->id);
-
-							paginas = list_size(segmento_buscado->tabla_de_paginas_segmento);
+						resultado = close_file_segmentacion_paginada(socket_cpu,segmento_buscado->id);
 
 
-
-
-							while(numero_pagina <= paginas ){
-
-							puntero_frame = list_get(segmento_buscado->tabla_de_paginas_segmento, numero_pagina);
-
-							frame = *puntero_frame;
-
-
-							bitarray_clean_bit(bitarray_memoria, frame);
-
-
-							numero_pagina++;
-							offset += config.TAM_PAGINA;
-
+						contador++;
 
 							}
-
-							list_destroy(segmento_buscado->tabla_de_paginas_segmento);
-							list_remove(tabla_de_segmentos_sp, contador);
+						}
 
 
-
-
-
-
-							}
-					contador++;
-					}
 
 	return resultado;
 
@@ -1961,7 +2125,7 @@ void reservar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limi
 
 
 
-	for(int i= 1; i <= limite; i++){
+	for(int i= base; i < base + limite; i++){
 
 	bitarray_set_bit(bitarray_memoria_segmentada, i);
 
@@ -1972,13 +2136,625 @@ void reservar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limi
 
 void liberar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limite){
 
-	for(int i= 0; i <= limite; i++){
+	for(int i= base; i < base +limite; i++){
 
 		bitarray_clean_bit(bitarray_memoria_segmentada, i);
+
 
 	}
 
 }
+
+//PAGINACION NUEVA
+
+void inicializar_memoria_paginacion_invertida(){
+
+
+	int forzar_bitarray;
+
+	tamanio_bitarray_paginada = config.TAMANIO / config.TAM_PAGINA;
+
+
+	if(tamanio_bitarray_sp % 8 > 0){
+
+					forzar_bitarray = (config.TAMANIO / config.TAM_PAGINA / 8) + 1;
+
+
+
+
+		}else{
+
+			if(config.TAMANIO / config.TAM_PAGINA == 0){
+
+					forzar_bitarray = 1;
+					tamanio_bitarray_sp = 1;
+				}else {
+
+					forzar_bitarray = config.TAMANIO / config.TAM_PAGINA / 8;
+				}
+
+		}
+
+			tabla_de_paginas = list_create();
+
+			puntero_memoria_paginada = malloc(config.TAMANIO);
+
+
+
+			b_m_s = calloc(0,forzar_bitarray);
+
+			bitarray_memoria = bitarray_create(b_m_s,forzar_bitarray);
+
+			int max_bit = bitarray_get_max_bit(bitarray_memoria);
+			printf("Tamanio del bitarray: %d\n", max_bit);
+
+			printf("Cantidad de paginas: %d \n", tamanio_bitarray_sp);
+			if(puntero_memoria_paginada == NULL){
+
+				log_error(log_fm9, "No se pudo inicializar la memoria");
+			}else{
+
+				log_info(log_fm9, "Inicialización de memoria exitosa");
+			}
+
+}
+
+int guardar_archivo_paginas_invertidas(int pid,int id,int cantidad_lineas,char* buffer_recepcion){
+	int resultado;
+
+	int paginas = cantidad_lineas * config.MAX_LINEA / config.TAM_PAGINA;
+
+
+		if((cantidad_lineas * config.MAX_LINEA) % config.TAM_PAGINA > 0 ){
+			paginas++;
+
+		}
+
+		printf("CANTIDAD DE PAGINAS : %d \n", paginas);
+		int entra_memoria = entra_memoria_paginada(paginas);
+
+		printf("ENTRA MEMORIA : %d\n", entra_memoria);
+
+			if(entra_memoria == 1){
+
+				paginar(pid, id,cantidad_lineas,buffer_recepcion);
+
+			//paginar_segmento(pid, id, cantidad_lineas, buffer_recepcion);
+			log_info(log_fm9,"Se guardo el archivo ID: %d en memoria \n", id);
+			resultado = OK;
+
+			}else{
+
+				log_error(log_fm9, "El archivo ID: %d no entra en memoria \n", id);
+				resultado = ESPACIO_INSUFICIENTE;
+
+			}
+
+
+
+
+	return resultado;
+
+
+
+
+
+
+
+
+}
+
+void abrir_archivo_paginacion(int socket_cpu,int id){
+		t_list* paginas_encontradas;
+		entrada_tabla_invertida_t* entrada_encontrada;
+
+		int resultado, frame, tamanio, paginas;
+		int contador = 0;
+		int offset = 0;
+
+		//int numero_pagina = numero_linea/ config.TAM_PAGINA / config.MAX_LINEA ;
+
+		//resto = numero_linea % config.TAM_PAGINA / config.MAX_LINEA;
+
+		//if(resto > 0){
+
+		//	numero_pagina++;
+
+		//}
+
+
+
+		//int corrimiento = numero_linea - (numero_pagina * config.TAM_PAGINA / config.MAX_LINEA);
+
+
+		bool es_id(entrada_tabla_invertida_t* entrada){
+
+								return entrada->id == id;
+
+					}
+
+				paginas_encontradas = list_filter(tabla_de_paginas, (void*) es_id);
+				paginas= list_size(paginas_encontradas);
+
+				if(paginas ==0){
+
+					resultado = ARCHIVO_NO_ABIERTO ;
+					log_error(log_fm9, "El archivo: %d no se encuentra en la tabla\n", id);
+				}else{
+
+					log_info("Abriendo archivo %d\n", id);
+
+
+				tamanio = config.TAM_PAGINA * paginas;
+
+				resultado = OK;
+
+				char* buffer_envio = malloc(sizeof(int)* 2 + tamanio);
+
+				memcpy(buffer_envio, &resultado, sizeof(int));
+				memcpy(buffer_envio + sizeof(int), &tamanio, sizeof(int));
+
+				while(contador < paginas){
+
+					entrada_encontrada = list_get(paginas_encontradas, contador);
+
+
+				frame = entrada_encontrada->frame;
+
+
+
+				memcpy(buffer_envio + sizeof(int)*2 + offset, puntero_memoria_paginada + (frame * config.TAM_PAGINA), config.TAM_PAGINA);
+
+
+				offset += config.TAM_PAGINA;
+				contador++;
+				}
+
+
+
+				send(socket_cpu, buffer_envio, sizeof(int)* 2 + config.MAX_LINEA * paginas, MSG_WAITALL);
+
+
+
+
+	}
+
+	free(buffer_envio);
+	}
+
+
+
+
+int close_file_paginacion(socket_cpu, id){
+
+	t_list* paginas_encontradas;
+	entrada_tabla_invertida_t * entrada_buscada;
+					int resultado;
+					int frame;
+
+					int offset = 0;
+					int paginas;
+					int numero_pagina = 0;
+
+
+
+
+
+					bool es_id(entrada_tabla_invertida_t* entrada){
+
+											return entrada->id == id;
+
+								}
+
+					paginas_encontradas = list_filter(tabla_de_segmentos_sp, (void*) es_id);
+
+					paginas= list_size(paginas_encontradas);
+
+							if(paginas == 0){
+
+								resultado = ARCHIVO_NO_ABIERTO;
+								log_error(log_fm9, "El archivo ID:%d no se encuentra en la tabla \n", id);
+								send(socket_cpu, &resultado, sizeof(int), MSG_WAITALL);
+
+							}else{
+								resultado = OK;
+
+								log_info(log_fm9, "Se ha cerrado el archivo ID:%d \n", id);
+
+
+
+							while(numero_pagina <= paginas ){
+
+							entrada_buscada = list_get(tabla_de_paginas, numero_pagina);
+
+							frame = entrada_buscada->frame;
+
+
+							bitarray_clean_bit(bitarray_memoria, frame);
+
+
+							numero_pagina++;
+							offset += config.TAM_PAGINA;
+
+
+							}
+
+
+							list_remove_by_condition(tabla_de_paginas, (void*) es_id);
+
+
+
+
+
+
+							}
+
+
+	return resultado;
+
+
+
+
+
+
+
+}
+
+
+int close_process_paginacion(int socket_cpu,int pid){
+
+	int resultado, aciertos;
+	entrada_tabla_invertida_t * entrada_buscada = malloc(sizeof(entrada_tabla_invertida_t));
+		t_list* lista_filtrada;
+
+
+
+						int contador = 0;
+
+
+
+
+
+						bool es_pid(entrada_tabla_invertida_t* entrada){
+
+													return entrada->pid == pid;
+
+											}
+
+						lista_filtrada = list_filter(tabla_de_paginas, (void*) es_pid);
+
+						aciertos = list_size(lista_filtrada);
+
+						if(aciertos == 0){
+							log_error(log_fm9,"El proceso PID: %d no se encuentra en memoria", pid);
+							resultado=ERROR;
+
+						}else{
+							log_info(log_fm9, "Se ha cerrado el proceso PID: %d", pid );
+
+							while(contador < aciertos){
+
+							entrada_buscada = list_get(lista_filtrada, contador);
+
+							 resultado = close_file_paginacion(socket_cpu,entrada_buscada->id);
+
+
+							contador++;
+
+								}
+							}
+
+
+
+		return resultado;
+
+
+
+
+
+
+
+
+}
+
+
+void modificar_linea_paginacion(int socket_cpu,int id,int numero_linea,char* linea_tratada){
+	entrada_tabla_invertida_t * entrada_buscada = malloc(sizeof(entrada_tabla_invertida_t));
+	t_list* paginas;
+			int resultado, frame, resto;
+
+			int numero_pagina = numero_linea/ config.TAM_PAGINA / config.MAX_LINEA  ;
+
+			resto = numero_linea % config.TAM_PAGINA / config.MAX_LINEA;
+
+				if(resto > 0){
+
+					numero_pagina++;
+
+				}
+
+
+
+			int corrimiento = numero_linea - (numero_pagina * config.TAM_PAGINA / config.MAX_LINEA);
+
+
+			bool es_id(entrada_tabla_invertida_t* entrada){
+
+									return entrada->id == id;
+
+						}
+
+			paginas = list_filter(tabla_de_paginas, (void*) es_id);
+
+					if(paginas ==0){
+
+						resultado = ARCHIVO_NO_ABIERTO ;
+						log_error(log_fm9, "El archivo ID:%d no se encuentra en la tabla\n", id);
+					}else{
+						resultado = OK;
+
+						log_info(log_fm9, "Modificando linea");
+					frame = list_get(paginas, numero_pagina);
+
+
+
+					memcpy(puntero_memoria_sp + (frame * config.TAM_PAGINA)+ (corrimiento * config.MAX_LINEA),linea_tratada, sizeof(config.MAX_LINEA));
+
+					}
+					send(socket_cpu, &resultado, sizeof(int), MSG_WAITALL);
+
+
+}
+
+void flush_paginacion_invertida(int socket_diego,int id){
+	t_list* paginas_encontradas;
+			entrada_tabla_invertida_t* entrada_encontrada;
+
+			int resultado, frame, tamanio, paginas;
+			int contador = 0;
+			int offset = 0;
+
+			//int numero_pagina = numero_linea/ config.TAM_PAGINA / config.MAX_LINEA ;
+
+			//resto = numero_linea % config.TAM_PAGINA / config.MAX_LINEA;
+
+			//if(resto > 0){
+
+			//	numero_pagina++;
+
+			//}
+
+
+
+			//int corrimiento = numero_linea - (numero_pagina * config.TAM_PAGINA / config.MAX_LINEA);
+
+
+			bool es_id(entrada_tabla_invertida_t* entrada){
+
+									return entrada->id == id;
+
+						}
+
+					paginas_encontradas = list_filter(tabla_de_paginas, (void*) es_id);
+					paginas= list_size(paginas_encontradas);
+
+					if(paginas ==0){
+
+						resultado = ARCHIVO_NO_ABIERTO ;
+						log_error(log_fm9, "El archivo: %d no se encuentra en la tabla\n", id);
+					}else{
+
+						log_info("Abriendo archivo %d\n", id);
+
+
+					tamanio = config.TAM_PAGINA * paginas;
+
+					resultado = OK;
+
+					char* buffer_envio = malloc(sizeof(int)* 2 + tamanio);
+
+					memcpy(buffer_envio, &resultado, sizeof(int));
+					memcpy(buffer_envio + sizeof(int), &tamanio, sizeof(int));
+
+					while(contador < paginas){
+
+						entrada_encontrada = list_get(paginas_encontradas, contador);
+
+
+					frame = entrada_encontrada->frame;
+
+
+
+					memcpy(buffer_envio + sizeof(int)*2 + offset, puntero_memoria_paginada + (frame * config.TAM_PAGINA), config.TAM_PAGINA);
+
+
+					offset += config.TAM_PAGINA;
+					contador++;
+					}
+
+
+
+					send(socket_diego, buffer_envio, sizeof(int)* 2 + config.MAX_LINEA * paginas, MSG_WAITALL);
+
+
+
+
+		}
+
+		free(buffer_envio);
+
+
+
+
+
+
+
+}
+
+void dump_paginacion_invertida(int pid){
+	entrada_tabla_invertida_t * entrada_buscada;
+			t_list* lista_filtrada;
+
+							int frame, aciertos;
+
+							int offset = 0;
+							int contador = 0;
+
+							int paginas;
+							int numero_pagina;
+
+
+
+
+							bool es_pid(entrada_tabla_invertida_t* entrada){
+
+														return entrada->pid == pid;
+
+												}
+
+							lista_filtrada = list_filter(tabla_de_paginas, (void*) es_pid);
+
+
+							paginas = list_size(lista_filtrada);
+
+							if(aciertos >0){
+							log_info(log_fm9, "------DUMP------\n");
+
+							log_info(log_fm9, "PID PROCESO = %d\n", pid);
+
+							char * buffer_muestra =  malloc(config.TAM_PAGINA);
+
+							while(contador < paginas){
+
+
+
+
+								entrada_buscada = list_get(lista_filtrada, contador);
+
+								frame = list_get(entrada_buscada, contador);
+
+									log_info(log_fm9, "ID ARCHIVO = %d\n", entrada_buscada->id);
+
+
+									log_info(log_fm9,"FRAME : %d de PAGINA %d \n", frame, contador);
+
+									memcpy(buffer_muestra, puntero_memoria_paginada + (frame * config.TAM_PAGINA), config.TAM_PAGINA);
+
+									printf("offset: %d\n", offset);
+									log_info(log_fm9,"CONTENIDO FRAME %d: %s \n",contador, buffer_muestra);
+
+									contador++;
+							}
+
+
+
+
+
+							}else{
+
+								log_error(log_fm9, "El proceso: %d no se encuentra en memoria\n", pid);
+							}
+
+
+
+
+}
+
+
+
+int entra_memoria_paginada(int cantidad_paginas){
+	int pagina = 0;
+	int espacios_vacios=0;
+
+	while (pagina < tamanio_bitarray_paginada){
+
+			if(!bitarray_test_bit(bitarray_memoria, pagina)){
+
+				espacios_vacios++;
+			}
+
+			pagina++;
+			}
+
+	printf("CANTIDAD DE PAGINAS LIBRES %d \n", espacios_vacios);
+			if(espacios_vacios < cantidad_paginas){
+
+
+				return 0;
+			}else{
+
+
+				return 1;
+			}
+
+}
+
+void paginar(int pid, int id, int cantidad_lineas, char* buffer_recepcion){
+entrada_tabla_invertida_t* entrada_tabla = malloc(sizeof(entrada_tabla_invertida_t));
+
+	int cantidad_paginas;
+	int contador=0;
+	int numero_frame=0;
+	int offset=0;
+
+	entrada_tabla->pid = pid;
+	entrada_tabla->id = id;
+
+	if((cantidad_lineas * config.MAX_LINEA) % config.TAM_PAGINA  > 0){
+
+			cantidad_paginas++;
+		}
+
+
+		printf("CANTIDAD DE PAGINAS %d :  ID %d \n", cantidad_paginas, id);
+
+
+		char*buffer_envio= malloc(cantidad_paginas * config.TAM_PAGINA);
+
+		memcpy(buffer_envio, buffer_recepcion, cantidad_lineas * config.MAX_LINEA);
+
+
+
+
+		while(numero_frame < tamanio_bitarray_paginada && contador < cantidad_paginas){
+
+					if(!(bitarray_test_bit(bitarray_memoria, numero_frame))){
+
+						contador++;
+
+						entrada_tabla->frame = numero_frame;
+
+						list_add(tabla_de_paginas, entrada_tabla);
+
+						log_info(log_fm9,  "Guardando pagina en frame: %d \n", numero_frame);
+						bitarray_set_bit(bitarray_memoria, numero_frame);
+
+						memcpy(puntero_memoria_paginada + (numero_frame) * config.TAM_PAGINA, buffer_envio + config.TAM_PAGINA * offset, config.TAM_PAGINA);
+						offset++;
+					}
+
+					numero_frame++;
+
+				}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
 
 
 //---------------------------------------------------------------------------------------------------------------
@@ -2022,6 +2798,6 @@ int id_nuevo(){
 	id_global++;
 
 	return id_global;
-
-
 }
+
+
