@@ -56,11 +56,6 @@ typedef struct {
 } config_fs;
 
 typedef struct {
-	uint32_t TAMANIO;
-	char **BLOQUES;
-} config_arch;
-
-typedef struct {
 	char *comando;
 	char *param[MAX_PARAMS];
 	uint32_t cant_params;

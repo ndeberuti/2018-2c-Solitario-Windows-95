@@ -486,36 +486,36 @@ void crear_path_completo(char *path_completo) {
 char *obtener_todo(char *path, uint32_t offset) {
 	t_config *aux_config = config_create(path);
 
-	config_arch *archConfig = malloc(sizeof(config_arch));
-	archConfig->TAMANIO = config_get_int_value(aux_config, "TAMANIO");
-	archConfig->BLOQUES = config_get_array_value(aux_config, "BLOQUES");
-	uint32_t cant_bloques = calcular_cant_bloques(archConfig->TAMANIO);
+	uint32_t tamanio = config_get_int_value(aux_config, "TAMANIO");
+	char **bloques = config_get_array_value(aux_config, "BLOQUES");
+	uint32_t cant_bloques = calcular_cant_bloques(tamanio);
 	config_destroy(aux_config);
 	char *rta = NULL;
 
-	if (offset < archConfig->TAMANIO) {
-		rta = malloc(sizeof(char) * (archConfig->TAMANIO + 1));
-		char *contenido = malloc(sizeof(char) * (fs_config->TAMANIO_BLOQUES + 1));
+	if (offset < tamanio) {
+		char *nombre_bloque;
+		FILE *fptr;
+		char *contenido;
+		rta = malloc(sizeof(char) * (tamanio + 1));
 
-		char *nombre_bloque = malloc(sizeof(char) * (strlen(carpeta_bloques) + strlen(archConfig->BLOQUES[0]) + 5));
-		strcpy(nombre_bloque, carpeta_bloques);
-		strcat(nombre_bloque, archConfig->BLOQUES[0]);
-		strcat(nombre_bloque, ".bin");
-		FILE *fptr = fopen(nombre_bloque, "r");
-		fgets(contenido, fs_config->TAMANIO_BLOQUES + 1, fptr);
-		strcpy(rta, contenido);
-		free(nombre_bloque);
-		free(contenido);
-		fclose(fptr);
-
-		for (uint32_t i = 1; i < cant_bloques; i++) {
-			nombre_bloque = malloc(sizeof(char) * (strlen(carpeta_bloques) + strlen(archConfig->BLOQUES[i]) + 5));
+		for (uint32_t i = 0; i < cant_bloques; i++) {
+			nombre_bloque = malloc(sizeof(char) * (strlen(carpeta_bloques) + strlen(bloques[i]) + 5));
 			strcpy(nombre_bloque, carpeta_bloques);
-			strcat(nombre_bloque, archConfig->BLOQUES[i]);
+			strcat(nombre_bloque, bloques[i]);
 			strcat(nombre_bloque, ".bin");
 			fptr = fopen(nombre_bloque, "r");
+			contenido = malloc(sizeof(char) * (fs_config->TAMANIO_BLOQUES + 1));
 			fgets(contenido, fs_config->TAMANIO_BLOQUES + 1, fptr);
-			strcat(rta, contenido);
+
+			if (i == 0)	strcpy(rta, contenido);
+			else strcat(rta, contenido);
+
+			while (!feof(fptr) && strlen(contenido) < fs_config->TAMANIO_BLOQUES) {
+				free(contenido);
+				contenido = malloc(sizeof(char) * (fs_config->TAMANIO_BLOQUES + 1));
+				fgets(contenido, fs_config->TAMANIO_BLOQUES + 1, fptr);
+				strcat(rta, contenido);
+			}
 			free(nombre_bloque);
 			free(contenido);
 			fclose(fptr);
@@ -523,9 +523,8 @@ char *obtener_todo(char *path, uint32_t offset) {
 	}
 
 	for (uint32_t i = 0; i < cant_bloques; i++)
-		free(archConfig->BLOQUES[i]);
-	free(archConfig->BLOQUES);
-	free(archConfig);
+		free(bloques[i]);
+	free(bloques);
 
 	return rta;
 }
