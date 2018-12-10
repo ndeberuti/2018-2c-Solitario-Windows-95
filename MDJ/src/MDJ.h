@@ -36,9 +36,12 @@ char *PATH_CONFIG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/MDJ/c
 #define VALIDAR_ARCHIVO 2
 #define CREAR_ARCHIVO 3
 #define OBTENER_DATOS 4
+#define GUARDAR_DATOS 5
+#define BORRAR_ARCHIVO 6
 
 #define OPERACION_FAIL 10
 #define OPERACION_OK 11
+#define BLOQUES_INSUFICIENTES 12
 
 #define ERROR_OPERACION 99
 
@@ -84,11 +87,15 @@ void command_handler(uint32_t socket, uint32_t command);
 void validar_archivo(uint32_t socket);
 void crear_archivo(uint32_t socket);
 void obtener_datos(uint32_t socket);
+void guardar_datos(uint32_t socket);
+void borrar_archivo(uint32_t socket);
 uint32_t calcular_cant_bloques(uint32_t bytes);
 void *proximo_bloque_libre(uint32_t bloque_inicial);
 void set_bitarray(uint32_t posicion);
+void clean_bitarray(uint32_t posicion);
 void crear_path_completo(char *path_completo);
 char *obtener_todo(char *path, uint32_t offset);
+void borrar_todo(char *path);
 void consola();
 
 #endif /* SRC_MDJ_H_ */

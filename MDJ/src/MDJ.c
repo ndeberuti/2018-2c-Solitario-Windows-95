@@ -37,7 +37,7 @@ config_t *load_config() {
 	miConfig->PUERTO = config_get_int_value(aux_config, "PUERTO");
 	miConfig->PUNTO_MONTAJE = strdup(config_get_string_value(aux_config, "PUNTO_MONTAJE"));
 	miConfig->RETARDO = config_get_int_value(aux_config, "RETARDO");
-	config_destroy(aux_config);
+	//config_destroy(aux_config);
 
 	log_info(log_mdj, "---- Configuracion ----");
 	log_info(log_mdj, "PUERTO = %d", miConfig->PUERTO);
@@ -91,7 +91,7 @@ void crear_estructura_directorios() {
 	fs_config->TAMANIO_BLOQUES = config_get_int_value(aux_config, "TAMANIO_BLOQUES");
 	fs_config->CANTIDAD_BLOQUES = config_get_int_value(aux_config, "CANTIDAD_BLOQUES");
 	fs_config->MAGIC_NUMBER = strdup(config_get_string_value(aux_config, "MAGIC_NUMBER"));
-	config_destroy(aux_config);
+	//config_destroy(aux_config);
 
 	log_info(log_mdj, "----- File System -----");
 	log_info(log_mdj, "TAMANIO_BLOQUES = %d", fs_config->TAMANIO_BLOQUES);
@@ -231,6 +231,14 @@ void command_handler(uint32_t socket, uint32_t command) {
 		log_info(log_consola, "Operacion OBTENER_DATOS recibida");
 		obtener_datos(socket);
 		break;
+	case GUARDAR_DATOS:
+		log_info(log_consola, "Operacion GUARDAR_DATOS recibida");
+		guardar_datos(socket);
+		break;
+	case BORRAR_ARCHIVO:
+		log_info(log_consola, "Operacion BORRAR_ARCHIVO recibida");
+		borrar_archivo(socket);
+		break;
 	default:
 		log_warning(log_consola, "%d: Comando recibido incorrecto", command);
 	}
@@ -296,7 +304,7 @@ void crear_archivo(uint32_t socket) {
 
 			if (prox_bloque == NULL) {
 				log_warning(log_consola, "No hay suficientes bloques libres para guardar el archivo");
-				rta = OPERACION_FAIL;
+				rta = BLOQUES_INSUFICIENTES;
 			}
 			else {
 				uint32_t bytes_del_bloque;
@@ -311,7 +319,7 @@ void crear_archivo(uint32_t socket) {
 					//CREAR EL BLOQUE
 					bytes_del_bloque = bytes_restantes > fs_config->TAMANIO_BLOQUES ? fs_config->TAMANIO_BLOQUES : bytes_restantes;
 					relleno = malloc(sizeof(char) * (bytes_del_bloque + 1));
-					bytes_restantes -= fs_config->TAMANIO_BLOQUES;
+					bytes_restantes -= bytes_del_bloque;
 
 					nro_bloque = string_itoa(bloques[i]);
 					largo_lista_bloques += strlen(nro_bloque) + 1;
@@ -355,7 +363,7 @@ void crear_archivo(uint32_t socket) {
 				config_set_value(aux_config, "TAMANIO", string_itoa(bytes));
 				config_set_value(aux_config, "BLOQUES", lista_bloques);
 				config_save(aux_config);
-				config_destroy(aux_config);
+				//config_destroy(aux_config);
 				free(path_archivo);
 				free(lista_bloques);
 
@@ -428,6 +436,184 @@ void obtener_datos(uint32_t socket) {
 	}
 }
 
+void guardar_datos(uint32_t socket) {
+	char *path;
+	char *buffer;
+	uint32_t rta;
+	uint32_t size;
+	uint32_t offset;
+
+	if (receive_string(socket, &path) <= 0) {
+		log_error(log_consola, "recv path (guardar_datos)");
+		rta = ERROR_OPERACION;
+	}
+	else {
+		if (receive_int(socket, &offset) <= 0) {
+			log_error(log_consola, "recv offset (guardar_datos)");
+			rta = ERROR_OPERACION;
+		}
+		else {
+			if (receive_int(socket, &size) <= 0) {
+				log_error(log_consola, "recv size (guardar_datos)");
+				rta = ERROR_OPERACION;
+			}
+			else {
+				if (receive_string(socket, &buffer) <= 0) {
+					log_error(log_consola, "recv buffer (guardar_datos)");
+					rta = ERROR_OPERACION;
+				}
+				else {
+					log_info(log_consola, "Guardar %s en el archivo %s desde el byte %d y largo %d", buffer, path, offset, size);
+
+					char *path_archivo = malloc(sizeof(char) * (strlen(carpeta_archivos) + strlen(path) + 1));
+					strcpy(path_archivo, carpeta_archivos);
+					strcat(path_archivo, path);
+
+					char *datos = obtener_todo(path_archivo, offset);
+
+					if (datos != NULL) {
+						char *cabeza = string_substring_until(datos, offset);
+						char *new_datos = malloc(sizeof(char) * (strlen(datos) - size + strlen(buffer) + 1));
+						strcpy(new_datos, cabeza);
+						strcat(new_datos, buffer);
+						free(cabeza);
+
+						if (offset + size < strlen(datos)) {
+							char *cola = string_substring_from(datos, offset + size);
+							strcat(new_datos, cola);
+							free(cola);
+						}
+
+						borrar_todo(path_archivo);
+
+						// CREAR TODOS
+						uint32_t cant_bloques = calcular_cant_bloques(strlen(new_datos));
+
+						uint32_t *prox_bloque;
+						uint32_t pos_actual = 0;
+						uint32_t bloque_inicial = 0;
+						uint32_t bloques[cant_bloques];
+
+						while (pos_actual < cant_bloques && (prox_bloque = proximo_bloque_libre(bloque_inicial)) != NULL) {
+							bloques[pos_actual] = *prox_bloque;
+							bloque_inicial = *prox_bloque + 1;
+							pos_actual++;
+						}
+
+						if (prox_bloque == NULL) {
+							log_warning(log_consola, "No hay suficientes bloques libres para guardar el archivo modificado");
+							rta = BLOQUES_INSUFICIENTES;
+							free(new_datos);
+							new_datos = strdup(datos);
+
+							cant_bloques = calcular_cant_bloques(strlen(new_datos));
+
+							pos_actual = 0;
+							bloque_inicial = 0;
+
+							while (pos_actual < cant_bloques && (prox_bloque = proximo_bloque_libre(bloque_inicial)) != NULL) {
+								bloques[pos_actual] = *prox_bloque;
+								bloque_inicial = *prox_bloque + 1;
+								pos_actual++;
+							}
+						}
+						else {
+							log_info(log_consola, "Operacion finalizada con exito");
+							rta = OPERACION_OK;
+						}
+
+						uint32_t bytes_del_bloque;
+						uint32_t bytes_restantes = strlen(new_datos);
+						char *relleno;
+						char *nro_bloque;
+						uint32_t largo_lista_bloques = 1;
+						char *nombre_bloque;
+						FILE *fptr;
+
+						for (uint32_t i = 0; i < cant_bloques; i++) {
+							//CREAR EL BLOQUE
+							bytes_del_bloque = bytes_restantes > fs_config->TAMANIO_BLOQUES ? fs_config->TAMANIO_BLOQUES : bytes_restantes;
+							bytes_restantes -= bytes_del_bloque;
+
+							nro_bloque = string_itoa(bloques[i]);
+							largo_lista_bloques += strlen(nro_bloque) + 1;
+							nombre_bloque = malloc(sizeof(char) * (strlen(carpeta_bloques) + strlen(nro_bloque) + 5));
+							strcpy(nombre_bloque, carpeta_bloques);
+							strcat(nombre_bloque, nro_bloque);
+							strcat(nombre_bloque, ".bin");
+
+							fptr = fopen(nombre_bloque, "w");
+							relleno = string_substring(new_datos, fs_config->TAMANIO_BLOQUES * i, bytes_del_bloque);
+							fputs(relleno, fptr);
+							fclose(fptr);
+							free(relleno);
+							free(nro_bloque);
+							free(nombre_bloque);
+
+							//ACTUALIZAR BITARRAY
+							set_bitarray(bloques[i]);
+						}
+						//CREAR EL ARCHIVO
+						char *lista_bloques = malloc(sizeof(char) * (largo_lista_bloques + 1));
+
+						strcpy(lista_bloques, "[");
+						for (uint32_t i = 0; i < cant_bloques; i++) {
+							strcat(lista_bloques, string_itoa(bloques[i]));
+							if (i < cant_bloques - 1)
+								strcat(lista_bloques, ",");
+						}
+						strcat(lista_bloques, "]");
+
+						t_config *aux_config = malloc(sizeof(t_config));
+						aux_config->path = strdup(path_archivo);
+						aux_config->properties = dictionary_create();
+						config_set_value(aux_config, "TAMANIO", string_itoa(strlen(new_datos)));
+						config_set_value(aux_config, "BLOQUES", lista_bloques);
+						config_save(aux_config);
+						//config_destroy(aux_config);
+						free(lista_bloques);
+						free(new_datos);
+						free(datos);
+					}
+					else {
+						log_warning(log_consola, "El offset es mayor que el tamanio del archivo");
+						rta = OPERACION_FAIL;
+					}
+					free(path_archivo);
+					free(buffer);
+				}
+			}
+		}
+		free(path);
+	}
+
+	if (send_int(socket, rta) == -1)
+		log_error(log_consola, "send (guardar_datos)");
+}
+
+void borrar_archivo(uint32_t socket) {
+	char *path;
+	uint32_t rta;
+
+	if (receive_string(socket, &path) <= 0) {
+		log_error(log_consola, "recv path (borrar_archivo)");
+		rta = ERROR_OPERACION;
+	}
+	else {
+		char *aux_path = malloc(sizeof(char) * (strlen(carpeta_archivos) + strlen(path) + 1));
+		log_info(log_consola, "Archivo borrado");
+		strcpy(aux_path, carpeta_archivos);
+		strcat(aux_path, path);
+		borrar_todo(aux_path);
+		rta = OPERACION_OK;
+		free(aux_path);
+		free(path);
+	}
+
+	if (send_int(socket, rta) == -1)
+		log_error(log_consola, "send (borrar_archivo)");
+}
+
 uint32_t calcular_cant_bloques(uint32_t bytes) {
 	uint32_t cant_bloques = bytes / fs_config->TAMANIO_BLOQUES;
 
@@ -448,6 +634,14 @@ void *proximo_bloque_libre(uint32_t bloque_inicial) {
 
 void set_bitarray(uint32_t posicion) {
 	bitarray_set_bit(bitarray, posicion * CHAR_BIT);
+
+	FILE *fptr = fopen(path_bitmap, "w");
+	fputs(bitarray->bitarray, fptr);
+	fclose(fptr);
+}
+
+void clean_bitarray(uint32_t posicion) {
+	bitarray_clean_bit(bitarray, posicion * CHAR_BIT);
 
 	FILE *fptr = fopen(path_bitmap, "w");
 	fputs(bitarray->bitarray, fptr);
@@ -489,7 +683,7 @@ char *obtener_todo(char *path, uint32_t offset) {
 	uint32_t tamanio = config_get_int_value(aux_config, "TAMANIO");
 	char **bloques = config_get_array_value(aux_config, "BLOQUES");
 	uint32_t cant_bloques = calcular_cant_bloques(tamanio);
-	config_destroy(aux_config);
+	//config_destroy(aux_config);
 	char *rta = NULL;
 
 	if (offset < tamanio) {
@@ -527,6 +721,31 @@ char *obtener_todo(char *path, uint32_t offset) {
 	free(bloques);
 
 	return rta;
+}
+
+void borrar_todo(char *path) {
+	t_config *aux_config = config_create(path);
+
+	uint32_t tamanio = config_get_int_value(aux_config, "TAMANIO");
+	char **bloques = config_get_array_value(aux_config, "BLOQUES");
+	uint32_t cant_bloques = calcular_cant_bloques(tamanio);
+	//config_destroy(aux_config);
+	char *nombre_bloque;
+
+	for (uint32_t i = 0; i < cant_bloques; i++) {
+		nombre_bloque = malloc(sizeof(char) * (strlen(carpeta_bloques) + strlen(bloques[i]) + 5));
+		strcpy(nombre_bloque, carpeta_bloques);
+		strcat(nombre_bloque, bloques[i]);
+		strcat(nombre_bloque, ".bin");
+
+		clean_bitarray(atoi(bloques[i]));
+
+		remove(nombre_bloque);
+		free(nombre_bloque);
+		free(bloques[i]);
+	}
+	free(bloques);
+	remove(path);
 }
 
 void consola() {
