@@ -1,0 +1,603 @@
+#include "DMA.h"
+
+int32_t getConfigs()
+{
+	char *configurationPath = calloc(22, sizeof(char));
+
+	if(configurationPath == NULL)
+		return MALLOC_ERROR;
+
+	strcpy(configurationPath, "../../Configs/DMA.cfg"); //strcpy stops copying characters when it encounters a '\0', memcpy stops when it copies the defined amount
+
+	t_config* configFile = config_create(configurationPath);
+	config_t tempConfig;
+
+	if(config_has_property(configFile, "PUERTO"))
+	{
+		tempConfig.port = config_get_int_value(configFile, "PUERTO");
+	}
+	else
+	{
+		log_error(dmaLog, "No se definio ninguna propiedad para el 'Puerto de El Diego' en el archivo de configuracion");
+		free(configurationPath);
+		config_destroy(configFile);
+		return CONFIG_PROPERTY_NOT_FOUND;
+	}
+
+	if(config_has_property(configFile, "IP_SAFA"))
+	{
+		tempConfig.schedulerIp = config_get_string_value(configFile, "IP_SAFA");
+	}
+	else
+	{
+		log_error(dmaLog, "No se definio ninguna propiedad para la 'IP de SAFA' en el archivo de configuracion");
+		free(configurationPath);
+		config_destroy(configFile);
+		return CONFIG_PROPERTY_NOT_FOUND;
+	}
+
+	if(config_has_property(configFile, "PUERTO_SAFA"))
+	{
+		tempConfig.schedulerPort = config_get_int_value(configFile, "PUERTO_SAFA");
+	}
+	else
+	{
+		log_error(dmaLog, "No se definio ninguna propiedad para el 'Puerto de SAFA' en el archivo de configuracion");
+		free(configurationPath);
+		config_destroy(configFile);
+		return CONFIG_PROPERTY_NOT_FOUND;
+	}
+
+	if(config_has_property(configFile, "IP_FM9"))
+	{
+		tempConfig.memoryIp = config_get_string_value(configFile, "IP_FM9");
+	}
+	else
+	{
+		log_error(dmaLog, "No se definio ninguna propiedad para la 'IP de FM9' en el archivo de configuracion");
+		free(configurationPath);
+		config_destroy(configFile);
+		return CONFIG_PROPERTY_NOT_FOUND;
+	}
+
+	if(config_has_property(configFile, "Puerto_FM9"))
+	{
+		tempConfig.memoryPort = config_get_int_value(configFile, "Puerto_FM9");
+	}
+	else
+	{
+		log_error(dmaLog, "No se definio ninguna propiedad para el 'Puerto de FM9' en el archivo de configuracion");
+		free(configurationPath);
+		config_destroy(configFile);
+		return CONFIG_PROPERTY_NOT_FOUND;
+	}
+
+	if(config_has_property(configFile, "IP_MDJ"))
+	{
+		tempConfig.fileSystemIp = config_get_string_value(configFile, "IP_MDJ");
+	}
+	else
+	{
+		log_error(dmaLog, "No se definio ninguna propiedad para la 'IP de MDJ' en el archivo de configuracion");
+		free(configurationPath);
+		config_destroy(configFile);
+		return CONFIG_PROPERTY_NOT_FOUND;
+	}
+
+	if(config_has_property(configFile, "Puerto_MDJ"))
+	{
+		tempConfig.fileSystemPort = config_get_int_value(configFile, "Puerto_MDJ");
+	}
+	else
+	{
+		log_error(dmaLog, "No se definio ninguna propiedad para el 'Puerto de MDJ' en el archivo de configuracion");
+		free(configurationPath);
+		config_destroy(configFile);
+		return CONFIG_PROPERTY_NOT_FOUND;
+	}
+
+	if(config_has_property(configFile, "TAMAÑO_TRANSFERENCIA"))
+	{
+		tempConfig.transferSize = config_get_int_value(configFile, "TAMAÑO_TRANSFERENCIA");
+	}
+	else
+	{
+		log_error(dmaLog, "No se definio ninguna propiedad para el 'Tamaño de Transferencia' en el archivo de configuracion");
+		free(configurationPath);
+		config_destroy(configFile);
+		return CONFIG_PROPERTY_NOT_FOUND;
+	}
+
+	free(configurationPath);
+	config_destroy(configFile);
+
+	config = tempConfig;	//This is to avoid modifying the original config values if an error occurs after modifying the configFile in runtime
+
+	return 0;
+}
+
+void showConfigs()
+{
+	log_info(dmaLog, "---- Configuracion ----");
+	log_info(dmaLog, "PUERTO = %d", config.port);
+	log_info(dmaLog, "IP_SAFA = %s", config.schedulerIp);
+	log_info(dmaLog, "PUERTO_SAFA = %d", config.schedulerPort);
+	log_info(dmaLog, "IP_MDJ = %s", config.fileSystemIp);
+	log_info(dmaLog, "PUERTO_MDJ = %d", config.fileSystemPort);
+	log_info(dmaLog, "IP_FM9 = %s", config.memoryIp);
+	log_info(dmaLog, "PUERTO_FM9 = %d", config.memoryPort);
+	log_info(dmaLog, "TRANSFER_SIZE = %d", config.transferSize);
+	log_info(dmaLog, "-----------------------");
+}
+
+bool checkIfFileIsInFS(char* filePath)
+{
+	int32_t nbytes;
+	int32_t isFileInFS;
+
+	//Send task and filePath to the FS
+	if((nbytes = send_int(fileSystemServerSocket, VALIDAR_ARCHIVO)) < 0)
+	{
+		log_error(dmaLog, "DMAFunctions (checkIfFileIsInFS) - Error al indicar al solicitar al FS que valide la existencia de un archivo");
+
+		log_info(dmaLog, "Debido a la desconexion del FS, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_string(fileSystemServerSocket, filePath)) < 0)
+	{
+		log_error(dmaLog, "DMAFunctions (checkIfFileIsInFS) - Error al enviar al FS el path del archivo a validar");
+
+		log_info(dmaLog, "Debido a la desconexion del FS, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+
+	//Receive validation result from the FS
+	if((nbytes = receive_int(fileSystemServerSocket, &isFileInFS)) <= 0)
+	{
+		if(nbytes == 0)
+			log_error(dmaLog, "DMAFunctions (checkIfFileIsInFS) - El FS fue desconectado al intentar recibir el resultado de la validacion de archivo");
+		else
+			log_error(dmaLog, "DMAFunctions (checkIfFileIsInFS) - Error al recibir el resultado de la validacion de archivo del FS");
+
+		log_info(dmaLog, "Debido a un error en la comunicacion con el FS, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+
+	if(isFileInFS == OPERACION_FAIL)	//File does not exist in the FS
+		return false;
+	else if (isFileInFS == OPERACION_OK)	//File exists in the FS
+		return true;
+	else
+	{
+		log_error(dmaLog, "DMAFunctions (checkIfFileIsInFS) - Se recibio una respuesta incorrecta al esperar el resultado de la validacion de un archivo del FS. Este proceso sera abortado");
+		exit(EXIT_FAILURE);
+	}
+}
+
+char* getFileFromFS(char* filePath)
+{
+	int32_t nbytes;
+	int32_t operationResult;
+	char* fileContents;
+
+	//Send task, filePath, offset & size to the FS;
+	//offset = 0; size = -1  -> means I want to get the whole file (from offset = 0), but I do not know the file size
+
+	if((nbytes = send_int(fileSystemServerSocket, OBTENER_DATOS)) < 0)
+	{
+		log_error(dmaLog, "DMAFunctions (getFileFromFS) - Error al solicitar al FS que obtenga datos de un archivo");
+
+		log_info(dmaLog, "Debido a la desconexion del FS, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_string(fileSystemServerSocket, filePath)) < 0)
+	{
+		log_error(dmaLog, "DMAFunctions (getFileFromFS) - Error al enviar al FS el path del archivo del cual obtener datos");
+
+		log_info(dmaLog, "Debido a la desconexion del FS, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_int(fileSystemServerSocket, 0)) < 0)	//Offset = 0
+	{
+		log_error(dmaLog, "DMAFunctions (getFileFromFS) - Error al enviar al FS el offset del archivo del cual se obtienen datos");
+
+		log_info(dmaLog, "Debido a la desconexion del FS, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_int(fileSystemServerSocket, UNKNOWN_FILE_SIZE)) < 0)	//Size = -1
+	{
+		log_error(dmaLog, "DMAFunctions (getFileFromFS) - Error al enviar al FS el tamaño de los datos a obtener de un archivo");
+
+		log_info(dmaLog, "Debido a la desconexion del FS, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+
+	//Receive operation result message from the FS
+	if((nbytes = receive_int(fileSystemServerSocket, &operationResult)) <= 0)
+	{
+		if(nbytes == 0)
+			log_error(dmaLog, "DMAFunctions (getFileFromFS) - El FS fue desconectado al intentar recibir el resultado de la apertura de un archivo");
+		else
+			log_error(dmaLog, "DMAFunctions (getFileFromFS) - Error al recibir el resultado de la apertura de un archivo del FS");
+
+		log_info(dmaLog, "Debido a un error en la comunicacion con el FS, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Recv Error Handling
+	}
+
+	if(operationResult == OPERACION_FAIL)	//Error getting data from a file
+	{
+		return NULL;
+	}
+	else if (operationResult == OPERACION_OK)	//Data obtained from a file successfully
+	{
+		//Receive file data from the FS
+		if((nbytes = receive_string(fileSystemServerSocket, &fileContents)) <= 0)
+		{
+			if(nbytes == 0)
+				log_error(dmaLog, "DMAFunctions (getFileFromFS) - El FS fue desconectado al intentar recibir el contenido de un archivo");
+			else
+				log_error(dmaLog, "DMAFunctions (getFileFromFS) - Error al recibir el contenido de un archivo del FS");
+
+			log_info(dmaLog, "Debido a un error en la comunicacion con el FS, este proceso se cerrara");
+			exit(EXIT_FAILURE);
+			//TODO (Optional) - Recv Error Handling
+		}
+
+		return fileContents;
+	}
+	else
+	{
+		log_error(dmaLog, "DMAFunctions (getFileFromFS) - Se recibio una respuesta incorrecta al esperar el resultado de la apertura de un archivo del FS. Este proceso sera abortado");
+		exit(EXIT_FAILURE);
+	}
+}
+
+void sendProcessErrorMessageToScheduler(uint32_t process)
+{
+	int32_t nbytes;
+
+	if((nbytes = send_int(schedulerServerSocket, PROCESS_ERROR)) < 0)
+	{
+		log_error(dmaLog, "DMAFunctions (sendProcessErrorMessageToScheduler) - Error al indicar al planificador que ocurrio un error");
+
+		log_info(dmaLog, "Debido a la desconexion del planificador, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_int(schedulerServerSocket, process)) < 0)
+	{
+		log_error(dmaLog, "DMAFunctions (sendProcessErrorMessageToScheduler) - Error al enviar al planificador el id del proceso con error");
+
+		log_info(dmaLog, "Debido a la desconexion del planificador, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+}
+
+t_list* parseScript(char* script)
+{
+	//Receives the script that the memory sends and transforms it to a list; the line/instruction 1 of the script is the element with index 0 of the list, and so on...
+
+	t_list* parsedScript =  string_split_to_list(script, "\n");
+
+	return parsedScript;
+}
+
+char* convertParsedFileToMemoryBuffer(t_list* parsedFile)
+{
+	uint32_t fileLines = list_size(parsedFile);
+	size_t bufferSize = (fileLines * sizeof(char) * memoryLineSize) + (fileLines * sizeof(char)) + 1;	//The size of each memoryLine * the quantity of lines of the file, plus a char for each line (to put a '\n' after each one)
+	char* memoryBuffer = calloc(1, bufferSize);
+	char* line;
+	uint32_t lineSize;
+	uint32_t bufferOffset = 0;
+
+	if(memoryBuffer == NULL)
+	{
+		log_error(dmaLog, "DMAFunctions (convertParsedFileToMemoryBuffer) - Error al intentar reservar espacio para el buffer a ser enviado a la memoria. Este proceso sera abortado por falta de espacio en MP");
+		exit(EXIT_FAILURE);
+	}
+
+	for(uint32_t i = 0; i < fileLines; i++)
+	{
+		line = (char*) list_get(parsedFile, i);
+		lineSize = string_length(line);
+
+		if(lineSize > memoryLineSize)
+		{
+			return NULL;	//A file line's size cannot be more than a memory line's size (because that line would not fit into the memory) -> A line is like a byte for the memory
+		}
+
+		memcpy(memoryBuffer + bufferOffset, line, lineSize);
+		bufferOffset += memoryLineSize;	//Move from the beginning of the last line copied to the buffer, to the end of that line, if the line were a memory line (may leave a trail of empty chars)
+
+		memcpy(memoryBuffer + bufferOffset, "\n", 1);	//Adds a '\n' char after each line
+		bufferOffset++;
+	}
+
+	return memoryBuffer;
+}
+
+void sendFileToMemory(char* filePath, uint32_t lines, char* buffer, uint32_t process)
+{
+	int32_t nbytes;
+	int32_t operationResult;
+
+	if((nbytes = send_int(memoryServerSocket, CARGAR_ARCHIVO)) < 0)
+	{
+		log_error(dmaLog, "DMAFunctions (sendFileToMemory) - Error al indicar a la memoria que debe cargar un archivo");
+
+		log_info(dmaLog, "Debido a la desconexion de la memoria, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_int(memoryServerSocket, process)) < 0)
+	{
+		log_error(dmaLog, "DMAFunctions (sendFileToMemory) - Error al enviar a la memoria el id del proceso para el cual se carga un archivo");
+
+		log_info(dmaLog, "Debido a la desconexion de la memoria, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_string(memoryServerSocket, filePath)) < 0)
+	{
+		log_error(dmaLog, "DMAFunctions (sendFileToMemory) - Error al enviar a la memoria el path del archivo a cargar en ella");
+
+		log_info(dmaLog, "Debido a la desconexion de la memoria, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_int(memoryServerSocket, lines)) < 0)
+	{
+		log_error(dmaLog, "DMAFunctions (sendFileToMemory) - Error al enviar a la memoria la cantidad de lineas del archivo a cargar en ella");
+
+		log_info(dmaLog, "Debido a la desconexion de la memoria, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_string(memoryServerSocket, buffer)) < 0)
+	{
+		log_error(dmaLog, "DMAFunctions (sendFileToMemory) - Error al enviar a la memoria el contenido del archivo a cargar en ella");
+
+		log_info(dmaLog, "Debido a la desconexion de la memoria, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+
+	//Receive operation result message from the memory
+	if((nbytes = receive_int(memoryServerSocket, &operationResult)) <= 0)
+	{
+		if(nbytes == 0)
+			log_error(dmaLog, "DMAFunctions (sendFileToMemory) - La memoria fue desconectada al intentar recibir el resultado de cargar los datos de un archivo en ella");
+		else
+			log_error(dmaLog, "DMAFunctions (sendFileToMemory) - Error al intentar recibir el resultado de cargar los datos de un archivo en la memoria");
+
+		log_info(dmaLog, "Debido a un error en la comunicacion con el FS, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Recv Error Handling
+	}
+
+	if(operationResult == ESPACIO_INSUFICIENTE)	//Error putting file data into memory
+	{
+		sendProcessErrorMessageToScheduler(process);
+		log_error(dmaLog, "Se intento guardar el contenido del archivo \"%s\" en memoria, para el proceso %d, pero la memoria no tiene espacio suficiente");
+	}
+	else if (operationResult != OK)
+	{
+		log_error(dmaLog, "DMAFunctions (sendFileToMemory) - Se recibio una respuesta incorrecta al esperar el resultado del guardado de datos de un archivo en la memoria. Este proceso sera abortado");
+		exit(EXIT_FAILURE);
+	}
+}
+
+char* convertParsedFileToFileSystemBuffer(t_list* parsedFile)
+{
+	//As each string in the list is a duplicate of the original string, and "strdup" supposedly copies characters from a string
+	//until it reaches a '\0' character, there is no need to parse each string from the list to remove the additional '\0' characters
+
+	//Because I do not know the size of all the lines of the list combined into a string, and to avoid calling "realloc" for each line
+	//of the list, I will allocate a large memory address -> lines * memoryLineSize (plus an extra character for each line, for the '\n')
+
+	uint32_t fileLines = list_size(parsedFile);
+	size_t bufferSize = (fileLines * sizeof(char) * memoryLineSize) + (fileLines * sizeof(char)) + 1;
+	char* filesystemBuffer = calloc(1, bufferSize);
+	char* line;
+	uint32_t lineSize;
+	uint32_t bufferOffset = 0;
+	uint32_t fileSize;
+
+	if(filesystemBuffer == NULL)
+	{
+		log_error(dmaLog, "DMAFunctions (convertParsedFileToFileSystemBuffer) - Error al intentar reservar espacio para el buffer a ser enviado al FS. Este proceso sera abortado por falta de espacio en MP");
+		exit(EXIT_FAILURE);
+	}
+
+	for(uint32_t i = 0; i < fileLines; i++)
+	{
+		line = (char*) list_get(parsedFile, i);
+		lineSize = string_length(line);
+
+		memcpy(filesystemBuffer + bufferOffset, line, lineSize);
+		bufferOffset += lineSize;	//Move from the beginning of the last line copied to the buffer, to the end of that line, if the line were a memory line (may leave a trail of empty chars)
+
+		memcpy(filesystemBuffer + bufferOffset, "\n", 1);	//Adds a '\n' char after each line
+		bufferOffset++;
+	}
+
+	fileSize = string_length(filesystemBuffer);
+	realloc(filesystemBuffer, fileSize + 1);
+
+	return filesystemBuffer;
+}
+
+char* getFileFromMemory(char* filePath)
+{
+	char* fileContents;
+	int32_t nbytes;
+	int32_t operationResult;
+
+	//Send task and filePath to the memory
+	if((nbytes = send_int(memoryServerSocket, FLUSH)) < 0)
+	{
+		log_error(dmaLog, "DMAFunctions (getFileFromMemory) - Error al solicitar a la memoria que obtenga datos de un archivo");
+
+		log_info(dmaLog, "Debido a la desconexion de la memoria, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_string(memoryServerSocket, filePath)) < 0)
+	{
+		log_error(dmaLog, "DMAFunctions (getFileFromMemory) - Error al enviar a la memoria el path del archivo del cual obtener datos");
+
+		log_info(dmaLog, "Debido a la desconexion de la memoria, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+
+	//Receive operation result message from the memory
+	if((nbytes = receive_int(memoryServerSocket, &operationResult)) <= 0)
+	{
+		if(nbytes == 0)
+			log_error(dmaLog, "DMAFunctions (getFileFromMemory) - La memoria fue desconectada al intentar recibir el resultado de obtener los datos de un archivo de ella");
+		else
+			log_error(dmaLog, "DMAFunctions (getFileFromMemory) - Error al recibir el resultado de obtener los datos de un archivo contenido en la memoria");
+
+		log_info(dmaLog, "Debido a un error en la comunicacion con el FS, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Recv Error Handling
+	}
+
+	if(operationResult == ARCHIVO_NO_ABIERTO)	//Error getting data from a file
+	{
+		return NULL;
+	}
+	else if (operationResult == OK)	//Data obtained from a file successfully
+	{
+		//Receive file data from the memory
+		if((nbytes = receive_string(fileSystemServerSocket, &fileContents)) <= 0)
+		{
+			if(nbytes == 0)
+				log_error(dmaLog, "DMAFunctions (getFileFromMemory) - La memoria fue desconectada al intentar recibir el contenido de un archivo");
+			else
+				log_error(dmaLog, "DMAFunctions (getFileFromMemory) - Error al recibir el contenido de un archivo de la memoria");
+
+			log_info(dmaLog, "Debido a un error en la comunicacion con la memoria, este proceso se cerrara");
+			exit(EXIT_FAILURE);
+			//TODO (Optional) - Recv Error Handling
+		}
+
+		return fileContents;
+	}
+	else
+	{
+		log_error(dmaLog, "DMAFunctions (getFileFromMemory) - Se recibio una respuesta incorrecta al esperar el resultado de la obtencion de datos de un archivo de la memoria. Este proceso sera abortado");
+		exit(EXIT_FAILURE);
+	}
+}
+
+int32_t sendFileToFileSystem(char* filePath, char* dataToReplace)
+{
+	int32_t nbytes;
+	int32_t operationResult;
+
+	//Send the task, filePath, offset, size and data of the file which needs to be flushed
+	//Offset = 0; Size = 0 -> This means that the file is replaced from the beginning (offset = 0) and all data is overwritten (size = 0)
+	if((nbytes = send_int(fileSystemServerSocket, GUARDAR_DATOS)) < 0)
+	{
+		log_error(dmaLog, "DMAFunctions (sendFileToFileSystem) - Error al solicitar al FS que guarde los datos de un archivo");
+
+		log_info(dmaLog, "Debido a la desconexion del FS, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_string(fileSystemServerSocket, filePath)) < 0)
+	{
+		log_error(dmaLog, "DMAFunctions (sendFileToFileSystem) - Error al enviar al FS el path del archivo para el cual se deben guardar datos");
+
+		log_info(dmaLog, "Debido a la desconexion del FS, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_int(fileSystemServerSocket, 0)) < 0)	//Offset = 0
+	{
+		log_error(dmaLog, "DMAFunctions (sendFileToFileSystem) - Error al enviar al FS el offset del archivo del cual se obtienen datos");
+
+		log_info(dmaLog, "Debido a la desconexion del FS, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_int(fileSystemServerSocket, 0)) < 0)	//Size = 0
+	{
+		log_error(dmaLog, "DMAFunctions (sendFileToFileSystem) - Error al enviar al FS el tamaño de los datos a obtener de un archivo");
+
+		log_info(dmaLog, "Debido a la desconexion del FS, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_string(fileSystemServerSocket, dataToReplace)) < 0)
+	{
+		log_error(dmaLog, "DMAFunctions (sendFileToFileSystem) - Error al enviar al FS el contenido del archivo para el cual se deben guardar datos");
+
+		log_info(dmaLog, "Debido a la desconexion del FS, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+
+	//Receive operation result message from the FS
+	if((nbytes = receive_int(fileSystemServerSocket, &operationResult)) <= 0)
+	{
+		if(nbytes == 0)
+			log_error(dmaLog, "DMAFunctions (sendFileToFileSystem) - El FS fue desconectado al intentar recibir el resultado del guardado de un archivo");
+		else
+			log_error(dmaLog, "DMAFunctions (sendFileToFileSystem) - Error al recibir el resultado del guardado de un archivo del FS");
+
+		log_info(dmaLog, "Debido a un error en la comunicacion con el FS, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Recv Error Handling
+	}
+
+	if ((operationResult != OPERACION_OK) || (operationResult != OPERACION_FAIL) || (operationResult != BLOQUES_INSUFICIENTES))
+	{
+		log_error(dmaLog, "DMAFunctions (sendFileToFileSystem) - Se recibio una respuesta incorrecta al esperar el resultado del guardado de un archivo en el FS. Este proceso sera abortado");
+		exit(EXIT_FAILURE);
+	}
+
+	return operationResult;
+}
+
+void tellSchedulerToUnblockProcess(uint32_t process, char* filePath)
+{
+	int32_t nbytes;
+
+	if((nbytes = send_int(schedulerServerSocket, UNLOCK_PROCESS)) < 0)
+	{
+		log_error(dmaLog, "DMAFunctions (tellSchedulerToUnblockProcess) - Error al indicar al planificador que desbloquee un proceso");
+
+		log_info(dmaLog, "Debido a la desconexion del planificador, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_int(schedulerServerSocket, process)) < 0)
+	{
+		log_error(dmaLog, "DMAFunctions (tellSchedulerToUnblockProcess) - Error al enviar al planificador pid del proceso a desbloquear");
+
+		log_info(dmaLog, "Debido a la desconexion del planificador, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_string(schedulerServerSocket, filePath)) < 0)
+	{
+		log_error(dmaLog, "DMAFunctions (tellSchedulerToUnblockProcess) - Error al enviar al planificador el path del archivo solicitado por el proceso");
+
+		log_info(dmaLog, "Debido a la desconexion del planificador, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+}

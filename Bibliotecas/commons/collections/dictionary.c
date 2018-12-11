@@ -40,7 +40,6 @@ t_dictionary *dictionary_create() {
 	self->elements = calloc(self->table_max_size, sizeof(t_hash_element*));
 	self->table_current_size = 0;
 	self->elements_amount = 0;
-	self->keys = list_create();
 	return self;
 }
 
@@ -71,15 +70,13 @@ void dictionary_put(t_dictionary *self, char *key, void *data) {
 
 	unsigned int key_hash = dictionary_hash(key, strlen(key));
 	int index = key_hash % self->table_max_size;
-	char* keyCopy = strdup(key);
-	t_hash_element * new_element = dictionary_create_element(keyCopy, key_hash, data);
+	t_hash_element * new_element = dictionary_create_element(strdup(key), key_hash, data);
 
 	t_hash_element *element = self->elements[index];
 
 	if (element == NULL) {
 		self->elements[index] = new_element;
 		self->table_current_size++;
-		list_add(self->keys, keyCopy);
 
 		if (self->table_current_size >= self->table_max_size) {
 			dictionary_resize(self, self->table_max_size * 2);
@@ -108,11 +105,6 @@ void *dictionary_remove(t_dictionary *self, char *key) {
 		self->elements_amount--;
 	}
 	return data;
-}
-
-t_list* dictionary_get_keys(t_dictionary* self)
-{
-	return self->keys;
 }
 
 void dictionary_remove_and_destroy(t_dictionary *self, char *key, void(*data_destroyer)(void*)) {
@@ -160,14 +152,12 @@ int dictionary_size(t_dictionary *self) {
 void dictionary_destroy(t_dictionary *self) {
 	dictionary_clean(self);
 	free(self->elements);
-	list_destroy(self->keys);
 	free(self);
 }
 
 void dictionary_destroy_and_destroy_elements(t_dictionary *self, void(*data_destroyer)(void*)) {
 	dictionary_clean_and_destroy_elements(self, data_destroyer);
 	free(self->elements);
-	list_destroy(self->keys);
 	free(self);
 }
 
@@ -235,7 +225,6 @@ static void internal_dictionary_clean_and_destroy_elements(t_dictionary *self, v
 
 	self->table_current_size = 0;
 	self->elements_amount = 0;
-	list_clean_and_destroy_elements(self->keys, free);
 }
 
 static t_hash_element *dictionary_create_element(char *key, unsigned int key_hash, void *data) {
@@ -271,12 +260,6 @@ static t_hash_element *dictionary_get_element(t_dictionary *self, char *key) {
 }
 
 static void *dictionary_remove_element(t_dictionary *self, char *key) {
-
-	bool _string_equals_given_key(char* _key)
-	{
-		return !(strcmp(_key, key));
-	}
-
 	unsigned int key_hash = dictionary_hash(key, strlen(key));
 	int index = key_hash % self->table_max_size;
 
@@ -292,9 +275,6 @@ static void *dictionary_remove_element(t_dictionary *self, char *key) {
 		if (self->elements[index] == NULL) {
 			self->table_current_size--;
 		}
-		char* removedKey = list_remove_by_condition(self->keys, _string_equals_given_key);
-		free(removedKey);
-
 		free(element->key);
 		free(element);
 		return data;
@@ -306,10 +286,6 @@ static void *dictionary_remove_element(t_dictionary *self, char *key) {
 			void *data = element->next->data;
 			t_hash_element *aux = element->next;
 			element->next = element->next->next;
-
-			char* removedKey = list_remove_by_condition(self->keys, _string_equals_given_key);
-			free(removedKey);
-
 			free(aux->key);
 			free(aux);
 			return data;

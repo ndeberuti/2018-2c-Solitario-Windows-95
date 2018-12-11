@@ -68,22 +68,121 @@ void virtualRoundRobinScheduler(PCB_t* process)
 
 void customScheduler()
 {
-	//TODO - Para hacerlo, deberia agregar al PCB un contador que guarda la cantidad de instrucciones
-	//		 que faltan antes de una operacion de IO o el fin del script
-	//		 la CPU tiene que verificar el contador cada vez que recibe el PCB. Si el contador
-	//		 esta en 0, hay que parsear el script y contar la cantidad de instrucciones antes de
-	//		 una de IO o del fin del script.
-	//		 Despues, con cada instruccion ejecutada se decrementa el contador de instrucciones
-	//		 restantes. Como la CPU parsea, para no tener que actualizar el PCB de este modulo
-	//		 cada vez que recalcula ese contador, la CPU se encarga de ir descontando el contador
-	//
-	//		 Despues, para planificar, se ordena la cola de listos por ese contador, poniendo el
-	//		 menor primero, y se elige el menor para ejecutar...
+	//If the scheduler gets to this point, there is a free CPU
+	PCB_t* scheduledProcess;
+	t_list* freeCPUs = getFreeCPUs();
+	cpu_t* selectedCPU;
+	t_list* schedulableProcesses;
+	t_list* processesToCountInstructions;
+	uint32_t processesToCountInstructionsQty, instructionsUntilIO;
+	PCB_t* processToCountInstructions;
+
+
+	bool processIOInstructionCounterIsZero(PCB_t* pcb)
+	{
+		return pcb->instructionsUntilIoOrEnd == 0;
+	}
+
+	bool processHasLessInstructionsUntilIO(PCB_t* pcb1, PCB_t* pcb2)
+	{
+		return pcb1->instructionsUntilIoOrEnd <= pcb2->instructionsUntilIoOrEnd;
+	}
+
+
+	if(list_size(freeCPUs) == 0)
+	{
+		log_info(schedulerLog, "No hay CPUs disponibles para ejecutar el proceso planificado\n");
+		return;
+	}
+
+	selectedCPU = list_get(freeCPUs, 0);
+
+	schedulableProcesses = getSchedulableProcesses();
+
+	if(list_size(schedulableProcesses) == 0)
+	{
+		log_warning(schedulerLog, "Se activo el planificador de corto plazo, pero no existen procesos planificables en la cola READY. Esto no deberia haber pasado\n");
+	}
+
+	processesToCountInstructions = list_filter(schedulableProcesses, processIOInstructionCounterIsZero);
+	processesToCountInstructionsQty = list_size(processesToCountInstructions);
+
+	if(processesToCountInstructionsQty > 0)
+	{
+		for(uint32_t i = 0; i < processesToCountInstructionsQty; i++)
+		{
+			processToCountInstructions = list_get(processesToCountInstructions, i);
+
+			instructionsUntilIO = countProcessInstructions(processToCountInstructions, selectedCPU);
+
+			if(instructionsUntilIO == -1)	//The CPU was disconnected, select a new one
+			{
+				closeSocketAndRemoveCPU(selectedCPU->clientSocket);
+
+				freeCPUs = getFreeCPUs();
+
+				if(list_size(freeCPUs) == 0)
+				{
+					log_warning(schedulerLog, "Se desconecto la ultima CPU libre al intentar planificar un proceso. No es posible planificar mas procesos hasta que haya mas CPUs libres\n");
+					return;
+				}
+
+				selectedCPU = list_get(freeCPUs, 0);
+			}
+
+			processToCountInstructions->instructionsUntilIoOrEnd = instructionsUntilIO;
+		}
+	}
+
+	list_sort(schedulableProcesses, processHasLessInstructionsUntilIO);
+
+	scheduledProcess = list_get(schedulableProcesses, 0);	//The process with less instructions until the end or an IO instruction is scheduled
+
+	executeProcess(scheduledProcess, selectedCPU);
 }
 
-//For the RR schedulers, the CPU should decrement the PCB quantum for each instruction executed, unless it calls the DMA
-//In that case, the CPU sends back the PCB to this module... then the process is put in the blocked queue or,
-//if the algorithm is VRR, it is put in the ioReadyQueue.. the process' remaining quantum should never be modified
-//unless it goes from the readyQueue to the executionQueue
+uint32_t countProcessInstructions(PCB_t* process, cpu_t* selectedCPU)
+{
+	int32_t instructionsUntilIO = 0;
+	int32_t nbytes;
+	uint32_t _socket = selectedCPU->clientSocket;
 
+	//To avoid sending all the PCB to the CPU, only certain variables are sent
+	if((nbytes = send_int(_socket, COUNT_INSTRUCTIONS)) < 0)
+	{
+		log_error(consoleLog, "Algorithms (countProcessInstructions) - Error al indicar a la CPU que debe contar instrucciones para un proceso\n");
+		return -1;
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_int(_socket, process->pid)) < 0)
+	{
+		log_error(consoleLog, "Algorithms (countProcessInstructions) - Error al enviar un pid a la CPU\n");
+		return -1;
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_int(_socket, process->programCounter)) < 0)
+	{
+		log_error(consoleLog, "Algorithms (countProcessInstructions) - Error al enviar un program counter a la CPU\n");
+		return -1;
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_string(_socket, process->scriptPathInFS)) < 0)
+	{
+		log_error(consoleLog, "Algorithms (countProcessInstructions) - Error al enviar un path de script a la CPU\n");
+		return -1;
+		//TODO (Optional) - Send Error Handling
+	}
 
+	//Receive the instructionsUntilIO count from the CPU
+	if((nbytes = receive_int(_socket, &instructionsUntilIO)) <= 0)
+	{
+		if(nbytes == 0)
+			log_error(consoleLog, "Algorithms (countProcessInstructions) - La CPU fue desconectada al intentar recibir la cantidad de instrucciones que le faltan a un proceso para una operacion de IO\n");
+		else
+			log_error(consoleLog, "Algorithms (countProcessInstructions) - Error al recibir la cantidad de instrucciones que le faltan a un proceso para una operacion de IO de la CPU\n");
+
+		return -1;
+	}
+
+	return instructionsUntilIO;
+}

@@ -19,6 +19,7 @@
 
 	#include <stdbool.h>
 	#include <stdarg.h>
+	#include <commons/collections/list.h>
 
 	/**
 	* @NAME: string_new
@@ -192,6 +193,17 @@
 	 *
 	 */
 	char**  string_n_split(char* text, int n, char* separator);
+
+	/**
+		* @NAME: string_split_to_list
+		* @DESC: Separa un string dado un separador
+		*
+		* @Return: Retorna una lista con cada palabra
+		*
+		* Ejemplo:
+		* string_split_to_list("hola, mundo", ",") => lista = ["hola", " mundo"]
+		*/
+	t_list*  string_split_to_list(char * text, char * separator);
 
 	/**
 	* @NAME: string_substring
