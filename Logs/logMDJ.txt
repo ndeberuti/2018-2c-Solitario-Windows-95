@@ -1,0 +1,22 @@
+[INFO] 23:27:45:214 Proceso MDJ/(10497:10497): Inicio del proceso
+[INFO] 23:27:45:214 Proceso MDJ/(10497:10497): ---- Configuracion ----
+[INFO] 23:27:45:214 Proceso MDJ/(10497:10497): PUERTO = 8002
+[INFO] 23:27:45:214 Proceso MDJ/(10497:10497): PUNTO_MONTAJE = /home/utnso/FIFA_FS/
+[INFO] 23:27:45:214 Proceso MDJ/(10497:10497): RETARDO = 500 milisegundos
+[INFO] 23:27:45:215 Proceso MDJ/(10497:10497): -----------------------
+[INFO] 23:27:45:215 Proceso MDJ/(10497:10497): ----- File System -----
+[INFO] 23:27:45:215 Proceso MDJ/(10497:10497): TAMANIO_BLOQUES = 64
+[INFO] 23:27:45:215 Proceso MDJ/(10497:10497): CANTIDAD_BLOQUES = 5192
+[INFO] 23:27:45:215 Proceso MDJ/(10497:10497): MAGIC_NUMBER = FIFA
+[INFO] 23:27:45:215 Proceso MDJ/(10497:10497): -----------------------
+[INFO] 23:40:27:230 Proceso MDJ/(11626:11626): Inicio del proceso
+[INFO] 23:40:27:230 Proceso MDJ/(11626:11626): ---- Configuracion ----
+[INFO] 23:40:27:230 Proceso MDJ/(11626:11626): PUERTO = 8002
+[INFO] 23:40:27:230 Proceso MDJ/(11626:11626): PUNTO_MONTAJE = /home/utnso/FIFA_FS/
+[INFO] 23:40:27:230 Proceso MDJ/(11626:11626): RETARDO = 500 milisegundos
+[INFO] 23:40:27:230 Proceso MDJ/(11626:11626): -----------------------
+[INFO] 23:40:27:230 Proceso MDJ/(11626:11626): ----- File System -----
+[INFO] 23:40:27:231 Proceso MDJ/(11626:11626): TAMANIO_BLOQUES = 64
+[INFO] 23:40:27:231 Proceso MDJ/(11626:11626): CANTIDAD_BLOQUES = 5192
+[INFO] 23:40:27:231 Proceso MDJ/(11626:11626): MAGIC_NUMBER = FIFA
+[INFO] 23:40:27:231 Proceso MDJ/(11626:11626): -----------------------

@@ -216,7 +216,7 @@ void server() {
 
 void command_handler(uint32_t socket, uint32_t command) {
 	switch (command) {
-	case NUEVA_CONEXION_DIEGO:
+	case NEW_DMA_CONNECTION:
 		log_info(log_consola, "Nueva conexion desde El Diego");
 		break;
 	case VALIDAR_ARCHIVO:

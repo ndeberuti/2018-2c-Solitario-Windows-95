@@ -26,6 +26,7 @@
 	#include "commons/collections/list.h"
 	#include "servidor/servidor.h"
 	#include "commons/collections/dictionary.h"
+	#include "enums.h"
 
 
 	#include "commons/bitarray.h"
@@ -36,27 +37,6 @@
 	char *PATH_CONFIG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/FM9/config.txt";
 
 	#define MAX_PARAMS 1
-
-	#define NUEVA_CONEXION_DIEGO 1
-	#define NUEVA_CONEXION_CPU 4
-	#define CARGAR_ARCHIVO 7000
-
-	#define ASIGNAR 7001
-
-	#define FLUSH 7002
-	#define LEER_ARCHIVO 7003
-	#define CLOSE_FILE 13
-	#define CLOSE_PROCESS 14
-
-	#define OK 9999
-	#define ERROR 9998
-
-
-	#define ESPACIO_INSUFICIENTE 10002
-
-
- 	#define ARCHIVO_NO_ABIERTO 20001
-  #define PROCESO_NO_ABIERTO 20009
 
 
 	//ESTRUCTURAS

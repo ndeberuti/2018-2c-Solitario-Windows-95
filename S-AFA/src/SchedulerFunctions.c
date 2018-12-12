@@ -667,7 +667,7 @@ int32_t send_PCB_with_delay(PCB_t* pcb, uint32_t _socket)
 	log_info(schedulerLog, "Delay de envio de mensaje...\n");
 	sleep(milisecondsSleep);
 
-	nbytes = sendPCB(pcb, _socket);
+	nbytes = sendPCB(_socket, pcb);
 
 	log_info(schedulerLog, "Se ha finalizado el envio de un mensaje");
 

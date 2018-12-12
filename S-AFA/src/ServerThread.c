@@ -237,7 +237,7 @@ void _blockProcess(uint32_t _socket)
 	PCB_t* processToBlock = NULL;
 	int32_t isDmaCall;
 
-	if((nbytes = recvPCB(processToBlock, _socket)) <= 0)
+	if((nbytes = recvPCB(_socket, processToBlock)) <= 0)
 	{
 			if(nbytes == 0)
 				log_error(consoleLog, "ServerThread (_blockProcess) - La CPU fue desconectada al intentar recibir un PCB");
@@ -301,7 +301,7 @@ void _killProcess(uint32_t _socket)
 	}
 	else	//If the CPU sent a process error, receive the PCB, update it in the execution queue and kill the process
 	{
-		if((nbytes = recvPCB(processToKill, _socket)) <= 0)
+		if((nbytes = recvPCB(_socket, processToKill)) <= 0)
 		{
 			if(nbytes == 0)
 				log_error(schedulerLog, "ServerThread (_killProcess) - La CPU fue desconectada al intentar recibir un PCB\n");
@@ -337,7 +337,7 @@ void processQuantumEnd(uint32_t _socket)
 	int32_t nbytes;
 	PCB_t* updatedPCB = NULL;
 
-	if((nbytes = recvPCB(updatedPCB, _socket)) <= 0)
+	if((nbytes = recvPCB(_socket, updatedPCB)) <= 0)
 	{
 		if(nbytes == 0)
 			log_error(consoleLog, "ServerThread (processQuantumEnd) - La CPU fue desconectada al intentar recibir un PCB");
@@ -954,7 +954,7 @@ void terminateProcess(uint32_t _socket)
 	int32_t nbytes;
 	PCB_t* updatedPCB = NULL;
 
-	if((nbytes = recvPCB(updatedPCB, _socket)) <= 0)
+	if((nbytes = recvPCB(_socket, updatedPCB)) <= 0)
 	{
 		if(nbytes == 0)
 			log_error(consoleLog, "ServerThread (terminateProcess) - La CPU fue desconectada al intentar recibir un PCB");

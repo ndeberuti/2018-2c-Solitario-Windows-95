@@ -215,12 +215,12 @@ void server() {
 
 void command_handler(uint32_t command, uint32_t socket) {
 	switch (command) {
-	case NUEVA_CONEXION_DIEGO:
+	case NEW_DMA_CONNECTION:
 		log_info(log_consola, "Nueva conexion desde El Diego");
 		diego = socket;
 		send(diego, &config.MAX_LINEA, sizeof(int), MSG_WAITALL);
 		break;
-	case NUEVA_CONEXION_CPU:
+	case NEW_CPU_CONNECTION:
 		log_info(log_consola, "Nueva conexion de CPU");
 
 			break;

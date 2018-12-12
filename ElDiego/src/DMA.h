@@ -61,7 +61,7 @@ void tellSchedulerToUnblockProcess(uint32_t, char*);
 
 //ServerThread
 void server();
-void commandHandler(uint32_t);
+void commandHandler(uint32_t, uint32_t);
 void openFile(uint32_t);
 void deleteFile(uint32_t);
 void createFile(uint32_t);

@@ -26,7 +26,7 @@ int32_t getConfigs()
 
 	if(config_has_property(configFile, "IP_SAFA"))
 	{
-		tempConfig.schedulerIp = config_get_string_value(configFile, "IP_SAFA");
+		tempConfig.schedulerIp = strdup(config_get_string_value(configFile, "IP_SAFA"));
 	}
 	else
 	{
@@ -50,7 +50,7 @@ int32_t getConfigs()
 
 	if(config_has_property(configFile, "IP_FM9"))
 	{
-		tempConfig.memoryIp = config_get_string_value(configFile, "IP_FM9");
+		tempConfig.memoryIp = strdup(config_get_string_value(configFile, "IP_FM9"));
 	}
 	else
 	{
@@ -60,9 +60,9 @@ int32_t getConfigs()
 		return CONFIG_PROPERTY_NOT_FOUND;
 	}
 
-	if(config_has_property(configFile, "Puerto_FM9"))
+	if(config_has_property(configFile, "PUERTO_FM9"))
 	{
-		tempConfig.memoryPort = config_get_int_value(configFile, "Puerto_FM9");
+		tempConfig.memoryPort = config_get_int_value(configFile, "PUERTO_FM9");
 	}
 	else
 	{
@@ -74,7 +74,7 @@ int32_t getConfigs()
 
 	if(config_has_property(configFile, "IP_MDJ"))
 	{
-		tempConfig.fileSystemIp = config_get_string_value(configFile, "IP_MDJ");
+		tempConfig.fileSystemIp = strdup(config_get_string_value(configFile, "IP_MDJ"));
 	}
 	else
 	{
@@ -84,9 +84,9 @@ int32_t getConfigs()
 		return CONFIG_PROPERTY_NOT_FOUND;
 	}
 
-	if(config_has_property(configFile, "Puerto_MDJ"))
+	if(config_has_property(configFile, "PUERTO_MDJ"))
 	{
-		tempConfig.fileSystemPort = config_get_int_value(configFile, "Puerto_MDJ");
+		tempConfig.fileSystemPort = config_get_int_value(configFile, "PUERTO_MDJ");
 	}
 	else
 	{
