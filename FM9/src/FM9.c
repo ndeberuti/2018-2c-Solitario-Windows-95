@@ -31,21 +31,17 @@ int main(void) {
 
 
 
-
-
-	dump(10);
-	//	dump(10);
 	//close_process_segmentacion_paginada(diego, 10);
 	//guardar_archivo_segmentacion_paginada(11 ,222,8,"fallaaa\0");
 
-
+/*
 	for(int j = 0; j < 4; j++){
 
 			int muestra = bitarray_test_bit(bitarray_memoria, j);
 			printf("prueba bitarray : %d \n", muestra);
 		}
 
-
+*/
 
 	/*
 	bitarray_set_bit(bitarray_memoria, 1);
@@ -219,11 +215,12 @@ void server() {
 
 void command_handler(uint32_t command, uint32_t socket) {
 	switch (command) {
-	case NUEVA_CONEXION_DIEGO:
+	case NEW_DMA_CONNECTION:
 		log_info(log_consola, "Nueva conexion desde El Diego");
 		diego = socket;
+		send(diego, &config.MAX_LINEA, sizeof(int), MSG_WAITALL);
 		break;
-	case NUEVA_CONEXION_CPU:
+	case NEW_CPU_CONNECTION:
 		log_info(log_consola, "Nueva conexion de CPU");
 
 			break;
@@ -2029,12 +2026,12 @@ int close_file_segmentacion_paginada(int socket_cpu,int id){
 
 
 
-						while(numero_pagina <= paginas ){
+						while(numero_pagina < paginas ){
 
 						frame = list_get(segmento_buscado->tabla_de_paginas_segmento, numero_pagina);
 
 
-
+						printf("FRAME BORRADO: %d \n", frame);
 
 						bitarray_clean_bit(bitarray_memoria, frame);
 
@@ -2148,14 +2145,12 @@ void liberar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limit
 //PAGINACION NUEVA
 
 void inicializar_memoria_paginacion_invertida(){
-
-
 	int forzar_bitarray;
+
 
 	tamanio_bitarray_paginada = config.TAMANIO / config.TAM_PAGINA;
 
-
-	if(tamanio_bitarray_sp % 8 > 0){
+	if(tamanio_bitarray_paginada % 8 > 0){
 
 					forzar_bitarray = (config.TAMANIO / config.TAM_PAGINA / 8) + 1;
 
@@ -2188,7 +2183,7 @@ void inicializar_memoria_paginacion_invertida(){
 			int max_bit = bitarray_get_max_bit(bitarray_memoria);
 			printf("Tamanio del bitarray: %d\n", max_bit);
 
-			printf("Cantidad de paginas: %d \n", tamanio_bitarray_sp);
+			printf("Cantidad de paginas: %d \n", tamanio_bitarray_paginada);
 			if(puntero_memoria_paginada == NULL){
 
 				log_error(log_fm9, "No se pudo inicializar la memoria");
@@ -2197,7 +2192,9 @@ void inicializar_memoria_paginacion_invertida(){
 				log_info(log_fm9, "Inicialización de memoria exitosa");
 			}
 
-}
+	}
+
+
 
 int guardar_archivo_paginas_invertidas(int pid,int id,int cantidad_lineas,char* buffer_recepcion){
 	int resultado;
@@ -2282,7 +2279,7 @@ void abrir_archivo_paginacion(int socket_cpu,int id){
 					log_error(log_fm9, "El archivo: %d no se encuentra en la tabla\n", id);
 				}else{
 
-					log_info("Abriendo archivo %d\n", id);
+					log_info(log_fm9,"Abriendo archivo %d\n", id);
 
 
 				tamanio = config.TAM_PAGINA * paginas;
@@ -2314,7 +2311,7 @@ void abrir_archivo_paginacion(int socket_cpu,int id){
 
 				send(socket_cpu, buffer_envio, sizeof(int)* 2 + config.MAX_LINEA * paginas, MSG_WAITALL);
 
-
+				printf("BUFFER ABRIR: %s\n", buffer_envio+ sizeof(int)*2);
 
 
 	}
@@ -2325,7 +2322,7 @@ void abrir_archivo_paginacion(int socket_cpu,int id){
 
 
 
-int close_file_paginacion(socket_cpu, id){
+int close_file_paginacion(int socket_cpu,int id){
 
 	t_list* paginas_encontradas;
 	entrada_tabla_invertida_t * entrada_buscada;
@@ -2338,7 +2335,7 @@ int close_file_paginacion(socket_cpu, id){
 
 
 
-
+					printf("ACAAAAAAAAAAAAA\n");
 
 					bool es_id(entrada_tabla_invertida_t* entrada){
 
@@ -2363,7 +2360,7 @@ int close_file_paginacion(socket_cpu, id){
 
 
 
-							while(numero_pagina <= paginas ){
+							while(numero_pagina < paginas ){
 
 							entrada_buscada = list_get(tabla_de_paginas, numero_pagina);
 
@@ -2617,7 +2614,7 @@ void dump_paginacion_invertida(int pid){
 
 							paginas = list_size(lista_filtrada);
 
-							if(aciertos >0){
+							if(paginas >0){
 							log_info(log_fm9, "------DUMP------\n");
 
 							log_info(log_fm9, "PID PROCESO = %d\n", pid);
@@ -2631,8 +2628,7 @@ void dump_paginacion_invertida(int pid){
 
 								entrada_buscada = list_get(lista_filtrada, contador);
 
-								frame = list_get(entrada_buscada, contador);
-
+								frame = entrada_buscada->frame;
 									log_info(log_fm9, "ID ARCHIVO = %d\n", entrada_buscada->id);
 
 
@@ -2692,13 +2688,15 @@ int entra_memoria_paginada(int cantidad_paginas){
 void paginar(int pid, int id, int cantidad_lineas, char* buffer_recepcion){
 entrada_tabla_invertida_t* entrada_tabla = malloc(sizeof(entrada_tabla_invertida_t));
 
-	int cantidad_paginas;
+
 	int contador=0;
 	int numero_frame=0;
 	int offset=0;
 
 	entrada_tabla->pid = pid;
 	entrada_tabla->id = id;
+
+	int cantidad_paginas = cantidad_lineas * config.MAX_LINEA / config.TAM_PAGINA;
 
 	if((cantidad_lineas * config.MAX_LINEA) % config.TAM_PAGINA  > 0){
 

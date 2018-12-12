@@ -1,0 +1,20 @@
+[INFO] 23:27:32:739 Consola S-AFA/(10475:10475): ---- Configuracion ----
+[INFO] 23:27:32:739 Consola S-AFA/(10475:10475): Puerto = 8000
+[INFO] 23:27:32:739 Consola S-AFA/(10475:10475): Algoritmo de Planificacion = RR
+[INFO] 23:27:32:739 Consola S-AFA/(10475:10475): Quantum = 2
+[INFO] 23:27:32:739 Consola S-AFA/(10475:10475): Nivel de Multiprogramacion = 3
+[INFO] 23:27:32:740 Consola S-AFA/(10475:10475): Retardo de Planificacion = 600
+[INFO] 23:27:32:740 Consola S-AFA/(10475:10475): -----------------------
+[INFO] 23:36:21:584 Consola S-AFA/(10475:10478): Nueva conexion desde el DMA
+[INFO] 23:36:21:585 Consola S-AFA/(10475:10478): DMA desconectado
+[INFO] 23:40:21:421 Consola S-AFA/(11619:11619): ---- Configuracion ----
+[INFO] 23:40:21:421 Consola S-AFA/(11619:11619): Puerto = 8000
+[INFO] 23:40:21:421 Consola S-AFA/(11619:11619): Algoritmo de Planificacion = RR
+[INFO] 23:40:21:421 Consola S-AFA/(11619:11619): Quantum = 2
+[INFO] 23:40:21:421 Consola S-AFA/(11619:11619): Nivel de Multiprogramacion = 3
+[INFO] 23:40:21:421 Consola S-AFA/(11619:11619): Retardo de Planificacion = 600
+[INFO] 23:40:21:422 Consola S-AFA/(11619:11619): -----------------------
+[INFO] 23:46:29:164 Consola S-AFA/(11619:11622): Nueva conexion desde el DMA
+[INFO] 23:46:29:165 Consola S-AFA/(11619:11622): DMA desconectado
+[INFO] 23:46:58:161 Consola S-AFA/(11619:11622): Nueva conexion desde el DMA
+[INFO] 23:46:58:197 Consola S-AFA/(11619:11622): DMA desconectado

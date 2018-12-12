@@ -26,25 +26,13 @@
 #include "commons/config.h"
 #include "commons/bitarray.h"
 #include "servidor/servidor.h"
+#include "enums.h"
 
 // constantes
 char *PATH_LOG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/Logs/logMDJ.txt";
 char *PATH_CONFIG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/MDJ/config.txt";
 
 #define MAX_PARAMS 1
-
-#define NUEVA_CONEXION_DIEGO 1
-#define VALIDAR_ARCHIVO 2
-#define CREAR_ARCHIVO 3
-#define OBTENER_DATOS 4
-#define GUARDAR_DATOS 5
-#define BORRAR_ARCHIVO 6
-
-#define OPERACION_FAIL 10
-#define OPERACION_OK 11
-#define BLOQUES_INSUFICIENTES 12
-
-#define ERROR_OPERACION 99
 
 // estructuras
 typedef struct {

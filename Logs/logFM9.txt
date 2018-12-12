@@ -1,0 +1,20 @@
+[INFO] 23:27:53:609 Proceso FM9/(10514:10514): Inicio del proceso
+[INFO] 23:27:53:609 Proceso FM9/(10514:10514): ---- Configuracion ----
+[INFO] 23:27:53:609 Proceso FM9/(10514:10514): PUERTO = 8003
+[INFO] 23:27:53:609 Proceso FM9/(10514:10514): MODO = SEG
+[INFO] 23:27:53:609 Proceso FM9/(10514:10514): TAMANIO = 2048
+[INFO] 23:27:53:609 Proceso FM9/(10514:10514): MAX_LINEA = 128
+[INFO] 23:27:53:609 Proceso FM9/(10514:10514): TAM_PAGINA = 1024
+[INFO] 23:27:53:609 Proceso FM9/(10514:10514): -----------------------
+[INFO] 23:27:53:610 Proceso FM9/(10514:10514): Segmentación Simple seteada
+[INFO] 23:27:53:610 Proceso FM9/(10514:10514): Inicialización de memoria exitosa
+[INFO] 23:42:42:881 Proceso FM9/(11676:11676): Inicio del proceso
+[INFO] 23:42:42:881 Proceso FM9/(11676:11676): ---- Configuracion ----
+[INFO] 23:42:42:882 Proceso FM9/(11676:11676): PUERTO = 8003
+[INFO] 23:42:42:882 Proceso FM9/(11676:11676): MODO = SEG
+[INFO] 23:42:42:882 Proceso FM9/(11676:11676): TAMANIO = 2048
+[INFO] 23:42:42:882 Proceso FM9/(11676:11676): MAX_LINEA = 128
+[INFO] 23:42:42:882 Proceso FM9/(11676:11676): TAM_PAGINA = 1024
+[INFO] 23:42:42:882 Proceso FM9/(11676:11676): -----------------------
+[INFO] 23:42:42:882 Proceso FM9/(11676:11676): Segmentación Simple seteada
+[INFO] 23:42:42:882 Proceso FM9/(11676:11676): Inicialización de memoria exitosa

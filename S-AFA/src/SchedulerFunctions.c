@@ -17,13 +17,13 @@ int32_t getConfigs()
 	{
 		tempConfig.schedulingAlgorithm = strdup(config_get_string_value(configFile, "AlgoritmoPlanificacion"));
 
-		if(strcmp(config.schedulingAlgorithm, "RR") == 0)
+		if(strcmp(tempConfig.schedulingAlgorithm, "RR") == 0)
 			tempConfig.schedulingAlgorithmCode = RR;
 
-		else if(strcmp(config.schedulingAlgorithm, "VRR") == 0)
+		else if(strcmp(tempConfig.schedulingAlgorithm, "VRR") == 0)
 			tempConfig.schedulingAlgorithmCode = VRR;
 
-		else if(strcmp(config.schedulingAlgorithm, "Custom") == 0)
+		else if(strcmp(tempConfig.schedulingAlgorithm, "Custom") == 0)
 			tempConfig.schedulingAlgorithmCode = Custom;
 
 		else
@@ -31,7 +31,7 @@ int32_t getConfigs()
 	}
 	else
 	{
-		log_error(schedulerLog, "No se definio ninguna propiedad para el 'Algoritmo de Planificacion' en el archivo de configuracion\n");
+		log_error(schedulerLog, "No se definio ninguna propiedad para el 'Algoritmo de Planificacion' en el archivo de configuracion");
 		free(configurationPath);
 		config_destroy(configFile);
 		return CONFIG_PROPERTY_NOT_FOUND;
@@ -43,7 +43,7 @@ int32_t getConfigs()
 	}
 	else
 	{
-		log_error(schedulerLog, "No se definio ninguna propiedad para el 'Nivel de Multiprogramacion' en el archivo de configuracion\n");
+		log_error(schedulerLog, "No se definio ninguna propiedad para el 'Nivel de Multiprogramacion' en el archivo de configuracion");
 		free(configurationPath);
 		config_destroy(configFile);
 		return CONFIG_PROPERTY_NOT_FOUND;
@@ -55,7 +55,7 @@ int32_t getConfigs()
 	}
 	else
 	{
-		log_error(schedulerLog, "No se definio ninguna propiedad para el 'Puerto' en el archivo de configuracion\n");
+		log_error(schedulerLog, "No se definio ninguna propiedad para el 'Puerto' en el archivo de configuracion");
 		free(configurationPath);
 		config_destroy(configFile);
 		return CONFIG_PROPERTY_NOT_FOUND;
@@ -67,7 +67,7 @@ int32_t getConfigs()
 	}
 	else
 	{
-		log_error(schedulerLog, "No se definio ninguna propiedad para el 'Quantum' en el archivo de configuracion\n");
+		log_error(schedulerLog, "No se definio ninguna propiedad para el 'Quantum' en el archivo de configuracion");
 		free(configurationPath);
 		config_destroy(configFile);
 		return CONFIG_PROPERTY_NOT_FOUND;
@@ -75,11 +75,11 @@ int32_t getConfigs()
 
 	if(config_has_property(configFile, "RetardoPlanificacion"))
 	{
-		tempConfig.schedulingDelay = config_get_string_value(configFile, "RetardoPlanificacion");
+		tempConfig.schedulingDelay = config_get_int_value(configFile, "RetardoPlanificacion");
 	}
 	else
 	{
-		log_error(schedulerLog, "No se definio ninguna propiedad para el 'Retardo de Planificacion' en el archivo de configuracion\n");
+		log_error(schedulerLog, "No se definio ninguna propiedad para el 'Retardo de Planificacion' en el archivo de configuracion");
 		free(configurationPath);
 		config_destroy(configFile);
 		return CONFIG_PROPERTY_NOT_FOUND;
@@ -91,6 +91,19 @@ int32_t getConfigs()
 	config = tempConfig;	//This is to avoid modifying the original config values if an error occurs after modifying the configFile in runtime
 
 	return 0;
+}
+
+void showConfigs()
+{
+	printf("\n");
+	log_info(consoleLog, "---- Configuracion ----");
+	log_info(consoleLog, "Puerto = %d", config.port);
+	log_info(consoleLog, "Algoritmo de Planificacion = %s", config.schedulingAlgorithm);
+	log_info(consoleLog, "Quantum = %d", config.quantum);
+	log_info(consoleLog, "Nivel de Multiprogramacion = %d", config.multiprogrammingLevel);
+	log_info(consoleLog, "Retardo de Planificacion = %d", config.schedulingDelay);
+	log_info(consoleLog, "-----------------------");
+	printf("\n");
 }
 
 void checkAlgorithm()
@@ -112,7 +125,7 @@ void checkAlgorithm()
 			break;
 
 		default:
-			log_warning(schedulerLog, "Se especifico un algoritmo incorrecto en el archivo de configuracio\nSe utilizara el algoritmo de planificacion Round Robin\n");
+			log_warning(schedulerLog, "Se especifico un algoritmo incorrecto en el archivo de configuracio\nSe utilizara el algoritmo de planificacion Round Robin");
 			scheduleProcesses = &roundRobinScheduler;
 			break;
 	}
@@ -124,8 +137,6 @@ void addProcessToNewQueue(PCB_t *process)
 {
 	pthread_mutex_lock(&metricsGlobalvariablesMutex);
 
-	uint32_t semaphoreValue;
-
 	process->executionState = NEW;
 	process->newQueueArrivalTime = executedInstructions;
 
@@ -135,7 +146,7 @@ void addProcessToNewQueue(PCB_t *process)
 
 	pthread_mutex_unlock(&newQueueMutex);
 
-	log_info(schedulerLog, "Se creo un proceso con id %d!\n", process->pid);
+	log_info(schedulerLog, "Se creo un proceso con id %d!", process->pid);
 
 	/*
 	sem_getvalue(&longTermScheduler, &semaphoreValue);
@@ -165,7 +176,7 @@ uint32_t addProcessToReadyQueue(PCB_t *process)
 	{
 		if(activeProcesses == config.multiprogrammingLevel)
 		{
-			log_info(schedulerLog, "El proceso con id %i no pudo ser agregado a la cola de listos ya que se alcanzo el nivel de multiprogramacion\n", process->pid);
+			log_info(schedulerLog, "El proceso con id %i no pudo ser agregado a la cola de listos ya que se alcanzo el nivel de multiprogramacion", process->pid);
 
 			pthread_mutex_unlock(&metricsGlobalvariablesMutex);
 			return 0;
@@ -179,7 +190,7 @@ uint32_t addProcessToReadyQueue(PCB_t *process)
 	process->executionState = READY;
 	list_add(readyQueue, process);
 
-	log_info(schedulerLog, "El proceso con id %d fue aceptado en la cola de listos!\n", process->pid);
+	log_info(schedulerLog, "El proceso con id %d fue aceptado en la cola de listos!", process->pid);
 
 	pthread_mutex_unlock(&metricsGlobalvariablesMutex);
 	pthread_mutex_unlock(&configFileMutex);
@@ -200,7 +211,7 @@ void moveProcessToReadyQueue(PCB_t* process, bool addToIoReadyQueue) //To add to
 
 		pthread_mutex_unlock(&readyQueueMutex);
 
-		log_info(schedulerLog, "El proceso con id %d fue movido a la cola de listos\n", process->pid);
+		log_info(schedulerLog, "El proceso con id %d fue movido a la cola de listos", process->pid);
 	}
 	else
 	{
@@ -210,7 +221,7 @@ void moveProcessToReadyQueue(PCB_t* process, bool addToIoReadyQueue) //To add to
 
 		pthread_mutex_unlock(&ioReadyQueueMutex);
 
-		log_info(schedulerLog, "El proceso con id %d fue movido a la cola auxiliar de listos\n", process->pid);
+		log_info(schedulerLog, "El proceso con id %d fue movido a la cola auxiliar de listos", process->pid);
 	}
 
 }
@@ -226,7 +237,7 @@ void addProcessToBlockedQueue(PCB_t* process)
 	pthread_mutex_unlock(&blockedQueueMutex);
 }
 
-PCB_t* createProcess(char* scriptName)
+PCB_t* createProcess(char* scriptPathInFS)
 {
 	pthread_mutex_lock(&metricsGlobalvariablesMutex);
 
@@ -239,8 +250,8 @@ PCB_t* createProcess(char* scriptName)
 	process->newQueueArrivalTime = executedInstructions;
 	process->newQueueLeaveTime = 0;
 	process->pid = ++totalProcesses;
-	process->programCounter = NULL;
-	process->scriptName = strdup(scriptName); // scriptName es parte de una estructura que va a ser liberada
+	process->programCounter = 0;
+	process->scriptPathInFS = string_duplicate(scriptPathInFS); // scriptName es parte de una estructura que va a ser liberada
 	process->wasInitialized = false;
 	process->canBeScheduled = false;
 	process->executionState = SYSTEM_PROCESS;
@@ -248,7 +259,9 @@ PCB_t* createProcess(char* scriptName)
 	process->completedDmaCalls = 0;
 	process->responseTimes = 0;
 	process->lastIOStartTime = 0;
-	process->instructionsExecuted = 0;
+	process->totalInstructionsExecuted = 0;
+	process->instructionsExecutedOnLastExecution = 0;
+	process->instructionsUntilIoOrEnd = 0;
 
 	pthread_mutex_unlock(&metricsGlobalvariablesMutex);
 
@@ -286,11 +299,13 @@ void terminateExecutingProcess(uint32_t processId)
 		sem_post(&longTermScheduler); //Always let the LTS accept new processes before running the STS
 	*/
 
-	sem_post(&longTermScheduler); //Post the LITS semaphore; it does not matter if it got
-								  //posted several times by new processes, and it runs several times
-
 	checkAndFreeProcessFiles(processId);
 	checkAndFreeProcessSemaphores(processId);
+
+	log_info(schedulerLog, "El proceso con id %d fue movido a la cola FINISH, ya que se terminaron las instruccciones de su script", processId);
+
+	sem_post(&longTermScheduler); //Post the LITS semaphore; it does not matter if it got
+								  //posted several times by new processes and it runs several times
 }
 
 void unblockProcess(uint32_t processId, bool unblockedByDMA)
@@ -358,7 +373,7 @@ void blockProcess(uint32_t pid, bool isDmaCall)
 
 	pthread_mutex_unlock(&blockedQueueMutex);
 
-	log_info(schedulerLog, "El proceso con id % fue movido a la cola de bloqueados\n", process->pid);
+	log_info(schedulerLog, "El proceso con id % fue movido a la cola de bloqueados", process->pid);
 
 	pthread_mutex_unlock(&metricsGlobalvariablesMutex);
 }
@@ -372,8 +387,6 @@ uint32_t getFreeCPUsQty()
 t_list* getFreeCPUs()
 {
 	pthread_mutex_lock(&cpuListMutex);
-
-	uint32_t cpuListSize = list_size(connectedCPUs);
 
 	bool _cpu_is_free(cpu_t* cpu)
 	{
@@ -389,9 +402,12 @@ t_list* getFreeCPUs()
 
 void executeProcess(PCB_t* process, cpu_t* selectedCPU)
 {
+	int32_t nbytes;
+	int32_t message;
+
 	pthread_mutex_lock(&configFileMutex);
 
-	char* taskMessage;
+	char* taskMessage = NULL;
 
 	selectedCPU->currentProcess = process->pid;
 	selectedCPU->isFree = false;
@@ -413,18 +429,47 @@ void executeProcess(PCB_t* process, cpu_t* selectedCPU)
 
 	if(!process->wasInitialized)
 	{
-		send_int_with_delay(selectedCPU->clientSocket, INITIALIZE_PROCESS);
+		if((nbytes = send_int_with_delay(selectedCPU->clientSocket, INITIALIZE_PROCESS)) < 0)
+		{
+			log_error(consoleLog, "executeProcess - Error al pedir a la CPU que inicialice un proceso");
+			return;
+			//TODO (Optional) - Send Error Handling
+		}
+		if((nbytes = receive_int(selectedCPU->clientSocket, &message)) <= 0)
+		{
+			if(nbytes == 0)
+				log_error(consoleLog, "SchedulerFunctions (executeProcess) - La CPU fue desconectada al intentar recibir la confirmacion de recepcion de PCB");
+			else
+				log_error(consoleLog, "SchedulerFunctions (executeProcess) - Error al intentar recibir la confirmacion de recepcion de PCB de la CPU");
+
+			closeSocketAndRemoveCPU(selectedCPU->clientSocket);
+			FD_CLR(selectedCPU->clientSocket, &master);
+		}
+
 		taskMessage = "inicializar";
 	}
 	else
 	{
-		send_int_with_delay(selectedCPU->clientSocket, EXECUTE_PROCESS);
+		if((nbytes = send_int_with_delay(selectedCPU->clientSocket, EXECUTE_PROCESS)) < 0)
+		{
+			log_error(consoleLog, "executeProcess - Error al pedir a la CPU que ejecute un proceso");
+			return;
+			//TODO (Optional) - Send Error Handling
+		}
+
 		taskMessage = "ejecutar";
 	}
 
-	send_PCB_with_delay(process, selectedCPU->clientSocket);
+	if((nbytes = send_PCB_with_delay(process, selectedCPU->clientSocket)) < 0)
+	{
+		log_error(consoleLog, "executeProcess - Error al pedir a la CPU que inicialice un archivo");
+		return;
+		//TODO (Optional) - Send Error Handling
+	}
 
-	log_info(schedulerLog, "El proceso con id %d fue enviado para %s en la CPU con id %d\n", taskMessage, process->pid,  selectedCPU->cpuId);
+	//TODO - With send errors, which should appear if the selectedCPU disconnects or something like that, a new CPU should be selected, which has different id than the current one
+
+	log_info(schedulerLog, "El proceso con id %d fue enviado para %s en la CPU con id %d", taskMessage, process->pid,  selectedCPU->cpuId);
 
 	pthread_mutex_unlock(&configFileMutex);
 }
@@ -433,8 +478,8 @@ void killProcess(uint32_t pid)
 {
 	pthread_mutex_lock(&metricsGlobalvariablesMutex);
 
-	PCB_t* processToKill;
-	t_list* queueToSearch;
+	PCB_t* processToKill = NULL;
+	t_list* queueToSearch = NULL;
 
 
 	bool process_has_given_id(PCB_t* pcb)
@@ -473,7 +518,7 @@ void killProcess(uint32_t pid)
 
 	if(processToKill == NULL)	//The process is not in any of the queues
 	{
-		log_error(consoleLog, "El proceso que se intento terminar no existe o ya fue terminado\n");
+		log_error(consoleLog, "El proceso que se intento terminar no existe o ya fue terminado");
 		pthread_mutex_unlock(&metricsGlobalvariablesMutex);
 		return;
 	}
@@ -514,7 +559,7 @@ void closeSocketAndRemoveCPU(uint32_t cpuSocket)
 	   
 void checkAndFreeProcessFiles(uint32_t processId)	//Checks if there are any files locked by the process and frees them
 {
-	t_list* fileTableKeys = dictionary_get_keys(fileTable);
+	//t_list* fileTableKeys = dictionary_get_keys(fileTable);
 	uint32_t fileTableKeysQty = list_size(fileTableKeys);
 	char* currentKey;
 	fileTableData* data;
@@ -546,13 +591,13 @@ void checkAndFreeProcessFiles(uint32_t processId)	//Checks if there are any file
 
 void checkAndFreeProcessSemaphores(uint32_t processId)
 {
-	t_list* semaphores = dictionary_get_keys(semaphoreList);
-	uint32_t semaphoresQty = list_size(semaphores);
-	char* currentKey;
+	//t_list* semaphores = dictionary_get_keys(semaphoreList);
+	uint32_t semaphoresQty = list_size(semaphoreListKeys);
+	char* currentKey = NULL;
 	semaphoreData* data;
 	uint32_t processToUnblock;
-	t_list* processWaitList;
-	t_list* usingProcessesList;
+	t_list* processWaitList = NULL;
+	t_list* usingProcessesList = NULL;
 	bool processHasTakenSemaphore;
 
 	bool _pid_equals_given_one(uint32_t pid)
@@ -564,7 +609,7 @@ void checkAndFreeProcessSemaphores(uint32_t processId)
 
 	for(uint32_t i = 0; i < semaphoresQty; i++)
 	{
-		currentKey = list_get(semaphores, i);
+		currentKey = list_get(semaphoreListKeys, i);
 		data = dictionary_get(fileTable, currentKey);
 		processWaitList = data->waitingProcesses;
 		usingProcessesList = data->processesUsingTheSemaphore;
@@ -587,44 +632,44 @@ void checkAndFreeProcessSemaphores(uint32_t processId)
 	pthread_mutex_unlock(&semaphoreListMutex);
 }
 
-int32_t send_int_with_delay(uint32_t socket, uint32_t messageCode)
+int32_t send_int_with_delay(uint32_t _socket, uint32_t messageCode)
 {
 	pthread_mutex_lock(&configFileMutex);
 
 	int32_t nbytes;
 
-	log_info(schedulerLog, "Se comenzara el envio de un mensaje...\n");
+	log_info(schedulerLog, "Se comenzara el envio de un mensaje...");
 
 	double milisecondsSleep = config.schedulingDelay / 1000;
 
 	log_info(schedulerLog, "Delay de envio de mensaje...\n");
 	sleep(milisecondsSleep);
 
-	nbytes = send_int(socket, messageCode);
+	nbytes = send_int(_socket, messageCode);
 
-	log_info(schedulerLog, "Se ha finalizado el envio de un mensaje\n");
+	log_info(schedulerLog, "Se ha finalizado el envio de un mensaje");
 
 	pthread_mutex_unlock(&configFileMutex);
 
 	return nbytes;
 }
 
-int32_t send_PCB_with_delay(PCB_t* pcb, uint32_t socket)
+int32_t send_PCB_with_delay(PCB_t* pcb, uint32_t _socket)
 {
 	pthread_mutex_lock(&configFileMutex);
 
 	int32_t nbytes;
 
-	log_info(schedulerLog, "Se comenzara el envio de un mensaje...\n");
+	log_info(schedulerLog, "Se comenzara el envio de un mensaje...");
 
 	double milisecondsSleep = config.schedulingDelay / 1000;
 
 	log_info(schedulerLog, "Delay de envio de mensaje...\n");
 	sleep(milisecondsSleep);
 
-	nbytes = sendPCB(pcb, socket);
+	nbytes = sendPCB(_socket, pcb);
 
-	log_info(schedulerLog, "Se ha finalizado el envio de un mensaje\n");
+	log_info(schedulerLog, "Se ha finalizado el envio de un mensaje");
 
 	pthread_mutex_unlock(&configFileMutex);
 
@@ -639,7 +684,7 @@ void freeCpuElement(cpu_t* cpu)
 
 void freePCB(PCB_t* pcb)
 {
-	free(pcb->scriptName);
+	free(pcb->scriptPathInFS);
 	free(pcb);
 }
 
@@ -654,4 +699,24 @@ void freeSemaphoreListData(semaphoreData* data)
 	list_destroy(data->processesUsingTheSemaphore);
 	list_destroy(data->waitingProcesses);
 	free(data);
+}
+
+void removeKeyFromList(t_list* table, char* key)
+{
+	bool _string_equals_given_one(char* string)
+	{
+		return string_equals_ignore_case(string, key);
+	}
+
+	list_remove_by_condition(table, _string_equals_given_one);
+}
+
+t_list* getSchedulableProcesses()
+{
+	bool processCanBeScheduled(PCB_t* pcb)
+	{
+		return pcb->canBeScheduled;
+	}
+
+	return list_filter(readyQueue, processCanBeScheduled);
 }

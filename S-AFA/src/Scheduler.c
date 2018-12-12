@@ -3,7 +3,7 @@
 
 void shortTermSchedulerThread()
 {
-	uint32_t semaphoreValue;
+	t_list* schedulableProcesses = NULL;
 
 	while(!killThreads)
 	{
@@ -15,11 +15,13 @@ void shortTermSchedulerThread()
 		STSAlreadyExecuting = true;
 
 		pthread_mutex_lock(&readyQueueMutex);
-		pthread_mutex_lock(&ioReadyQueue);
+		pthread_mutex_lock(&ioReadyQueueMutex);
 
-		if(list_size(readyQueue) == 0)
+		schedulableProcesses = getSchedulableProcesses();
+
+		if(list_size(schedulableProcesses) == 0)
 		{
-			log_info(schedulerLog, "No es posible planificar ya que no hay procesos listos\nSe debe crear un nuevo proceso, o desbloquear uno ya existente, para poder planificar\n");
+			log_info(schedulerLog, "No es posible planificar ya que no hay procesos listos\nSe debe crear un nuevo proceso, o desbloquear uno ya existente, para poder planificar");
 		}
 		else
 		{
@@ -27,7 +29,7 @@ void shortTermSchedulerThread()
 		}
 
 		pthread_mutex_unlock(&readyQueueMutex);
-		pthread_mutex_unlock(&ioReadyQueue);
+		pthread_mutex_unlock(&ioReadyQueueMutex);
 
 		STSAlreadyExecuting = false;
 
@@ -37,8 +39,9 @@ void shortTermSchedulerThread()
 
 void longTermSchedulerThread()
 {
-	PCB_t* processToInitialize;
-	uint32_t processAccepted, semaphoreValue;
+	PCB_t* processToInitialize = NULL;
+	uint32_t processAccepted;
+	t_list* schedulableProcesses = NULL;
 
 	while(!killThreads)
 	{
@@ -52,10 +55,12 @@ void longTermSchedulerThread()
 
 		if(list_size(newQueue) == 0)
 		{
-			log_info(schedulerLog, "LTS: No hay procesos para aceptar\n");
+			log_info(schedulerLog, "LTS: No hay procesos para aceptar");
 
-			if(list_size(readyQueue) == 0)
-				log_info(schedulerLog, "LTS: No hay procesos para planificar\n");
+			schedulableProcesses = getSchedulableProcesses();
+
+			if(list_size(schedulableProcesses) == 0)
+				log_info(schedulerLog, "LTS: No hay procesos para planificar");
 			else
 				_checkExecProc_and_algorithm(); //Call the STS if there are no new processes to add, but there are ready ones
 		}
@@ -69,7 +74,7 @@ void longTermSchedulerThread()
 				t_list* freeCPUs = getFreeCPUs();
 
 				if(list_size(freeCPUs) == 0)
-					log_info(schedulerLog, "No hay CPUs disponibles para inicializar el proceso con id %d. Se dejara en la cola de listos (sin poder ser planificado) a la espera de que se libere una CPU\n", processToInitialize->pid);
+					log_info(schedulerLog, "No hay CPUs disponibles para inicializar el proceso con id %d. Se dejara en la cola de listos (sin poder ser planificado) a la espera de que se libere una CPU", processToInitialize->pid);
 				else
 				{
 					cpu_t* freeCPU = list_get(freeCPUs, 0);
@@ -101,9 +106,9 @@ void longTermSchedulerThread()
 
 void _checkExecProc_and_algorithm()
 {
-	uint32_t semaphoreValue;
+	int32_t semaphoreValue;
 
-	log_info(schedulerLog, "LTS: Se encontraron procesos en la cola de listos. Se intentara activar el STS\n");
+	log_info(schedulerLog, "LTS: Se encontraron procesos en la cola de listos. Se intentara activar el STS");
 
 	if((list_size(executionQueue) == 0) || (getFreeCPUsQty() > 0))
 	{
@@ -143,6 +148,8 @@ void initializeVariables()
 	finishedQueue = list_create();
 	connectedCPUs = list_create();
 	ioReadyQueue = list_create();
+	fileTableKeys = list_create();
+	semaphoreListKeys = list_create();
 
 	fileTable = dictionary_create();
 	semaphoreList = dictionary_create();
@@ -155,23 +162,24 @@ void initializeVariables()
 	schedulerLog = init_log("../../Logs/S-AFA_Planif.log", "Proceso S-AFA", false, LOG_LEVEL_INFO);
 
 	int32_t result = getConfigs();
+	showConfigs();
 
 	if(result < 0)
 	{
 		if(result == MALLOC_ERROR)
 		{
-			log_error(schedulerLog, "Se aborta el proceso por un error de malloc al intentar obtener las configuraciones...\n");
+			log_error(schedulerLog, "Se aborta el proceso por un error de malloc al intentar obtener las configuraciones...");
 		}
 		else if (result == CONFIG_PROPERTY_NOT_FOUND)
 		{
-			log_error(schedulerLog, "Se aborta el proceso debido a que no se encontro una propiedad requerida en el archivo de configuracion...\n");
+			log_error(schedulerLog, "Se aborta el proceso debido a que no se encontro una propiedad requerida en el archivo de configuracion...");
 		}
 
-		log_error(consoleLog, "Ocurrio un error al intentar obtener los datos del archivo de configuracion. El proceso sera abortado...\n");
+		log_error(consoleLog, "Ocurrio un error al intentar obtener los datos del archivo de configuracion. El proceso sera abortado...");
 		exit(CONFIG_LOAD_ERROR);
 	}
 
-	pthread_attr_t* threadAttributes = NULL;
+	pthread_attr_t* threadAttributes = malloc(sizeof(pthread_attr_t));
 	pthread_attr_init(threadAttributes);
 	pthread_attr_setdetachstate(threadAttributes, PTHREAD_CREATE_DETACHED);
 
@@ -179,7 +187,9 @@ void initializeVariables()
 
 	pthread_create(&stsThread, threadAttributes, (void *)shortTermSchedulerThread, NULL);
 
-	pthread_create(ltsThread, threadAttributes, (void *)longTermSchedulerThread, NULL);
+	pthread_create(&ltsThread, threadAttributes, (void *)longTermSchedulerThread, NULL);
+
+	free(threadAttributes);
 }
 
 void freeResources()
@@ -196,6 +206,9 @@ void freeResources()
 
 	dictionary_destroy_and_destroy_elements(fileTable, freeFileTableData);
 	dictionary_destroy_and_destroy_elements(fileTable, freeSemaphoreListData);
+
+	list_destroy_and_destroy_elements(fileTableKeys, free);
+	list_destroy_and_destroy_elements(semaphoreListKeys, free);
 
 	log_destroy(consoleLog);
 	log_destroy(schedulerLog);

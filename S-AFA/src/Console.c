@@ -1,12 +1,24 @@
 #include "Scheduler.h"
-#include <sys/mut.h>
 
 void console()
 {
-	char* line;
-	char* token;
-	console_t* console;
+	char* line = NULL;
+	char* token = NULL;
+	console_t* console = NULL;
 
+	printf("\n--------CONSOLE COMMANDS--------\n");
+	printf("\n\tejecutar <scriptPath> - Permite ejecutar un script. Se debe proporcionar la ruta del script dentro del FileSystem FIFA\n");
+	printf("\n\tstatus <processId> - Existen 2 opciones para este comando. Se le puede proporcionar el ID de un proceso, para lo cual proporciona informacion sobre las variables internas del mismo; o se puede ejecutar sin pasarle parametros, para lo cual proporciona informacion sobre las colas de planificacion\n");
+	printf("\n\tfinalizar <processId> - Permite finalizar de forma prematura la ejecucion de un proceso\n");
+	printf("\n\tmetricas <processId> - Existen 2 opciones para este comando. Se le puede proporcionar el ID de un proceso, para lo cual se muestran metricas relativas al mismo; o se puede ejecutar sin pasarle parametros, para lo cual muestra metricas relativas al sistema\n");
+	printf("\n\tpausar - Permite detener la planificacion de procesos\n");
+	printf("\n\tcontinuar - Permite reanudar la planificacion de procesos\n");
+	printf("\n\tsalir - Permite cerrar este modulo\n\n");
+	printf("\nNOTA: Para el comando finalizar, debito a la falta de tiempo y conocimientos para realizar una implementacion apropiada, no es posible matar procesos que esten siendo inicializados por una CPU\n");
+	printf("-----------------------------------\n\n");
+
+	//Lo indicado en esa nota es asi porque implicaria romper un flujo de mensajes entre modulos, lo cual seria dificil de implementar
+	//(ya que cada modulo, una vez que recibe una tarea, debe respetar un cierto flujo de mensajes (recepcion y envio))
 
 	while (!terminateModule)
 	{
@@ -33,7 +45,7 @@ void console()
 				else if (str_eq(console->command, "ejecutar"))
 				{
 					if (console->paramsQty < 1)
-						print_c(consoleLog, "%s: falta la ruta del script que se desea ejecutar\n", console->command);
+						print_c(consoleLog, "%s: falta la ruta del script que se desea ejecutar", console->command);
 					else
 						executeScript(console->param[0]);
 				}
@@ -47,16 +59,16 @@ void console()
 					else if (console->paramsQty == 0)
 						getQueuesStatus();
 					else
-						log_info(consoleLog, "%s: numero incorrecto de argumentos. Recuerde que puede ingresar solo un id de proceso o ningun argumento\n", console->command);
+						log_info(consoleLog, "%s: numero incorrecto de argumentos. Recuerde que puede ingresar solo un id de proceso o ningun argumento", console->command);
 				}
 				else if (str_eq(console->command, "finalizar"))
 				{
 					if (console->paramsQty < 1)
-						print_c(consoleLog, "%s: debe indicar el id de un proceso\n", console->command);
+						print_c(consoleLog, "%s: debe indicar el id de un proceso", console->command);
 					else
 					{
 						uint32_t param = (uint32_t) atoi(console->param[0]);
-						terminateProcess(param);
+						terminateProcessConsole(param);
 					}
 				}
 				else if (str_eq(console->command, "metricas"))
@@ -69,15 +81,23 @@ void console()
 					else if (console->paramsQty == 0)
 						getSystemMetrics();
 					else
-						log_info(consoleLog, "%s: numero incorrecto de argumentos. Recuerde que puede ingresar solo un id de proceso o ningun argumento\n", console->command);
+						log_info(consoleLog, "%s: numero incorrecto de argumentos. Recuerde que puede ingresar solo un id de proceso o ningun argumento", console->command);
 				}
 				else if(str_eq(console->command, "salir"))
 				{
 					terminateModule = true;
 					//Should send a message to all the CPUs and the DMA to tell them this process will exit, if there are any modules connected to this one
 				}
+				else if(str_eq(console->command, "continuar"))
+				{
+					//TODO - Usar lo hecho en el tp anterior
+				}
+				else if(str_eq(console->command, "pausar"))
+				{
+					//TODO - Usar lo hecho en el tp anterior
+				}
 				else
-					print_c(consoleLog, "%s: Comando incorrecto\n", console->command);
+					print_c(consoleLog, "%s: Comando incorrecto", console->command);
 
 				free(console->command);
 				for (uint32_t i = 0; i < console->paramsQty; i++)
@@ -97,7 +117,7 @@ void executeScript(char* script)
 
 	if(process == NULL)
 	{
-		log_error(schedulerLog, "Ocurrio un problema al intentar crear el PCB para el nuevo proceso\n");
+		log_error(schedulerLog, "Ocurrio un problema al intentar crear el PCB para el nuevo proceso");
 		return;
 	}
 
@@ -122,7 +142,7 @@ void getProcessMetrics(uint32_t processId)
 	if(process != NULL)
 	{
 		uint32_t newQueueWaitTime = process->newQueueLeaveTime - process->newQueueLeaveTime;
-		uint32_t dmaInstructionsPercent = (process->completedDmaCalls * 100) / process->instructionsExecuted;
+		uint32_t dmaInstructionsPercent = (process->completedDmaCalls * 100) / process->totalInstructionsExecuted;
 
 		char* message = "\nMetricas para el proceso %d de la cola %s:\n\tCantidad de sentencias ejecutadas que paso el proceso en la cola NEW: %d\n\tPorcentaje de instrucciones del proceso que fueron al DMA: %d%%\n";
 
@@ -154,20 +174,21 @@ void getSystemMetrics()
 void getProcessStatus(uint32_t processId)
 {
 	char *queueName = NULL;
-	char *scriptName, *wasInitialized, *canBeScheduled;
+	char *scriptName = NULL, *wasInitialized = NULL, *canBeScheduled = NULL;
 	uint32_t pid, programCounter, cpuProcessIsAssignedTo, remainingQuantum, newQueueArrivalTime;
 	uint32_t newQueueLeaveTime, instructionsExecuted, completedDmaCalls, lastIOStartTime, responseTimes;
+	uint32_t instructionsExecutedOnLastExecution, instructionsUntilIoOrEnd;
 
 	PCB_t* process = getProcessFromSchedulingQueues(processId, queueName); //queueName == executionState
 
 	if(process != NULL)
 	{
 		char* message = calloc(1, 357 * sizeof(char));
-		strcpy(message, "\nValores de las variables del PCB con id %d:\n\t");
+		strcpy(message, "\n-------------------Valores de las variables del PCB con id %d-------------------\n\n\t");
 		strcat(message, "scriptName: %s\n\tprogramCounter: %d\n\twasInitialized: %s\n\tcanBeScheduled: %s\n\t");
 		strcat(message, "executionState: %s\n\tcpuProcessIsAssignedTo: %d\n\tremainingQuantum: %d\n\t");
-		strcat(message, "newQueueArrivalTime: %d\n\tnewQueueLeaveTime: %d\n\tinstructionsExecuted: %d\n\t");
-		strcat(message, "completedDmaCalls: %d\n\tlastIOStartTime: %d\n\tresponseTimes: %d\n");
+		strcat(message, "newQueueArrivalTime: %d\n\tnewQueueLeaveTime: %d\n\tinstructionsExecuted: %d\n\tinstructionsExecutedOnLastExecution: %d\n\t");
+		strcat(message, "instructionsUntilIoOrEnd: %d\n\tcompletedDmaCalls: %d\n\tlastIOStartTime: %d\n\tresponseTimes: %d\n");
 
 		pid = process->pid;
 		programCounter = process->programCounter;
@@ -175,11 +196,13 @@ void getProcessStatus(uint32_t processId)
 		remainingQuantum = process->remainingQuantum;
 		newQueueArrivalTime = process->newQueueArrivalTime;
 		newQueueLeaveTime = process->newQueueLeaveTime;
-		instructionsExecuted = process->instructionsExecuted;
+		instructionsExecuted = process->totalInstructionsExecuted;
+		instructionsExecutedOnLastExecution = process->instructionsExecutedOnLastExecution;
+		instructionsUntilIoOrEnd = process->instructionsUntilIoOrEnd;
 		completedDmaCalls = process->completedDmaCalls;
 		lastIOStartTime = process->lastIOStartTime;
 		responseTimes = process->responseTimes;
-		scriptName = process->scriptName;
+		scriptName = process->scriptPathInFS;
 
 		if(process->wasInitialized)
 			wasInitialized = "TRUE";
@@ -193,7 +216,8 @@ void getProcessStatus(uint32_t processId)
 
 		log_info(consoleLog, message, pid, scriptName, programCounter, wasInitialized, canBeScheduled,
 				 queueName, cpuProcessIsAssignedTo, remainingQuantum, newQueueArrivalTime,
-				 newQueueLeaveTime, instructionsExecuted, completedDmaCalls, lastIOStartTime, responseTimes);
+				 newQueueLeaveTime, instructionsExecuted, instructionsExecutedOnLastExecution,
+				 instructionsUntilIoOrEnd, completedDmaCalls, lastIOStartTime, responseTimes);
 
 		free(message);
 	}
@@ -309,7 +333,7 @@ void getQueuesStatus()
 	pthread_mutex_unlock(&finishedQueueMutex);
 }
 
-void terminateProcess(uint32_t processId)
+void terminateProcessConsole(uint32_t processId)
 {
 	int32_t nbytes;
 
@@ -336,7 +360,7 @@ void terminateProcess(uint32_t processId)
 PCB_t* getProcessFromSchedulingQueues(uint32_t processId, char* queueName)
 {
 	PCB_t* process = NULL;
-	t_list* queueToSearch;
+	t_list* queueToSearch = NULL;
 
 	bool process_has_given_id(PCB_t* pcb)
 	{

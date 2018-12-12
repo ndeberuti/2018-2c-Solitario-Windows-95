@@ -1,9 +1,3 @@
-/*
- * CPU.c
- *
- *  Created on: 1 sep. 2018
- *      Author: Solitario Windows 95
- */
 #include "CPU.h"
 
 void initializeVariables()
@@ -11,16 +5,43 @@ void initializeVariables()
 	cpuLog = init_log("../../Logs/CPU.log", "Proceso CPU", true, LOG_LEVEL_INFO);
 
 	terminateModule = false;
+	stopExecution = false;
+	killExecutingProcess = false;
+	usingCustomSchedulingAlgorithm = false;
+	blockExecutingProcess = false;
 
-	getConfigs();
+	processInExecutionPCB = NULL;
+	instructionsExecuted = 0;
+	currentProcessQuantum = 0;
+	currentProgramCounter = 0;
 
-	pthread_attr_t* threadAttributes = NULL;
+	int32_t result = getConfigs();
+	showConfigs();
+
+	if(result < 0)
+	{
+		if(result == MALLOC_ERROR)
+		{
+			log_error(cpuLog, "Se aborta el proceso por un error de malloc al intentar obtener las configuraciones...");
+		}
+		else if (result == CONFIG_PROPERTY_NOT_FOUND)
+		{
+			log_error(cpuLog, "Se aborta el proceso debido a que no se encontro una propiedad requerida en el archivo de configuracion...");
+		}
+
+		log_error(cpuLog, "Ocurrio un error al intentar obtener los datos del archivo de configuracion. El proceso sera abortado...");
+		exit(CONFIG_LOAD_ERROR);
+	}
+
+	pthread_attr_t* threadAttributes = malloc(sizeof(pthread_attr_t));
 	pthread_attr_init(threadAttributes);
 	pthread_attr_setdetachstate(threadAttributes, PTHREAD_CREATE_DETACHED);
 
 	pthread_create(&serverThread, threadAttributes, (void *)server, NULL);
 
 	connectToServers();
+
+	free(threadAttributes);
 }
 
 void executeProcesses()
@@ -49,6 +70,10 @@ void executeProcesses()
 
 			case EXECUTE_PROCESS:
 				executeProcess();
+			break;
+
+			case COUNT_INSTRUCTIONS:		 //Receives the scriptPath, program counter and pid from a PCB (No need to send the complete pcb), and
+				countProcessInstructions();	 //returns the number of instructions left before an IO instruction or the end of the script
 			break;
 
 			default:
