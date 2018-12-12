@@ -1,0 +1,228 @@
+[INFO] 01:22:11:876 Proceso CPU/(16640:16640): ---- Configuracion ----
+
+[INFO] 01:22:11:876 Proceso CPU/(16640:16640): IP_SAFA = xìˆ0.0.1
+[INFO] 01:22:11:876 Proceso CPU/(16640:16640): Puerto_SAFA = 8000
+[INFO] 01:22:11:876 Proceso CPU/(16640:16640): IP_DAM = Píˆ
+[INFO] 01:22:11:876 Proceso CPU/(16640:16640): Puerto_DAM = 8001
+[INFO] 01:22:11:876 Proceso CPU/(16640:16640): IP_FM9 = 
+[INFO] 01:22:11:877 Proceso CPU/(16640:16640): Puerto_FM9 = 8003
+[INFO] 01:22:11:877 Proceso CPU/(16640:16640): IP_CPU = 876 Proceso CPU/(16640:16640): Puerto_SAFA = 8000
+[0m
+[INFO] 01:22:11:877 Proceso CPU/(16640:16640): Puerto_CPU = 25751040
+[INFO] 01:22:11:877 Proceso CPU/(16640:16640): Retardo de Ejecucion = 1000
+[INFO] 01:22:11:877 Proceso CPU/(16640:16640): -----------------------
+
+[ERROR] 01:22:11:877 Proceso CPU/(16640:16640): connect
+[ERROR] 01:22:11:877 Proceso CPU/(16640:16640): Error al conectar con S-AFA
+[INFO] 01:24:15:891 Proceso CPU/(16781:16781): ---- Configuracion ----
+
+[INFO] 01:24:15:891 Proceso CPU/(16781:16781): IP_SAFA = 127.0.0.1
+[INFO] 01:24:15:891 Proceso CPU/(16781:16781): Puerto_SAFA = 8000
+[INFO] 01:24:15:891 Proceso CPU/(16781:16781): IP_DAM = 127.0.0.1
+[INFO] 01:24:15:891 Proceso CPU/(16781:16781): Puerto_DAM = 8001
+[INFO] 01:24:15:891 Proceso CPU/(16781:16781): IP_FM9 = 127.0.0.1
+[INFO] 01:24:15:891 Proceso CPU/(16781:16781): Puerto_FM9 = 8003
+[INFO] 01:24:15:891 Proceso CPU/(16781:16781): IP_CPU = 127.0.0.1
+[INFO] 01:24:15:891 Proceso CPU/(16781:16781): Puerto_CPU = 8004
+[INFO] 01:24:15:892 Proceso CPU/(16781:16781): Retardo de Ejecucion = 1000
+[INFO] 01:24:15:892 Proceso CPU/(16781:16781): -----------------------
+
+[INFO] 01:24:15:892 Proceso CPU/(16781:16781): El planificador acepto la conexion de la CPU correctamente
+
+[INFO] 01:24:15:892 Proceso CPU/(16781:16781): El handshake con el planificador se ha realizado correctamente!
+
+[INFO] 01:24:15:892 Proceso CPU/(16781:16781): Conexion con S-AFA exitosa
+[INFO] 01:24:15:892 Proceso CPU/(16781:16781): Conexion con El Diego exitosa
+[INFO] 01:24:15:893 Proceso CPU/(16781:16781): Conexion con FM9 exitosa
+[INFO] 01:24:15:893 Proceso CPU/(16781:16781): Inicio del proceso
+
+[ERROR] 01:24:15:893 Proceso CPU/(16781:16781): Se recibio un id de tarea incorrecto del planificador!
+
+[ERROR] 01:33:25:677 Proceso CPU/(16781:16781): EL planificador fue desconectado al intentar recibir una tarea del mismo
+
+[INFO] 01:33:25:677 Proceso CPU/(16781:16781): Debido a una desconexion del planificador, este proceso se cerrara
+
+[INFO] 01:35:37:283 Proceso CPU/(17286:17286): ---- Configuracion ----
+
+[INFO] 01:35:37:283 Proceso CPU/(17286:17286): IP_SAFA = 127.0.0.1
+[INFO] 01:35:37:284 Proceso CPU/(17286:17286): Puerto_SAFA = 8000
+[INFO] 01:35:37:284 Proceso CPU/(17286:17286): IP_DAM = 127.0.0.1
+[INFO] 01:35:37:284 Proceso CPU/(17286:17286): Puerto_DAM = 8001
+[INFO] 01:35:37:284 Proceso CPU/(17286:17286): IP_FM9 = 127.0.0.1
+[INFO] 01:35:37:284 Proceso CPU/(17286:17286): Puerto_FM9 = 8003
+[INFO] 01:35:37:284 Proceso CPU/(17286:17286): IP_CPU = 127.0.0.1
+[INFO] 01:35:37:284 Proceso CPU/(17286:17286): Puerto_CPU = 8004
+[INFO] 01:35:37:284 Proceso CPU/(17286:17286): Retardo de Ejecucion = 1000
+[INFO] 01:35:37:284 Proceso CPU/(17286:17286): -----------------------
+
+[INFO] 01:35:37:323 Proceso CPU/(17286:17286): El handshake con el planificador se ha realizado correctamente!
+
+[INFO] 01:35:37:323 Proceso CPU/(17286:17286): Conexion con S-AFA exitosa
+[INFO] 01:35:37:324 Proceso CPU/(17286:17286): Conexion con El Diego exitosa
+[INFO] 01:35:37:324 Proceso CPU/(17286:17286): Conexion con FM9 exitosa
+[INFO] 01:35:37:324 Proceso CPU/(17286:17286): Inicio del proceso
+
+[INFO] 01:36:13:530 Proceso CPU/(17308:17308): ---- Configuracion ----
+
+[INFO] 01:36:13:530 Proceso CPU/(17308:17308): IP_SAFA = 127.0.0.1
+[INFO] 01:36:13:530 Proceso CPU/(17308:17308): Puerto_SAFA = 8000
+[INFO] 01:36:13:530 Proceso CPU/(17308:17308): IP_DAM = 127.0.0.1
+[INFO] 01:36:13:530 Proceso CPU/(17308:17308): Puerto_DAM = 8001
+[INFO] 01:36:13:530 Proceso CPU/(17308:17308): IP_FM9 = 127.0.0.1
+[INFO] 01:36:13:530 Proceso CPU/(17308:17308): Puerto_FM9 = 8003
+[INFO] 01:36:13:531 Proceso CPU/(17308:17308): IP_CPU = 127.0.0.1
+[INFO] 01:36:13:531 Proceso CPU/(17308:17308): Puerto_CPU = 8004
+[INFO] 01:36:13:531 Proceso CPU/(17308:17308): Retardo de Ejecucion = 1000
+[INFO] 01:36:13:531 Proceso CPU/(17308:17308): -----------------------
+
+[INFO] 01:36:13:572 Proceso CPU/(17308:17308): El handshake con el planificador se ha realizado correctamente!
+
+[INFO] 01:36:13:572 Proceso CPU/(17308:17308): Conexion con S-AFA exitosa
+[INFO] 01:36:13:572 Proceso CPU/(17308:17308): Conexion con El Diego exitosa
+[INFO] 01:36:13:572 Proceso CPU/(17308:17308): Conexion con FM9 exitosa
+[INFO] 01:36:13:572 Proceso CPU/(17308:17308): Inicio del proceso
+
+[ERROR] 01:36:35:836 Proceso CPU/(17308:17308): EL planificador fue desconectado al intentar recibir una tarea del mismo
+
+[INFO] 01:36:35:836 Proceso CPU/(17308:17308): Debido a una desconexion del planificador, este proceso se cerrara
+
+[INFO] 01:37:44:378 Proceso CPU/(17584:17584): ---- Configuracion ----
+
+[INFO] 01:37:44:378 Proceso CPU/(17584:17584): IP_SAFA = 127.0.0.1
+[INFO] 01:37:44:378 Proceso CPU/(17584:17584): Puerto_SAFA = 8000
+[INFO] 01:37:44:378 Proceso CPU/(17584:17584): IP_DAM = 127.0.0.1
+[INFO] 01:37:44:378 Proceso CPU/(17584:17584): Puerto_DAM = 8001
+[INFO] 01:37:44:378 Proceso CPU/(17584:17584): IP_FM9 = 127.0.0.1
+[INFO] 01:37:44:378 Proceso CPU/(17584:17584): Puerto_FM9 = 8003
+[INFO] 01:37:44:378 Proceso CPU/(17584:17584): IP_CPU = 127.0.0.1
+[INFO] 01:37:44:378 Proceso CPU/(17584:17584): Puerto_CPU = 8004
+[INFO] 01:37:44:378 Proceso CPU/(17584:17584): Retardo de Ejecucion = 1000
+[INFO] 01:37:44:379 Proceso CPU/(17584:17584): -----------------------
+
+[INFO] 01:37:44:416 Proceso CPU/(17584:17584): El handshake con el planificador se ha realizado correctamente!
+
+[INFO] 01:37:44:416 Proceso CPU/(17584:17584): Conexion con S-AFA exitosa
+[INFO] 01:37:44:416 Proceso CPU/(17584:17584): Conexion con El Diego exitosa
+[INFO] 01:37:44:416 Proceso CPU/(17584:17584): Conexion con FM9 exitosa
+[INFO] 01:37:44:416 Proceso CPU/(17584:17584): Inicio del proceso
+
+[INFO] 01:41:50:502 Proceso CPU/(18042:18042): ---- Configuracion ----
+
+[INFO] 01:41:50:502 Proceso CPU/(18042:18042): IP_SAFA = 127.0.0.1
+[INFO] 01:41:50:502 Proceso CPU/(18042:18042): Puerto_SAFA = 8000
+[INFO] 01:41:50:502 Proceso CPU/(18042:18042): IP_DAM = 127.0.0.1
+[INFO] 01:41:50:502 Proceso CPU/(18042:18042): Puerto_DAM = 8001
+[INFO] 01:41:50:502 Proceso CPU/(18042:18042): IP_FM9 = 127.0.0.1
+[INFO] 01:41:50:502 Proceso CPU/(18042:18042): Puerto_FM9 = 8003
+[INFO] 01:41:50:502 Proceso CPU/(18042:18042): IP_CPU = 127.0.0.1
+[INFO] 01:41:50:502 Proceso CPU/(18042:18042): Puerto_CPU = 8004
+[INFO] 01:41:50:502 Proceso CPU/(18042:18042): Retardo de Ejecucion = 1000
+[INFO] 01:41:50:502 Proceso CPU/(18042:18042): -----------------------
+
+[INFO] 01:41:50:539 Proceso CPU/(18042:18042): El handshake con el planificador se ha realizado correctamente!
+
+[INFO] 01:41:50:539 Proceso CPU/(18042:18042): Conexion con S-AFA exitosa
+[INFO] 01:41:50:540 Proceso CPU/(18042:18042): Conexion con El Diego exitosa
+[INFO] 01:41:50:540 Proceso CPU/(18042:18042): Conexion con FM9 exitosa
+[INFO] 01:41:50:540 Proceso CPU/(18042:18042): Inicio del proceso
+
+[ERROR] 01:44:43:687 Proceso CPU/(18042:18042): EL planificador fue desconectado al intentar recibir una tarea del mismo
+
+[INFO] 01:44:43:687 Proceso CPU/(18042:18042): Debido a una desconexion del planificador, este proceso se cerrara
+
+[INFO] 01:45:28:676 Proceso CPU/(18308:18308): ---- Configuracion ----
+
+[INFO] 01:45:28:676 Proceso CPU/(18308:18308): IP_SAFA = 127.0.0.1
+[INFO] 01:45:28:676 Proceso CPU/(18308:18308): Puerto_SAFA = 8000
+[INFO] 01:45:28:676 Proceso CPU/(18308:18308): IP_DAM = 127.0.0.1
+[INFO] 01:45:28:676 Proceso CPU/(18308:18308): Puerto_DAM = 8001
+[INFO] 01:45:28:676 Proceso CPU/(18308:18308): IP_FM9 = 127.0.0.1
+[INFO] 01:45:28:677 Proceso CPU/(18308:18308): Puerto_FM9 = 8003
+[INFO] 01:45:28:677 Proceso CPU/(18308:18308): IP_CPU = 127.0.0.1
+[INFO] 01:45:28:677 Proceso CPU/(18308:18308): Puerto_CPU = 8004
+[INFO] 01:45:28:677 Proceso CPU/(18308:18308): Retardo de Ejecucion = 1000
+[INFO] 01:45:28:677 Proceso CPU/(18308:18308): -----------------------
+
+[INFO] 01:45:28:716 Proceso CPU/(18308:18308): El handshake con el planificador se ha realizado correctamente!
+
+[INFO] 01:45:28:716 Proceso CPU/(18308:18308): Conexion con S-AFA exitosa
+[INFO] 01:45:28:716 Proceso CPU/(18308:18308): Conexion con El Diego exitosa
+[INFO] 01:45:28:716 Proceso CPU/(18308:18308): Conexion con FM9 exitosa
+[INFO] 01:45:28:716 Proceso CPU/(18308:18308): Inicio del proceso
+
+[ERROR] 02:14:37:60 Proceso CPU/(18308:18308): EL planificador fue desconectado al intentar recibir una tarea del mismo
+
+[INFO] 02:14:37:65 Proceso CPU/(18308:18308): Debido a una desconexion del planificador, este proceso se cerrara
+
+[INFO] 02:16:41:330 Proceso CPU/(19212:19212): ---- Configuracion ----
+
+[INFO] 02:16:41:331 Proceso CPU/(19212:19212): IP_SAFA = 127.0.0.1
+[INFO] 02:16:41:331 Proceso CPU/(19212:19212): Puerto_SAFA = 8000
+[INFO] 02:16:41:331 Proceso CPU/(19212:19212): IP_DAM = 127.0.0.1
+[INFO] 02:16:41:331 Proceso CPU/(19212:19212): Puerto_DAM = 8001
+[INFO] 02:16:41:331 Proceso CPU/(19212:19212): IP_FM9 = 127.0.0.1
+[INFO] 02:16:41:331 Proceso CPU/(19212:19212): Puerto_FM9 = 8003
+[INFO] 02:16:41:331 Proceso CPU/(19212:19212): IP_CPU = 127.0.0.1
+[INFO] 02:16:41:331 Proceso CPU/(19212:19212): Puerto_CPU = 8004
+[INFO] 02:16:41:331 Proceso CPU/(19212:19212): Retardo de Ejecucion = 1000
+[INFO] 02:16:41:331 Proceso CPU/(19212:19212): -----------------------
+
+[INFO] 02:16:41:371 Proceso CPU/(19212:19212): El handshake con el planificador se ha realizado correctamente!
+
+[INFO] 02:16:41:371 Proceso CPU/(19212:19212): Conexion con S-AFA exitosa
+[INFO] 02:16:41:371 Proceso CPU/(19212:19212): Conexion con El Diego exitosa
+[INFO] 02:16:41:371 Proceso CPU/(19212:19212): Conexion con FM9 exitosa
+[INFO] 02:16:41:372 Proceso CPU/(19212:19212): Inicio del proceso
+
+[ERROR] 02:18:57:334 Proceso CPU/(19212:19212): EL planificador fue desconectado al intentar recibir una tarea del mismo
+
+[INFO] 02:18:57:334 Proceso CPU/(19212:19212): Debido a una desconexion del planificador, este proceso se cerrara
+
+[INFO] 03:31:21:783 Proceso CPU/(21886:21886): ---- Configuracion ----
+
+[INFO] 03:31:21:784 Proceso CPU/(21886:21886): IP_SAFA = 127.0.0.1
+[INFO] 03:31:21:784 Proceso CPU/(21886:21886): Puerto_SAFA = 8000
+[INFO] 03:31:21:784 Proceso CPU/(21886:21886): IP_DAM = 127.0.0.1
+[INFO] 03:31:21:784 Proceso CPU/(21886:21886): Puerto_DAM = 8001
+[INFO] 03:31:21:784 Proceso CPU/(21886:21886): IP_FM9 = 127.0.0.1
+[INFO] 03:31:21:784 Proceso CPU/(21886:21886): Puerto_FM9 = 8003
+[INFO] 03:31:21:784 Proceso CPU/(21886:21886): IP_CPU = 127.0.0.1
+[INFO] 03:31:21:784 Proceso CPU/(21886:21886): Puerto_CPU = 8004
+[INFO] 03:31:21:784 Proceso CPU/(21886:21886): Retardo de Ejecucion = 1000
+[INFO] 03:31:21:784 Proceso CPU/(21886:21886): -----------------------
+
+[INFO] 03:31:21:824 Proceso CPU/(21886:21886): El handshake con el planificador se ha realizado correctamente!
+
+[INFO] 03:31:21:824 Proceso CPU/(21886:21886): Conexion con S-AFA exitosa
+[INFO] 03:31:21:824 Proceso CPU/(21886:21886): Conexion con El Diego exitosa
+[INFO] 03:31:21:824 Proceso CPU/(21886:21886): Conexion con FM9 exitosa
+[INFO] 03:31:21:824 Proceso CPU/(21886:21886): Inicio del proceso
+
+[ERROR] 03:31:44:11 Proceso CPU/(21886:21886): EL planificador fue desconectado al intentar recibir una tarea del mismo
+
+[INFO] 03:31:44:11 Proceso CPU/(21886:21886): Debido a una desconexion del planificador, este proceso se cerrara
+
+[INFO] 03:42:18:256 Proceso CPU/(22388:22388): ---- Configuracion ----
+
+[INFO] 03:42:18:256 Proceso CPU/(22388:22388): IP_SAFA = 127.0.0.1
+[INFO] 03:42:18:256 Proceso CPU/(22388:22388): Puerto_SAFA = 8000
+[INFO] 03:42:18:256 Proceso CPU/(22388:22388): IP_DAM = 127.0.0.1
+[INFO] 03:42:18:256 Proceso CPU/(22388:22388): Puerto_DAM = 8001
+[INFO] 03:42:18:256 Proceso CPU/(22388:22388): IP_FM9 = 127.0.0.1
+[INFO] 03:42:18:256 Proceso CPU/(22388:22388): Puerto_FM9 = 8003
+[INFO] 03:42:18:256 Proceso CPU/(22388:22388): IP_CPU = 127.0.0.1
+[INFO] 03:42:18:256 Proceso CPU/(22388:22388): Puerto_CPU = 8004
+[INFO] 03:42:18:256 Proceso CPU/(22388:22388): Retardo de Ejecucion = 1000
+[INFO] 03:42:18:257 Proceso CPU/(22388:22388): -----------------------
+
+[INFO] 03:42:18:296 Proceso CPU/(22388:22388): El handshake con el planificador se ha realizado correctamente!
+
+[INFO] 03:42:18:296 Proceso CPU/(22388:22388): Conexion con S-AFA exitosa
+[INFO] 03:42:18:296 Proceso CPU/(22388:22388): Conexion con El Diego exitosa
+[INFO] 03:42:18:296 Proceso CPU/(22388:22388): Conexion con FM9 exitosa
+[INFO] 03:42:18:296 Proceso CPU/(22388:22388): Inicio del proceso
+
+[ERROR] 03:42:52:138 Proceso CPU/(22388:22388): EL planificador fue desconectado al intentar recibir una tarea del mismo
+
+[INFO] 03:42:52:138 Proceso CPU/(22388:22388): Debido a una desconexion del planificador, este proceso se cerrara
+

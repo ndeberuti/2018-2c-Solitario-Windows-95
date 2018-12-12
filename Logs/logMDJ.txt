@@ -20,3 +20,99 @@
 [INFO] 23:40:27:231 Proceso MDJ/(11626:11626): CANTIDAD_BLOQUES = 5192
 [INFO] 23:40:27:231 Proceso MDJ/(11626:11626): MAGIC_NUMBER = FIFA
 [INFO] 23:40:27:231 Proceso MDJ/(11626:11626): -----------------------
+[INFO] 00:59:25:211 Proceso MDJ/(15458:15458): Inicio del proceso
+[INFO] 00:59:25:212 Proceso MDJ/(15458:15458): ---- Configuracion ----
+[INFO] 00:59:25:212 Proceso MDJ/(15458:15458): PUERTO = 8002
+[INFO] 00:59:25:212 Proceso MDJ/(15458:15458): PUNTO_MONTAJE = /home/utnso/FIFA_FS/
+[INFO] 00:59:25:212 Proceso MDJ/(15458:15458): RETARDO = 500 milisegundos
+[INFO] 00:59:25:212 Proceso MDJ/(15458:15458): -----------------------
+[INFO] 00:59:25:213 Proceso MDJ/(15458:15458): ----- File System -----
+[INFO] 00:59:25:213 Proceso MDJ/(15458:15458): TAMANIO_BLOQUES = 64
+[INFO] 00:59:25:213 Proceso MDJ/(15458:15458): CANTIDAD_BLOQUES = 5192
+[INFO] 00:59:25:213 Proceso MDJ/(15458:15458): MAGIC_NUMBER = FIFA
+[INFO] 00:59:25:213 Proceso MDJ/(15458:15458): -----------------------
+[INFO] 01:02:09:685 Proceso MDJ/(15897:15897): Inicio del proceso
+[INFO] 01:02:09:685 Proceso MDJ/(15897:15897): ---- Configuracion ----
+[INFO] 01:02:09:685 Proceso MDJ/(15897:15897): PUERTO = 8002
+[INFO] 01:02:09:685 Proceso MDJ/(15897:15897): PUNTO_MONTAJE = /home/utnso/FIFA_FS/
+[INFO] 01:02:09:685 Proceso MDJ/(15897:15897): RETARDO = 500 milisegundos
+[INFO] 01:02:09:685 Proceso MDJ/(15897:15897): -----------------------
+[INFO] 01:02:09:685 Proceso MDJ/(15897:15897): ----- File System -----
+[INFO] 01:02:09:685 Proceso MDJ/(15897:15897): TAMANIO_BLOQUES = 64
+[INFO] 01:02:09:685 Proceso MDJ/(15897:15897): CANTIDAD_BLOQUES = 5192
+[INFO] 01:02:09:685 Proceso MDJ/(15897:15897): MAGIC_NUMBER = FIFA
+[INFO] 01:02:09:685 Proceso MDJ/(15897:15897): -----------------------
+[INFO] 01:08:21:456 Consola MDJ/(15897:15900): Nueva conexion desde El Diego
+[INFO] 01:08:21:457 Consola MDJ/(15897:15900): Se desconecto El Diego
+[INFO] 01:11:17:919 Consola MDJ/(15897:15900): Nueva conexion desde El Diego
+[INFO] 01:15:03:252 Consola MDJ/(15897:15900): Se desconecto El Diego
+[INFO] 01:18:50:362 Consola MDJ/(15897:15900): Nueva conexion desde El Diego
+[INFO] 01:35:16:633 Consola MDJ/(15897:15900): Se desconecto El Diego
+[INFO] 01:35:19:22 Consola MDJ/(15897:15900): Nueva conexion desde El Diego
+[INFO] 01:36:05:752 Consola MDJ/(15897:15900): Se desconecto El Diego
+[INFO] 01:36:11:918 Consola MDJ/(15897:15900): Nueva conexion desde El Diego
+[INFO] 01:37:30:498 Proceso MDJ/(17571:17571): Inicio del proceso
+[INFO] 01:37:30:498 Proceso MDJ/(17571:17571): ---- Configuracion ----
+[INFO] 01:37:30:498 Proceso MDJ/(17571:17571): PUERTO = 8002
+[INFO] 01:37:30:498 Proceso MDJ/(17571:17571): PUNTO_MONTAJE = /home/utnso/FIFA_FS/
+[INFO] 01:37:30:498 Proceso MDJ/(17571:17571): RETARDO = 500 milisegundos
+[INFO] 01:37:30:498 Proceso MDJ/(17571:17571): -----------------------
+[INFO] 01:37:30:498 Proceso MDJ/(17571:17571): ----- File System -----
+[INFO] 01:37:30:498 Proceso MDJ/(17571:17571): TAMANIO_BLOQUES = 64
+[INFO] 01:37:30:498 Proceso MDJ/(17571:17571): CANTIDAD_BLOQUES = 5192
+[INFO] 01:37:30:498 Proceso MDJ/(17571:17571): MAGIC_NUMBER = FIFA
+[INFO] 01:37:30:498 Proceso MDJ/(17571:17571): -----------------------
+[INFO] 01:37:39:381 Consola MDJ/(17571:17574): Nueva conexion desde El Diego
+[INFO] 01:40:42:287 Consola MDJ/(17571:17574): Se desconecto El Diego
+[INFO] 01:41:29:70 Proceso MDJ/(17920:17920): Inicio del proceso
+[INFO] 01:41:29:70 Proceso MDJ/(17920:17920): ---- Configuracion ----
+[INFO] 01:41:29:70 Proceso MDJ/(17920:17920): PUERTO = 8002
+[INFO] 01:41:29:71 Proceso MDJ/(17920:17920): PUNTO_MONTAJE = /home/utnso/FIFA_FS/
+[INFO] 01:41:29:71 Proceso MDJ/(17920:17920): RETARDO = 500 milisegundos
+[INFO] 01:41:29:71 Proceso MDJ/(17920:17920): -----------------------
+[INFO] 01:41:29:71 Proceso MDJ/(17920:17920): ----- File System -----
+[INFO] 01:41:29:71 Proceso MDJ/(17920:17920): TAMANIO_BLOQUES = 64
+[INFO] 01:41:29:71 Proceso MDJ/(17920:17920): CANTIDAD_BLOQUES = 5192
+[INFO] 01:41:29:71 Proceso MDJ/(17920:17920): MAGIC_NUMBER = FIFA
+[INFO] 01:41:29:71 Proceso MDJ/(17920:17920): -----------------------
+[INFO] 01:41:45:529 Consola MDJ/(17920:17923): Nueva conexion desde El Diego
+[INFO] 01:45:14:130 Proceso MDJ/(18190:18190): Inicio del proceso
+[INFO] 01:45:14:130 Proceso MDJ/(18190:18190): ---- Configuracion ----
+[INFO] 01:45:14:130 Proceso MDJ/(18190:18190): PUERTO = 8002
+[INFO] 01:45:14:130 Proceso MDJ/(18190:18190): PUNTO_MONTAJE = /home/utnso/FIFA_FS/
+[INFO] 01:45:14:130 Proceso MDJ/(18190:18190): RETARDO = 500 milisegundos
+[INFO] 01:45:14:130 Proceso MDJ/(18190:18190): -----------------------
+[INFO] 01:45:14:130 Proceso MDJ/(18190:18190): ----- File System -----
+[INFO] 01:45:14:130 Proceso MDJ/(18190:18190): TAMANIO_BLOQUES = 64
+[INFO] 01:45:14:130 Proceso MDJ/(18190:18190): CANTIDAD_BLOQUES = 5192
+[INFO] 01:45:14:130 Proceso MDJ/(18190:18190): MAGIC_NUMBER = FIFA
+[INFO] 01:45:14:130 Proceso MDJ/(18190:18190): -----------------------
+[INFO] 01:45:26:113 Consola MDJ/(18190:18193): Nueva conexion desde El Diego
+[INFO] 02:14:39:956 Consola MDJ/(18190:18193): Se desconecto El Diego
+[INFO] 02:16:28:603 Proceso MDJ/(19094:19094): Inicio del proceso
+[INFO] 02:16:28:604 Proceso MDJ/(19094:19094): ---- Configuracion ----
+[INFO] 02:16:28:604 Proceso MDJ/(19094:19094): PUERTO = 8002
+[INFO] 02:16:28:604 Proceso MDJ/(19094:19094): PUNTO_MONTAJE = /home/utnso/FIFA_FS/
+[INFO] 02:16:28:604 Proceso MDJ/(19094:19094): RETARDO = 500 milisegundos
+[INFO] 02:16:28:604 Proceso MDJ/(19094:19094): -----------------------
+[INFO] 02:16:28:604 Proceso MDJ/(19094:19094): ----- File System -----
+[INFO] 02:16:28:604 Proceso MDJ/(19094:19094): TAMANIO_BLOQUES = 64
+[INFO] 02:16:28:604 Proceso MDJ/(19094:19094): CANTIDAD_BLOQUES = 5192
+[INFO] 02:16:28:604 Proceso MDJ/(19094:19094): MAGIC_NUMBER = FIFA
+[INFO] 02:16:28:604 Proceso MDJ/(19094:19094): -----------------------
+[INFO] 02:16:37:483 Consola MDJ/(19094:19097): Nueva conexion desde El Diego
+[INFO] 02:21:53:165 Consola MDJ/(19094:19097): Se desconecto El Diego
+[INFO] 03:31:08:295 Proceso MDJ/(21765:21765): Inicio del proceso
+[INFO] 03:31:08:296 Proceso MDJ/(21765:21765): ---- Configuracion ----
+[INFO] 03:31:08:296 Proceso MDJ/(21765:21765): PUERTO = 8002
+[INFO] 03:31:08:296 Proceso MDJ/(21765:21765): PUNTO_MONTAJE = /home/utnso/FIFA_FS/
+[INFO] 03:31:08:296 Proceso MDJ/(21765:21765): RETARDO = 500 milisegundos
+[INFO] 03:31:08:296 Proceso MDJ/(21765:21765): -----------------------
+[INFO] 03:31:08:299 Proceso MDJ/(21765:21765): ----- File System -----
+[INFO] 03:31:08:299 Proceso MDJ/(21765:21765): TAMANIO_BLOQUES = 64
+[INFO] 03:31:08:299 Proceso MDJ/(21765:21765): CANTIDAD_BLOQUES = 5192
+[INFO] 03:31:08:299 Proceso MDJ/(21765:21765): MAGIC_NUMBER = FIFA
+[INFO] 03:31:08:299 Proceso MDJ/(21765:21765): -----------------------
+[INFO] 03:31:19:598 Consola MDJ/(21765:21768): Nueva conexion desde El Diego
+[INFO] 03:42:05:721 Consola MDJ/(21765:21768): Se desconecto El Diego
+[INFO] 03:42:11:804 Consola MDJ/(21765:21768): Nueva conexion desde El Diego

@@ -365,12 +365,19 @@ void processQuantumEnd(uint32_t _socket)
 
 cpu_t* findCPUBy_socket(uint32_t _socket)
 {
+	pthread_mutex_lock(&cpuListMutex);
+
 	bool _cpu_has_given__socket(cpu_t* cpu)
 	{
 		return cpu->clientSocket == _socket;
 	}
 
-	return (cpu_t*) list_find(connectedCPUs, _cpu_has_given__socket);
+	cpu_t* _cpu = NULL;
+	_cpu = (cpu_t*) list_find(connectedCPUs, _cpu_has_given__socket);
+
+	pthread_mutex_unlock(&cpuListMutex);
+
+	return _cpu;
 }
 
 //TODO (optional):
@@ -380,40 +387,10 @@ cpu_t* findCPUBy_socket(uint32_t _socket)
 //		 THIS IS DIFFICULT TO DO AND NOT NECESSARY FOR THIS PROJECTS COMPLETION
 
 
-void checkAndInitializeProcesses(cpu_t* freeCpu)
-{
-	//Check if there are any uninitialized processes in the readyQueue. If there are any, remove the
-	//first one from that queue and initialize it with the given CPU
-
-	pthread_mutex_lock(&readyQueueMutex);
-
-	bool _process_is_uninitialized(PCB_t* pcb)
-	{
-		return !(pcb->wasInitialized);
-	}
-
-	//The new list should have all the uninitialized processes ordered by which time they arrived
-	//to the readyQueue
-	t_list* uninitializedProcesses = list_filter(readyQueue, _process_is_uninitialized);
-
-	if(list_size(uninitializedProcesses) != 0)
-	{
-		PCB_t* processToInitialize = list_get(uninitializedProcesses, 0);
-		processToInitialize->wasInitialized = false;
-
-		bool _process_has_given_id(PCB_t* pcb)
-		{
-			return pcb->pid == processToInitialize->pid;
-		}
-
-		list_remove_by_condition(readyQueue, _process_has_given_id);
-
-		executeProcess(processToInitialize, freeCpu);
-	}
-}
-
 uint32_t updatePCBInExecutionQueue(PCB_t* updatedPCB)
 {
+	pthread_mutex_lock(&executionQueueMutex);
+
 	bool _process_has_given_id(PCB_t* pcb)
 	{
 		return pcb->pid == updatedPCB->pid;
@@ -422,12 +399,8 @@ uint32_t updatePCBInExecutionQueue(PCB_t* updatedPCB)
 	//The old pcb gets deleted from the executionQueue and the updated one gets added because I do not
 	//have a proper function to replace an object in a list following a given condition
 
-	pthread_mutex_lock(&executionQueueMutex);
-
 	PCB_t* oldPCB = NULL;
 	oldPCB = list_remove_by_condition(executionQueue, _process_has_given_id);
-
-	pthread_mutex_unlock(&executionQueueMutex);
 
 	if(oldPCB == NULL)
 	{
@@ -438,8 +411,6 @@ uint32_t updatePCBInExecutionQueue(PCB_t* updatedPCB)
 
 	free(oldPCB->scriptPathInFS);
 	free(oldPCB);
-
-	pthread_mutex_lock(&executionQueueMutex);
 
 	list_add(executionQueue, updatedPCB);	//Do not care about PCB arrival order in that queue
 
@@ -566,6 +537,7 @@ void saveFileDataToFileTable(uint32_t _socket, uint32_t pid) //Receives pid, fil
 	fileTableData* data = NULL;
 
 	pthread_mutex_lock(&fileTableMutex);
+	pthread_mutex_lock(&fileTableKeysMutex);
 
 	if((nbytes = receive_string(_socket, &fileName)) <= 0)
 	{
@@ -615,6 +587,7 @@ void saveFileDataToFileTable(uint32_t _socket, uint32_t pid) //Receives pid, fil
 	}
 
 	pthread_mutex_unlock(&fileTableMutex);
+	pthread_mutex_unlock(&fileTableKeysMutex);
 }
 
 void closeFile(uint32_t _socket)
@@ -628,6 +601,7 @@ void closeFile(uint32_t _socket)
 	bool result;
 
 	pthread_mutex_lock(&fileTableMutex);
+	pthread_mutex_lock(&fileTableKeysMutex);
 
 	if((nbytes = receive_int(_socket, &pid)) <= 0)
 	{
@@ -694,6 +668,7 @@ void closeFile(uint32_t _socket)
 	}
 
 	pthread_mutex_unlock(&fileTableMutex);
+	pthread_mutex_unlock(&fileTableKeysMutex);
 }
 
 void unlockProcess(uint32_t _socket)
@@ -875,13 +850,6 @@ void handleCpuConnection(uint32_t _socket)
 
 	log_info(consoleLog, "Nueva conexion de CPU\n");
 
-	if((nbytes = send_int_with_delay(_socket, MESSAGE_RECEIVED)) < 0)
-	{
-		log_error(consoleLog, "ServerThread (handleCpuConnection) - Error al indicar a la CPU que el primer mensaje de handshake fue recibido");
-		return;
-		//TODO (Optional) - Send Error Handling
-	}
-
 	if(config.schedulingAlgorithmCode == Custom)
 	{
 		if((nbytes = send_int_with_delay(_socket, USE_CUSTOM_ALGORITHM)) < 0)
@@ -904,9 +872,9 @@ void handleCpuConnection(uint32_t _socket)
 	if((nbytes = receive_string(_socket, &cpuIp)) <= 0)
 	{
 		if(nbytes == 0)
-			log_error(consoleLog, "ServerThread (checkIfFileOpen) - La CPU fue desconectada al intentar recibir su direccion ip");
+			log_error(consoleLog, "ServerThread (handleCpuConnection) - La CPU fue desconectada al intentar recibir su direccion ip de servidor");
 		else
-			log_error(consoleLog, "ServerThread (checkIfFileOpen) - Error al recibir la direccion ip de la CPU");
+			log_error(consoleLog, "ServerThread (handleCpuConnection) - Error al recibir la direccion ip de servidor de la CPU");
 
 		close(_socket);
 		FD_CLR(_socket, &master);
@@ -916,9 +884,9 @@ void handleCpuConnection(uint32_t _socket)
 	if((nbytes = receive_int(_socket, &cpuPort)) <= 0)
 	{
 		if(nbytes == 0)
-			log_error(consoleLog, "ServerThread (checkIfFileOpen) - La CPU fue desconectada al intentar recibir su puerto de servidor");
+			log_error(consoleLog, "ServerThread (handleCpuConnection) - La CPU fue desconectada al intentar recibir su puerto de servidor");
 		else
-			log_error(consoleLog, "ServerThread (checkIfFileOpen) - Error al recibir el puerto de servidor de la CPU");
+			log_error(consoleLog, "ServerThread (handleCpuConnection) - Error al recibir el puerto de servidor de la CPU");
 
 		close(_socket);
 		FD_CLR(_socket, &master);

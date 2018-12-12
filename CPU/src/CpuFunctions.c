@@ -15,7 +15,7 @@ int32_t getConfigs()
 
 	if(config_has_property(configFile, "IP_SAFA"))
 	{
-		tempConfig.schedulerIp = config_get_string_value(configFile, "IP_SAFA");
+		tempConfig.schedulerIp = strdup(config_get_string_value(configFile, "IP_SAFA"));
 	}
 	else
 	{
@@ -39,7 +39,7 @@ int32_t getConfigs()
 
 	if(config_has_property(configFile, "IP_FM9"))
 	{
-		tempConfig.memoryIp = config_get_string_value(configFile, "IP_FM9");
+		tempConfig.memoryIp = strdup(config_get_string_value(configFile, "IP_FM9"));
 	}
 	else
 	{
@@ -63,7 +63,7 @@ int32_t getConfigs()
 
 	if(config_has_property(configFile, "IP_Diego"))
 	{
-		tempConfig.dmaIp = config_get_string_value(configFile, "IP_Diego");
+		tempConfig.dmaIp = strdup(config_get_string_value(configFile, "IP_Diego"));
 	}
 	else
 	{
@@ -87,7 +87,7 @@ int32_t getConfigs()
 
 	if(config_has_property(configFile, "IP_CPU"))
 	{
-		tempConfig.cpuIp = config_get_string_value(configFile, "IP_CPU");
+		tempConfig.cpuIp = strdup(config_get_string_value(configFile, "IP_CPU"));
 	}
 	else
 	{
@@ -99,7 +99,7 @@ int32_t getConfigs()
 
 	if(config_has_property(configFile, "Puerto_CPU"))
 	{
-		tempConfig.cpuPort = config_get_string_value(configFile, "Puerto_CPU");
+		tempConfig.cpuPort = config_get_int_value(configFile, "Puerto_CPU");
 	}
 	else
 	{
@@ -147,7 +147,7 @@ void showConfigs()
 int32_t handshakeScheduler(uint32_t socket)
 {
 	int32_t nbytes;
-	int32_t messageReceived;
+	int32_t message;
 
 	if((nbytes = send_int(socket, NEW_CPU_CONNECTION)) < 0)
 	{
@@ -156,7 +156,7 @@ int32_t handshakeScheduler(uint32_t socket)
 		//TODO (Optional) - Send Error Handling
 	}
 
-	if((nbytes = receive_int(socket, &messageReceived)) <= 0)
+	if((nbytes = receive_int(socket, &message)) <= 0)
 	{
 		if(nbytes == 0)
 		{
@@ -173,7 +173,16 @@ int32_t handshakeScheduler(uint32_t socket)
 		}
 	}
 
-	log_info(cpuLog, "El planificador acepto la conexion de la CPU correctamente\n");
+	if(message == USE_NORMAL_ALGORITHM)
+		usingCustomSchedulingAlgorithm = false;
+
+	else if(message == USE_CUSTOM_ALGORITHM)
+		usingCustomSchedulingAlgorithm = true;
+	else
+	{
+		log_error(cpuLog, "Se recibio un valor incorrecto al esperar el tipo de algoritmo usado por el planificador. Este proceso sera abortado...");
+		exit(EXIT_FAILURE);
+	}
 
 	if((nbytes = send_string(socket, config.cpuIp)) < 0)
 	{
@@ -189,7 +198,7 @@ int32_t handshakeScheduler(uint32_t socket)
 		//TODO (Optional) - Send Error Handling
 	}
 
-	if((nbytes = receive_int(socket, &messageReceived)) <= 0)
+	if((nbytes = receive_int(socket, &message)) <= 0)
 	{
 		if(nbytes == 0)
 		{
@@ -1050,6 +1059,7 @@ void handleProcessError()
 void tellMemoryToFreeProcessData()
 {
 	int32_t nbytes;
+	int32_t message;
 
 	if((nbytes = send_int(memoryServerSocket, CLOSE_PROCESS)) < 0)
 	{

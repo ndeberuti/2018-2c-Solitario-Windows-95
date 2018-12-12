@@ -380,7 +380,12 @@ void blockProcess(uint32_t pid, bool isDmaCall)
 
 uint32_t getFreeCPUsQty()
 {
-	return list_size(getFreeCPUs());
+	t_list* freeCPUs = getFreeCPUs();
+	uint32_t freeCPUsQty = list_size(freeCPUs);
+
+	list_destroy(freeCPUs);
+
+	return freeCPUsQty;
 }
 
 
@@ -393,14 +398,15 @@ t_list* getFreeCPUs()
 		return cpu->isFree;
 	}
 
-	t_list* freeCPUs = list_filter(connectedCPUs, _cpu_is_free);
+	t_list* freeCPUs = NULL;
+	freeCPUs = list_filter(connectedCPUs, _cpu_is_free);
 
 	pthread_mutex_unlock(&cpuListMutex);
 
 	return freeCPUs;
 }
 
-void executeProcess(PCB_t* process, cpu_t* selectedCPU)
+void initializeOrExecuteProcess(PCB_t* process, cpu_t* selectedCPU)
 {
 	int32_t nbytes;
 	int32_t message;
@@ -431,7 +437,7 @@ void executeProcess(PCB_t* process, cpu_t* selectedCPU)
 	{
 		if((nbytes = send_int_with_delay(selectedCPU->clientSocket, INITIALIZE_PROCESS)) < 0)
 		{
-			log_error(consoleLog, "executeProcess - Error al pedir a la CPU que inicialice un proceso");
+			log_error(consoleLog, "SchedulerFunctions (executeProcess) - Error al pedir a la CPU que inicialice un proceso");
 			return;
 			//TODO (Optional) - Send Error Handling
 		}
@@ -477,6 +483,12 @@ void executeProcess(PCB_t* process, cpu_t* selectedCPU)
 void killProcess(uint32_t pid)
 {
 	pthread_mutex_lock(&metricsGlobalvariablesMutex);
+	pthread_mutex_lock(&readyQueueMutex);
+	pthread_mutex_lock(&blockedQueueMutex);
+	pthread_mutex_lock(&executionQueueMutex);
+	pthread_mutex_lock(&finishedQueueMutex);
+	pthread_mutex_lock(&ioReadyQueueMutex);
+
 
 	PCB_t* processToKill = NULL;
 	t_list* queueToSearch = NULL;
@@ -713,10 +725,61 @@ void removeKeyFromList(t_list* table, char* key)
 
 t_list* getSchedulableProcesses()
 {
+	//No need to add a mutex here, the readyQueue is locked by the functions that call this one
+
 	bool processCanBeScheduled(PCB_t* pcb)
 	{
 		return pcb->canBeScheduled;
 	}
 
 	return list_filter(readyQueue, processCanBeScheduled);
+}
+
+
+void checkAndInitializeProcesses()
+{
+	//Check if there are any uninitialized processes in the readyQueue. If there are any, remove the
+	//first one from that queue and initialize it with the given CPU
+
+	PCB_t* processToInitialize = NULL;
+	t_list* uninitializedProcesses = NULL;
+	uint32_t uninitializedProcessesQty;
+	t_list* freeCPUs = getFreeCPUs();	//If there are no freeCPUs, this list is empty
+	uint32_t freeCPUsQty = list_size(freeCPUs);
+	cpu_t* freeCPU = NULL;
+
+
+	bool _process_is_uninitialized(PCB_t* pcb)
+	{
+		return !(pcb->wasInitialized);
+	}
+
+	bool _process_has_given_id(PCB_t* pcb)
+	{
+		return pcb->pid == processToInitialize->pid;
+	}
+
+	//The new list should have all the uninitialized processes ordered by the time they arrived
+	//to the readyQueue
+	uninitializedProcesses = list_filter(readyQueue, _process_is_uninitialized);
+	uninitializedProcessesQty = list_size(uninitializedProcesses);
+
+	for(uint32_t i = 0; (i < uninitializedProcessesQty) && (freeCPUsQty > 0); i++)	//If the uninitializedProcesses list size is 0, this loop never starts; the same goes for the freeCPUs list
+	{
+		freeCPU = list_get(freeCPUs, 0);
+
+		PCB_t* processToInitialize = list_get(uninitializedProcesses, i);
+		processToInitialize->wasInitialized = false;
+
+		list_remove_by_condition(readyQueue, _process_has_given_id);
+
+		initializeOrExecuteProcess(processToInitialize, freeCPU);
+
+		list_destroy(freeCPUs);		//Need to destroy the previous filtered list (list_filter always creates a new list) but, as
+									//it contains pointers to the original CPUsList, this lists elements cannot be deleted
+		freeCPUs = getFreeCPUs();
+		freeCPUsQty = list_size(freeCPUs);
+	}
+
+	list_destroy(freeCPUs);
 }

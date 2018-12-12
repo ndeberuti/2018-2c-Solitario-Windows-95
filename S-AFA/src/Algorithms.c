@@ -26,7 +26,9 @@ void roundRobinScheduler()
 	scheduledProcess = list_remove_by_condition(readyQueue, processCanBeScheduled); //The ready queue has processes which cannot be scheduled (script not yet loaded in memory)
 
 	selectedCPU = list_get(freeCPUs, 0);
-	executeProcess(scheduledProcess, selectedCPU);
+	initializeOrExecuteProcess(scheduledProcess, selectedCPU);
+
+	list_destroy(freeCPUs);
 }
 
 void virtualRoundRobinScheduler(PCB_t* process)
@@ -63,7 +65,9 @@ void virtualRoundRobinScheduler(PCB_t* process)
 
 	selectedCPU = list_get(freeCPUs, 0);
 
-	executeProcess(scheduledProcess, selectedCPU);
+	initializeOrExecuteProcess(scheduledProcess, selectedCPU);
+
+	list_destroy(freeCPUs);
 }
 
 void customScheduler()
@@ -97,6 +101,9 @@ void customScheduler()
 
 	selectedCPU = list_get(freeCPUs, 0);
 
+	list_destroy(freeCPUs);
+
+	//No need to add a mutex here for the readyQueue, cause it got locked by the STS that called this function
 	schedulableProcesses = getSchedulableProcesses();
 
 	if(list_size(schedulableProcesses) == 0)
@@ -128,6 +135,8 @@ void customScheduler()
 				}
 
 				selectedCPU = list_get(freeCPUs, 0);
+
+				list_destroy(freeCPUs);
 			}
 
 			processToCountInstructions->instructionsUntilIoOrEnd = instructionsUntilIO;
@@ -138,7 +147,9 @@ void customScheduler()
 
 	scheduledProcess = list_get(schedulableProcesses, 0);	//The process with less instructions until the end or an IO instruction is scheduled
 
-	executeProcess(scheduledProcess, selectedCPU);
+	initializeOrExecuteProcess(scheduledProcess, selectedCPU);
+
+	list_destroy(processesToCountInstructions);
 }
 
 uint32_t countProcessInstructions(PCB_t* process, cpu_t* selectedCPU)

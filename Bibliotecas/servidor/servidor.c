@@ -56,7 +56,7 @@ uint32_t connect_server(char *dest_ip, uint32_t port, uint32_t handshake, t_log 
 		return 0;
 	}
 
-	if (handshake >= 0)
+	if (!(handshake < 0))
 	{
 		if(send_int(sockfd, handshake) == -1)
 		{
