@@ -1208,13 +1208,19 @@ void handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToAssig
 
 	if(message == ARCHIVO_NO_ABIERTO)
 	{
-		log_info(cpuLog, "Ocurrio un error al modificar la informacion de un archivo en memoria. El proceso sera terminado...\n");
+		log_info(cpuLog, "Se intento modificar un archivo en memoria que no se encuentra en ella. El proceso sera terminado...\n");
 
 		handleProcessError();
 	}
 	else if(message == OK)
 	{
 		log_info(cpuLog, "Se ha modificado extosamente la linea %d del archivo en la ruta \"%s\"", lineNumber, filePathInFS);
+	}
+	else if(message == SEGMENTATION_FAULT)
+	{
+		log_info(cpuLog, "Ocurrio un error de segmentation fault al intentar modificar el contenido de un archivo en memoria. El proceso sera terminado...\n");
+
+		handleProcessError();
 	}
 }
 
