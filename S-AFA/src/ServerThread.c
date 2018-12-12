@@ -237,7 +237,7 @@ void _blockProcess(uint32_t _socket)
 	PCB_t* processToBlock = NULL;
 	int32_t isDmaCall;
 
-	if((nbytes = recvPCB(_socket, processToBlock)) <= 0)
+	if((nbytes = recvPCB(processToBlock, _socket)) <= 0)
 	{
 			if(nbytes == 0)
 				log_error(consoleLog, "ServerThread (_blockProcess) - La CPU fue desconectada al intentar recibir un PCB");
@@ -301,7 +301,7 @@ void _killProcess(uint32_t _socket)
 	}
 	else	//If the CPU sent a process error, receive the PCB, update it in the execution queue and kill the process
 	{
-		if((nbytes = recvPCB(_socket, processToKill)) <= 0)
+		if((nbytes = recvPCB(processToKill, _socket)) <= 0)
 		{
 			if(nbytes == 0)
 				log_error(schedulerLog, "ServerThread (_killProcess) - La CPU fue desconectada al intentar recibir un PCB\n");
@@ -337,7 +337,7 @@ void processQuantumEnd(uint32_t _socket)
 	int32_t nbytes;
 	PCB_t* updatedPCB = NULL;
 
-	if((nbytes = recvPCB(_socket, updatedPCB)) <= 0)
+	if((nbytes = recvPCB(updatedPCB, _socket)) <= 0)
 	{
 		if(nbytes == 0)
 			log_error(consoleLog, "ServerThread (processQuantumEnd) - La CPU fue desconectada al intentar recibir un PCB");
@@ -424,7 +424,8 @@ uint32_t updatePCBInExecutionQueue(PCB_t* updatedPCB)
 
 	pthread_mutex_lock(&executionQueueMutex);
 
-	PCB_t* oldPCB = list_remove_by_condition(executionQueue, _process_has_given_id);
+	PCB_t* oldPCB = NULL;
+	oldPCB = list_remove_by_condition(executionQueue, _process_has_given_id);
 
 	pthread_mutex_unlock(&executionQueueMutex);
 
@@ -451,7 +452,7 @@ uint32_t updatePCBInExecutionQueue(PCB_t* updatedPCB)
 void checkIfFileOpen(uint32_t _socket) //Receives pid, fileName length, fileName string
 {
 	int32_t nbytes;
-	char* fileName;
+	char* fileName = NULL;
 	bool result;
 	int32_t pid;
 
@@ -620,10 +621,10 @@ void closeFile(uint32_t _socket)
 {
 	int32_t nbytes;
 	int32_t pid, processToUnblock;
-	fileTableData* data;
-	fileTableData* dataToRemove;
-	t_list* processWaitList;
-	char* fileName;
+	fileTableData* data = NULL;
+	fileTableData* dataToRemove = NULL;
+	t_list* processWaitList = NULL;
+	char* fileName = NULL;
 	bool result;
 
 	pthread_mutex_lock(&fileTableMutex);
@@ -725,9 +726,9 @@ void unlockProcess(uint32_t _socket)
 void signalResource(uint32_t _socket)
 {
 	int32_t nbytes;
-	char* semaphoreName;
+	char* semaphoreName = NULL;
 	bool result;
-	semaphoreData* data;
+	semaphoreData* data = NULL;
 
 	pthread_mutex_lock(&semaphoreListMutex);
 
@@ -779,10 +780,10 @@ void waitResource(uint32_t _socket)
 {
 	int32_t pid;
 	int32_t nbytes;
-	char* semaphoreName;
+	char* semaphoreName = NULL;
 	bool dictionaryHasKey;
-	semaphoreData* data;
-	t_list* processWaitList;
+	semaphoreData* data = NULL;
+	t_list* processWaitList = NULL;
 
 	if((nbytes = receive_int(_socket, &pid)) <= 0)
 	{
@@ -859,7 +860,8 @@ void waitResource(uint32_t _socket)
 
 void freeCPUBySocket(uint32_t _socket)
 {
-	cpu_t* cpuToFree = findCPUBy_socket(_socket);
+	cpu_t* cpuToFree =  NULL;
+	cpuToFree = findCPUBy_socket(_socket);
 
 	cpuToFree->currentProcess = 0;
 	cpuToFree->isFree = true;
@@ -868,7 +870,7 @@ void freeCPUBySocket(uint32_t _socket)
 void handleCpuConnection(uint32_t _socket)
 {
 	int32_t nbytes;
-	char* cpuIp;
+	char* cpuIp = NULL;
 	int32_t cpuPort;
 
 	log_info(consoleLog, "Nueva conexion de CPU\n");
@@ -952,7 +954,7 @@ void terminateProcess(uint32_t _socket)
 	int32_t nbytes;
 	PCB_t* updatedPCB = NULL;
 
-	if((nbytes = recvPCB(_socket, updatedPCB)) <= 0)
+	if((nbytes = recvPCB(updatedPCB, _socket)) <= 0)
 	{
 		if(nbytes == 0)
 			log_error(consoleLog, "ServerThread (terminateProcess) - La CPU fue desconectada al intentar recibir un PCB");

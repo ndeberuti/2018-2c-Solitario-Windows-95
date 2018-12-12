@@ -6,9 +6,9 @@
 
 void roundRobinScheduler()
 {
-	PCB_t* scheduledProcess;
+	PCB_t* scheduledProcess = NULL;
 	t_list* freeCPUs = getFreeCPUs();
-	cpu_t* selectedCPU;
+	cpu_t* selectedCPU = NULL;
 
 	bool processCanBeScheduled(PCB_t* pcb)
 	{
@@ -31,9 +31,9 @@ void roundRobinScheduler()
 
 void virtualRoundRobinScheduler(PCB_t* process)
 {
-	PCB_t* scheduledProcess;
+	PCB_t* scheduledProcess = NULL;
 	t_list* freeCPUs = getFreeCPUs();
-	cpu_t* selectedCPU;
+	cpu_t* selectedCPU = NULL;
 
 	bool processCanBeScheduled(PCB_t* pcb)
 	{
@@ -69,13 +69,13 @@ void virtualRoundRobinScheduler(PCB_t* process)
 void customScheduler()
 {
 	//If the scheduler gets to this point, there is a free CPU
-	PCB_t* scheduledProcess;
+	PCB_t* scheduledProcess = NULL;
 	t_list* freeCPUs = getFreeCPUs();
-	cpu_t* selectedCPU;
-	t_list* schedulableProcesses;
-	t_list* processesToCountInstructions;
+	cpu_t* selectedCPU = NULL;
+	t_list* schedulableProcesses = NULL;
+	t_list* processesToCountInstructions = NULL;
 	uint32_t processesToCountInstructionsQty, instructionsUntilIO;
-	PCB_t* processToCountInstructions;
+	PCB_t* processToCountInstructions = NULL;
 
 
 	bool processIOInstructionCounterIsZero(PCB_t* pcb)

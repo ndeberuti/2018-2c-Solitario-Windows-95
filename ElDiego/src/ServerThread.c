@@ -7,7 +7,7 @@ void server()
 	struct sockaddr_in remoteaddr; //Client address
 	uint32_t fdmax; //Number of the maximum FD
 	uint32_t newfd; //New connection socket
-	uint32_t command; //Client command
+	int32_t command; //Client command
 	uint32_t nbytes;
 	uint32_t addrlen;
 	FD_ZERO(&master); //Set to zero all sockets in the master and read FD sets
@@ -83,13 +83,13 @@ void server()
 					else
 					{
 						//Receive data from a client
-						command_handler(command, _socket);
+						commandHandler(command, _socket);
 					}
 			} // if (FD_ISSET(i, &read_fds))
 	} // while (true)
 }
 
-void command_handler(uint32_t command, uint32_t _socket)
+void commandHandler(uint32_t command, uint32_t _socket)
 {
 	switch (command)
 	{
@@ -242,7 +242,6 @@ void flushFile(uint32_t _socket)
 	if(fileIsInFS)
 	{
 		t_list* parsedFile;
-		uint32_t fileLines;
 		char* fileContents = getFileFromMemory(currentFilePath);
 		char* fileBuffer = NULL; //Contains a buffer with all the lines of a file, each line contained in a sub-buffer that has the size of a memory line;
 								 //each line is separated by a '\n' character
@@ -261,7 +260,6 @@ void flushFile(uint32_t _socket)
 		parsedFile = parseScript(fileContents);	//Creates a list, with each element containing a line of the file (in order of appearance)
 		free(fileContents);
 
-		fileLines = list_size(parsedFile);
 		fileBuffer = convertParsedFileToFileSystemBuffer(parsedFile);
 
 		int32_t operationResult = sendFileToFileSystem(currentFilePath, fileBuffer);
@@ -312,7 +310,7 @@ void createFile(uint32_t _socket)
 	int32_t nbytes, operationResult;
 	int32_t currentProcess;
 	char* currentFilePath = NULL;		//Path of the file to open
-	uint32_t linesInFileToCreate;
+	int32_t linesInFileToCreate;
 	uint32_t fileSize;
 
 	//Receive from the CPU the pid of the requesting process, the path where the file will be created, and the number of lines the file should have
@@ -422,8 +420,6 @@ void deleteFile(uint32_t _socket)
 	int32_t nbytes, operationResult;
 	int32_t currentProcess;
 	char* currentFilePath = NULL;		//Path of the file to open
-	uint32_t linesInFileToCreate;
-	uint32_t fileSize;
 
 	//Receive from the CPU the pid of the requesting process, the path where the file will be created, and the number of lines the file should have
 	if((nbytes = receive_int(_socket, &currentProcess)) <= 0)

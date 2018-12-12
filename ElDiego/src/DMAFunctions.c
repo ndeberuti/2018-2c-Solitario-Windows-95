@@ -296,7 +296,7 @@ char* convertParsedFileToMemoryBuffer(t_list* parsedFile)
 	uint32_t fileLines = list_size(parsedFile);
 	size_t bufferSize = (fileLines * sizeof(char) * memoryLineSize) + (fileLines * sizeof(char)) + 1;	//The size of each memoryLine * the quantity of lines of the file, plus a char for each line (to put a '\n' after each one)
 	char* memoryBuffer = calloc(1, bufferSize);
-	char* line;
+	char* line = NULL;
 	uint32_t lineSize;
 	uint32_t bufferOffset = 0;
 
@@ -408,7 +408,7 @@ char* convertParsedFileToFileSystemBuffer(t_list* parsedFile)
 	uint32_t fileLines = list_size(parsedFile);
 	size_t bufferSize = (fileLines * sizeof(char) * memoryLineSize) + (fileLines * sizeof(char)) + 1;
 	char* filesystemBuffer = calloc(1, bufferSize);
-	char* line;
+	char* line = NULL;
 	uint32_t lineSize;
 	uint32_t bufferOffset = 0;
 	uint32_t fileSize;

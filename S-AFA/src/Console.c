@@ -2,19 +2,19 @@
 
 void console()
 {
-	char* line;
-	char* token;
-	console_t* console;
+	char* line = NULL;
+	char* token = NULL;
+	console_t* console = NULL;
 
-	printf("\n--------CONSOLE COMMANDS--------\n\n");
-	printf("\tejecutar <scriptPath> - Permite ejecutar un script. Se debe proporcionar la ruta del script dentro del FileSystem FIFA\n");
-	printf("\tstatus <processId> - Existen 2 opciones para este comando. Se le puede proporcionar el ID de un proceso, para lo cual proporciona informacion sobre las variables internas del mismo; o se puede ejecutar sin pasarle parametros, para lo cual proporciona informacion sobre las colas de planificacion\n");
-	printf("\tfinalizar <processId> - Permite finalizar de forma prematura la ejecucion de un proceso\n");
-	printf("\tmetricas <processId> - Existen 2 opciones para este comando. Se le puede proporcionar el ID de un proceso, para lo cual se muestran metricas relativas al mismo; o se puede ejecutar sin pasarle parametros, para lo cual muestra metricas relativas al sistema\n");
-	printf("\tpausar - Permite detener la planificacion de procesos\n");
-	printf("\tcontinuar - Permite reanudar la planificacion de procesos\n");
-	printf("\tsalir - Permite cerrar este modulo\n\n");
-	printf("NOTA: Para el comando finalizar, debito a la falta de tiempo y conocimientos para realizar una implementacion apropiada, no es posible matar procesos que esten siendo inicializados por una CPU\n");
+	printf("\n--------CONSOLE COMMANDS--------\n");
+	printf("\n\tejecutar <scriptPath> - Permite ejecutar un script. Se debe proporcionar la ruta del script dentro del FileSystem FIFA\n");
+	printf("\n\tstatus <processId> - Existen 2 opciones para este comando. Se le puede proporcionar el ID de un proceso, para lo cual proporciona informacion sobre las variables internas del mismo; o se puede ejecutar sin pasarle parametros, para lo cual proporciona informacion sobre las colas de planificacion\n");
+	printf("\n\tfinalizar <processId> - Permite finalizar de forma prematura la ejecucion de un proceso\n");
+	printf("\n\tmetricas <processId> - Existen 2 opciones para este comando. Se le puede proporcionar el ID de un proceso, para lo cual se muestran metricas relativas al mismo; o se puede ejecutar sin pasarle parametros, para lo cual muestra metricas relativas al sistema\n");
+	printf("\n\tpausar - Permite detener la planificacion de procesos\n");
+	printf("\n\tcontinuar - Permite reanudar la planificacion de procesos\n");
+	printf("\n\tsalir - Permite cerrar este modulo\n\n");
+	printf("\nNOTA: Para el comando finalizar, debito a la falta de tiempo y conocimientos para realizar una implementacion apropiada, no es posible matar procesos que esten siendo inicializados por una CPU\n");
 	printf("-----------------------------------\n\n");
 
 	//Lo indicado en esa nota es asi porque implicaria romper un flujo de mensajes entre modulos, lo cual seria dificil de implementar
@@ -174,7 +174,7 @@ void getSystemMetrics()
 void getProcessStatus(uint32_t processId)
 {
 	char *queueName = NULL;
-	char *scriptName, *wasInitialized, *canBeScheduled;
+	char *scriptName = NULL, *wasInitialized = NULL, *canBeScheduled = NULL;
 	uint32_t pid, programCounter, cpuProcessIsAssignedTo, remainingQuantum, newQueueArrivalTime;
 	uint32_t newQueueLeaveTime, instructionsExecuted, completedDmaCalls, lastIOStartTime, responseTimes;
 	uint32_t instructionsExecutedOnLastExecution, instructionsUntilIoOrEnd;
@@ -360,7 +360,7 @@ void terminateProcessConsole(uint32_t processId)
 PCB_t* getProcessFromSchedulingQueues(uint32_t processId, char* queueName)
 {
 	PCB_t* process = NULL;
-	t_list* queueToSearch;
+	t_list* queueToSearch = NULL;
 
 	bool process_has_given_id(PCB_t* pcb)
 	{

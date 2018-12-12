@@ -33,13 +33,15 @@ void initializeVariables()
 		exit(CONFIG_LOAD_ERROR);
 	}
 
-	pthread_attr_t* threadAttributes = NULL;
+	pthread_attr_t* threadAttributes = malloc(sizeof(pthread_attr_t));
 	pthread_attr_init(threadAttributes);
 	pthread_attr_setdetachstate(threadAttributes, PTHREAD_CREATE_DETACHED);
 
 	pthread_create(&serverThread, threadAttributes, (void *)server, NULL);
 
 	connectToServers();
+
+	free(threadAttributes);
 }
 
 void executeProcesses()

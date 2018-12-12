@@ -3,7 +3,7 @@
 
 void shortTermSchedulerThread()
 {
-	t_list* schedulableProcesses;
+	t_list* schedulableProcesses = NULL;
 
 	while(!killThreads)
 	{
@@ -39,9 +39,9 @@ void shortTermSchedulerThread()
 
 void longTermSchedulerThread()
 {
-	PCB_t* processToInitialize;
+	PCB_t* processToInitialize = NULL;
 	uint32_t processAccepted;
-	t_list* schedulableProcesses;
+	t_list* schedulableProcesses = NULL;
 
 	while(!killThreads)
 	{
@@ -179,7 +179,7 @@ void initializeVariables()
 		exit(CONFIG_LOAD_ERROR);
 	}
 
-	pthread_attr_t* threadAttributes = NULL;
+	pthread_attr_t* threadAttributes = malloc(sizeof(pthread_attr_t));
 	pthread_attr_init(threadAttributes);
 	pthread_attr_setdetachstate(threadAttributes, PTHREAD_CREATE_DETACHED);
 
@@ -188,6 +188,8 @@ void initializeVariables()
 	pthread_create(&stsThread, threadAttributes, (void *)shortTermSchedulerThread, NULL);
 
 	pthread_create(&ltsThread, threadAttributes, (void *)longTermSchedulerThread, NULL);
+
+	free(threadAttributes);
 }
 
 void freeResources()

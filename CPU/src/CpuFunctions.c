@@ -279,15 +279,14 @@ void executeProcess()
 {
 	uint32_t instructionsQty;
 	int32_t nbytes;
-	int32_t message;
 	bool instructionWasExecuted;
 	PCB_t* processToExecute = NULL;
-	char* scriptContent; 		//The contents of a script file, which are in memory (all the lines of instructions of that script arranged in a string)
-	char* lineToParse;
+	char* scriptContent = NULL; 	//The contents of a script file, which are in memory (all the lines of instructions of that script arranged in a string)
+	char* lineToParse = NULL;
 	t_list* parsedScript;	//This contains an element for each line/instruction the script has
 	t_list* parsedLine;		//This contains the instruction (first element of the list) and its arguments (each is an element of the list)
 
-	if((nbytes = recvPCB(schedulerServerSocket, processToExecute)) <= 0)
+	if((nbytes = recvPCB(processToExecute, schedulerServerSocket)) <= 0)
 	{
 		if(nbytes == 0)
 			log_error(cpuLog, "EL planificador fue desconectado al intentar recibir un PCB del mismo\n");
@@ -394,7 +393,7 @@ void initializeProcess()
 	int32_t nbytes;
 	PCB_t* processToInitialize = NULL;
 
-	if((nbytes = recvPCB(schedulerServerSocket, processToInitialize)) <= 0)
+	if((nbytes = recvPCB(processToInitialize, schedulerServerSocket)) <= 0)
 	{
 		if(nbytes == 0)
 			log_error(cpuLog, "EL planificador fue desconectado al intentar recibir un PCB del mismo\n");
@@ -413,7 +412,7 @@ void initializeProcess()
 		//TODO (Optional) - Send Error Handling
 	}
 
-	sendOpenFileRequestToDMA(processToInitialize);
+	sendOpenFileRequestToDMA(processToInitialize->scriptPathInFS);
 
 	if((nbytes = send_int(schedulerServerSocket, BLOCK_PROCESS_INIT)) < 0)
 	{
@@ -927,7 +926,7 @@ void deleteFile(char* filePathInFS)
 uint32_t askSchedulerIfFileOpen(char* filePathInFS)
 {
 	int32_t nbytes;
-	uint32_t message;
+	int32_t message;
 
 	//Send the scheduler the taskCode, the current process' ID, and the path of the file to open (in order for the scheduler to locate it in the fileTable)
 	if((nbytes = send_int(schedulerServerSocket, CHECK_IF_FILE_OPEN)) < 0)
@@ -975,8 +974,6 @@ void handleFileNotOpen(char* filePathInFS, bool raiseError)
 	//If this function does not raise an error, it means it should handle the FILE_NOT_OPEN message when trying to execute the openFile instruction
 	//If it raises an error, it has to handle the FILE_NOT_OPEN message when trying to execute another instruction related to files
 
-	int32_t nbytes;
-
 	if(!raiseError)
 	{
 		sendOpenFileRequestToDMA(filePathInFS);
@@ -993,8 +990,6 @@ void handleFileOpenedByOtherProcess(char* filePathInFS, bool raiseError)
 {
 	//If this function does not raise an error, it means it should handle the FILE_OPENED_BY_ANOTHER_PROCESS message when trying to execute the openFile instruction
 	//If it raises an error, it has to handle the FILE_OPENED_BY_ANOTHER_PROCESS message when trying to execute another instruction related to files
-
-	int32_t nbytes;
 
 	if(!raiseError)
 	{
@@ -1026,9 +1021,9 @@ void handleProcessError()
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = sendPCB(schedulerServerSocket, processInExecutionPCB)) < 0)
+	if((nbytes = sendPCB(processInExecutionPCB, schedulerServerSocket)) < 0)
 	{
-		log_error(cpuLog, "Error al enviar al planificador el PCB del proceso en ejecucion\n");
+		log_error(cpuLog, "Error al indicar al planificador que ocurrio un error en la ejecucion\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
 		exit(EXIT_FAILURE);
@@ -1055,9 +1050,8 @@ void handleProcessError()
 void tellMemoryToFreeProcessData()
 {
 	int32_t nbytes;
-	int32_t message;
 
-	if((nbytes = send_int(memoryServerSocket, CLOSE_PROCESS)) < 0)
+	if((nbytes = send_int(memoryServerSocket, PROCESS_ERROR)) < 0)
 	{
 		log_error(cpuLog, "Error al indicar a la memoria que ocurrio un error en la ejecucion\n");
 
@@ -1072,31 +1066,6 @@ void tellMemoryToFreeProcessData()
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
-	}
-
-	//Wait for the memory to confirm the result of the operation before continuing execution
-	if((nbytes = receive_int(memoryServerSocket, &message)) <= 0)
-	{
-		if(nbytes == 0)
-			log_error(cpuLog, "La memoria fue desconectada al intentar recibir el resultado de una operacion de cierre de archivos para un proceso");
-		if(nbytes < 0)
-			log_error(cpuLog, "Error al intentar recibir el resultado de una operacion de cierre de archivos para un proceso de la memoria");
-
-		log_info(cpuLog, "Debido a una desconexion de la memoria, este proceso se cerrara");
-		exit(EXIT_FAILURE);
-	}
-
-	if(message == ARCHIVO_NO_ABIERTO)
-	{
-		log_warning(cpuLog, "Se intentaron quitar archivos de la memoria que no se encuentran en ella");
-	}
-	else if(message == PROCESO_NO_ABIERTO)
-	{
-		log_warning(cpuLog, "Se intentaron quitar archivos de la memoria para un proceso que no tiene archivos en ella");
-	}
-	else if(message == OK)
-	{
-		log_info(cpuLog, "Se han quitado de la memoria todos los archivos para el proceso %d de forma exitosa", processInExecutionPCB->pid);
 	}
 }
 
@@ -1116,7 +1085,7 @@ void tellSchedulerToBlockProcess(bool isDmaCall)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = sendPCB(schedulerServerSocket, processInExecutionPCB)) < 0)
+	if((nbytes = sendPCB(processInExecutionPCB, schedulerServerSocket)) < 0)
 	{
 		log_error(cpuLog, "Error al enviar al planificador el PCB del proceso en ejecucion\n");
 
@@ -1153,7 +1122,7 @@ void handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToAssig
 	int32_t message;
 
 	//Tell the memory to modify a file and send the filePath, the number of the line that should be modified, and the data to insert in that line
-	if((nbytes = send_int(memoryServerSocket, ASIGNAR)) < 0)
+	if((nbytes = send_int(memoryServerSocket, MODIFY_FILE)) < 0)
 	{
 		log_error(cpuLog, "Error al solicitar a la memoria que modifique un archivo\n");
 
@@ -1198,13 +1167,13 @@ void handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToAssig
 		exit(EXIT_FAILURE);
 	}
 
-	if(message == ARCHIVO_NO_ABIERTO)
+	if(message == MODIFY_FILE_ERROR)
 	{
 		log_info(cpuLog, "Ocurrio un error al modificar la informacion de un archivo en memoria. El proceso sera terminado...\n");
 
 		handleProcessError();
 	}
-	else if(message == OK)
+	else if(message == MODIFY_FILE_OK)
 	{
 		log_info(cpuLog, "Se ha modificado extosamente la linea %d del archivo en la ruta \"%s\"", lineNumber, filePathInFS);
 	}
@@ -1281,7 +1250,7 @@ void handleCloseFile(char* filePathInFS)
 	{
 		log_error(cpuLog, "Error al solicitar a la memoria que cierre un archivo\n");
 
-		log_info(cpuLog, "Debido a una desconexion de la memoria, este proceso se cerrara\n");
+		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1289,32 +1258,32 @@ void handleCloseFile(char* filePathInFS)
 	{
 		log_error(cpuLog, "Error al enviar a la memoria el nombre del archivo que debe cerrar\n");
 
-		log_info(cpuLog, "Debido a una desconexion de la memoria, este proceso se cerrara\n");
+		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
 
 	//Wait for the memory to confirm the result of the operation before continuing execution
-	if((nbytes = receive_int(memoryServerSocket, &message)) <= 0)
+	if((nbytes = receive_int(schedulerServerSocket, &message)) <= 0)
 	{
 		if(nbytes == 0)
-			log_error(cpuLog, "La memoria fue desconectada al intentar recibir el resultado de una operacion de cierre de archivo");
+			log_error(cpuLog, "EL planificador fue desconectado al intentar recibir la confirmacion de si un archivo se encuentra abierto\n");
 		if(nbytes < 0)
-			log_error(cpuLog, "Error al intentar recibir el resultado de una operacion de cierre de archivo de la memoria");
+			log_error(cpuLog, "Error al intentar recibir la confirmacion de si un archivo se encuentra abierto del planificador\n");
 
-		log_info(cpuLog, "Debido a una desconexion de la memoria, este proceso se cerrara");
+		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
 		exit(EXIT_FAILURE);
 	}
 
-	if(message == ARCHIVO_NO_ABIERTO)
+	if(message == CLOSE_FILE_ERROR)
 	{
-		log_info(cpuLog, "El archivo \"%s\" que se intento quitar de memoria no se encuentra en ella. El proceso sera terminado...", filePathInFS);
+		log_info(cpuLog, "Ocurrio un error al cerrar un archivo en memoria. El proceso sera terminado...\n");
 
 		handleProcessError();
 	}
-	else if(message == OK)
+	else if(message == CLOSE_FILE_OK)
 	{
-		log_info(cpuLog, "Se ha cerrado exitosamente el archivo de la ruta \"%s\"", filePathInFS);
+		log_info(cpuLog, "Se ha cerrado exitosamente el archivo en la ruta \"%s\"", filePathInFS);
 	}
 }
 
@@ -1354,7 +1323,7 @@ void updatePCBAndSendExecutionEndMessage(uint32_t messageCode)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = sendPCB(schedulerServerSocket, processInExecutionPCB)) < 0)
+	if((nbytes = sendPCB(processInExecutionPCB, schedulerServerSocket)) < 0)
 	{
 		log_error(cpuLog, "Error al enviar al planificador el PCB del proceso en ejecucion\n");
 
@@ -1396,7 +1365,7 @@ uint32_t countInstructionsUntilEndOrIO(t_list* parsedScript)
 {
 	uint32_t linesQty = list_size(parsedScript);
 	uint32_t instructionsCount = 0;
-	char* line;
+	char* line = NULL;
 	t_list* parsedLine;
 
 	//Counts how many instructions are left until the next IO operation or end of script
@@ -1433,8 +1402,8 @@ bool isIoInstruction(t_list* parsedLine)	//Receives a list that represents the p
 void countProcessInstructions()
 {
 	int32_t nbytes;
-	uint32_t processId;
-	uint32_t programCounter;
+	int32_t processId;
+	int32_t programCounter;
 	char* scriptPath;
 	t_list* parsedScript;
 	char* scriptContent;
@@ -1492,7 +1461,7 @@ void countProcessInstructions()
 char* requestScriptFromMemory()
 {
 	int32_t nbytes;
-	char* scriptContent;
+	char* scriptContent = NULL;
 
 	//Ask the memory for the script
 	if((nbytes = send_int(memoryServerSocket, REQUEST_SCRIPT)) < 0)

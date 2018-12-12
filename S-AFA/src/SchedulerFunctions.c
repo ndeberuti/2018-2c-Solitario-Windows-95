@@ -17,13 +17,13 @@ int32_t getConfigs()
 	{
 		tempConfig.schedulingAlgorithm = strdup(config_get_string_value(configFile, "AlgoritmoPlanificacion"));
 
-		if(strcmp(config.schedulingAlgorithm, "RR") == 0)
+		if(strcmp(tempConfig.schedulingAlgorithm, "RR") == 0)
 			tempConfig.schedulingAlgorithmCode = RR;
 
-		else if(strcmp(config.schedulingAlgorithm, "VRR") == 0)
+		else if(strcmp(tempConfig.schedulingAlgorithm, "VRR") == 0)
 			tempConfig.schedulingAlgorithmCode = VRR;
 
-		else if(strcmp(config.schedulingAlgorithm, "Custom") == 0)
+		else if(strcmp(tempConfig.schedulingAlgorithm, "Custom") == 0)
 			tempConfig.schedulingAlgorithmCode = Custom;
 
 		else
@@ -100,7 +100,7 @@ void showConfigs()
 	log_info(consoleLog, "Puerto = %d", config.port);
 	log_info(consoleLog, "Algoritmo de Planificacion = %s", config.schedulingAlgorithm);
 	log_info(consoleLog, "Quantum = %d", config.quantum);
-	log_info(consoleLog, "Nivel de Multiprogramacion = %s", config.multiprogrammingLevel);
+	log_info(consoleLog, "Nivel de Multiprogramacion = %d", config.multiprogrammingLevel);
 	log_info(consoleLog, "Retardo de Planificacion = %d", config.schedulingDelay);
 	log_info(consoleLog, "-----------------------");
 	printf("\n");
@@ -388,8 +388,6 @@ t_list* getFreeCPUs()
 {
 	pthread_mutex_lock(&cpuListMutex);
 
-	uint32_t cpuListSize = list_size(connectedCPUs);
-
 	bool _cpu_is_free(cpu_t* cpu)
 	{
 		return cpu->isFree;
@@ -409,7 +407,7 @@ void executeProcess(PCB_t* process, cpu_t* selectedCPU)
 
 	pthread_mutex_lock(&configFileMutex);
 
-	char* taskMessage;
+	char* taskMessage = NULL;
 
 	selectedCPU->currentProcess = process->pid;
 	selectedCPU->isFree = false;
@@ -480,8 +478,8 @@ void killProcess(uint32_t pid)
 {
 	pthread_mutex_lock(&metricsGlobalvariablesMutex);
 
-	PCB_t* processToKill;
-	t_list* queueToSearch;
+	PCB_t* processToKill = NULL;
+	t_list* queueToSearch = NULL;
 
 
 	bool process_has_given_id(PCB_t* pcb)
@@ -595,11 +593,11 @@ void checkAndFreeProcessSemaphores(uint32_t processId)
 {
 	//t_list* semaphores = dictionary_get_keys(semaphoreList);
 	uint32_t semaphoresQty = list_size(semaphoreListKeys);
-	char* currentKey;
+	char* currentKey = NULL;
 	semaphoreData* data;
 	uint32_t processToUnblock;
-	t_list* processWaitList;
-	t_list* usingProcessesList;
+	t_list* processWaitList = NULL;
+	t_list* usingProcessesList = NULL;
 	bool processHasTakenSemaphore;
 
 	bool _pid_equals_given_one(uint32_t pid)
@@ -669,7 +667,7 @@ int32_t send_PCB_with_delay(PCB_t* pcb, uint32_t _socket)
 	log_info(schedulerLog, "Delay de envio de mensaje...\n");
 	sleep(milisecondsSleep);
 
-	nbytes = sendPCB(_socket, pcb);
+	nbytes = sendPCB(pcb, _socket);
 
 	log_info(schedulerLog, "Se ha finalizado el envio de un mensaje");
 
