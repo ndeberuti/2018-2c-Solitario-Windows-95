@@ -28,24 +28,20 @@ int main(void) {
 	setear_modo();
 
 
-	guardar_archivo_paginas_invertidas(10, 101, 1, "hola\0");
-	guardar_archivo_paginas_invertidas(10, 102, 2, "chau\0");
-
-	abrir_archivo_paginacion(diego, 102);
 
 
-dump(10);
+
 	//close_process_segmentacion_paginada(diego, 10);
 	//guardar_archivo_segmentacion_paginada(11 ,222,8,"fallaaa\0");
 
-
+/*
 	for(int j = 0; j < 4; j++){
 
 			int muestra = bitarray_test_bit(bitarray_memoria, j);
 			printf("prueba bitarray : %d \n", muestra);
 		}
 
-
+*/
 
 	/*
 	bitarray_set_bit(bitarray_memoria, 1);
