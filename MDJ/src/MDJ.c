@@ -748,10 +748,86 @@ void borrar_todo(char *path) {
 	remove(path);
 }
 
+char *formatear_path(char *path) {
+	char *primer_caracter = string_substring_until(path, 1);
+	char *rta;
+
+	if (str_eq(primer_caracter, "/")) {
+		rta = malloc(sizeof(char) * (strlen(config->PUNTO_MONTAJE) + strlen(path) + 1));
+		strcpy(rta, config->PUNTO_MONTAJE);
+	}
+	else {
+		rta = malloc(sizeof(char) * (strlen(pathActual) + strlen(path) + 1));
+		strcpy(rta, pathActual);
+	}
+
+	char *sub_path;
+	bool sin_barra;
+	char *nuevo_path;
+	free(primer_caracter);
+	char *aux_path = strdup(path);
+	char *token = strtok(aux_path, "/");
+
+	while (token != NULL) {
+		sub_path = strdup(token);
+		sin_barra = false;
+
+		if (strlen(sub_path) == 0 || str_eq(sub_path, "."))
+			sin_barra = true;
+		else if (str_eq(sub_path, "..")) {
+			nuevo_path = convertir_punto_punto(rta);
+			strcpy(rta, nuevo_path);
+			free(nuevo_path);
+		}
+		else
+			strcat(rta, sub_path);
+
+		token = strtok(NULL, "/");
+		if (token != NULL && !sin_barra)
+			strcat(rta, "/");
+		free(sub_path);
+	}
+	free(aux_path);
+
+	if (string_ends_with(rta, "/")) {
+		char *new_rta = string_substring_until(rta, strlen(rta) - 1);
+		free(rta);
+		return new_rta;
+	}
+	else
+		return rta;
+}
+
+char *convertir_punto_punto(char *path_completo) {
+	char *path;
+
+	if (str_eq(path_completo, config->PUNTO_MONTAJE))
+		path = string_substring_until(path_completo, strlen(path_completo) - 1);
+	else {
+		uint32_t i = strlen(path_completo) - 2;
+		bool salir = false;
+		char *aux;
+
+		while (i > 0 && !salir) {
+			aux = string_substring(path_completo, i, 1);
+			if (str_eq(aux, "/"))
+				salir = true;
+			else
+				i--;
+			free(aux);
+		}
+		path = string_substring_until(path_completo, i);
+	}
+
+	return path;
+}
+
 void consola() {
+	char *aux;
 	char *linea;
 	char *token;
 	console_t *consola;
+	char *pathFormateado;
 
 	while (true) {
 		linea = readline(pathConsola);
@@ -768,64 +844,88 @@ void consola() {
 				while (consola->cant_params < MAX_PARAMS && (token = strtok(NULL, " ")) != NULL)
 					consola->param[consola->cant_params++] = strdup(token);
 
-				if (consola->cant_params > 0) {
-					//TODO: Formatear path teniendo en cuenta el . y el ..
-					//char *pathFormateado = formatearPath(consola->param[0]);
-				}
+				if (consola->cant_params > 0)
+					pathFormateado = formatear_path(consola->param[0]);
+				else
+					pathFormateado = strdup(pathActual);
 
 				if (str_eq(consola->comando, "clear"))
 					system("clear");
 
 				else if (str_eq(consola->comando, "ls")) {
-					char *aux;
-					if (consola->cant_params == 0) {
-						aux = malloc(sizeof(char) * (strlen(pathActual) + 7));
+					if (isDirectoryExists(pathFormateado)) {
+						aux = malloc(sizeof(char) * (strlen(pathFormateado) + 7));
 						strcpy(aux, "ls -l ");
-						strcat(aux, pathActual);
+						strcat(aux, pathFormateado);
 						system(aux);
+						free(aux);
 					}
-					else {
-						aux = malloc(sizeof(char) * (strlen(consola->param[0]) + strlen(pathActual) + 1));
-						strcpy(aux, pathActual);
-						strcat(aux, consola->param[0]);
-						if (isDirectoryExists(aux)) {
-							free(aux);
-							aux = malloc(sizeof(char) * (strlen(consola->param[0]) + strlen(pathActual) + 7));
-							strcpy(aux, "ls -l ");
-							strcat(aux, pathActual);
-							strcat(aux, consola->param[0]);
-							system(aux);
-						}
-						else
-							print_c(log_consola, "%s: No existe el directorio %s", consola->comando, consola->param[0]);
-					}
-					free(aux);
+					else
+						print_c(log_consola, "%s: No existe el directorio %s", consola->comando, consola->param[0]);
 				}
 
 				else if (str_eq(consola->comando, "cd"))
 					if (consola->cant_params < 1)
 						print_c(log_consola, "%s: falta el parametro <directorio>", consola->comando);
 					else {
-						// TODO: comando cd
+						if (isDirectoryExists(pathFormateado)) {
+							char *aux = malloc(sizeof(char) * (strlen(pathFormateado) + 2));
+							strcpy(aux, pathFormateado);
+							strcat(aux, "/");
+
+							free(pathActual);
+							pathActual = strdup(aux);
+
+							free(pathConsola);
+							pathConsola = string_substring_from(aux, strlen(config->PUNTO_MONTAJE) - 1);
+
+							free(aux);
+						}
+						else
+							print_c(log_consola, "%s: No existe el directorio %s", consola->comando, consola->param[0]);
 					}
 
 				else if (str_eq(consola->comando, "md5"))
 					if (consola->cant_params < 1)
 						print_c(log_consola, "%s: falta el parametro <archivo>", consola->comando);
 					else {
-						// TODO: comando md5
+						if (isFileExists(pathFormateado)) {
+							//TODO armar el content con el contenido del archivo
+							void *content = strdup(pathFormateado);
+							unsigned char *digest = malloc(MD5_DIGEST_LENGTH);
+							MD5_CTX context;
+							MD5_Init(&context);
+							MD5_Update(&context, content, strlen(content) + 1);
+							MD5_Final(digest, &context);
+							for(uint32_t i = 0; i < MD5_DIGEST_LENGTH; i++)
+								printf("%02x", digest[i]);
+							printf("\n");
+							free(content);
+							free(digest);
+						}
+						else
+							print_c(log_consola, "%s: No existe el archivo %s", consola->comando, consola->param[0]);
 					}
 
 				else if (str_eq(consola->comando, "cat"))
 					if (consola->cant_params < 1)
 						print_c(log_consola, "%s: falta el parametro <archivo>", consola->comando);
 					else {
-						// TODO: comando cat
+						if (isFileExists(pathFormateado)) {
+							aux = malloc(sizeof(char) * (strlen(pathFormateado) + 5));
+							strcpy(aux, "cat ");
+							strcat(aux, pathFormateado);
+							system(aux);
+							free(aux);
+						}
+						else
+							print_c(log_consola, "%s: No existe el archivo %s", consola->comando, consola->param[0]);
 					}
 
 				else
 					print_c(log_consola, "%s: Comando incorrecto", consola->comando);
 
+				free(pathFormateado);
 				free(consola->comando);
 				for (uint32_t i = 0; i < consola->cant_params; i++)
 					free(consola->param[i]);

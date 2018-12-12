@@ -21,6 +21,7 @@
 #include <pthread.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <openssl/md5.h>
 #include "funciones/funciones.h"
 #include "commons/config.h"
 #include "commons/bitarray.h"
@@ -96,6 +97,8 @@ void clean_bitarray(uint32_t posicion);
 void crear_path_completo(char *path_completo);
 char *obtener_todo(char *path, uint32_t offset);
 void borrar_todo(char *path);
+char *formatear_path(char *path);
+char *convertir_punto_punto(char *path_completo);
 void consola();
 
 #endif /* SRC_MDJ_H_ */
