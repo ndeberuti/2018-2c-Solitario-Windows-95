@@ -141,6 +141,7 @@ pthread_mutex_t ioReadyQueueMutex;
 pthread_mutex_t cpuListMutex;
 pthread_mutex_t finishedQueueMutex;
 pthread_mutex_t fileTableMutex;
+pthread_mutex_t fileTableKeysMutex;
 pthread_mutex_t semaphoreListMutex;
 pthread_mutex_t processIOTimesTableMutex;
 pthread_mutex_t metricsGlobalvariablesMutex; //mutex for the "executedInstructions", "dma_executedInstructions"
@@ -169,7 +170,7 @@ void unblockProcess(uint32_t, bool);
 void blockProcess(uint32_t, bool);
 uint32_t getFreeCPUsQty();
 t_list* getFreeCPUs();
-void executeProcess(PCB_t*, cpu_t*);
+void initializeOrExecuteProcess(PCB_t*, cpu_t*);
 void killProcess(uint32_t);
 void closeSocketAndRemoveCPU(uint32_t);
 void checkAndFreeProcessFiles(uint32_t);
@@ -183,6 +184,7 @@ t_list* getSchedulableProcesses();
 void removeKeyFromList(t_list*, char*);
 void showConfigs();
 int32_t send_PCB_with_delay(PCB_t*, uint32_t);
+void checkAndInitializeProcesses();
 
 //Algorithms
 void roundRobinScheduler();
@@ -210,7 +212,6 @@ void _blockProcess(uint32_t);
 void _killProcess(uint32_t);
 void processQuantumEnd(uint32_t);
 cpu_t* findCPUBySocket(uint32_t);
-void checkAndInitializeProcesses(cpu_t*);
 uint32_t updatePCBInExecutionQueue(PCB_t*);
 void checkIfFileOpen(uint32_t);
 void saveFileDataToFileTable(uint32_t, uint32_t);

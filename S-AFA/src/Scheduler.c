@@ -62,7 +62,13 @@ void longTermSchedulerThread()
 			if(list_size(schedulableProcesses) == 0)
 				log_info(schedulerLog, "LTS: No hay procesos para planificar");
 			else
+			{
+				pthread_mutex_lock(&executionQueueMutex);
+
 				_checkExecProc_and_algorithm(); //Call the STS if there are no new processes to add, but there are ready ones
+
+				pthread_mutex_unlock(&executionQueueMutex);
+			}
 		}
 		else
 		{
@@ -71,14 +77,11 @@ void longTermSchedulerThread()
 				processToInitialize = list_remove(newQueue, 0);
 				processAccepted = addProcessToReadyQueue(processToInitialize);
 
-				t_list* freeCPUs = getFreeCPUs();
-
-				if(list_size(freeCPUs) == 0)
+				if(getFreeCPUsQty() == 0)
 					log_info(schedulerLog, "No hay CPUs disponibles para inicializar el proceso con id %d. Se dejara en la cola de listos (sin poder ser planificado) a la espera de que se libere una CPU", processToInitialize->pid);
 				else
 				{
-					cpu_t* freeCPU = list_get(freeCPUs, 0);
-					executeProcess(processToInitialize, freeCPU);
+					checkAndInitializeProcesses();	//Initializes all the processes waiting in the readyQueue to be initialized
 				}
 
 				//tengo que agregar el nuevo pcb a la cola de listos para guardar el espacio y despues a la cola de ejecucion, para poder mandar el proceso a la cola de bloqueados,
@@ -99,8 +102,6 @@ void longTermSchedulerThread()
 		pthread_mutex_unlock(&newQueueMutex);
 
 		LTSAlreadyExecuting = false;
-
-		sem_post(&schedulerNotRunning);
 	}
 }
 
@@ -109,6 +110,7 @@ void _checkExecProc_and_algorithm()
 	int32_t semaphoreValue;
 
 	log_info(schedulerLog, "LTS: Se encontraron procesos en la cola de listos. Se intentara activar el STS");
+	log_info(schedulerLog, "LTS: No se encontraron procesos en la cola de listos. No se activara el STS");
 
 	if((list_size(executionQueue) == 0) || (getFreeCPUsQty() > 0))
 	{
@@ -159,7 +161,7 @@ void initializeVariables()
 	sem_init(&schedulerNotRunning, 0, 1);
 
 	consoleLog = init_log("../../Logs/S-AFA_Consola.log", "Consola S-AFA", true, LOG_LEVEL_INFO);
-	schedulerLog = init_log("../../Logs/S-AFA_Planif.log", "Proceso S-AFA", false, LOG_LEVEL_INFO);
+	schedulerLog = init_log("../../Logs/S-AFA_Planif.log", "Proceso S-AFA", true, LOG_LEVEL_INFO);
 
 	int32_t result = getConfigs();
 	showConfigs();

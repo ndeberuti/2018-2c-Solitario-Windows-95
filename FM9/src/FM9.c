@@ -14,7 +14,7 @@ int main(void) {
 	system("clear");
 	puts("PROCESO FM9\n");
 
-	log_consola = init_log(PATH_LOG, "Consola FM9", false, LOG_LEVEL_INFO);
+	log_consola = init_log(PATH_LOG, "Consola FM9", true, LOG_LEVEL_INFO);
 	log_fm9 = init_log(PATH_LOG, "Proceso FM9", true, LOG_LEVEL_INFO);
 	log_info(log_fm9, "Inicio del proceso");
 
@@ -113,13 +113,15 @@ printf("BASE: %d OTRABASE :%d", base, otra_base);
 
 	pthread_create(&thread_consola, NULL, (void *) consola, NULL);
 
+	server();
+
 	pthread_join(thread_consola, NULL);
 
-	pthread_join(thread_servidor, NULL);
+	//pthread_join(thread_servidor, NULL);
 
 	exit(EXIT_SUCCESS);
 	
-	free(puntero_memoria_segmentada);
+	//free(puntero_memoria_segmentada);
 
 
 }

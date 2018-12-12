@@ -47,7 +47,10 @@ void console()
 					if (console->paramsQty < 1)
 						print_c(consoleLog, "%s: falta la ruta del script que se desea ejecutar", console->command);
 					else
-						executeScript(console->param[0]);
+					{
+						char* script = console->param[0];
+						executeScript(script);
+					}
 				}
 				else if (str_eq(console->command, "status"))
 				{
@@ -121,11 +124,7 @@ void executeScript(char* script)
 		return;
 	}
 
-	pthread_mutex_lock(&newQueueMutex);
-
 	addProcessToNewQueue(process);
-
-	pthread_mutex_unlock(&newQueueMutex);
 }
 
 void getProcessMetrics(uint32_t processId)
@@ -335,6 +334,8 @@ void getQueuesStatus()
 
 void terminateProcessConsole(uint32_t processId)
 {
+	pthread_mutex_lock(&cpuListMutex);
+
 	int32_t nbytes;
 
 	bool cpu_is_executing_given_process(cpu_t* cpu)
@@ -355,10 +356,18 @@ void terminateProcessConsole(uint32_t processId)
 	}
 	else
 		killProcess(processId);
+
+	pthread_mutex_unlock(&cpuListMutex);
 }
 
 PCB_t* getProcessFromSchedulingQueues(uint32_t processId, char* queueName)
 {
+	pthread_mutex_lock(&readyQueueMutex);
+	pthread_mutex_lock(&ioReadyQueueMutex);
+	pthread_mutex_lock(&blockedQueueMutex);
+	pthread_mutex_lock(&executionQueueMutex);
+	pthread_mutex_lock(&finishedQueueMutex);
+
 	PCB_t* process = NULL;
 	t_list* queueToSearch = NULL;
 
@@ -403,6 +412,13 @@ PCB_t* getProcessFromSchedulingQueues(uint32_t processId, char* queueName)
 
 	if(process == NULL)	//The specified process is not in any of the queues
 		log_info(schedulerLog, "El proceso indicado no existe o aun no fue aceptado (esta en la cola NEW)\n");
+
+
+	pthread_mutex_unlock(&readyQueueMutex);
+	pthread_mutex_unlock(&ioReadyQueueMutex);
+	pthread_mutex_unlock(&blockedQueueMutex);
+	pthread_mutex_unlock(&executionQueueMutex);
+	pthread_mutex_unlock(&finishedQueueMutex);
 
 	return process;
 }

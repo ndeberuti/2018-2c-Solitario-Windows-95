@@ -4,6 +4,7 @@
 void connectToServers()
 {
 	int32_t nbytes;
+	int32_t _lineSize;
 
 	if ((schedulerServerSocket = connect_server(config.schedulerIp, config.schedulerPort, NEW_DMA_CONNECTION, dmaLog)) == 0)
 	{
@@ -13,7 +14,7 @@ void connectToServers()
 
 	log_info(dmaLog, "Conexion con S-AFA exitosa");
 
-	if ((fileSystemServerSocket = connect_server(config.memoryIp, config.memoryPort, NEW_DMA_CONNECTION, dmaLog)) == 0)
+	if ((fileSystemServerSocket = connect_server(config.fileSystemIp, config.fileSystemPort, NEW_DMA_CONNECTION, dmaLog)) == 0)
 	{
 		log_error(dmaLog, "Error al conectar con MDJ");
 		exit(EXIT_FAILURE);
@@ -27,9 +28,7 @@ void connectToServers()
 		exit(EXIT_FAILURE);
 	}
 
-	log_info(dmaLog, "Conexion con FM9 exitosa");
-
-	if((nbytes = receive_int(memoryServerSocket, &memoryLineSize)) <= 0)
+	if((nbytes = receive_int(memoryServerSocket, &_lineSize)) <= 0)
 	{
 		if(nbytes == 0)
 			log_error(dmaLog, "La memoria fue desconectada al intentar recibir su tamaño de linea. El proceso sera abortado...");
@@ -38,6 +37,10 @@ void connectToServers()
 
 		exit(EXIT_FAILURE);
 	}
+
+	log_info(dmaLog, "Conexion con FM9 exitosa");
+
+	memoryLineSize = _lineSize;
 }
 
 void initializeVariables()
