@@ -1437,7 +1437,7 @@ void modificar_linea_segmentacion_paginada(int socket_cpu,int id,int numero_line
 				send(socket_cpu, &resultado, sizeof(int), MSG_WAITALL);
 
 }
-
+}
 void flush_segmentacion_paginada(int socket_diego,int id){
 
 	segmento_paginado_t * segmento_buscado = malloc(sizeof(segmento_paginado_t));
@@ -2120,7 +2120,7 @@ void modificar_linea_paginacion(int socket_cpu,int id,int numero_linea,char* lin
 
 
 }
-
+}
 void flush_paginacion_invertida(int socket_diego,int id){
 	t_list* paginas_encontradas;
 			entrada_tabla_invertida_t* entrada_encontrada;
