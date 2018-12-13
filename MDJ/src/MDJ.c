@@ -704,7 +704,7 @@ char *obtener_todo(char *path, uint32_t offset) {
 			if (i == 0)	strcpy(rta, contenido);
 			else strcat(rta, contenido);
 
-			while (!feof(fptr) && strlen(contenido) < fs_config->TAMANIO_BLOQUES) {
+			while (!feof(fptr) && strlen(contenido) < fs_config->TAMANIO_BLOQUES && strlen(rta) < tamanio) {
 				free(contenido);
 				contenido = malloc(sizeof(char) * (fs_config->TAMANIO_BLOQUES + 1));
 				fgets(contenido, fs_config->TAMANIO_BLOQUES + 1, fptr);
@@ -822,15 +822,29 @@ char *convertir_punto_punto(char *path_completo) {
 	return path;
 }
 
+bool es_carpeta_archivos(char *path) {
+	char *aux = string_substring_until(path, strlen(carpeta_archivos));
+	bool esCarpetaArchivos = str_eq(aux, carpeta_archivos);
+	free(aux);
+
+	return esCarpetaArchivos;
+}
+
 void consola() {
 	char *aux;
 	char *linea;
 	char *token;
+	char *prompt;
 	console_t *consola;
 	char *pathFormateado;
+	char *pathFormateadoCorto;
 
 	while (true) {
-		linea = readline(pathConsola);
+		prompt = malloc(sizeof(char) * (strlen(pathConsola) + 3));
+		strcpy(prompt, pathConsola);
+		strcat(prompt, "> ");
+
+		linea = readline(prompt);
 
 		if (strlen(linea) > 0) {
 			add_history(linea);
@@ -849,6 +863,8 @@ void consola() {
 				else
 					pathFormateado = strdup(pathActual);
 
+				pathFormateadoCorto = string_substring_from(pathFormateado, strlen(config->PUNTO_MONTAJE) - 1);
+
 				if (str_eq(consola->comando, "clear"))
 					system("clear");
 
@@ -861,7 +877,7 @@ void consola() {
 						free(aux);
 					}
 					else
-						print_c(log_consola, "%s: No existe el directorio %s", consola->comando, consola->param[0]);
+						print_c(log_consola, "%s: No existe el directorio %s", consola->comando, pathFormateadoCorto);
 				}
 
 				else if (str_eq(consola->comando, "cd"))
@@ -882,16 +898,16 @@ void consola() {
 							free(aux);
 						}
 						else
-							print_c(log_consola, "%s: No existe el directorio %s", consola->comando, consola->param[0]);
+							print_c(log_consola, "%s: No existe el directorio %s", consola->comando, pathFormateadoCorto);
 					}
 
-				else if (str_eq(consola->comando, "md5"))
+				else if (str_eq(consola->comando, "md5") && es_carpeta_archivos(pathFormateado))
 					if (consola->cant_params < 1)
 						print_c(log_consola, "%s: falta el parametro <archivo>", consola->comando);
 					else {
 						if (isFileExists(pathFormateado)) {
-							//TODO armar el content con el contenido del archivo
-							void *content = strdup(pathFormateado);
+							aux = obtener_todo(pathFormateado, 0);
+							void *content = strdup(aux);
 							unsigned char *digest = malloc(MD5_DIGEST_LENGTH);
 							MD5_CTX context;
 							MD5_Init(&context);
@@ -902,9 +918,10 @@ void consola() {
 							printf("\n");
 							free(content);
 							free(digest);
+							free(aux);
 						}
 						else
-							print_c(log_consola, "%s: No existe el archivo %s", consola->comando, consola->param[0]);
+							print_c(log_consola, "%s: No existe el archivo %s", consola->comando, pathFormateadoCorto);
 					}
 
 				else if (str_eq(consola->comando, "cat"))
@@ -912,26 +929,34 @@ void consola() {
 						print_c(log_consola, "%s: falta el parametro <archivo>", consola->comando);
 					else {
 						if (isFileExists(pathFormateado)) {
-							aux = malloc(sizeof(char) * (strlen(pathFormateado) + 5));
-							strcpy(aux, "cat ");
-							strcat(aux, pathFormateado);
-							system(aux);
+							if (es_carpeta_archivos(pathFormateado)) {
+								aux = obtener_todo(pathFormateado, 0);
+								printf("%s", aux);
+							}
+							else {
+								aux = malloc(sizeof(char) * (strlen(pathFormateado) + 5));
+								strcpy(aux, "cat ");
+								strcat(aux, pathFormateado);
+								system(aux);
+							}
 							free(aux);
 						}
 						else
-							print_c(log_consola, "%s: No existe el archivo %s", consola->comando, consola->param[0]);
+							print_c(log_consola, "%s: No existe el archivo %s", consola->comando, pathFormateadoCorto);
 					}
 
 				else
 					print_c(log_consola, "%s: Comando incorrecto", consola->comando);
 
-				free(pathFormateado);
 				free(consola->comando);
 				for (uint32_t i = 0; i < consola->cant_params; i++)
 					free(consola->param[i]);
 				free(consola);
+				free(pathFormateado);
+				free(pathFormateadoCorto);
 			}
 		}
 		free(linea);
+		free(prompt);
 	}
 }

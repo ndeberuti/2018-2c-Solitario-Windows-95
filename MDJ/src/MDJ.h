@@ -87,6 +87,7 @@ char *obtener_todo(char *path, uint32_t offset);
 void borrar_todo(char *path);
 char *formatear_path(char *path);
 char *convertir_punto_punto(char *path_completo);
+bool es_carpeta_archivos(char *path);
 void consola();
 
 #endif /* SRC_MDJ_H_ */
