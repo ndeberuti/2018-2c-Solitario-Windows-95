@@ -197,7 +197,7 @@
 	void buscar_segmento_2(int pid, segmento_tabla_t* segmento_envio);
 	void liberar_segmento(int pid,int base, int limite);
 
-	//NUEVA PAGINACION
+	//PAGINACION
 	t_list* tabla_de_paginas;
 
 	typedef struct {
@@ -224,57 +224,9 @@
 	void paginar(int pid, int id, int cantidad_lineas, char* buffer_recepcion);
 	int entra_memoria_paginada(int cantidad_paginas);
 
-	//PAGINACION
-/*
-	#define FRAME_ADM -1
-	#define PAGINALIBRE -2
-	#define FRAMELIBRE -3
-
-	int ESTRUCTURA_ADM_SIZE;
-	int ESTRUCTURA_ADM_CANT_FRAMES;
-	int MARCOS;
-	int MARCO_SIZE;
-	int CANTIDADLINEASxPAG;
-
-	typedef struct {
-		int frame;
-		int id;
-		int pid;
-		int nroPag;
-	} t_tablaPaginaInvertida;
-
-	typedef struct memoria_principal{
-		t_tablaPaginaInvertida *estructura_administrativa;
-		char* frames;
-		char* memoria;
-	} t_memoria_principal;
+	
 
 	
-	t_tablaPaginaInvertida * tablaInvertida;
-	t_memoria_principal* memoria; // nuevo
-
-	
-	void inicializarMEMpaginada();
-
-	void inicializarEstructuraAdicional();
-	void crearMemoriaPrincipalPaginacion(int marcos, int marco_size);
-	int crearEstructurasAdministrativas();
-	int calcularPosicion(int frame);
-	int buscarFrame(int id, int pagina);
-	int asignarPaginasIniciales(int unPid,int id, int paginas, char * buffer) ;
-	int almacenarLinea(int id, int pagina, int offset, int tamanio, char * buffer);
-	int hash(int id, int pagina) ;
-	int asignarPaginas(int pid, int paginas,char *buffer);
-	int crearPid(int pid,int id,int lineas,char *buffer);
-	int eliminarPid(int pid);
-	void modificar_linea_paginas_invertidas(int socket_cpu, int id,int nroLinea,char* buffer);
-	void dump_paginacion(int unPid);
-	void flush_paginacion(int socket_diego, int id);
-	void abrir_archivo_paginas_invertidas(int socket_cpu,int id);
-	int close_file_paginas_invertidas(int socket_cpu,int id);
-	int close_process_paginas_invertidas(int socket_cpu,int pid);
-
-	*/
 	//SEGMENTACION PAGINADA
 
 	t_list* tabla_de_procesos_sp;

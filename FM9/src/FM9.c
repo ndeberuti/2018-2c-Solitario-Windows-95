@@ -121,7 +121,7 @@ printf("BASE: %d OTRABASE :%d", base, otra_base);
 
 	exit(EXIT_SUCCESS);
 	
-	//free(puntero_memoria_segmentada);
+
 
 
 }
@@ -145,7 +145,7 @@ config_t load_config() {
 	log_info(log_fm9, "TAM_PAGINA = %d", miConfig.TAM_PAGINA);
 	log_info(log_fm9, "-----------------------");
 
-	//config_destroy(config);
+	config_destroy(config);
 	return miConfig;
 }
 
@@ -490,7 +490,7 @@ void modificar_linea(int socket_cpu){
 			modificar_linea_segmentacion_simple(socket_cpu, id,numero_linea, linea_tratada);
 			}
 			else if(strcmp("TPI", config.MODO)== 0){
-			//modificar_linea_paginas_invertidas(socket_cpu, id,numero_linea, linea_tratada);
+
 			modificar_linea_paginacion(socket_cpu, id, numero_linea, linea_tratada);
 			}
 			else if(strcmp("SPI", config.MODO)== 0){
@@ -825,16 +825,21 @@ void modificar_linea_segmentacion_simple(int socket_cpu,int id,int numero_linea,
 
 		segmento_linea = list_find(tabla_de_segmentos, (void*) es_id);
 
-		if(segmento_linea != NULL){
+		if(segmento_linea != NULL && numero_linea <= segmento_linea->limite){
 			log_info(log_fm9, "Modificando linea");
 
 		memcpy(puntero_memoria_segmentada + segmento_linea->base + (numero_linea * config.MAX_LINEA), linea_nueva ,config.MAX_LINEA );
 		resultado = OK ;
 		}else{
+			if(numero_linea > segmento_linea->limite){
+				log_error(log_fm9, "Segmentation Fault");
+				resultado = SEGMENTATION_FAULT;
+			}
 
 			log_error(log_fm9, "El segmento %d no se encuentra en memoria", id);
 			resultado = ARCHIVO_NO_ABIERTO ;
-		}
+
+			}
 	free(linea_nueva);
 
 
@@ -1102,411 +1107,6 @@ segmento->segmento = base;
 
 
 
-
-//-------------------------------------------------------------------------------------------------------------------------
-//PAGINACION INVERTIDA
-
-/*
-
-
-
-
-	/*
-	 * //Logear que inicializamos
-	MARCO_SIZE = config.TAM_PAGINA;
-	MARCOS = config.TAMANIO / MARCO_SIZE;
-	CANTIDADLINEASxPAG = MARCO_SIZE / config.MAX_LINEA;
-	
-	int frames = config.TAMANIO / config.TAM_PAGINA;
-	crearMemoriaPrincipalPaginacion(frames, config.TAM_PAGINA);
-	
-	crearEstructurasAdministrativas(frames);
-	
-	*/
-
-//}
-/*
-void crearMemoriaPrincipalPaginacion(int frames,int tamanio_pagina){
-
-	 int resto=0;
-
-    //Calculo cuanto Marcos me va a llevar la estructura administrativa en si.
-    ESTRUCTURA_ADM_SIZE= MARCOS*sizeof(t_tablaPaginaInvertida)/MARCO_SIZE;
-    resto = MARCOS*sizeof(t_tablaPaginaInvertida)%MARCO_SIZE;
-
-    // si el resto es cero necesito una cantidad justa de marcos, sino voy a necesitar uno mas.
-    if (resto >0){
-        ESTRUCTURA_ADM_CANT_FRAMES=ESTRUCTURA_ADM_SIZE+1;
-    }else{
-            ESTRUCTURA_ADM_CANT_FRAMES = ESTRUCTURA_ADM_SIZE;
-        }
-
-
-    //int cant;
-    //ceil(ESTRUCTURA_ADM_SIZE);//ESTRUCTURA_ADM_CANT_FRAMES
-    int Cant_Total = MARCOS*MARCO_SIZE;
-    memoria = malloc(sizeof(t_memoria_principal)+ESTRUCTURA_ADM_SIZE);
-    memoria->memoria=malloc(Cant_Total);
-   //va a tirar el warning igual
-    memoria->estructura_administrativa= memoria->memoria; // hito en la humanida'
-    memoria->frames= memoria->memoria+(ESTRUCTURA_ADM_CANT_FRAMES*MARCO_SIZE);
-
-
-}
-
-int crearEstructurasAdministrativas() {
-
-    int numeroDeFrame;
-    for (numeroDeFrame = 0; numeroDeFrame < ESTRUCTURA_ADM_CANT_FRAMES;
-            numeroDeFrame++) {
-        memoria->estructura_administrativa[numeroDeFrame].frame = numeroDeFrame;
-        memoria->estructura_administrativa[numeroDeFrame].nroPag = FRAME_ADM;
-        memoria->estructura_administrativa[numeroDeFrame].pid = FRAME_ADM;
-		memoria->estructura_administrativa[numeroDeFrame].id = FRAME_ADM;
-    }
-
-    //inicializar frame
-    for (numeroDeFrame=0; numeroDeFrame < MARCOS; numeroDeFrame++) {
-        memoria->estructura_administrativa[numeroDeFrame].frame = numeroDeFrame;
-        memoria->estructura_administrativa[numeroDeFrame].nroPag = PAGINALIBRE;
-        memoria->estructura_administrativa[numeroDeFrame].pid = PAGINALIBRE;
-		memoria->estructura_administrativa[numeroDeFrame].id = PAGINALIBRE;
-    }
-
-    return 0;
-}
-
-int hash(int id, int pagina) {
-	printf("id %d, pagina %d\n",id,pagina);
-	int frame;   //TODO funcion mas pro loco
-	frame = (((id * MARCO_SIZE)+(pagina*MARCOS))/MARCO_SIZE);
-	if (frame > MARCOS){
-		frame = frame - MARCOS;
-	}
-	printf("framede hash %i\n",frame);
-    return frame;
-}
-
-int buscarFrame(int id, int pagina) {
-	int frame = hash(id, pagina);
-	int frameAux = frame;
-	int noEncontre = 1;
-	while (noEncontre) {
-		if (memoria->estructura_administrativa[frame].id == id && memoria->estructura_administrativa[frame].nroPag == pagina) {
-			return frame;
-		} else {
-			frame++;
-			if (frame > MARCOS) {
-				frame = 0;
-			}
-			if (frame == frameAux) {
-				noEncontre = 0;
-			}
-		}
-	}
-	return -1;
-}
-
-//ESCRIBIR
-int almacenarLinea(int id, int pagina, int offset, int tamanio, char * buffer) {
-
-	printf("almacenar Linea \n");
-    int frame = buscarFrame(id,pagina);
-    int espacioEnMemoria = calcularPosicion(frame);
-    printf("BUSCO FRAME: %i\n",frame);
-
-	if (frame > 0) {
-
-		//Escribo en memoria
-		memcpy(memoria->frames + espacioEnMemoria + offset, buffer, tamanio);
-		log_info(log_fm9, "Se modificó la linea");
-		return OK;
-
-	} else {
-//		log_info(memLog, "El pid PID %i no tiene la pagina asignada PG %i  ", unPid, pagina);
-		printf("El id %d no tiene la pagina asignada PG %d  ", id, pagina);
-		//log_error(log_fm9,"El pid PID %i no tiene la pagina asignada PG %i  ", unPid, pagina);
-		return ARCHIVO_NO_ABIERTO;
-
-	}
-}
-
-int calcularPosicion(int frame){
-
-	int posicionFrame = (frame + ESTRUCTURA_ADM_CANT_FRAMES) *MARCO_SIZE;
-	return posicionFrame;
-
-}
-
-
-//Pedido de Apertura de Archivo por parte de DMA 
-int crearPid(int unPid,int id, int lineas, char * buffer) {
-
-int resultado;
-	
-	int paginas = lineas / CANTIDADLINEASxPAG;
-	int resto = lineas % CANTIDADLINEASxPAG;
-	if (resto >0){
-		paginas = paginas+1;
-				}
-	
-	resultado = asignarPaginasIniciales(unPid,id,paginas,buffer);
-	
-	return resultado;
-}
-
-int asignarPaginasIniciales(int unPid,int id, int paginas,char * buffer) {
-	int resultado = OK;
-	int encontre_frame = 0;
-	int cont_frame = 0;
-	int espacioEnMemoria =0;// -UPD- 08/12/18 Declaro
-
-	//seguro hay q hacer hs de nuevo?
-	//TODO AGREGAR ESTRUCTURAS PID CANT PAGINAS
-	int pag,frame;
-
-	for(pag = 1; pag <= paginas; pag++){ // -UPD- 08/12/18 cambio la inicializacion de pag y la condicion =<
-		    // me ofrece un frame
-			frame = hash(unPid,pag);
-			encontre_frame=0;
-			cont_frame=0;
-			// me fijo si ese frame esta disponible
-
-			if(memoria->estructura_administrativa[frame].id == PAGINALIBRE && memoria->estructura_administrativa[frame].pid == PAGINALIBRE &&
-				memoria->estructura_administrativa[frame].nroPag == PAGINALIBRE){
-				memoria->estructura_administrativa[frame].pid = unPid;
-			    memoria->estructura_administrativa[frame].nroPag = pag;
-				memoria->estructura_administrativa[frame].id = id;
-			    //TODO se debera incluir la pagina a la lista de paginas del proceso
-			   
-			    printf("ID: %d |PID: %d | PG: %d | FRAME %d \n",id,unPid,pag,frame);
-
-				// -UPD- 08/12/18 Asigno y guardo sin funcion
-				espacioEnMemoria = calcularPosicion(frame);
-				memcpy(memoria->frames + espacioEnMemoria, buffer, MARCO_SIZE);
-			   	encontre_frame = 1;
-			}else{
-				// ciclo hasta encontrar un frame libre
-				while(encontre_frame < 1) { //ciclo infinite
-					if (cont_frame > MARCOS){
-						//TODO Devuelvo que no tengo espacio.
-						resultado= ERROR;
-						//TODO corto el flujo de procesamiento
-						encontre_frame = 1; //pq no tenia este ajaj
-					}
-				if (memoria->estructura_administrativa[frame].id == PAGINALIBRE && memoria->estructura_administrativa[frame + cont_frame].pid == PAGINALIBRE && memoria->estructura_administrativa[frame + cont_frame].nroPag == PAGINALIBRE) {
-					memoria->estructura_administrativa[frame + cont_frame].pid = unPid;
-					memoria->estructura_administrativa[frame + cont_frame].nroPag = pag;
-					memoria->estructura_administrativa[frame].id = id;
-					encontre_frame = 1;//TODO ACA
-					
-					printf("ID: %d | PID: %d | PG: %d | FRAME %d \n", id,unPid, pag, frame+cont_frame);
-					// -UPD- 08/12/18 Asigno y guardo sin funcion
-					espacioEnMemoria = calcularPosicion(frame);
-					memcpy(memoria->frames + espacioEnMemoria, buffer, MARCO_SIZE);
-				} else {
-						cont_frame++;
-					}
-				}
-			}
-	}
-	
-	return resultado;
-}
-
-int close_process_paginas_invertidas(int socket_cpu,int pid){
-int resultado;
-
-resultado = eliminarPid(pid);
-
-return resultado;
-
-
-}
-
-int close_file_paginas_invertidas(int socket_cpu,int id){
-	int frameNro,procesoNro,resultado;
-	for (frameNro = 0; frameNro < MARCOS; frameNro++) {
-		//verificar que el frame este vacio
-		if (memoria->estructura_administrativa[frameNro].id == id) {//[i]
-			memoria->estructura_administrativa[frameNro].id = PAGINALIBRE;
-			memoria->estructura_administrativa[frameNro].pid = PAGINALIBRE;
-			memoria->estructura_administrativa[frameNro].nroPag = PAGINALIBRE;
-			memoria->estructura_administrativa[frameNro].frame = PAGINALIBRE;
-			resultado = OK;
-		}else{
-			resultado = ARCHIVO_NO_ABIERTO;
-			}
-	}
-
-	return resultado ;
-}
-
-
-//Elimino todas las paginas de un pid
-int eliminarPid(int pid) {
-	int frameNro,procesoNro,resultado;
-	for (frameNro = 0; frameNro < MARCOS; frameNro++) {
-		//verificar que el frame este vacio
-		if (memoria->estructura_administrativa[frameNro].pid == pid) {//[i]
-			memoria->estructura_administrativa[frameNro].id = PAGINALIBRE;
-			memoria->estructura_administrativa[frameNro].pid = PAGINALIBRE;
-			memoria->estructura_administrativa[frameNro].nroPag = PAGINALIBRE;
-			memoria->estructura_administrativa[frameNro].frame = PAGINALIBRE; 
-			resultado = OK;
-		}else{
-			resultado = PROCESO_NO_ABIERTO;
-			}
-	}
-
-	return resultado ;
-}
-
-
-void dump_paginacion(int unPid){
-	for (int i=0; i < MARCOS; i++) {
-			if (memoria->estructura_administrativa[i].pid == unPid) {
-				log_info(log_fm9, "ID: %d |PID: %d | PG: %d | FRAME: %d",memoria->estructura_administrativa[i].id, memoria->estructura_administrativa[i].pid,
-				memoria->estructura_administrativa[i].nroPag, memoria->estructura_administrativa[i].frame);
-
-		}
-	}
-}
-
-
-void flush_paginacion(int socket_diego, int id){
-	int cantidad_paginas = 0;
-	int i,resultado,j;
-	int offset = 0;
-	
-	//Cuento la cantidad de paginas que tiene el pid
-	for (i=0; i < MARCOS; i++) {
-			if (memoria->estructura_administrativa[i].id == id) {
-				cantidad_paginas++;
-				resultado = OK;
-			}else{
-				resultado = ARCHIVO_NO_ABIERTO;
-		}
-	}
-	
-	if (resultado == OK){
-		log_info(log_fm9, "Las paginas se encuentran en memoria");
-		
-		int tamanio_paginas = cantidad_paginas * config.TAM_PAGINA;
-		char* buffer_envio = malloc(sizeof(int) * 2 + tamanio_paginas);
-		
-		memcpy(buffer_envio, &resultado, sizeof(int));
-		memcpy(buffer_envio+ sizeof(int), &tamanio_paginas, sizeof(int));
-		
-		//Preparo el buffer para el envio
-		for (j=0; j < cantidad_paginas; j++) {
-			if (memoria->estructura_administrativa[j].id == id) {
-				
-			memcpy(buffer_envio + sizeof(int) *2 + offset ,memoria->estructura_administrativa[j].frame, sizeof(config.TAM_PAGINA));
-			offset += config.TAM_PAGINA;
-
-			}
-				
-		}
-		
-		send(socket_diego, buffer_envio, sizeof(int)*2 + cantidad_paginas* config.TAM_PAGINA, MSG_WAITALL);
-
-		free(buffer_envio);
-	}else{
-		
-		log_error(log_fm9, "Las paginas no se encuentran en memoria");
-		send(socket_diego, &resultado, sizeof(int), MSG_WAITALL);
-		
-	}
-	
-	
-	
-}
-
-
-void abrir_archivo_paginas_invertidas(int socket_cpu,int id){
-				int resultado;
-				int cantidad_paginas = 0;
-				int offset = 0;
-				//Cuento la cantidad de paginas que tiene el id
-				for (int i=0; i < MARCOS; i++) {
-					if (memoria->estructura_administrativa[i].id == id) {
-						cantidad_paginas++;
-						resultado = OK;
-				}else{
-					resultado = ERROR;
-					}
-				}
-
-				if (resultado == OK){
-					log_info(log_fm9, "Las paginas se encuentran en memoria");
-
-					int tamanio_paginas = cantidad_paginas * config.TAM_PAGINA;
-					char* buffer_envio = malloc(sizeof(int) * 2 + tamanio_paginas);
-
-					memcpy(buffer_envio, &resultado, sizeof(int));
-					memcpy(buffer_envio+ sizeof(int), &tamanio_paginas, sizeof(int));
-
-					//Preparo el buffer para el envio
-					for (int j=0; j < cantidad_paginas; j++) {
-						if (memoria->estructura_administrativa[j].id == id) {
-						memcpy(buffer_envio + sizeof(int) *2 + offset ,memoria->estructura_administrativa[j].frame, sizeof(config.TAM_PAGINA));
-						offset += config.TAM_PAGINA;
-						}
-					}
-
-					send(socket_cpu, buffer_envio, sizeof(int)*2 + cantidad_paginas* config.TAM_PAGINA, MSG_WAITALL);
-
-					free(buffer_envio);
-				}else{
-
-					log_error(log_fm9, "Las paginas no se encuentran en memoria");
-					send(socket_cpu, &resultado, sizeof(int), MSG_WAITALL);
-
-					}
-
-}
-
-
-void modificar_linea_paginas_invertidas(int socket_cpu, int id,int nroLinea,char* buffer){
-	int resultado;
-
-	int pagina = nroLinea / CANTIDADLINEASxPAG;
-	int resto = nroLinea % CANTIDADLINEASxPAG;
-	if (resto >0){
-		pagina = pagina+1;
-				}
-	int offset = resto * config.MAX_LINEA;
-	int tamanio = sizeof(buffer);
-	
-	resultado =almacenarLinea(id,pagina, offset, tamanio,buffer);
-
-	send(socket_cpu, &resultado, sizeof(int), MSG_WAITALL);
-}
-*/
-/*
-void inicializar_ta---------------------------------------------------------------------------
-//SEbla_de_paginas(int numero_lineas_memoria){
-	segmento_tabla_t* entrada_vacia = malloc(sizeof(segmento_tabla_t));
-
-	entrada_vacia->base=0;
-	entrada_vacia->limite=0;
-
-
-
-	for(int i=0; i < numero_lineas_memoria; i++){
-		int j= 0;
-
-		entrada_vacia->id = j;
-		list_add(tabla_de_segmentos, entrada_vacia);
-		j++;
-
-	}
-
-free(entrada_vacia);
-
-}
-*/
 
 
 
@@ -1814,10 +1414,20 @@ void modificar_linea_segmentacion_paginada(int socket_cpu,int id,int numero_line
 					resultado = ARCHIVO_NO_ABIERTO ;
 					log_error(log_fm9, "El segmento ID: no se encuentra en la tabla\n");
 				}else{
+
+					if(list_size(segmento_buscado->tabla_de_paginas_segmento) * config.TAM_PAGINA/ config.MAX_LINEA < numero_linea ){
+
+						log_error(log_fm9, "Segmentation Fault");
+						resultado =SEGMENTATION_FAULT;
+					}else{
+
+					frame = list_get(segmento_buscado->tabla_de_paginas_segmento, numero_pagina);
+
+
 					resultado = OK;
 
 					log_info(log_fm9, "Modificando linea");
-				frame = list_get(segmento_buscado->tabla_de_paginas_segmento, numero_pagina);
+
 
 
 
@@ -2144,7 +1754,7 @@ void liberar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limit
 
 }
 
-//PAGINACION NUEVA
+//TABLA DE PAGINAS INVERTIDAS
 
 void inicializar_memoria_paginacion_invertida(){
 	int forzar_bitarray;
@@ -2485,11 +2095,17 @@ void modificar_linea_paginacion(int socket_cpu,int id,int numero_linea,char* lin
 
 			paginas = list_filter(tabla_de_paginas, (void*) es_id);
 
-					if(paginas ==0){
+					if(list_size(paginas) == 0){
 
 						resultado = ARCHIVO_NO_ABIERTO ;
 						log_error(log_fm9, "El archivo ID:%d no se encuentra en la tabla\n", id);
 					}else{
+						if(list_size(paginas)*config.TAM_PAGINA / config.MAX_LINEA < numero_linea ){
+							log_error(log_fm9, "Segmentation Fault");
+							resultado = SEGMENTATION_FAULT;
+
+
+						}else{
 						resultado = OK;
 
 						log_info(log_fm9, "Modificando linea");
