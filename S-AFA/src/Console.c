@@ -131,6 +131,7 @@ void getProcessMetrics(uint32_t processId)
 {
 	//Lock all queues, so results do not change during this functions execution
 	pthread_mutex_lock(&readyQueueMutex);
+	pthread_mutex_lock(&ioReadyQueueMutex);
 	pthread_mutex_lock(&blockedQueueMutex);
 	pthread_mutex_lock(&executionQueueMutex);
 	pthread_mutex_lock(&finishedQueueMutex);
@@ -150,6 +151,7 @@ void getProcessMetrics(uint32_t processId)
 	}
 
 	pthread_mutex_unlock(&readyQueueMutex);
+	pthread_mutex_unlock(&ioReadyQueueMutex);
 	pthread_mutex_unlock(&blockedQueueMutex);
 	pthread_mutex_unlock(&executionQueueMutex);
 	pthread_mutex_unlock(&finishedQueueMutex);
@@ -172,6 +174,13 @@ void getSystemMetrics()
 
 void getProcessStatus(uint32_t processId)
 {
+	//Lock all queues, so results do not change during this functions execution
+	pthread_mutex_lock(&readyQueueMutex);
+	pthread_mutex_lock(&ioReadyQueueMutex);
+	pthread_mutex_lock(&blockedQueueMutex);
+	pthread_mutex_lock(&executionQueueMutex);
+	pthread_mutex_lock(&finishedQueueMutex);
+
 	char *queueName = NULL;
 	char *scriptName = NULL, *wasInitialized = NULL, *canBeScheduled = NULL;
 	uint32_t pid, programCounter, cpuProcessIsAssignedTo, remainingQuantum, newQueueArrivalTime;
@@ -220,11 +229,18 @@ void getProcessStatus(uint32_t processId)
 
 		free(message);
 	}
+
+	pthread_mutex_unlock(&readyQueueMutex);
+	pthread_mutex_unlock(&ioReadyQueueMutex);
+	pthread_mutex_unlock(&blockedQueueMutex);
+	pthread_mutex_unlock(&executionQueueMutex);
+	pthread_mutex_unlock(&finishedQueueMutex);
 }
 
 void getQueuesStatus()
 {
 	pthread_mutex_lock(&readyQueueMutex);
+	pthread_mutex_lock(&ioReadyQueueMutex);
 	pthread_mutex_lock(&blockedQueueMutex);
 	pthread_mutex_lock(&executionQueueMutex);
 	pthread_mutex_lock(&finishedQueueMutex);
@@ -327,6 +343,7 @@ void getQueuesStatus()
 	free(readyIoProcesses);
 
 	pthread_mutex_unlock(&readyQueueMutex);
+	pthread_mutex_unlock(&ioReadyQueueMutex);
 	pthread_mutex_unlock(&blockedQueueMutex);
 	pthread_mutex_unlock(&executionQueueMutex);
 	pthread_mutex_unlock(&finishedQueueMutex);
@@ -334,16 +351,22 @@ void getQueuesStatus()
 
 void terminateProcessConsole(uint32_t processId)
 {
-	pthread_mutex_lock(&cpuListMutex);
-
 	int32_t nbytes;
+	uint32_t _socket;
+	cpu_t* cpu = NULL;
 
 	bool cpu_is_executing_given_process(cpu_t* cpu)
 	{
 		return cpu->currentProcess == processId;
 	}
 
-	cpu_t* cpu = (cpu_t*) list_find(connectedCPUs, cpu_is_executing_given_process);
+	pthread_mutex_lock(&cpuListMutex);
+
+	cpu = (cpu_t*) list_find(connectedCPUs, cpu_is_executing_given_process);
+	_socket = cpu->serverSocket;
+
+	pthread_mutex_unlock(&cpuListMutex);
+
 
 	if(cpu != NULL)	//If there is a CPU executing the given process, tell it to issue a kill request (so the CPU can finish properly)
 	{
@@ -356,17 +379,11 @@ void terminateProcessConsole(uint32_t processId)
 	}
 	else
 		killProcess(processId);
-
-	pthread_mutex_unlock(&cpuListMutex);
 }
 
 PCB_t* getProcessFromSchedulingQueues(uint32_t processId, char* queueName)
 {
-	pthread_mutex_lock(&readyQueueMutex);
-	pthread_mutex_lock(&ioReadyQueueMutex);
-	pthread_mutex_lock(&blockedQueueMutex);
-	pthread_mutex_lock(&executionQueueMutex);
-	pthread_mutex_lock(&finishedQueueMutex);
+	//No need to block all the queues, they are blocked by the functions that call this one
 
 	PCB_t* process = NULL;
 	t_list* queueToSearch = NULL;
@@ -413,12 +430,6 @@ PCB_t* getProcessFromSchedulingQueues(uint32_t processId, char* queueName)
 	if(process == NULL)	//The specified process is not in any of the queues
 		log_info(schedulerLog, "El proceso indicado no existe o aun no fue aceptado (esta en la cola NEW)\n");
 
-
-	pthread_mutex_unlock(&readyQueueMutex);
-	pthread_mutex_unlock(&ioReadyQueueMutex);
-	pthread_mutex_unlock(&blockedQueueMutex);
-	pthread_mutex_unlock(&executionQueueMutex);
-	pthread_mutex_unlock(&finishedQueueMutex);
 
 	return process;
 }

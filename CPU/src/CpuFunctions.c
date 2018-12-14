@@ -161,7 +161,6 @@ int32_t handshakeScheduler(uint32_t socket)
 		if(nbytes == 0)
 		{
 			log_error(cpuLog, "Error al recibir mensaje de confirmacion de handshake del planificador\n");
-			return nbytes;
 		}
 		else
 		{
@@ -169,8 +168,10 @@ int32_t handshakeScheduler(uint32_t socket)
 
 			close(socket);
 			FD_CLR(socket, &master);
-			return nbytes;
 		}
+
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+		return nbytes;
 	}
 
 	if(message == USE_NORMAL_ALGORITHM)
@@ -187,6 +188,7 @@ int32_t handshakeScheduler(uint32_t socket)
 	if((nbytes = send_string(socket, config.cpuIp)) < 0)
 	{
 		log_error(cpuLog, "Error al enviar al planificador la direccion ip de la CPU\n");
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
 		return nbytes;
 		//TODO (Optional) - Send Error Handling
 	}
@@ -194,6 +196,7 @@ int32_t handshakeScheduler(uint32_t socket)
 	if((nbytes = send_int(socket, config.cpuPort)) < 0)
 	{
 		log_error(cpuLog, "Error al enviar al planificador la el puerto de la CPU\n");
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
 		return nbytes;
 		//TODO (Optional) - Send Error Handling
 	}
@@ -203,7 +206,6 @@ int32_t handshakeScheduler(uint32_t socket)
 		if(nbytes == 0)
 		{
 			log_error(cpuLog, "Error al recibir mensaje de confirmacion de handshake del planificador\n");
-			return nbytes;
 		}
 		else
 		{
@@ -211,8 +213,10 @@ int32_t handshakeScheduler(uint32_t socket)
 
 			close(socket);
 			FD_CLR(socket, &master);
-			return nbytes;
 		}
+
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+		return nbytes;
 	}
 
 	log_info(cpuLog, "El handshake con el planificador se ha realizado correctamente!\n");
@@ -295,6 +299,8 @@ void executeProcess()
 	t_list* parsedScript;	//This contains an element for each line/instruction the script has
 	t_list* parsedLine;		//This contains the instruction (first element of the list) and its arguments (each is an element of the list)
 
+	log_info(cpuLog, "El planificador solicita la incializacion de un proceso");
+
 	if((nbytes = recvPCB(schedulerServerSocket, processToExecute)) <= 0)
 	{
 		if(nbytes == 0)
@@ -303,7 +309,24 @@ void executeProcess()
 			log_error(cpuLog, "Error al intentar recibir un PCB del planificador\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
+	}
+
+	log_info(cpuLog, "Se recibio del planificador el PCB correspondiente al proceso %d", processToExecute->pid);
+
+	if((nbytes = send_int(schedulerServerSocket, MESSAGE_RECEIVED)) < 0)
+	{
+		log_error(cpuLog, "Error al indicar al planificador que se recibio un PCB correctamente\n");
+
+		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
 	}
 
 	processInExecutionPCB = processToExecute;
@@ -347,6 +370,9 @@ void executeProcess()
 				log_error(cpuLog, "Error al indicar al planificador que se ejecuto una instruccion\n");
 
 				log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+				log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 				exit(EXIT_FAILURE);
 				//TODO (Optional) - Send Error Handling
 			}
@@ -402,6 +428,8 @@ void initializeProcess()
 	int32_t nbytes;
 	PCB_t* processToInitialize = NULL;
 
+	log_info(cpuLog, "El planificador solicita la incializacion de un proceso");
+
 	if((nbytes = recvPCB(schedulerServerSocket, processToInitialize)) <= 0)
 	{
 		if(nbytes == 0)
@@ -410,13 +438,22 @@ void initializeProcess()
 			log_error(cpuLog, "Error al intentar recibir un PCB del planificador\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 	}
+
+	log_info(cpuLog, "Se recibio del planificador el PCB correspondiente al proceso %d", processToInitialize->pid);
+
 	if((nbytes = send_int(schedulerServerSocket, MESSAGE_RECEIVED)) < 0)
 	{
 		log_error(cpuLog, "Error al indicar al planificador que se recibio un PCB correctamente\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -428,6 +465,9 @@ void initializeProcess()
 		log_error(cpuLog, "Error al indicar al planificador que debe bloquear un proceso\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -437,6 +477,9 @@ void initializeProcess()
 		log_error(cpuLog, "Error al enviar al planificador el pid del proceso a bloquear\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -708,6 +751,9 @@ void waitSemaphore(char* semaphoreName)
 		log_error(cpuLog, "Error al solicitar al planificador que haga un WAIT sobre un semaforo\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -716,6 +762,9 @@ void waitSemaphore(char* semaphoreName)
 		log_error(cpuLog, "Error al enviar al planificador el pid del proceso para el cual debe hacer un WAIT\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -724,6 +773,9 @@ void waitSemaphore(char* semaphoreName)
 		log_error(cpuLog, "Error al enviar al planificador el nombre del semaforo al cual debe hacerle WAIT\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -737,6 +789,9 @@ void waitSemaphore(char* semaphoreName)
 			log_error(cpuLog, "Error al intentar recibir la confirmacion de si se pudo realizar una operacion de WAIT sobre el semaforo \"%s\"\n", semaphoreName);
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 	}
 
@@ -764,6 +819,9 @@ void signalSemaphore(char* semaphoreName)
 		log_error(cpuLog, "Error al solicitar al planificador que haga un SIGNAL sobre un semaforo\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -772,6 +830,9 @@ void signalSemaphore(char* semaphoreName)
 		log_error(cpuLog, "Error al enviar al planificador el pid del proceso para el cual debe hacer un SIGNAL\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -780,6 +841,9 @@ void signalSemaphore(char* semaphoreName)
 		log_error(cpuLog, "Error al enviar al planificador el nombre del semaforo al cual debe hacerle SIGNAL\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -793,6 +857,9 @@ void signalSemaphore(char* semaphoreName)
 			log_error(cpuLog, "Error al intentar recibir la confirmacion de si se pudo realizar una operacion de SIGNAL sobre el semaforo \"%s\"\n", semaphoreName);
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 	}
 
@@ -868,6 +935,9 @@ void createFile(char* filePathInFS, uint32_t numberOfLines)
 		log_error(cpuLog, "Error al solicitar al DMA que cree un archivo\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -876,6 +946,9 @@ void createFile(char* filePathInFS, uint32_t numberOfLines)
 		log_error(cpuLog, "Error al enviar al DMA el pid del proceso para el cual se debe crear un archivo\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -892,6 +965,9 @@ void createFile(char* filePathInFS, uint32_t numberOfLines)
 		log_error(cpuLog, "Error al enviar al DMA la cantidad de lineas que debe contener el archivo que se desea crear\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -909,6 +985,9 @@ void deleteFile(char* filePathInFS)
 		log_error(cpuLog, "Error al solicitar al DMA que elimine un archivo\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -917,6 +996,9 @@ void deleteFile(char* filePathInFS)
 		log_error(cpuLog, "Error al enviar al DMA el pid del proceso para el cual se debe elimninar un archivo\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -925,6 +1007,9 @@ void deleteFile(char* filePathInFS)
 		log_error(cpuLog, "Error al enviar al DMA el nombre del archivo que debe eliminar\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -943,6 +1028,9 @@ uint32_t askSchedulerIfFileOpen(char* filePathInFS)
 		log_error(cpuLog, "Error al solicitar al planificador que verifique si un archivo esta abierto\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -951,6 +1039,9 @@ uint32_t askSchedulerIfFileOpen(char* filePathInFS)
 		log_error(cpuLog, "Error al enviar al planificador el pid del proceso para el cual verificar si un archivo esta abierto\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -959,6 +1050,9 @@ uint32_t askSchedulerIfFileOpen(char* filePathInFS)
 		log_error(cpuLog, "Error al enviar al planificador el nombre del archivo que debe verificar si se encuentra abierto\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -972,6 +1066,9 @@ uint32_t askSchedulerIfFileOpen(char* filePathInFS)
 			log_error(cpuLog, "Error al intentar recibir la confirmacion de si un archivo se encuentra abierto del planificador\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 	}
 
@@ -1027,6 +1124,9 @@ void handleProcessError()
 		log_error(cpuLog, "Error al indicar al planificador que ocurrio un error en la ejecucion\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1035,6 +1135,9 @@ void handleProcessError()
 		log_error(cpuLog, "Error al enviar al planificador el PCB del proceso en ejecucion\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1047,6 +1150,9 @@ void handleProcessError()
 			log_error(cpuLog, "Error al intentar recibir la confirmacion de recepcion de un PCB del planificador");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 	}
 
@@ -1066,6 +1172,9 @@ void tellMemoryToFreeProcessData()
 		log_error(cpuLog, "Error al indicar a la memoria que ocurrio un error en la ejecucion\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 			//TODO (Optional) - Send Error Handling
 	}
@@ -1074,6 +1183,9 @@ void tellMemoryToFreeProcessData()
 		log_error(cpuLog, "Error al indicar a la memoria que ocurrio un error en la ejecucion\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1087,6 +1199,9 @@ void tellMemoryToFreeProcessData()
 			log_error(cpuLog, "Error al intentar recibir el resultado de una operacion de cierre de archivos para un proceso de la memoria");
 
 		log_info(cpuLog, "Debido a una desconexion de la memoria, este proceso se cerrara");
+
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 	}
 
@@ -1121,6 +1236,9 @@ void tellSchedulerToBlockProcess(bool isDmaCall)
 		log_error(cpuLog, "Error al solicitar al planificador que bloquee el proceso en ejecucion\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1129,6 +1247,9 @@ void tellSchedulerToBlockProcess(bool isDmaCall)
 		log_error(cpuLog, "Error al enviar al planificador el PCB del proceso en ejecucion\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1137,6 +1258,9 @@ void tellSchedulerToBlockProcess(bool isDmaCall)
 		log_error(cpuLog, "Error al solicitar al planificador que bloquee el proceso en ejecucion\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1149,6 +1273,9 @@ void tellSchedulerToBlockProcess(bool isDmaCall)
 			log_error(cpuLog, "Error al intentar recibir la confirmacion de recepcion de un PCB del planificador");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 	}
 
@@ -1166,6 +1293,9 @@ void handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToAssig
 		log_error(cpuLog, "Error al solicitar a la memoria que modifique un archivo\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1174,6 +1304,9 @@ void handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToAssig
 		log_error(cpuLog, "Error al enviar a la memoria el path del archivo a modificar\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1182,6 +1315,9 @@ void handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToAssig
 		log_error(cpuLog, "Error al indicar a la memoria el numero de linea a modificar en el archivo\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1190,6 +1326,9 @@ void handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToAssig
 		log_error(cpuLog, "Error al enviar a la memoria el dato a asignar en la linea del archivo especificado\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1203,6 +1342,9 @@ void handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToAssig
 			log_error(cpuLog, "Error al intentar recibir la confirmacion de si un archivo se encuentra abierto del planificador\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 	}
 
@@ -1234,6 +1376,9 @@ void handleFlushFile(char* filePathInFS)
 		log_error(cpuLog, "Error al solicitar al planificador que bloquee el proceso en ejecucion\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1242,6 +1387,9 @@ void handleFlushFile(char* filePathInFS)
 		log_error(cpuLog, "Error al enviar al planificador el PCB del proceso en ejecucion\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1250,6 +1398,9 @@ void handleFlushFile(char* filePathInFS)
 		log_error(cpuLog, "Error al enviar al planificador el PCB del proceso en ejecucion\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1270,6 +1421,9 @@ void handleCloseFile(char* filePathInFS)
 		log_error(cpuLog, "Error al solicitar al planificador que cierre un archivo\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1278,6 +1432,9 @@ void handleCloseFile(char* filePathInFS)
 		log_error(cpuLog, "Error al enviar al planificador el pid del proceso para el cual debe cerrar un archivo\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1286,6 +1443,9 @@ void handleCloseFile(char* filePathInFS)
 		log_error(cpuLog, "Error al enviar al planificador el nombre del archivo que debe cerrar\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1296,6 +1456,9 @@ void handleCloseFile(char* filePathInFS)
 		log_error(cpuLog, "Error al solicitar a la memoria que cierre un archivo\n");
 
 		log_info(cpuLog, "Debido a una desconexion de la memoria, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1304,6 +1467,9 @@ void handleCloseFile(char* filePathInFS)
 		log_error(cpuLog, "Error al enviar a la memoria el nombre del archivo que debe cerrar\n");
 
 		log_info(cpuLog, "Debido a una desconexion de la memoria, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1317,6 +1483,9 @@ void handleCloseFile(char* filePathInFS)
 			log_error(cpuLog, "Error al intentar recibir el resultado de una operacion de cierre de archivo de la memoria");
 
 		log_info(cpuLog, "Debido a una desconexion de la memoria, este proceso se cerrara");
+
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 	}
 
@@ -1365,6 +1534,9 @@ void updatePCBAndSendExecutionEndMessage(uint32_t messageCode)
 		log_error(cpuLog, "Error al indicar al planificador que se termino el quantum de un proceso\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1373,6 +1545,9 @@ void updatePCBAndSendExecutionEndMessage(uint32_t messageCode)
 		log_error(cpuLog, "Error al enviar al planificador el PCB del proceso en ejecucion\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1385,6 +1560,9 @@ void updatePCBAndSendExecutionEndMessage(uint32_t messageCode)
 			log_error(cpuLog, "Error al intentar recibir la confirmacion de recepcion de un PCB del planificador");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 	}
 }
@@ -1463,6 +1641,9 @@ void countProcessInstructions()
 			log_error(cpuLog, "Error al intentar recibir un pid del planificador\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 	}
 	if((nbytes = receive_int(schedulerServerSocket, &programCounter)) <= 0)
@@ -1473,6 +1654,9 @@ void countProcessInstructions()
 			log_error(cpuLog, "Error al intentar recibir un program counter del planificador\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 	}
 	if((nbytes = receive_string(schedulerServerSocket, &scriptPath)) <= 0)
@@ -1483,6 +1667,9 @@ void countProcessInstructions()
 			log_error(cpuLog, "Error al intentar recibir un path de script del planificador\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 	}
 
@@ -1498,6 +1685,9 @@ void countProcessInstructions()
 		log_error(cpuLog, "Error al informar al planificador la cantidad de instrucciones que le faltan a un proceso antes de una operacion de IO\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1514,6 +1704,9 @@ char* requestScriptFromMemory()
 		log_error(cpuLog, "Error al solicitar a la memoria que envie un script\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1522,6 +1715,9 @@ char* requestScriptFromMemory()
 		log_error(cpuLog, "Error al enviar a la memoria el nombre del script requerido\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1534,6 +1730,9 @@ char* requestScriptFromMemory()
 			log_error(cpuLog, "Error al intentar recibir un PCB del planificador\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 	}
 
@@ -1550,6 +1749,9 @@ void sendOpenFileRequestToDMA(char* filePathInFS)
 		log_error(cpuLog, "Error al solicitar al planificador que bloquee el proceso en ejecucion\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1558,6 +1760,9 @@ void sendOpenFileRequestToDMA(char* filePathInFS)
 		log_error(cpuLog, "Error al enviar al planificador el PCB del proceso en ejecucion\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
@@ -1566,6 +1771,9 @@ void sendOpenFileRequestToDMA(char* filePathInFS)
 		log_error(cpuLog, "Error al enviar al planificador el PCB del proceso en ejecucion\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}

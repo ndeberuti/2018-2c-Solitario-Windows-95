@@ -11,6 +11,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <pthread.h>
+#include <errno.h>
 #include "funciones/funciones.h"
 #include <commons/config.h>
 #include "commons/string.h"
@@ -36,6 +37,7 @@ typedef struct
 
 
 t_log* cpuLog;
+t_log* socketErrorLog;		//select/recv/send error log
 config_t config;
 uint32_t schedulerServerSocket;	//The one obtained when this module connects to the scheduler
 uint32_t schedulerClientSocket;	//The one obtained when the scheduler connects to this module's server

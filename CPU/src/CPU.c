@@ -3,6 +3,7 @@
 void initializeVariables()
 {
 	cpuLog = init_log("../../Logs/CPU.log", "Proceso CPU", true, LOG_LEVEL_INFO);
+	socketErrorLog = init_log("../../Logs/CPUSocketErrors.log", "CPU", false, LOG_LEVEL_INFO);
 
 	terminateModule = false;
 	stopExecution = false;

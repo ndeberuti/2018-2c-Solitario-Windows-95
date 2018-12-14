@@ -90,6 +90,8 @@ int32_t getConfigs()
 
 	config = tempConfig;	//This is to avoid modifying the original config values if an error occurs after modifying the configFile in runtime
 
+	checkAlgorithm();
+
 	return 0;
 }
 
@@ -108,8 +110,6 @@ void showConfigs()
 
 void checkAlgorithm()
 {
-	pthread_mutex_lock(&configFileMutex);
-
 	switch(config.schedulingAlgorithmCode)
 	{
 		case RR:
@@ -129,8 +129,6 @@ void checkAlgorithm()
 			scheduleProcesses = &roundRobinScheduler;
 			break;
 	}
-
-	pthread_mutex_unlock(&configFileMutex);
 }
 
 void addProcessToNewQueue(PCB_t *process)
@@ -140,11 +138,15 @@ void addProcessToNewQueue(PCB_t *process)
 	process->executionState = NEW;
 	process->newQueueArrivalTime = executedInstructions;
 
+	pthread_mutex_unlock(&metricsGlobalvariablesMutex);
+
+
 	pthread_mutex_lock(&newQueueMutex);
 
 	list_add(newQueue, process);
 
 	pthread_mutex_unlock(&newQueueMutex);
+
 
 	log_info(schedulerLog, "Se creo un proceso con id %d!", process->pid);
 
@@ -157,8 +159,6 @@ void addProcessToNewQueue(PCB_t *process)
 
 	sem_post(&longTermScheduler);
 
-	pthread_mutex_unlock(&metricsGlobalvariablesMutex);
-
 	// If a process gets added to the new queue, just signal the LTS semaphore, no need to
 	// sleep the LTS when it starts. It does not matter if you pause scheduling, the
 	// first time the LTS starts it gets all the processes, and then it runs several times
@@ -168,13 +168,16 @@ void addProcessToNewQueue(PCB_t *process)
 uint32_t addProcessToReadyQueue(PCB_t *process)
 {
 	pthread_mutex_lock(&configFileMutex);
-	pthread_mutex_lock(&metricsGlobalvariablesMutex);
+		uint32_t multiprrogrammingLevel = config.multiprogrammingLevel;
+	pthread_mutex_unlock(&configFileMutex);
 
 	//No need to lock the readyQueue with a mutex, it was already locked in the LTS that called this function
 
 	if((process->executionState == NEW))
 	{
-		if(activeProcesses == config.multiprogrammingLevel)
+		pthread_mutex_lock(&metricsGlobalvariablesMutex);
+
+		if(activeProcesses == multiprrogrammingLevel)
 		{
 			log_info(schedulerLog, "El proceso con id %i no pudo ser agregado a la cola de listos ya que se alcanzo el nivel de multiprogramacion", process->pid);
 
@@ -184,6 +187,8 @@ uint32_t addProcessToReadyQueue(PCB_t *process)
 		else
 			activeProcesses++;
 
+		pthread_mutex_unlock(&metricsGlobalvariablesMutex);
+
 		process->newQueueLeaveTime = executedInstructions;
 	}
 
@@ -191,9 +196,6 @@ uint32_t addProcessToReadyQueue(PCB_t *process)
 	list_add(readyQueue, process);
 
 	log_info(schedulerLog, "El proceso con id %d fue aceptado en la cola de listos!", process->pid);
-
-	pthread_mutex_unlock(&metricsGlobalvariablesMutex);
-	pthread_mutex_unlock(&configFileMutex);
 
 	return 1;
 }
@@ -239,17 +241,20 @@ void addProcessToBlockedQueue(PCB_t* process)
 
 PCB_t* createProcess(char* scriptPathInFS)
 {
-	pthread_mutex_lock(&metricsGlobalvariablesMutex);
-
 	PCB_t* process = calloc(1, sizeof(PCB_t));
 
 	if(process == NULL)	//no se pudo reservar memoria
 		return NULL;
 
+
+	pthread_mutex_lock(&metricsGlobalvariablesMutex);
 									
 	process->newQueueArrivalTime = executedInstructions;
-	process->newQueueLeaveTime = 0;
 	process->pid = ++totalProcesses;
+
+	pthread_mutex_unlock(&metricsGlobalvariablesMutex);
+
+	process->newQueueLeaveTime = 0;
 	process->programCounter = 0;
 	process->scriptPathInFS = string_duplicate(scriptPathInFS); // scriptName es parte de una estructura que va a ser liberada
 	process->wasInitialized = false;
@@ -262,8 +267,6 @@ PCB_t* createProcess(char* scriptPathInFS)
 	process->totalInstructionsExecuted = 0;
 	process->instructionsExecutedOnLastExecution = 0;
 	process->instructionsUntilIoOrEnd = 0;
-
-	pthread_mutex_unlock(&metricsGlobalvariablesMutex);
 
 	return process;
 }
@@ -281,6 +284,8 @@ void terminateExecutingProcess(uint32_t processId)
 
 	pthread_mutex_unlock(&executionQueueMutex);
 
+	log_info(schedulerLog, "El proceso %d fue quitado de la cola de ejecucion (el proceso se esta finalizando)", processId);
+
 	process->executionState = TERMINATED;
 
 	pthread_mutex_lock(&finishedQueueMutex);
@@ -290,7 +295,11 @@ void terminateExecutingProcess(uint32_t processId)
 	pthread_mutex_unlock(&finishedQueueMutex);
 										  
 
+	pthread_mutex_lock(&metricsGlobalvariablesMutex);
+
 	activeProcesses--;
+
+	pthread_mutex_unlock(&metricsGlobalvariablesMutex);
 
 	/*
 	sem_getvalue(&longTermScheduler, &semaphoreValue);
@@ -302,7 +311,7 @@ void terminateExecutingProcess(uint32_t processId)
 	checkAndFreeProcessFiles(processId);
 	checkAndFreeProcessSemaphores(processId);
 
-	log_info(schedulerLog, "El proceso con id %d fue movido a la cola FINISH, ya que se terminaron las instruccciones de su script", processId);
+	log_info(schedulerLog, "El proceso con id %d fue movido a la cola de procesos terminados, ya que se terminaron las instruccciones de su script", processId);
 
 	sem_post(&longTermScheduler); //Post the LITS semaphore; it does not matter if it got
 								  //posted several times by new processes and it runs several times
@@ -311,7 +320,11 @@ void terminateExecutingProcess(uint32_t processId)
 void unblockProcess(uint32_t processId, bool unblockedByDMA)
 {
 	pthread_mutex_lock(&configFileMutex);
-	pthread_mutex_unlock(&metricsGlobalvariablesMutex);
+
+	uint32_t schedulingAlgorithmCode = config.schedulingAlgorithmCode;
+
+	pthread_mutex_unlock(&configFileMutex);
+
 
 	bool _process_has_given_id(PCB_t* pcb)
 	{
@@ -324,39 +337,48 @@ void unblockProcess(uint32_t processId, bool unblockedByDMA)
 
 	pthread_mutex_unlock(&blockedQueueMutex);
 
+	log_info(schedulerLog, "El proceso %d fue quitado de la cola de bloqueados", processId);
+
 	process->wasInitialized = true;	//If the process was not initialized and the DMA told me to unblock it, its initialization completed succesfully
 	//Need to do something else?
 
 	if(unblockedByDMA)
 	{
-		(process->completedDmaCalls)++;
-		uint32_t lastIOResponseTime = executedInstructions - (process->lastIOStartTime);
-		process->responseTimes += lastIOResponseTime;
-		process->lastIOStartTime = 0;
+		pthread_mutex_lock(&metricsGlobalvariablesMutex);
 
+		uint32_t lastIOResponseTime = executedInstructions - (process->lastIOStartTime);
 		systemResponseTime += lastIOResponseTime;
 		dma_executedInstructions++;
 
-		if(config.schedulingAlgorithmCode == VRR)
+		pthread_mutex_unlock(&metricsGlobalvariablesMutex);
+
+		(process->completedDmaCalls)++;
+		process->responseTimes += lastIOResponseTime;
+		process->lastIOStartTime = 0;
+
+
+		if(schedulingAlgorithmCode == VRR)
 			moveProcessToReadyQueue(process, true);
 		else
 			moveProcessToReadyQueue(process, false);
 	}
 	else
 		moveProcessToReadyQueue(process, false);
-
-	pthread_mutex_unlock(&metricsGlobalvariablesMutex);
-	pthread_mutex_unlock(&configFileMutex);
 }
 
 void blockProcess(uint32_t pid, bool isDmaCall)
 {
-	pthread_mutex_lock(&metricsGlobalvariablesMutex);
-
 	bool _process_has_given_id(PCB_t* pcb)
 	{
-		return pcb->pid == pid;
+		return (pcb->pid == pid);
 	}
+
+	pthread_mutex_lock(&metricsGlobalvariablesMutex);
+
+	uint32_t _executedInstructions = executedInstructions;
+
+	pthread_mutex_lock(&metricsGlobalvariablesMutex);
+
 
 	PCB_t* process = list_remove_by_condition(executionQueue, _process_has_given_id);
 	process->executionState = BLOCKED;
@@ -364,7 +386,7 @@ void blockProcess(uint32_t pid, bool isDmaCall)
 
 	if(isDmaCall && (process->wasInitialized))
 	{
-		process->lastIOStartTime = executedInstructions;
+		process->lastIOStartTime = _executedInstructions;
 	}
 
 	pthread_mutex_lock(&blockedQueueMutex);
@@ -373,9 +395,8 @@ void blockProcess(uint32_t pid, bool isDmaCall)
 
 	pthread_mutex_unlock(&blockedQueueMutex);
 
-	log_info(schedulerLog, "El proceso con id % fue movido a la cola de bloqueados", process->pid);
 
-	pthread_mutex_unlock(&metricsGlobalvariablesMutex);
+	log_info(schedulerLog, "El proceso con id % fue movido a la cola de bloqueados", process->pid);
 }
 
 uint32_t getFreeCPUsQty()
@@ -391,17 +412,31 @@ uint32_t getFreeCPUsQty()
 
 t_list* getFreeCPUs()
 {
-	pthread_mutex_lock(&cpuListMutex);
+	t_list* freeCPUs = NULL;
 
 	bool _cpu_is_free(cpu_t* cpu)
 	{
 		return cpu->isFree;
 	}
 
-	t_list* freeCPUs = NULL;
+	log_info(schedulerLog, "Buscando CPUs libres...");
+
+
+	pthread_mutex_lock(&cpuListMutex);
+
 	freeCPUs = list_filter(connectedCPUs, _cpu_is_free);
 
 	pthread_mutex_unlock(&cpuListMutex);
+
+
+	if(list_size(freeCPUs) > 0)
+	{
+		log_info(schedulerLog, "Se han encontrado CPUs libres! :D ");
+	}
+	else
+	{
+		log_info(schedulerLog, "No se han encontrado CPUs libres :( ...");
+	}
 
 	return freeCPUs;
 }
@@ -413,6 +448,11 @@ void initializeOrExecuteProcess(PCB_t* process, cpu_t* selectedCPU)
 
 	pthread_mutex_lock(&configFileMutex);
 
+	uint32_t quantum = config.quantum;
+
+	pthread_mutex_unlock(&configFileMutex);
+
+
 	char* taskMessage = NULL;
 
 	selectedCPU->currentProcess = process->pid;
@@ -422,7 +462,7 @@ void initializeOrExecuteProcess(PCB_t* process, cpu_t* selectedCPU)
 
 	if(process->executionState == READY)	//Modify the quantum only if it comes from the readyQueue, not from the ioReadyQueue;
 	{										//if the process was not initialized, this property will not be used by the cpu, but there is no need to change this for that case
-		process->remainingQuantum =  config.quantum;
+		process->remainingQuantum =  quantum;
 	}
 
 	process->executionState = EXECUTING;
@@ -440,16 +480,6 @@ void initializeOrExecuteProcess(PCB_t* process, cpu_t* selectedCPU)
 			log_error(consoleLog, "SchedulerFunctions (executeProcess) - Error al pedir a la CPU que inicialice un proceso");
 			return;
 			//TODO (Optional) - Send Error Handling
-		}
-		if((nbytes = receive_int(selectedCPU->clientSocket, &message)) <= 0)
-		{
-			if(nbytes == 0)
-				log_error(consoleLog, "SchedulerFunctions (executeProcess) - La CPU fue desconectada al intentar recibir la confirmacion de recepcion de PCB");
-			else
-				log_error(consoleLog, "SchedulerFunctions (executeProcess) - Error al intentar recibir la confirmacion de recepcion de PCB de la CPU");
-
-			closeSocketAndRemoveCPU(selectedCPU->clientSocket);
-			FD_CLR(selectedCPU->clientSocket, &master);
 		}
 
 		taskMessage = "inicializar";
@@ -472,17 +502,24 @@ void initializeOrExecuteProcess(PCB_t* process, cpu_t* selectedCPU)
 		return;
 		//TODO (Optional) - Send Error Handling
 	}
+	if((nbytes = receive_int(selectedCPU->clientSocket, &message)) <= 0)
+	{
+		if(nbytes == 0)
+			log_error(consoleLog, "SchedulerFunctions (executeProcess) - La CPU fue desconectada al intentar recibir la confirmacion de recepcion de PCB");
+		else
+			log_error(consoleLog, "SchedulerFunctions (executeProcess) - Error al intentar recibir la confirmacion de recepcion de PCB de la CPU");
+
+		closeSocketAndRemoveCPU(selectedCPU->clientSocket);
+		FD_CLR(selectedCPU->clientSocket, &master);
+	}
 
 	//TODO - With send errors, which should appear if the selectedCPU disconnects or something like that, a new CPU should be selected, which has different id than the current one
 
 	log_info(schedulerLog, "El proceso con id %d fue enviado para %s en la CPU con id %d", taskMessage, process->pid,  selectedCPU->cpuId);
-
-	pthread_mutex_unlock(&configFileMutex);
 }
 
 void killProcess(uint32_t pid)
 {
-	pthread_mutex_lock(&metricsGlobalvariablesMutex);
 	pthread_mutex_lock(&readyQueueMutex);
 	pthread_mutex_lock(&blockedQueueMutex);
 	pthread_mutex_lock(&executionQueueMutex);
@@ -493,6 +530,8 @@ void killProcess(uint32_t pid)
 	PCB_t* processToKill = NULL;
 	t_list* queueToSearch = NULL;
 
+
+	log_info(schedulerLog, "Se intentara terminar el proceso %d de forma prematura", pid);
 
 	bool process_has_given_id(PCB_t* pcb)
 	{
@@ -531,18 +570,37 @@ void killProcess(uint32_t pid)
 	if(processToKill == NULL)	//The process is not in any of the queues
 	{
 		log_error(consoleLog, "El proceso que se intento terminar no existe o ya fue terminado");
-		pthread_mutex_unlock(&metricsGlobalvariablesMutex);
+
+		pthread_mutex_unlock(&readyQueueMutex);
+		pthread_mutex_unlock(&blockedQueueMutex);
+		pthread_mutex_unlock(&executionQueueMutex);
+		pthread_mutex_unlock(&finishedQueueMutex);
+		pthread_mutex_unlock(&ioReadyQueueMutex);
+
 		return;
 	}
 
+	pthread_mutex_lock(&metricsGlobalvariablesMutex);
+
 	killProcessInstructions++;
+
+	pthread_mutex_lock(&metricsGlobalvariablesMutex);
+
+
 	processToKill->executionState = TERMINATED;
 	list_add(finishedQueue, processToKill);
+
+	pthread_mutex_unlock(&readyQueueMutex);
+	pthread_mutex_unlock(&blockedQueueMutex);
+	pthread_mutex_unlock(&executionQueueMutex);
+	pthread_mutex_unlock(&finishedQueueMutex);
+	pthread_mutex_unlock(&ioReadyQueueMutex);
+
 
 	checkAndFreeProcessFiles(pid);
 	checkAndFreeProcessSemaphores(pid);
 
-	pthread_mutex_unlock(&metricsGlobalvariablesMutex);
+	log_info(schedulerLog, "El proceso %d fue terminado de forma exitosa, y los recursos que tenia tomados fueron liberados", pid);
 }
 
 void closeSocketAndRemoveCPU(uint32_t cpuSocket)
@@ -565,6 +623,8 @@ void closeSocketAndRemoveCPU(uint32_t cpuSocket)
 
 	pthread_mutex_unlock(&cpuListMutex);
 
+	log_info(schedulerLog, "La CPU con id %d fue quitada de la lista de CPUs y su socket sera cerrado, ya que la misma fue desconectada", cpuToRemove->cpuId);
+
 	free(cpuToRemove);
 	close(cpuSocket);
 }
@@ -573,28 +633,65 @@ void checkAndFreeProcessFiles(uint32_t processId)	//Checks if there are any file
 {
 	//t_list* fileTableKeys = dictionary_get_keys(fileTable);
 	uint32_t fileTableKeysQty = list_size(fileTableKeys);
-	char* currentKey;
-	fileTableData* data;
+	char* currentFile = NULL;
+	char* procIdToUnblockString = NULL;
+	fileTableData* data = NULL;
+	fileTableData* dataToRemove = NULL;
 	uint32_t processToUnblock;
-	t_list* processWaitList;
+	t_list* processWaitList = NULL;
+	bool processHadFilesTaken = false;
+	uint32_t processesWaitingForFile;
 
 	pthread_mutex_lock(&fileTableMutex);
 
 	for(uint32_t i = 0; i < fileTableKeysQty; i++)
 	{
-		currentKey = list_get(fileTableKeys, i);
-		data = dictionary_get(fileTable, currentKey);
+		currentFile = list_get(fileTableKeys, i);
+		data = dictionary_get(fileTable, currentFile);
 
 		if(data->processFileIsAssignedTo == processId)
 		{
-			data->processFileIsAssignedTo = 0;
-			processWaitList = data->processesWaitingForFile;
+			//Unblock all of the processes that were waiting for the file, which was taken by the process that is being terminated
+			//Then remove the file from the file table
 
-			if(list_size(processWaitList) > 0)
+			processWaitList = data->processesWaitingForFile;
+			processesWaitingForFile = list_size(processWaitList);
+
+			if(processesWaitingForFile == 0)
 			{
-				processToUnblock = (uint32_t) list_remove(processWaitList, 0);
-				unblockProcess(processToUnblock, false);
+				log_info(schedulerLog, "El archivo \"%s\", el cual habia sido tomado por el proceso %d (que esta siendo terminado), no tiene procesos en espera", currentFile, processId);
 			}
+			else
+			{
+				log_info(schedulerLog, "El archivo \"%s\", el cual habia sido tomado por el proceso %d (que esta siendo terminado), tiene procesos en espera", currentFile, processId);
+
+
+				processToUnblock = (uint32_t) list_remove(processWaitList, 0);
+
+				char* processId = string_itoa(processToUnblock);
+				char* procWaitingForFileString = string_new();
+				string_append(&procWaitingForFileString, processId);
+
+				free(processId);
+
+				for(uint32_t i = 1; i < processesWaitingForFile; i++)
+				{
+					processToUnblock = (uint32_t) list_remove(processWaitList, i);
+					unblockProcess(processToUnblock, false);
+
+					processId = string_from_format(", %d", processToUnblock);
+					string_append(&procWaitingForFileString, processId);
+
+					free(processId);
+				}
+
+				log_info(schedulerLog, "Los siguientes procesos esperaban por la liberacion del archivo \"%s\" y fueron desbloqueados: %s", currentFile, processesWaitingForFile);
+				free(procWaitingForFileString);
+			}
+
+			dataToRemove = dictionary_remove(fileTable, currentFile);
+			list_destroy(dataToRemove->processesWaitingForFile);
+			free(dataToRemove);
 		}
 	}
 
@@ -603,26 +700,30 @@ void checkAndFreeProcessFiles(uint32_t processId)	//Checks if there are any file
 
 void checkAndFreeProcessSemaphores(uint32_t processId)
 {
+	pthread_mutex_lock(&semaphoreListKeysMutex);
+	pthread_mutex_lock(&semaphoreListMutex);
+
 	//t_list* semaphores = dictionary_get_keys(semaphoreList);
 	uint32_t semaphoresQty = list_size(semaphoreListKeys);
-	char* currentKey = NULL;
-	semaphoreData* data;
+	char* currentSemaphore = NULL;
+	semaphoreData* data = NULL;
 	uint32_t processToUnblock;
 	t_list* processWaitList = NULL;
 	t_list* usingProcessesList = NULL;
 	bool processHasTakenSemaphore;
+	bool processHasTakenAnySemaphore = false;
+
 
 	bool _pid_equals_given_one(uint32_t pid)
 	{
 		return pid == processId;
 	}
 
-	pthread_mutex_lock(&semaphoreListMutex);
 
 	for(uint32_t i = 0; i < semaphoresQty; i++)
 	{
-		currentKey = list_get(semaphoreListKeys, i);
-		data = dictionary_get(fileTable, currentKey);
+		currentSemaphore = list_get(semaphoreListKeys, i);
+		data = dictionary_get(semaphoreList, currentSemaphore);
 		processWaitList = data->waitingProcesses;
 		usingProcessesList = data->processesUsingTheSemaphore;
 
@@ -630,38 +731,49 @@ void checkAndFreeProcessSemaphores(uint32_t processId)
 
 		if(processHasTakenSemaphore)
 		{
+			processHasTakenAnySemaphore = true;
+
 			list_remove_by_condition(usingProcessesList, _pid_equals_given_one);
 			(data->semaphoreValue)++;
+
+			log_info(schedulerLog, "El proceso %d habia tomado una instancia del semaforo \"%s\", la cual fue liberada", processId, currentSemaphore);
 
 			if(list_size(processWaitList) > 0)
 			{
 				processToUnblock = (uint32_t) list_remove(processWaitList, 0);
 				unblockProcess(processToUnblock, false);
+
+				log_info(schedulerLog, "Debido a que un proceso libero una instancia del semaforo \"%s\", el proceso %d, el cual esperaba por dicho semaforo, fue desbloqueado", currentSemaphore, processToUnblock);
 			}
 		}
 	}
 
+	if(!processHasTakenAnySemaphore)
+		log_info(schedulerLog, "El proceso %d no tenia semaforos tomados", processId);
+
+	pthread_mutex_unlock(&semaphoreListKeysMutex);
 	pthread_mutex_unlock(&semaphoreListMutex);
 }
 
 int32_t send_int_with_delay(uint32_t _socket, uint32_t messageCode)
 {
 	pthread_mutex_lock(&configFileMutex);
+	uint32_t schedulingDelay = config.schedulingDelay;
+	pthread_mutex_unlock(&configFileMutex);
+
 
 	int32_t nbytes;
 
-	log_info(schedulerLog, "Se comenzara el envio de un mensaje...");
+	log_info(schedulerLog, "Se comenzara el envio de un mensaje");
 
-	double milisecondsSleep = config.schedulingDelay / 1000;
+	double milisecondsSleep = schedulingDelay / 1000;
 
-	log_info(schedulerLog, "Delay de envio de mensaje...\n");
+	log_info(schedulerLog, "Delay de envio de mensaje: %d ms", schedulingDelay);
 	sleep(milisecondsSleep);
 
 	nbytes = send_int(_socket, messageCode);
 
 	log_info(schedulerLog, "Se ha finalizado el envio de un mensaje");
-
-	pthread_mutex_unlock(&configFileMutex);
 
 	return nbytes;
 }
@@ -669,21 +781,21 @@ int32_t send_int_with_delay(uint32_t _socket, uint32_t messageCode)
 int32_t send_PCB_with_delay(PCB_t* pcb, uint32_t _socket)
 {
 	pthread_mutex_lock(&configFileMutex);
+	uint32_t schedulingDelay = config.schedulingDelay;
+	pthread_mutex_unlock(&configFileMutex);
 
 	int32_t nbytes;
 
-	log_info(schedulerLog, "Se comenzara el envio de un mensaje...");
+	log_info(schedulerLog, "Se comenzara el envio de un PCB");
 
-	double milisecondsSleep = config.schedulingDelay / 1000;
+	double milisecondsSleep = schedulingDelay / 1000;
 
-	log_info(schedulerLog, "Delay de envio de mensaje...\n");
+	log_info(schedulerLog, "Delay de envio de mensaje: %d ms", schedulingDelay);
 	sleep(milisecondsSleep);
 
 	nbytes = sendPCB(_socket, pcb);
 
-	log_info(schedulerLog, "Se ha finalizado el envio de un mensaje");
-
-	pthread_mutex_unlock(&configFileMutex);
+	log_info(schedulerLog, "Se ha finalizado el envio de un PCB");
 
 	return nbytes;
 }
@@ -727,6 +839,8 @@ t_list* getSchedulableProcesses()
 {
 	//No need to add a mutex here, the readyQueue is locked by the functions that call this one
 
+	log_info(schedulerLog, "Obteniendo procesos planificables");
+
 	bool processCanBeScheduled(PCB_t* pcb)
 	{
 		return pcb->canBeScheduled;
@@ -753,16 +867,31 @@ void checkAndInitializeProcesses()
 	{
 		return !(pcb->wasInitialized);
 	}
-
-	bool _process_has_given_id(PCB_t* pcb)
+/*
+	bool _process_has_given_id(PCB_t* pcb)		//Cannot place this here because processToInitialize is null
 	{
-		return pcb->pid == processToInitialize->pid;
+		return (pcb->pid == processToInitialize->pid);
 	}
+*/
 
 	//The new list should have all the uninitialized processes ordered by the time they arrived
 	//to the readyQueue
 	uninitializedProcesses = list_filter(readyQueue, _process_is_uninitialized);
 	uninitializedProcessesQty = list_size(uninitializedProcesses);
+
+	if(uninitializedProcessesQty > 0)
+	{
+		log_info(schedulerLog, "Hay %d procesos sin inicializar. Se comenzara la inicializacion...", uninitializedProcessesQty);
+	}
+	else
+	{
+		log_info(schedulerLog, "No hay procesos para inicializar");
+
+		if(freeCPUs != NULL)
+			list_destroy(freeCPUs);
+
+		return;
+	}
 
 	for(uint32_t i = 0; (i < uninitializedProcessesQty) && (freeCPUsQty > 0); i++)	//If the uninitializedProcesses list size is 0, this loop never starts; the same goes for the freeCPUs list
 	{
@@ -771,15 +900,31 @@ void checkAndInitializeProcesses()
 		PCB_t* processToInitialize = list_get(uninitializedProcesses, i);
 		processToInitialize->wasInitialized = false;
 
+		bool _process_has_given_id(PCB_t* pcb)	//As 'processToInitialize' is assigned above, I have to create this function here for it to work
+		{
+			return (pcb->pid == processToInitialize->pid);
+		}
+
+		log_info(schedulerLog, "Se inicializara el proceso con id %d", processToInitialize->pid);
+
 		list_remove_by_condition(readyQueue, _process_has_given_id);
 
 		initializeOrExecuteProcess(processToInitialize, freeCPU);
 
-		list_destroy(freeCPUs);		//Need to destroy the previous filtered list (list_filter always creates a new list) but, as
-									//it contains pointers to the original CPUsList, this lists elements cannot be deleted
+		log_info(schedulerLog, "LTS: El proceso %d fue enviado a una CPU para ser inicializado...", processToInitialize->pid);
+
+		if(freeCPUs != NULL)
+			list_destroy(freeCPUs);		//Need to destroy the previous filtered list (list_filter always creates a new list) but, as
+										//it contains pointers to the original CPUsList, this lists elements cannot be deleted
 		freeCPUs = getFreeCPUs();
 		freeCPUsQty = list_size(freeCPUs);
+
+		if(freeCPUsQty == 0)
+		{
+			log_info(schedulerLog, "LTS: No hay mas CPUs disponibles para inicializar procesos, se continuara con la planificacion...");
+		}
 	}
 
-	list_destroy(freeCPUs);
+	if(freeCPUs != NULL)
+		list_destroy(freeCPUs);
 }

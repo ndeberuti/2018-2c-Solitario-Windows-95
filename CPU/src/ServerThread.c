@@ -28,6 +28,8 @@ void server()
 		if (select(fdmax + 1, &read_fds, NULL, NULL, NULL) == -1)
 		{
 			log_error(cpuLog, "Error en select\n");
+			log_error(socketErrorLog, "Select error: %s", strerror(errno));
+
 			exit(EXIT_FAILURE);
 		}
 
@@ -41,7 +43,10 @@ void server()
 					//Manage new connections
 					addrlen = sizeof(remoteaddr);
 					if ((newfd = accept(serverSocket, (struct sockaddr *) &remoteaddr, &addrlen)) == -1)
+					{
 						log_error(cpuLog, "Error en accept\n");
+						log_error(socketErrorLog, "Accept error: %s", strerror(errno));
+					}
 					else
 					{
 						FD_SET(newfd, &master); //Add the socket to the master set
@@ -66,6 +71,8 @@ void server()
 						else
 							log_error(cpuLog, "recv (comando)\n");
 
+
+						log_error(socketErrorLog, "Receive error: %s", strerror(errno));
 						close(i);
 						FD_CLR(i, &master); //Remove socket from master set
 					}

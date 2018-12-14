@@ -143,6 +143,7 @@ pthread_mutex_t finishedQueueMutex;
 pthread_mutex_t fileTableMutex;
 pthread_mutex_t fileTableKeysMutex;
 pthread_mutex_t semaphoreListMutex;
+pthread_mutex_t semaphoreListKeysMutex;
 pthread_mutex_t processIOTimesTableMutex;
 pthread_mutex_t metricsGlobalvariablesMutex; //mutex for the "executedInstructions", "dma_executedInstructions"
 											 //"killProcessInstructions", "systemResponseTime" variables

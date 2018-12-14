@@ -14,6 +14,8 @@ void shortTermSchedulerThread()
 
 		STSAlreadyExecuting = true;
 
+		log_info(schedulerLog, "STS: Comenzando ejecucion");
+
 		pthread_mutex_lock(&readyQueueMutex);
 		pthread_mutex_lock(&ioReadyQueueMutex);
 
@@ -34,6 +36,7 @@ void shortTermSchedulerThread()
 		STSAlreadyExecuting = false;
 
 		sem_post(&schedulerNotRunning);
+		log_info(schedulerLog, "STS: Ejecucion finalizada");
 	}
 }
 
@@ -49,6 +52,8 @@ void longTermSchedulerThread()
 		sem_wait(&schedulerNotRunning);	//Extra security measure to avoid 2 the schedulers running at the same time and thus, producing unexpected behavior
 
 		LTSAlreadyExecuting = true;
+
+		log_info(schedulerLog, "LTS: Comenzando ejecucion...");
 
 		pthread_mutex_lock(&newQueueMutex);		//Need to prevent the threads accessing the readyQueue/newQueue
 		pthread_mutex_lock(&readyQueueMutex); 	//at the same time. Otherwise, unexpected things may happen...
@@ -102,6 +107,7 @@ void longTermSchedulerThread()
 		pthread_mutex_unlock(&newQueueMutex);
 
 		LTSAlreadyExecuting = false;
+		log_info(schedulerLog, "LTS: Ejecucion finalizada");
 	}
 }
 
@@ -109,8 +115,7 @@ void _checkExecProc_and_algorithm()
 {
 	int32_t semaphoreValue;
 
-	log_info(schedulerLog, "LTS: Se encontraron procesos en la cola de listos. Se intentara activar el STS");
-	log_info(schedulerLog, "LTS: No se encontraron procesos en la cola de listos. No se activara el STS");
+	log_info(schedulerLog, "LTS: Se intentara activar el STS");
 
 	if((list_size(executionQueue) == 0) || (getFreeCPUsQty() > 0))
 	{
