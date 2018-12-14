@@ -384,6 +384,8 @@ void guardar_archivo(int socket_diego){
 
 void liberear_estructuras(){
 
+	dictionary_clean(diccionario);
+
 	if(strcmp("SEG", config.MODO)== 0){
 
 
@@ -959,7 +961,7 @@ void dump_segmentacion_simple(int pid){
 
 						while(contador < aciertos){
 
-							segmento = list_get(tabla_de_segmentos, contador);
+							segmento = list_get(lista_filtrada, contador);
 							char* buffer_muestra = malloc(segmento->limite * config.MAX_LINEA);
 
 							if(segmento != NULL){
@@ -996,6 +998,8 @@ void dump_segmentacion_simple(int pid){
 
 				log_error(log_fm9, "La tabla de segmentos y la memoria estan vacias");
 			}
+
+list_destroy(lista_filtrada);
 }
 
 
@@ -1067,6 +1071,7 @@ int close_process_segmentacion_simple(int socket_cpu,int pid){
 					resultado = PROCESO_NO_ABIERTO;
 				}
 
+list_destroy(lista_filtrada);
 return resultado;
 }
 //--
@@ -1277,7 +1282,7 @@ void paginar_segmento(int pid, int id, int cantidad_lineas, char* buffer_recepci
 
 	memcpy(buffer_envio, buffer_recepcion, cantidad_lineas * config.MAX_LINEA);
 
-		asignar_segmento_paginado_vacio(cantidad_paginas, segmento_nuevo,  buffer_envio);
+	asignar_segmento_paginado_vacio(cantidad_paginas, segmento_nuevo,  buffer_envio);
 
 
 
@@ -1375,6 +1380,8 @@ void abrir_archivo_segmentacion_paginada(int socket_cpu, int id){
 
 				resultado = ARCHIVO_NO_ABIERTO ;
 				log_error(log_fm9, "El segmento no se encuentra en la tabla");
+				send(socket_cpu, &resultado, sizeof(int)* 2, MSG_WAITALL);
+
 			}else{
 
 				log_info("Abriendo archivo %d", id);
@@ -1409,18 +1416,18 @@ void abrir_archivo_segmentacion_paginada(int socket_cpu, int id){
 
 
 			send(socket_cpu, buffer_envio, sizeof(int)* 2 + config.MAX_LINEA * paginas, MSG_WAITALL);
-
+			free(buffer_envio);
 
 
 
 }
 
-free(buffer_envio);
+
 }
 
 void modificar_linea_segmentacion_paginada(int socket_cpu,int id,int numero_linea,char* linea_tratada){
 
-	segmento_paginado_t * segmento_buscado = malloc(sizeof(segmento_paginado_t));
+	segmento_paginado_t * segmento_buscado;
 		int resultado, frame, resto;
 
 		int numero_pagina = numero_linea/ config.TAM_PAGINA / config.MAX_LINEA  ;
@@ -1753,6 +1760,8 @@ int close_process_segmentacion_paginada(int socket_cpu,int pid){
 
 
 
+
+	list_destroy(lista_filtrada);
 	return resultado;
 
 
@@ -1964,7 +1973,7 @@ void abrir_archivo_paginacion(int socket_cpu,int id){
 
 
 	}
-
+	list_destroy(paginas_encontradas);
 	free(buffer_envio);
 	}
 
@@ -2091,7 +2100,7 @@ int close_process_paginacion(int socket_cpu,int pid){
 							}
 
 
-
+		list_destroy(lista_filtrada);
 		return resultado;
 
 
@@ -2105,8 +2114,8 @@ int close_process_paginacion(int socket_cpu,int pid){
 
 
 void modificar_linea_paginacion(int socket_cpu,int id,int numero_linea,char* linea_tratada){
-	entrada_tabla_invertida_t * entrada_buscada = malloc(sizeof(entrada_tabla_invertida_t));
-	t_list* paginas;
+	entrada_tabla_invertida_t * entrada_buscada;
+	t_list* lista_filtrada;
 			int resultado, frame, resto;
 
 			int numero_pagina = numero_linea/ config.TAM_PAGINA / config.MAX_LINEA  ;
@@ -2130,14 +2139,14 @@ void modificar_linea_paginacion(int socket_cpu,int id,int numero_linea,char* lin
 
 						}
 
-			paginas = list_filter(tabla_de_paginas, (void*) es_id);
+			lista_filtrada = list_filter(tabla_de_paginas, (void*) es_id);
 
-					if(list_size(paginas) == 0){
+					if(list_size(lista_filtrada) == 0){
 
 						resultado = ARCHIVO_NO_ABIERTO ;
 						log_error(log_fm9, "El archivo ID:%d no se encuentra en la tabla\n", id);
 					}else{
-						if(list_size(paginas)*config.TAM_PAGINA / config.MAX_LINEA < numero_linea ){
+						if(list_size(lista_filtrada)*config.TAM_PAGINA / config.MAX_LINEA < numero_linea ){
 							log_error(log_fm9, "Segmentation Fault");
 							resultado = SEGMENTATION_FAULT;
 
@@ -2145,8 +2154,8 @@ void modificar_linea_paginacion(int socket_cpu,int id,int numero_linea,char* lin
 						}else{
 						resultado = OK;
 
-						log_info(log_fm9, "Modificando linea");
-					frame = list_get(paginas, numero_pagina);
+						log_info(log_fm9, "Modificando linea %d", numero_linea);
+						frame = list_get(lista_filtrada, numero_pagina);
 
 
 
@@ -2157,7 +2166,10 @@ void modificar_linea_paginacion(int socket_cpu,int id,int numero_linea,char* lin
 
 
 }
+
+					list_destroy(lista_filtrada);
 }
+
 void flush_paginacion_invertida(int socket_diego,int id){
 	t_list* paginas_encontradas;
 			entrada_tabla_invertida_t* entrada_encontrada;
@@ -2235,7 +2247,7 @@ void flush_paginacion_invertida(int socket_diego,int id){
 
 		free(buffer_envio);
 
-
+		list_destroy(paginas_encontradas);
 
 
 
@@ -2306,7 +2318,7 @@ void dump_paginacion_invertida(int pid){
 								log_error(log_fm9, "El proceso: %d no se encuentra en memoria\n", pid);
 							}
 
-
+list_destroy(lista_filtrada);
 
 
 }
