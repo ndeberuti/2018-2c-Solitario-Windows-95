@@ -119,6 +119,7 @@ printf("BASE: %d OTRABASE :%d", base, otra_base);
 
 	//pthread_join(thread_servidor, NULL);
 
+	liberear_estructuras();
 	exit(EXIT_SUCCESS);
 	
 
@@ -381,6 +382,42 @@ void guardar_archivo(int socket_diego){
 	send(socket_diego, &resultado, sizeof(int), MSG_WAITALL);
 }
 
+void liberear_estructuras(){
+
+	if(strcmp("SEG", config.MODO)== 0){
+
+
+	 list_destroy(tabla_de_segmentos);
+				}
+				else if(strcmp("TPI", config.MODO)== 0){
+
+					list_destroy(tabla_de_paginas);
+
+				}
+				else if(strcmp("SPI", config.MODO)== 0){
+					segmento_paginado_t* segmento;
+
+					int tamanio = list_size(tabla_de_segmentos_sp);
+
+					for(int i = 0; i < tamanio; i++){
+
+						segmento = list_get(tabla_de_segmentos_sp, i);
+						list_destroy(segmento->tabla_de_paginas_segmento);
+
+					}
+
+					list_destroy(tabla_de_segmentos_sp);
+
+				}
+				else {
+				log_error(log_fm9, "Modo de Gestión de Memoria desconocido");
+				}
+
+
+
+
+}
+
 void abrir_archivo(int socket_cpu){
 
 
@@ -429,7 +466,7 @@ void close_file(int socket_cpu){
 				}
 				else if(strcmp("TPI", config.MODO)== 0){
 
-				//resultado = close_file_paginas_invertidas(socket_cpu, id);
+
 					resultado= close_file_paginacion(socket_cpu, id);
 
 				}
@@ -1289,7 +1326,7 @@ void asignar_segmento_paginado_vacio(int cantidad_paginas,segmento_paginado_t* s
 
 				list_add(segmento_nuevo->tabla_de_paginas_segmento, numero_frame);
 
-				log_info(log_fm9,  "Guardando pagina: %d", numero_frame);
+				log_info(log_fm9,  "Guardando pagina: %d\n", numero_frame);
 				bitarray_set_bit(bitarray_memoria, numero_frame);
 
 				memcpy(puntero_memoria_sp + (numero_frame) * config.TAM_PAGINA, buffer_envio + config.TAM_PAGINA * offset, config.TAM_PAGINA);
@@ -1602,7 +1639,7 @@ void dump_segmentacion_paginada(int pid){
 
 
 int close_file_segmentacion_paginada(int socket_cpu,int id){
-	segmento_paginado_t * segmento_buscado = malloc(sizeof(segmento_paginado_t));
+	segmento_paginado_t * segmento_buscado;
 				int resultado;
 				int frame;
 

@@ -140,6 +140,8 @@
 	void close_file(int socket_cpu);
 	void close_process(int socket_cpu);
 
+	void liberear_estructuras();
+
 	void setear_segmentacion_simple();
 	void setear_paginacion_invertida();
 	void setear_segmentacion_paginada();
