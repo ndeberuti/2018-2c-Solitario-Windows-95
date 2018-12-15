@@ -78,6 +78,7 @@ void crear_archivo(uint32_t socket);
 void obtener_datos(uint32_t socket);
 void guardar_datos(uint32_t socket);
 void borrar_archivo(uint32_t socket);
+char *int_to_bin(uint32_t i);
 uint32_t calcular_cant_bloques(uint32_t bytes);
 void *proximo_bloque_libre(uint32_t bloque_inicial);
 void set_bitarray(uint32_t posicion);

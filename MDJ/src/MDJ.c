@@ -55,6 +55,8 @@ void crear_estructura_directorios() {
 			exit(EXIT_FAILURE);
 		}
 
+	log_info(log_consola, "Punto de montaje OK en: %s", config->PUNTO_MONTAJE);
+
 	char *path;
 	uint32_t largo_mnt = strlen(config->PUNTO_MONTAJE);
 	if ((path = malloc(sizeof(char) * (largo_mnt + 10))) == NULL) {
@@ -65,6 +67,8 @@ void crear_estructura_directorios() {
 	strcpy(path, config->PUNTO_MONTAJE);
 	strcat(path, "Metadata/");
 	mkdir(path, 0777);
+
+	log_info(log_consola, "Carpeta Metadata OK en: %s", path);
 	free(path);
 
 	if ((path = malloc(sizeof(char) * (largo_mnt + 22))) == NULL) {
@@ -98,14 +102,15 @@ void crear_estructura_directorios() {
 	log_info(log_mdj, "CANTIDAD_BLOQUES = %d", fs_config->CANTIDAD_BLOQUES);
 	log_info(log_mdj, "MAGIC_NUMBER = %s", fs_config->MAGIC_NUMBER);
 	log_info(log_mdj, "-----------------------");
+	log_info(log_consola, "Archivo Metadata.bin OK en: %s", path);
 	free(path);
 
-	if ((path = malloc(sizeof(char) * (largo_mnt + 20))) == NULL) {
+	if ((bitmap = malloc(sizeof(char) * (fs_config->CANTIDAD_BLOQUES + 1))) == NULL) {
 		log_error(log_mdj, "Error al intentar crear la estructura de directorios");
 		exit(EXIT_FAILURE);
 	}
 
-	if ((bitmap = malloc(sizeof(char) * (fs_config->CANTIDAD_BLOQUES + 1))) == NULL) {
+	if ((path = malloc(sizeof(char) * (largo_mnt + 20))) == NULL) {
 		log_error(log_mdj, "Error al intentar crear la estructura de directorios");
 		exit(EXIT_FAILURE);
 	}
@@ -115,17 +120,36 @@ void crear_estructura_directorios() {
 	strcat(path, "Bitmap.bin");
 	path_bitmap = strdup(path);
 
-	FILE *fptr = fopen(path, "r");
+	FILE *fptr = fopen(path, "rb");
 	if (fptr == NULL) {
-		fptr = fopen(path, "w");
 		memset(bitmap, '\0', fs_config->CANTIDAD_BLOQUES + 1);
 		memset(bitmap, '0', fs_config->CANTIDAD_BLOQUES);
-		fputs(bitmap, fptr);
 	}
-	else
-		fgets(bitmap, fs_config->CANTIDAD_BLOQUES + 1, fptr);
+	else {
+		char *aux_bitmap = malloc(sizeof(char) * (fs_config->CANTIDAD_BLOQUES + 1));
+		fread(aux_bitmap, fs_config->CANTIDAD_BLOQUES, 1, fptr);
+		if (strlen(aux_bitmap) == fs_config->CANTIDAD_BLOQUES)
+			strcpy(bitmap, aux_bitmap);
+		else {
+			rewind(fptr);
+			char *binario;
+			strcpy(bitmap, "");
+			uint32_t entero = fgetc(fptr);
+			while (!feof(fptr)) {
+				binario = int_to_bin(entero);
+				strcat(bitmap, binario);
+				free(binario);
+				entero = fgetc(fptr);
+			}
+		}
+		free(aux_bitmap);
+		fclose(fptr);
+	}
 
+	log_info(log_consola, "Archivo Bitmap.bin OK en: %s", path);
 	bitarray = bitarray_create(bitmap, strlen(bitmap));
+	fptr = fopen(path, "w");
+	fputs(bitmap, fptr);
 	fclose(fptr);
 	free(path);
 
@@ -136,8 +160,10 @@ void crear_estructura_directorios() {
 
 	strcpy(path, config->PUNTO_MONTAJE);
 	strcat(path, "Archivos/");
-	carpeta_archivos = strdup(path);
+	carpeta_archivos = string_substring_until(path, largo_mnt + 8);
 	mkdir(path, 0777);
+
+	log_info(log_consola, "Carpeta Archivos OK en: %s", path);
 	free(path);
 
 	if ((path = malloc(sizeof(char) * (largo_mnt + 9))) == NULL) {
@@ -149,7 +175,23 @@ void crear_estructura_directorios() {
 	strcat(path, "Bloques/");
 	carpeta_bloques = strdup(path);
 	mkdir(path, 0777);
+
+	log_info(log_consola, "Carpeta Bloques OK en: %s", path);
 	free(path);
+
+	char *nro_bloque;
+	char *nombre_bloque;
+	for (uint32_t i = 0; i < bitarray->size; i++)
+		if (!bitarray_test_bit(bitarray, i * CHAR_BIT)) {
+			nro_bloque = string_itoa(i);
+			nombre_bloque = malloc(sizeof(char) * (strlen(carpeta_bloques) + strlen(nro_bloque) + 5));
+			strcpy(nombre_bloque, carpeta_bloques);
+			strcat(nombre_bloque, nro_bloque);
+			strcat(nombre_bloque, ".bin");
+			remove(nombre_bloque);
+			free(nombre_bloque);
+			free(nro_bloque);
+		}
 }
 
 void server() {
@@ -253,6 +295,8 @@ void validar_archivo(uint32_t socket) {
 		rta = ERROR_OPERACION;
 	}
 	else {
+		log_info(log_consola, "Validar archivo %s", path);
+
 		char *aux_path = malloc(sizeof(char) * (strlen(carpeta_archivos) + strlen(path) + 1));
 		strcpy(aux_path, carpeta_archivos);
 		strcat(aux_path, path);
@@ -267,6 +311,8 @@ void validar_archivo(uint32_t socket) {
 		free(aux_path);
 		free(path);
 	}
+
+	usleep(config->RETARDO * 1000);
 
 	if (send_int(socket, rta) == -1)
 		log_error(log_consola, "send (validar_archivo)");
@@ -290,6 +336,8 @@ void crear_archivo(uint32_t socket) {
 			log_info(log_consola, "Crear archivo %s de %d bytes", path, bytes);
 
 			uint32_t cant_bloques = calcular_cant_bloques(bytes);
+
+			log_info(log_consola, "El archivo ocupa %d bloques", cant_bloques);
 
 			uint32_t *prox_bloque;
 			uint32_t pos_actual = 0;
@@ -333,12 +381,16 @@ void crear_archivo(uint32_t socket) {
 					memset(relleno, '\n', bytes_del_bloque);
 					fputs(relleno, fptr);
 					fclose(fptr);
+
+					log_info(log_consola, "Se creo el bloque %s.bin", nro_bloque);
+
 					free(relleno);
 					free(nro_bloque);
 					free(nombre_bloque);
 
 					//ACTUALIZAR BITARRAY
 					set_bitarray(bloques[i]);
+					log_info(log_consola, "Se actualizo el bit %d del bitmap", bloques[i]);
 				}
 				//CREAR EL ARCHIVO
 				char *lista_bloques = malloc(sizeof(char) * (largo_lista_bloques + 1));
@@ -367,12 +419,15 @@ void crear_archivo(uint32_t socket) {
 				free(path_archivo);
 				free(lista_bloques);
 
+				log_info(log_consola, "Se creo el archivo %s", path);
 				log_info(log_consola, "Operacion finalizada con exito");
 				rta = OPERACION_OK;
 			}
 		}
 		free(path);
 	}
+
+	usleep(config->RETARDO * 1000);
 
 	if (send_int(socket, rta) == -1)
 		log_error(log_consola, "send (crear_archivo)");
@@ -424,6 +479,8 @@ void obtener_datos(uint32_t socket) {
 		}
 		free(path);
 	}
+
+	usleep(config->RETARDO * 1000);
 
 	if (send_int(socket, rta) == -1)
 		log_error(log_consola, "send (obtener_datos)");
@@ -485,9 +542,12 @@ void guardar_datos(uint32_t socket) {
 						}
 
 						borrar_todo(path_archivo);
+						log_info(log_consola, "Se elimino el archivo original");
 
-						// CREAR TODOS
+						// CREAR TODOO
 						uint32_t cant_bloques = calcular_cant_bloques(strlen(new_datos));
+
+						log_info(log_consola, "El archivo modificado ocupa %d bloques", cant_bloques);
 
 						uint32_t *prox_bloque;
 						uint32_t pos_actual = 0;
@@ -502,6 +562,7 @@ void guardar_datos(uint32_t socket) {
 
 						if (prox_bloque == NULL) {
 							log_warning(log_consola, "No hay suficientes bloques libres para guardar el archivo modificado");
+							log_info(log_consola, "Se va a restaurar el archivo original");
 							rta = BLOQUES_INSUFICIENTES;
 							free(new_datos);
 							new_datos = strdup(datos);
@@ -517,10 +578,8 @@ void guardar_datos(uint32_t socket) {
 								pos_actual++;
 							}
 						}
-						else {
-							log_info(log_consola, "Operacion finalizada con exito");
+						else
 							rta = OPERACION_OK;
-						}
 
 						uint32_t bytes_del_bloque;
 						uint32_t bytes_restantes = strlen(new_datos);
@@ -546,12 +605,16 @@ void guardar_datos(uint32_t socket) {
 							relleno = string_substring(new_datos, fs_config->TAMANIO_BLOQUES * i, bytes_del_bloque);
 							fputs(relleno, fptr);
 							fclose(fptr);
+
+							log_info(log_consola, "Se creo el bloque %s.bin", nro_bloque);
+
 							free(relleno);
 							free(nro_bloque);
 							free(nombre_bloque);
 
 							//ACTUALIZAR BITARRAY
 							set_bitarray(bloques[i]);
+							log_info(log_consola, "Se actualizo el bit %d del bitmap", bloques[i]);
 						}
 						//CREAR EL ARCHIVO
 						char *lista_bloques = malloc(sizeof(char) * (largo_lista_bloques + 1));
@@ -574,6 +637,11 @@ void guardar_datos(uint32_t socket) {
 						free(lista_bloques);
 						free(new_datos);
 						free(datos);
+
+						if (rta == OPERACION_OK) {
+							log_info(log_consola, "Se modifico el archivo %s", path);
+							log_info(log_consola, "Operacion finalizada con exito");
+						}
 					}
 					else {
 						log_warning(log_consola, "El offset es mayor que el tamanio del archivo");
@@ -586,6 +654,8 @@ void guardar_datos(uint32_t socket) {
 		}
 		free(path);
 	}
+
+	usleep(config->RETARDO * 1000);
 
 	if (send_int(socket, rta) == -1)
 		log_error(log_consola, "send (guardar_datos)");
@@ -600,8 +670,10 @@ void borrar_archivo(uint32_t socket) {
 		rta = ERROR_OPERACION;
 	}
 	else {
+		log_info(log_consola, "Borrar archivo %s", path);
+
 		char *aux_path = malloc(sizeof(char) * (strlen(carpeta_archivos) + strlen(path) + 1));
-		log_info(log_consola, "Archivo borrado");
+		log_info(log_consola, "Operacion finalizada con exito");
 		strcpy(aux_path, carpeta_archivos);
 		strcat(aux_path, path);
 		borrar_todo(aux_path);
@@ -610,8 +682,24 @@ void borrar_archivo(uint32_t socket) {
 		free(path);
 	}
 
+	usleep(config->RETARDO * 1000);
+
 	if (send_int(socket, rta) == -1)
 		log_error(log_consola, "send (borrar_archivo)");
+}
+
+char *int_to_bin(uint32_t i) {
+	char *bits = malloc(sizeof(char) * 9);
+	uint32_t bits_index = 7;
+	memset(bits, '\0', 9);
+	memset(bits, '0', 8);
+
+	while (i > 0) {
+		bits[bits_index--] = (i & 1) + '0';
+		i = (i >> 1);
+	}
+
+	return bits;
 }
 
 uint32_t calcular_cant_bloques(uint32_t bytes) {
@@ -689,6 +777,7 @@ char *obtener_todo(char *path, uint32_t offset) {
 	if (offset < tamanio) {
 		char *nombre_bloque;
 		FILE *fptr;
+		char *parte;
 		char *contenido;
 		rta = malloc(sizeof(char) * (tamanio + 1));
 
@@ -698,21 +787,25 @@ char *obtener_todo(char *path, uint32_t offset) {
 			strcat(nombre_bloque, bloques[i]);
 			strcat(nombre_bloque, ".bin");
 			fptr = fopen(nombre_bloque, "r");
+			parte = malloc(sizeof(char) * (fs_config->TAMANIO_BLOQUES + 1));
 			contenido = malloc(sizeof(char) * (fs_config->TAMANIO_BLOQUES + 1));
-			fgets(contenido, fs_config->TAMANIO_BLOQUES + 1, fptr);
+			fgets(parte, fs_config->TAMANIO_BLOQUES + 1, fptr);
+			strcpy(contenido, parte);
 
-			if (i == 0)	strcpy(rta, contenido);
-			else strcat(rta, contenido);
+			if (i == 0) strcpy(rta, parte);
+			else strcat(rta, parte);
 
 			while (!feof(fptr) && strlen(contenido) < fs_config->TAMANIO_BLOQUES && strlen(rta) < tamanio) {
-				free(contenido);
-				contenido = malloc(sizeof(char) * (fs_config->TAMANIO_BLOQUES + 1));
-				fgets(contenido, fs_config->TAMANIO_BLOQUES + 1, fptr);
-				strcat(rta, contenido);
+				free(parte);
+				parte = malloc(sizeof(char) * (fs_config->TAMANIO_BLOQUES + 1));
+				fgets(parte, fs_config->TAMANIO_BLOQUES + 1, fptr);
+				strcat(contenido, parte);
+                strcat(rta, parte);
 			}
 			free(nombre_bloque);
 			free(contenido);
 			fclose(fptr);
+			free(parte);
 		}
 	}
 
@@ -823,9 +916,13 @@ char *convertir_punto_punto(char *path_completo) {
 }
 
 bool es_carpeta_archivos(char *path) {
-	char *aux = string_substring_until(path, strlen(carpeta_archivos));
-	bool esCarpetaArchivos = str_eq(aux, carpeta_archivos);
-	free(aux);
+	char *aux_path = string_substring_until(path, strlen(carpeta_archivos) + 1);
+	char *aux_arch = malloc(sizeof(char) * (strlen(carpeta_archivos) + 2));
+	strcpy(aux_arch, carpeta_archivos);
+	strcat(aux_arch, "/");
+	bool esCarpetaArchivos = str_eq(aux_path, aux_arch);
+	free(aux_path);
+	free(aux_arch);
 
 	return esCarpetaArchivos;
 }
@@ -880,7 +977,7 @@ void consola() {
 						print_c(log_consola, "%s: No existe el directorio %s", consola->comando, pathFormateadoCorto);
 				}
 
-				else if (str_eq(consola->comando, "cd"))
+				else if (str_eq(consola->comando, "cd")) {
 					if (consola->cant_params < 1)
 						print_c(log_consola, "%s: falta el parametro <directorio>", consola->comando);
 					else {
@@ -895,36 +992,44 @@ void consola() {
 							free(pathConsola);
 							pathConsola = string_substring_from(aux, strlen(config->PUNTO_MONTAJE) - 1);
 
+							log_info(log_consola, "Se cambio el path a %s", pathConsola);
+
 							free(aux);
 						}
 						else
 							print_c(log_consola, "%s: No existe el directorio %s", consola->comando, pathFormateadoCorto);
 					}
+				}
 
-				else if (str_eq(consola->comando, "md5") && es_carpeta_archivos(pathFormateado))
-					if (consola->cant_params < 1)
-						print_c(log_consola, "%s: falta el parametro <archivo>", consola->comando);
-					else {
-						if (isFileExists(pathFormateado)) {
-							aux = obtener_todo(pathFormateado, 0);
-							void *content = strdup(aux);
-							unsigned char *digest = malloc(MD5_DIGEST_LENGTH);
-							MD5_CTX context;
-							MD5_Init(&context);
-							MD5_Update(&context, content, strlen(content) + 1);
-							MD5_Final(digest, &context);
-							for(uint32_t i = 0; i < MD5_DIGEST_LENGTH; i++)
-								printf("%02x", digest[i]);
-							printf("\n");
-							free(content);
-							free(digest);
-							free(aux);
+				else if (str_eq(consola->comando, "md5")) {
+					if (es_carpeta_archivos(pathFormateado)) {
+						if (consola->cant_params < 1)
+							print_c(log_consola, "%s: falta el parametro <archivo>", consola->comando);
+						else {
+							if (isFileExists(pathFormateado)) {
+								aux = obtener_todo(pathFormateado, 0);
+								void *content = strdup(aux);
+								unsigned char *digest = malloc(MD5_DIGEST_LENGTH);
+								MD5_CTX context;
+								MD5_Init(&context);
+								MD5_Update(&context, content, strlen(content) + 1);
+								MD5_Final(digest, &context);
+								for(uint32_t i = 0; i < MD5_DIGEST_LENGTH; i++)
+									printf("%02x", digest[i]);
+								printf("\n");
+								free(content);
+								free(digest);
+								free(aux);
+							}
+							else
+								print_c(log_consola, "%s: No existe el archivo %s", consola->comando, pathFormateadoCorto);
 						}
-						else
-							print_c(log_consola, "%s: No existe el archivo %s", consola->comando, pathFormateadoCorto);
 					}
+					else
+						print_c(log_consola, "%s: Comando incorrecto en este contexto", consola->comando);
+				}
 
-				else if (str_eq(consola->comando, "cat"))
+				else if (str_eq(consola->comando, "cat")) {
 					if (consola->cant_params < 1)
 						print_c(log_consola, "%s: falta el parametro <archivo>", consola->comando);
 					else {
@@ -944,6 +1049,7 @@ void consola() {
 						else
 							print_c(log_consola, "%s: No existe el archivo %s", consola->comando, pathFormateadoCorto);
 					}
+				}
 
 				else
 					print_c(log_consola, "%s: Comando incorrecto", consola->comando);
