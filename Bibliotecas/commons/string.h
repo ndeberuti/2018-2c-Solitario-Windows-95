@@ -206,6 +206,19 @@
 	t_list*  string_split_to_list(char * text, char * separator);
 
 	/**
+		 * @NAME: string_n_split_to_list
+		 * @DESC: Separa un string tantas veces por su separador como n lo permita
+		 *
+		 *
+		 * Ejemplo:
+		 * string_n_split_to_list("hola, mundo, bueno", 2, ",") => lista = ["hola", " mundo, bueno"]
+		 * string_n_split_to_list("hola, mundo, bueno", 3, ",") => lista = ["hola", " mundo", " bueno"]
+		 * string_n_split_to_list("hola, mundo, bueno", 10, ",") => lista = ["hola", " mundo", " bueno"]
+		 *
+		 */
+		t_list*  string_n_split_to_list(char* text, int n, char* separator);
+
+	/**
 	* @NAME: string_substring
 	* @DESC: Retorna los length caracteres de text empezando en start
 	* en un nuevo string

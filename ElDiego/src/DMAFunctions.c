@@ -294,7 +294,7 @@ t_list* parseScript(char* script)
 char* convertParsedFileToMemoryBuffer(t_list* parsedFile)
 {
 	uint32_t fileLines = list_size(parsedFile);
-	size_t bufferSize = (fileLines * sizeof(char) * memoryLineSize) + (fileLines * sizeof(char)) + 1;	//The size of each memoryLine * the quantity of lines of the file, plus a char for each line (to put a '\n' after each one)
+	size_t bufferSize = (fileLines * sizeof(char) * memoryLineSize) + 1;	//The '\n' of each line is part of the size of a line
 	char* memoryBuffer = calloc(1, bufferSize);
 	char* line = NULL;
 	uint32_t lineSize;
@@ -403,10 +403,10 @@ char* convertParsedFileToFileSystemBuffer(t_list* parsedFile)
 	//until it reaches a '\0' character, there is no need to parse each string from the list to remove the additional '\0' characters
 
 	//Because I do not know the size of all the lines of the list combined into a string, and to avoid calling "realloc" for each line
-	//of the list, I will allocate a large memory address -> lines * memoryLineSize (plus an extra character for each line, for the '\n')
+	//of the list, I will allocate a large memory address -> lines * memoryLineSize
 
 	uint32_t fileLines = list_size(parsedFile);
-	size_t bufferSize = (fileLines * sizeof(char) * memoryLineSize) + (fileLines * sizeof(char)) + 1;
+	size_t bufferSize = (fileLines * sizeof(char) * memoryLineSize) + 1; //The '\n' of each line is part of the line size
 	char* filesystemBuffer = calloc(1, bufferSize);
 	char* line = NULL;
 	uint32_t lineSize;

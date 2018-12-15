@@ -131,64 +131,69 @@ void getProcessMetrics(uint32_t processId)
 {
 	//Lock all queues, so results do not change during this functions execution
 	pthread_mutex_lock(&readyQueueMutex);
+	pthread_mutex_lock(&ioReadyQueueMutex);
 	pthread_mutex_lock(&blockedQueueMutex);
 	pthread_mutex_lock(&executionQueueMutex);
 	pthread_mutex_lock(&finishedQueueMutex);
 
 	char* queueName = "";
-	PCB_t* process = getProcessFromSchedulingQueues(processId, queueName);	//Looks for the process with the given pid in the read, blocked, execution & finished queues
+	PCB_t* process = getProcessFromSchedulingQueues(processId, &queueName);	//Looks for the process with the given pid in the read, blocked, execution & finished queues
 
 	if(process != NULL)
 	{
 		uint32_t newQueueWaitTime = process->newQueueLeaveTime - process->newQueueLeaveTime;
 		uint32_t dmaInstructionsPercent = (process->completedDmaCalls * 100) / process->totalInstructionsExecuted;
 
-		char* message = "\nMetricas para el proceso %d de la cola %s:\n\tCantidad de sentencias ejecutadas que paso el proceso en la cola NEW: %d\n\tPorcentaje de instrucciones del proceso que fueron al DMA: %d%%\n";
-
-		log_info(consoleLog, message, process->pid, queueName, newQueueWaitTime, dmaInstructionsPercent);
-
+		log_info(consoleLog, "-----Metricas para el proceso %d de la cola %s-----", process->pid, queueName);
+		log_info(consoleLog, "\tCantidad de sentencias ejecutadas que paso el proceso en la cola NEW: %d", newQueueWaitTime);
+		log_info(consoleLog, "\tPorcentaje de instrucciones del proceso que fueron al DMA: %d%%", dmaInstructionsPercent);
 	}
 
 	pthread_mutex_unlock(&readyQueueMutex);
+	pthread_mutex_unlock(&ioReadyQueueMutex);
 	pthread_mutex_unlock(&blockedQueueMutex);
 	pthread_mutex_unlock(&executionQueueMutex);
 	pthread_mutex_unlock(&finishedQueueMutex);
+
+	free(queueName);
 }
 
 void getSystemMetrics()
 {
 	pthread_mutex_lock(&metricsGlobalvariablesMutex);
 
-	char* message = "\nMetricas del sistema:\n\tSentencias ejecutadas promedio que invocaron al DMA: %.2f\n\tSentencias promedio que provocaron la terminacion de un proceso: %.2f\n\tTiempo de respuesta promedio del sistema: %.2f\n";
-
 	double medianDMACalls = ((double) dma_executedInstructions) / ((double)executedInstructions);
 	double medianKillInstructions = ((double)killProcessInstructions) / ((double) executedInstructions);
 	double medianSystemResponseTime = ((double) systemResponseTime) / ((double) dma_executedInstructions);
 
-	log_info(consoleLog, message, medianDMACalls, medianKillInstructions, medianSystemResponseTime);
-
 	pthread_mutex_unlock(&metricsGlobalvariablesMutex);
+
+
+	log_info(consoleLog, "-----Metricas del sistema.....");
+	log_info(consoleLog, "\tSentencias ejecutadas promedio que invocaron al DMA: %.2f", medianDMACalls);
+	log_info(consoleLog, "\tSentencias promedio que provocaron la terminacion de un proceso: %.2f", medianKillInstructions);
+	log_info(consoleLog, "\tTiempo de respuesta promedio del sistema: %.2f", medianSystemResponseTime);
 }
 
 void getProcessStatus(uint32_t processId)
 {
+	//Lock all queues, so results do not change during this functions execution
+	pthread_mutex_lock(&readyQueueMutex);
+	pthread_mutex_lock(&ioReadyQueueMutex);
+	pthread_mutex_lock(&blockedQueueMutex);
+	pthread_mutex_lock(&executionQueueMutex);
+	pthread_mutex_lock(&finishedQueueMutex);
+
 	char *queueName = NULL;
 	char *scriptName = NULL, *wasInitialized = NULL, *canBeScheduled = NULL;
 	uint32_t pid, programCounter, cpuProcessIsAssignedTo, remainingQuantum, newQueueArrivalTime;
 	uint32_t newQueueLeaveTime, instructionsExecuted, completedDmaCalls, lastIOStartTime, responseTimes;
 	uint32_t instructionsExecutedOnLastExecution, instructionsUntilIoOrEnd;
 
-	PCB_t* process = getProcessFromSchedulingQueues(processId, queueName); //queueName == executionState
+	PCB_t* process = getProcessFromSchedulingQueues(processId, &queueName); //queueName == executionState
 
 	if(process != NULL)
 	{
-		char* message = calloc(1, 357 * sizeof(char));
-		strcpy(message, "\n-------------------Valores de las variables del PCB con id %d-------------------\n\n\t");
-		strcat(message, "scriptName: %s\n\tprogramCounter: %d\n\twasInitialized: %s\n\tcanBeScheduled: %s\n\t");
-		strcat(message, "executionState: %s\n\tcpuProcessIsAssignedTo: %d\n\tremainingQuantum: %d\n\t");
-		strcat(message, "newQueueArrivalTime: %d\n\tnewQueueLeaveTime: %d\n\tinstructionsExecuted: %d\n\tinstructionsExecutedOnLastExecution: %d\n\t");
-		strcat(message, "instructionsUntilIoOrEnd: %d\n\tcompletedDmaCalls: %d\n\tlastIOStartTime: %d\n\tresponseTimes: %d\n");
-
 		pid = process->pid;
 		programCounter = process->programCounter;
 		cpuProcessIsAssignedTo = process->cpuProcessIsAssignedTo;
@@ -213,44 +218,58 @@ void getProcessStatus(uint32_t processId)
 		else
 			canBeScheduled = "FALSE";
 
-		log_info(consoleLog, message, pid, scriptName, programCounter, wasInitialized, canBeScheduled,
-				 queueName, cpuProcessIsAssignedTo, remainingQuantum, newQueueArrivalTime,
-				 newQueueLeaveTime, instructionsExecuted, instructionsExecutedOnLastExecution,
-				 instructionsUntilIoOrEnd, completedDmaCalls, lastIOStartTime, responseTimes);
 
-		free(message);
+		log_info(schedulerLog, "-----Valores de las variables del PCB con id %d-----", pid);
+		log_info(schedulerLog, "\tscriptName: %s", scriptName);
+		log_info(schedulerLog, "\tprogramCounter: %d", programCounter);
+		log_info(schedulerLog, "\twasInitialized: %s", wasInitialized);
+		log_info(schedulerLog, "\tcanBeScheduled: %s", canBeScheduled);
+		log_info(schedulerLog, "\texecutionState: %s", queueName);
+		log_info(schedulerLog, "\tcpuProcessIsAssignedTo: %d", cpuProcessIsAssignedTo);
+		log_info(schedulerLog, "\tremainingQuantum: %d", remainingQuantum);
+		log_info(schedulerLog, "\tnewQueueArrivalTime: %d", newQueueArrivalTime);
+		log_info(schedulerLog, "\tnewQueueLeaveTime: %d", newQueueLeaveTime);
+		log_info(schedulerLog, "\tinstructionsExecuted: %d", instructionsExecuted);
+		log_info(schedulerLog, "\tinstructionsExecutedOnLastExecution: %d", instructionsExecutedOnLastExecution);
+		log_info(schedulerLog, "\tinstructionsUntilIoOrEnd: %d", instructionsUntilIoOrEnd);
+		log_info(schedulerLog, "\tcompletedDmaCalls: %d", completedDmaCalls);
+		log_info(schedulerLog, "\tlastIOStartTime: %d", lastIOStartTime);
+		log_info(schedulerLog, "\tresponseTimes: %d", responseTimes);
 	}
+
+	pthread_mutex_unlock(&readyQueueMutex);
+	pthread_mutex_unlock(&ioReadyQueueMutex);
+	pthread_mutex_unlock(&blockedQueueMutex);
+	pthread_mutex_unlock(&executionQueueMutex);
+	pthread_mutex_unlock(&finishedQueueMutex);
 }
 
 void getQueuesStatus()
 {
 	pthread_mutex_lock(&readyQueueMutex);
+	pthread_mutex_lock(&ioReadyQueueMutex);
 	pthread_mutex_lock(&blockedQueueMutex);
 	pthread_mutex_lock(&executionQueueMutex);
 	pthread_mutex_lock(&finishedQueueMutex);
 
-	char* message = calloc(1, 513 * sizeof(char));
 	char *queueName = NULL;
-	char *readyProcesses = calloc(1, 64 * sizeof(char));
-	char *blockedProcesses = calloc(1, 64 * sizeof(char));
-	char *executingProcesses = calloc(1, 64 * sizeof(char));
-	char *finishedProcesses = calloc(1, 64 * sizeof(char));
-	char *readyIoProcesses = calloc(1, 64 * sizeof(char));
 	char *stringToReplace = NULL;
-	char *pidStr = NULL;
+	uint32_t pid;
+	char* stringToAppend = NULL;
 	t_list* queueToSearch = NULL;
 	t_list* mappedList = NULL;
-	uint32_t stringLength = 0;
+	uint32_t mappedListSize = 0;
+	char* readyProcesses = NULL;
+	char* readyIoProcesses = NULL;
+	char* blockedProcesses = NULL;
+	char* executingProcesses = NULL;
+	char* finishedProcesses = NULL;
 
-	char* get_pid_string_from_pcb(PCB_t* pcb)
+
+	uint32_t get_pid_from_pcb(PCB_t* pcb)
 	{
-		char* pidString = calloc(1, 3 * sizeof(char));	//Don't think process IDs will go above 2 digits
-		sprintf(pidString, "%d", pcb->pid);
-		return pidString;
+		return pcb->pid;
 	}
-
-	strcpy(message, "\nInformacion de estado de las colas de planificacion:\n");
-	uint32_t messageLength = 56;
 
 	for(uint32_t i = 0; i < 5; i++)
 	{
@@ -296,37 +315,68 @@ void getQueuesStatus()
 		//So, the first "%s" gets replaced by the string in "queueName" and the "%%s" get replaced
 		//by "%s", so it can be used in another format function
 
-		messageLength += sprintf(message + messageLength, "\tProcesos en la cola %s:%%s\n", queueName);
+		stringToReplace = string_new();
 
-		mappedList = list_map(queueToSearch, get_pid_string_from_pcb);
-		stringLength = 0;
+		mappedList = list_map(queueToSearch, get_pid_from_pcb);
+		mappedListSize = list_size(mappedList);
 
-		for(uint32_t j = 0; j < list_size(mappedList); j++)
+		if(mappedListSize > 0)
 		{
-			pidStr = (char*) list_get(mappedList, j);
+			pid = (uint32_t) list_get(mappedList, 0);
+			stringToAppend = string_from_format("%d", pid);
+			string_append(&stringToReplace, stringToAppend);
 
-			//Using "sprintf" to be able to get the length of the "stringToReplace" after adding each pid
-			stringLength += sprintf(stringToReplace + stringLength, " %s,", pidStr);
+			free(stringToAppend);
+
+			for(uint32_t j = 1; j < mappedListSize; j++)
+			{
+				pid = (uint32_t) list_get(mappedList, j);
+				stringToAppend = string_from_format(", %d", pid);
+				string_append(&stringToReplace, pid);
+
+				free(stringToAppend);
+			}
+
+			list_destroy(mappedList);
 		}
-
-		sprintf(stringToReplace + stringLength, "\b"); //To remove the last comma
-		list_destroy_and_destroy_elements(mappedList, free);
 	}
 
-	log_info(consoleLog, message, readyProcesses, blockedProcesses, executingProcesses,
-			 finishedProcesses, readyIoProcesses);
+	log_info(consoleLog, "-----Estado de las colas de planificacion-----");
 
-	log_info(consoleLog, "Para obtener informacion de cada proceso debe ejecutar el comando \"status <pid>\"...\n");
+	if(string_length(readyProcesses) > 0)
+		log_info(consoleLog, "\tProcesos en la cola de listos -> %s", readyProcesses);
+	else
+		log_info(consoleLog, "\tProcesos en la cola de listos -> VACIA");
 
+	if(string_length(blockedProcesses) > 0)
+		log_info(consoleLog, "\tProcesos en la cola de listos -> %s", blockedProcesses);
+	else
+		log_info(consoleLog, "\tProcesos en la cola de listos -> VACIA");
 
-	free(message);
+	if(string_length(executingProcesses) > 0)
+		log_info(consoleLog, "\tProcesos en la cola de listos -> %s", executingProcesses);
+	else
+		log_info(consoleLog, "\tProcesos en la cola de listos -> VACIA");
+
+	if(string_length(finishedProcesses) > 0)
+		log_info(consoleLog, "\tProcesos en la cola de listos -> %s", finishedProcesses);
+	else
+		log_info(consoleLog, "\tProcesos en la cola de listos -> VACIA");
+
+	if(string_length(readyIoProcesses) > 0)
+		log_info(consoleLog, "\tProcesos en la cola de listos -> %s", readyIoProcesses);
+	else
+		log_info(consoleLog, "\tProcesos en la cola de listos -> VACIA");
+
 	free(readyProcesses);
 	free(executingProcesses);
 	free(blockedProcesses);
 	free(finishedProcesses);
 	free(readyIoProcesses);
 
+
 	pthread_mutex_unlock(&readyQueueMutex);
+	pthread_mutex_unlock(&ioReadyQueueMutex);
 	pthread_mutex_unlock(&blockedQueueMutex);
 	pthread_mutex_unlock(&executionQueueMutex);
 	pthread_mutex_unlock(&finishedQueueMutex);
@@ -334,42 +384,48 @@ void getQueuesStatus()
 
 void terminateProcessConsole(uint32_t processId)
 {
-	pthread_mutex_lock(&cpuListMutex);
-
 	int32_t nbytes;
+	uint32_t _socket;
+	cpu_t* cpu = NULL;
 
 	bool cpu_is_executing_given_process(cpu_t* cpu)
 	{
 		return cpu->currentProcess == processId;
 	}
 
-	cpu_t* cpu = (cpu_t*) list_find(connectedCPUs, cpu_is_executing_given_process);
+	pthread_mutex_lock(&cpuListMutex);
 
-	if(cpu != NULL)	//If there is a CPU executing the given process, tell it to issue a kill request (so the CPU can finish properly)
-	{
-		if((nbytes = send_int_with_delay(cpu->serverSocket, KILL_PROCESS_CPU)) < 0)
-		{
-			log_error(consoleLog, "Console - Error al indicar a la CPU que debe terminar un proceso\n");
-			return;
-			//TODO (Optional) - Send Error Handling
-		}
+	cpu = (cpu_t*) list_find(connectedCPUs, cpu_is_executing_given_process);
+	_socket = cpu->clientSocket;
+
+	pthread_mutex_unlock(&cpuListMutex);
+
+
+	if(cpu != NULL)	//If there is a CPU executing the given process, sending a message to kill the process to that CPU means that CPU will
+	{				//get the message when the process left it, so I must add that process ID and CPU to a list, which will be checked by the ServerThread
+					//when that process leaves the CPU (because it must be blocked or its quantum ended; not if it left the CPU due to an error or script end)
+
+		processToKillData* data = calloc(1, sizeof(processToKillData));
+		data->cpuSocketProcessWasExecutingOn = _socket;
+		data->processToBeKilled = processId;
+
+		pthread_mutex_lock(&executingProcessesToKillMutex);
+
+		list_add(executingProcessesToKill, data);
+
+		pthread_mutex_unlock(&executingProcessesToKillMutex);
 	}
 	else
 		killProcess(processId);
-
-	pthread_mutex_unlock(&cpuListMutex);
 }
 
-PCB_t* getProcessFromSchedulingQueues(uint32_t processId, char* queueName)
+PCB_t* getProcessFromSchedulingQueues(uint32_t processId, char** _queueName)
 {
-	pthread_mutex_lock(&readyQueueMutex);
-	pthread_mutex_lock(&ioReadyQueueMutex);
-	pthread_mutex_lock(&blockedQueueMutex);
-	pthread_mutex_lock(&executionQueueMutex);
-	pthread_mutex_lock(&finishedQueueMutex);
+	//No need to block all the queues, they are blocked by the functions that call this one
 
 	PCB_t* process = NULL;
 	t_list* queueToSearch = NULL;
+	char* queueName = NULL;
 
 	bool process_has_given_id(PCB_t* pcb)
 	{
@@ -413,12 +469,7 @@ PCB_t* getProcessFromSchedulingQueues(uint32_t processId, char* queueName)
 	if(process == NULL)	//The specified process is not in any of the queues
 		log_info(schedulerLog, "El proceso indicado no existe o aun no fue aceptado (esta en la cola NEW)\n");
 
-
-	pthread_mutex_unlock(&readyQueueMutex);
-	pthread_mutex_unlock(&ioReadyQueueMutex);
-	pthread_mutex_unlock(&blockedQueueMutex);
-	pthread_mutex_unlock(&executionQueueMutex);
-	pthread_mutex_unlock(&finishedQueueMutex);
+	(*_queueName) = queueName;
 
 	return process;
 }

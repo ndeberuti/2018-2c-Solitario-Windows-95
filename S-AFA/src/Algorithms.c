@@ -156,7 +156,8 @@ uint32_t countProcessInstructions(PCB_t* process, cpu_t* selectedCPU)
 {
 	int32_t instructionsUntilIO = 0;
 	int32_t nbytes;
-	uint32_t _socket = selectedCPU->clientSocket;
+	uint32_t _socket = selectedCPU->clientSocket;	//As this is a request from the scheduler to a CPU, and to avoid its data mixing with
+													//the one received by the scheduler's serverThread, this request is sent to the CPUs serverThread
 
 	//To avoid sending all the PCB to the CPU, only certain variables are sent
 	if((nbytes = send_int(_socket, COUNT_INSTRUCTIONS)) < 0)

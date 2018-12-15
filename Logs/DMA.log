@@ -1,328 +1,415 @@
-[INFO] 23:28:06:238 El Diego/(10531:10531): Inicio del proceso
+[INFO] 19:52:00:180 El Diego/(16606:16606): Inicio del proceso
 
-[ERROR] 23:28:06:238 El Diego/(10531:10531): No se definio ninguna propiedad para el 'Puerto de FM9' en el archivo de configuracion
-[INFO] 23:28:06:239 El Diego/(10531:10531): ---- Configuracion ----
-[INFO] 23:28:06:239 El Diego/(10531:10531): PUERTO = 0
-[INFO] 23:28:06:239 El Diego/(10531:10531): IP_SAFA = (null)
-[INFO] 23:28:06:239 El Diego/(10531:10531): PUERTO_SAFA = 0
-[INFO] 23:28:06:239 El Diego/(10531:10531): IP_MDJ = (null)
-[INFO] 23:28:06:239 El Diego/(10531:10531): PUERTO_MDJ = 0
-[INFO] 23:28:06:239 El Diego/(10531:10531): IP_FM9 = (null)
-[INFO] 23:28:06:239 El Diego/(10531:10531): PUERTO_FM9 = 0
-[INFO] 23:28:06:239 El Diego/(10531:10531): TRANSFER_SIZE = 0
-[INFO] 23:28:06:239 El Diego/(10531:10531): -----------------------
-[ERROR] 23:28:06:239 El Diego/(10531:10531): Se aborta el proceso debido a que no se encontro una propiedad requerida en el archivo de configuracion...
-[ERROR] 23:28:06:239 El Diego/(10531:10531): Ocurrio un error al intentar obtener los datos del archivo de configuracion. El proceso sera abortado...
-[INFO] 23:31:09:320 El Diego/(10658:10658): Inicio del proceso
+[INFO] 19:52:00:182 El Diego/(16606:16606): ---- Configuracion ----
+[INFO] 19:52:00:182 El Diego/(16606:16606): PUERTO = 8001
+[INFO] 19:52:00:182 El Diego/(16606:16606): IP_SAFA = 127.0.0.1
+[INFO] 19:52:00:182 El Diego/(16606:16606): PUERTO_SAFA = 8000
+[INFO] 19:52:00:182 El Diego/(16606:16606): IP_MDJ = 127.0.0.1
+[INFO] 19:52:00:182 El Diego/(16606:16606): PUERTO_MDJ = 8002
+[INFO] 19:52:00:182 El Diego/(16606:16606): IP_FM9 = 127.0.0.1
+[INFO] 19:52:00:182 El Diego/(16606:16606): PUERTO_FM9 = 8003
+[INFO] 19:52:00:182 El Diego/(16606:16606): TRANSFER_SIZE = 16
+[INFO] 19:52:00:182 El Diego/(16606:16606): -----------------------
+[INFO] 19:52:00:183 El Diego/(16606:16606): Conexion con S-AFA exitosa
+[INFO] 19:52:00:183 El Diego/(16606:16606): Conexion con MDJ exitosa
+[INFO] 19:52:00:183 El Diego/(16606:16606): Conexion con FM9 exitosa
+[INFO] 19:52:11:466 El Diego/(16606:16606): Nueva conexion de CPU
 
-[INFO] 23:31:28:667 El Diego/(10680:10680): Inicio del proceso
+[ERROR] 19:52:25:263 El Diego/(16606:16606): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 19:56:08:233 El Diego/(16804:16804): Inicio del proceso
 
-[INFO] 23:34:48:917 El Diego/(10825:10825): Inicio del proceso
+[INFO] 19:56:08:233 El Diego/(16804:16804): ---- Configuracion ----
+[INFO] 19:56:08:233 El Diego/(16804:16804): PUERTO = 8001
+[INFO] 19:56:08:233 El Diego/(16804:16804): IP_SAFA = 127.0.0.1
+[INFO] 19:56:08:233 El Diego/(16804:16804): PUERTO_SAFA = 8000
+[INFO] 19:56:08:233 El Diego/(16804:16804): IP_MDJ = 127.0.0.1
+[INFO] 19:56:08:233 El Diego/(16804:16804): PUERTO_MDJ = 8002
+[INFO] 19:56:08:233 El Diego/(16804:16804): IP_FM9 = 127.0.0.1
+[INFO] 19:56:08:233 El Diego/(16804:16804): PUERTO_FM9 = 8003
+[INFO] 19:56:08:233 El Diego/(16804:16804): TRANSFER_SIZE = 16
+[INFO] 19:56:08:233 El Diego/(16804:16804): -----------------------
+[INFO] 19:56:08:235 El Diego/(16804:16804): Conexion con S-AFA exitosa
+[INFO] 19:56:08:235 El Diego/(16804:16804): Conexion con MDJ exitosa
+[INFO] 19:56:08:235 El Diego/(16804:16804): Conexion con FM9 exitosa
+[INFO] 19:56:13:288 El Diego/(16804:16804): Nueva conexion de CPU
 
-[ERROR] 23:34:48:917 El Diego/(10825:10825): No se definio ninguna propiedad para el 'Tamaño de Transferencia' en el archivo de configuracion
-[INFO] 23:34:48:917 El Diego/(10825:10825): ---- Configuracion ----
-[INFO] 23:34:48:917 El Diego/(10825:10825): PUERTO = 0
-[INFO] 23:34:48:917 El Diego/(10825:10825): IP_SAFA = (null)
-[INFO] 23:34:48:917 El Diego/(10825:10825): PUERTO_SAFA = 0
-[INFO] 23:34:48:917 El Diego/(10825:10825): IP_MDJ = (null)
-[INFO] 23:34:48:917 El Diego/(10825:10825): PUERTO_MDJ = 0
-[INFO] 23:34:48:917 El Diego/(10825:10825): IP_FM9 = (null)
-[INFO] 23:34:48:917 El Diego/(10825:10825): PUERTO_FM9 = 0
-[INFO] 23:34:48:917 El Diego/(10825:10825): TRANSFER_SIZE = 0
-[INFO] 23:34:48:917 El Diego/(10825:10825): -----------------------
-[ERROR] 23:34:48:917 El Diego/(10825:10825): Se aborta el proceso debido a que no se encontro una propiedad requerida en el archivo de configuracion...
-[ERROR] 23:34:48:918 El Diego/(10825:10825): Ocurrio un error al intentar obtener los datos del archivo de configuracion. El proceso sera abortado...
-[INFO] 23:35:12:490 El Diego/(10843:10843): Inicio del proceso
+[ERROR] 19:56:33:796 El Diego/(16804:16804): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 20:31:22:433 El Diego/(17616:17616): Inicio del proceso
 
-[INFO] 23:35:12:490 El Diego/(10843:10843): ---- Configuracion ----
-[INFO] 23:35:12:490 El Diego/(10843:10843): PUERTO = 8001
-[INFO] 23:35:12:490 El Diego/(10843:10843): IP_SAFA = ؛G0.0.1
-[INFO] 23:35:12:490 El Diego/(10843:10843): PUERTO_SAFA = 8000
-[INFO] 23:35:12:490 El Diego/(10843:10843): IP_MDJ = 
-[INFO] 23:35:12:491 El Diego/(10843:10843): PUERTO_MDJ = 8002
-[INFO] 23:35:12:491 El Diego/(10843:10843): IP_FM9 = �G0.0.1
-[INFO] 23:35:12:491 El Diego/(10843:10843): PUERTO_FM9 = 8003
-[INFO] 23:35:12:491 El Diego/(10843:10843): TRANSFER_SIZE = 16
-[INFO] 23:35:12:491 El Diego/(10843:10843): -----------------------
-[ERROR] 23:35:12:491 El Diego/(10843:10843): connect
-[ERROR] 23:35:12:491 El Diego/(10843:10843): Error al conectar con S-AFA
-[INFO] 23:36:21:583 El Diego/(10921:10921): Inicio del proceso
+[INFO] 20:31:22:433 El Diego/(17616:17616): ---- Configuracion ----
+[INFO] 20:31:22:433 El Diego/(17616:17616): PUERTO = 8001
+[INFO] 20:31:22:433 El Diego/(17616:17616): IP_SAFA = 127.0.0.1
+[INFO] 20:31:22:433 El Diego/(17616:17616): PUERTO_SAFA = 8000
+[INFO] 20:31:22:433 El Diego/(17616:17616): IP_MDJ = 127.0.0.1
+[INFO] 20:31:22:433 El Diego/(17616:17616): PUERTO_MDJ = 8002
+[INFO] 20:31:22:434 El Diego/(17616:17616): IP_FM9 = 127.0.0.1
+[INFO] 20:31:22:434 El Diego/(17616:17616): PUERTO_FM9 = 8003
+[INFO] 20:31:22:434 El Diego/(17616:17616): TRANSFER_SIZE = 16
+[INFO] 20:31:22:434 El Diego/(17616:17616): -----------------------
+[INFO] 20:31:22:434 El Diego/(17616:17616): Conexion con S-AFA exitosa
+[INFO] 20:31:22:435 El Diego/(17616:17616): Conexion con MDJ exitosa
+[INFO] 20:31:22:435 El Diego/(17616:17616): Conexion con FM9 exitosa
+[INFO] 20:31:24:562 El Diego/(17616:17616): Nueva conexion de CPU
 
-[INFO] 23:36:21:583 El Diego/(10921:10921): ---- Configuracion ----
-[INFO] 23:36:21:583 El Diego/(10921:10921): PUERTO = 8001
-[INFO] 23:36:21:583 El Diego/(10921:10921): IP_SAFA = 127.0.0.1
-[INFO] 23:36:21:584 El Diego/(10921:10921): PUERTO_SAFA = 8000
-[INFO] 23:36:21:584 El Diego/(10921:10921): IP_MDJ = 127.0.0.1
-[INFO] 23:36:21:584 El Diego/(10921:10921): PUERTO_MDJ = 8002
-[INFO] 23:36:21:584 El Diego/(10921:10921): IP_FM9 = 127.0.0.1
-[INFO] 23:36:21:584 El Diego/(10921:10921): PUERTO_FM9 = 8003
-[INFO] 23:36:21:584 El Diego/(10921:10921): TRANSFER_SIZE = 16
-[INFO] 23:36:21:584 El Diego/(10921:10921): -----------------------
-[INFO] 23:36:21:584 El Diego/(10921:10921): Conexion con S-AFA exitosa
-[ERROR] 23:36:21:584 El Diego/(10921:10921): connect
-[ERROR] 23:36:21:584 El Diego/(10921:10921): Error al conectar con MDJ
-[INFO] 23:46:29:163 El Diego/(11749:11749): Inicio del proceso
+[ERROR] 20:31:50:318 El Diego/(17616:17616): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 02:18:47:422 El Diego/(25602:25602): Inicio del proceso
 
-[INFO] 23:46:29:163 El Diego/(11749:11749): ---- Configuracion ----
-[INFO] 23:46:29:163 El Diego/(11749:11749): PUERTO = 8001
-[INFO] 23:46:29:163 El Diego/(11749:11749): IP_SAFA = 127.0.0.1
-[INFO] 23:46:29:163 El Diego/(11749:11749): PUERTO_SAFA = 8000
-[INFO] 23:46:29:163 El Diego/(11749:11749): IP_MDJ = 127.0.0.1
-[INFO] 23:46:29:163 El Diego/(11749:11749): PUERTO_MDJ = 8002
-[INFO] 23:46:29:163 El Diego/(11749:11749): IP_FM9 = 127.0.0.1
-[INFO] 23:46:29:163 El Diego/(11749:11749): PUERTO_FM9 = 8003
-[INFO] 23:46:29:163 El Diego/(11749:11749): TRANSFER_SIZE = 16
-[INFO] 23:46:29:163 El Diego/(11749:11749): -----------------------
-[INFO] 23:46:29:164 El Diego/(11749:11749): Conexion con S-AFA exitosa
-[ERROR] 23:46:29:164 El Diego/(11749:11749): connect
-[ERROR] 23:46:29:164 El Diego/(11749:11749): Error al conectar con MDJ
-[INFO] 23:46:58:109 El Diego/(11762:11762): Inicio del proceso
+[INFO] 02:18:47:423 El Diego/(25602:25602): ---- Configuracion ----
+[INFO] 02:18:47:423 El Diego/(25602:25602): PUERTO = 8001
+[INFO] 02:18:47:423 El Diego/(25602:25602): IP_SAFA = 127.0.0.1
+[INFO] 02:18:47:423 El Diego/(25602:25602): PUERTO_SAFA = 8000
+[INFO] 02:18:47:423 El Diego/(25602:25602): IP_MDJ = 127.0.0.1
+[INFO] 02:18:47:423 El Diego/(25602:25602): PUERTO_MDJ = 8002
+[INFO] 02:18:47:423 El Diego/(25602:25602): IP_FM9 = 127.0.0.1
+[INFO] 02:18:47:423 El Diego/(25602:25602): PUERTO_FM9 = 8003
+[INFO] 02:18:47:423 El Diego/(25602:25602): TRANSFER_SIZE = 16
+[INFO] 02:18:47:423 El Diego/(25602:25602): -----------------------
+[INFO] 02:18:47:425 El Diego/(25602:25602): Conexion con S-AFA exitosa
+[INFO] 02:18:47:425 El Diego/(25602:25602): Conexion con MDJ exitosa
+[INFO] 02:18:47:425 El Diego/(25602:25602): Conexion con FM9 exitosa
+[INFO] 02:18:50:661 El Diego/(25602:25602): Nueva conexion de CPU
 
-[INFO] 23:46:58:150 El Diego/(11762:11762): ---- Configuracion ----
-[INFO] 23:46:58:151 El Diego/(11762:11762): PUERTO = 8001
-[INFO] 23:46:58:151 El Diego/(11762:11762): IP_SAFA = 127.0.0.1
-[INFO] 23:46:58:152 El Diego/(11762:11762): PUERTO_SAFA = 8000
-[INFO] 23:46:58:152 El Diego/(11762:11762): IP_MDJ = 127.0.0.1
-[INFO] 23:46:58:152 El Diego/(11762:11762): PUERTO_MDJ = 8002
-[INFO] 23:46:58:153 El Diego/(11762:11762): IP_FM9 = 127.0.0.1
-[INFO] 23:46:58:154 El Diego/(11762:11762): PUERTO_FM9 = 8003
-[INFO] 23:46:58:154 El Diego/(11762:11762): TRANSFER_SIZE = 16
-[INFO] 23:46:58:155 El Diego/(11762:11762): -----------------------
-[INFO] 23:46:58:162 El Diego/(11762:11762): Conexion con S-AFA exitosa
-[ERROR] 23:46:58:163 El Diego/(11762:11762): connect
-[ERROR] 23:46:58:163 El Diego/(11762:11762): Error al conectar con MDJ
-[INFO] 00:59:49:872 El Diego/(15495:15495): Inicio del proceso
+[ERROR] 02:25:31:112 El Diego/(25602:25602): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 02:26:00:565 El Diego/(25854:25854): Inicio del proceso
 
-[INFO] 00:59:49:872 El Diego/(15495:15495): ---- Configuracion ----
-[INFO] 00:59:49:872 El Diego/(15495:15495): PUERTO = 8001
-[INFO] 00:59:49:872 El Diego/(15495:15495): IP_SAFA = 127.0.0.1
-[INFO] 00:59:49:872 El Diego/(15495:15495): PUERTO_SAFA = 8000
-[INFO] 00:59:49:872 El Diego/(15495:15495): IP_MDJ = 127.0.0.1
-[INFO] 00:59:49:872 El Diego/(15495:15495): PUERTO_MDJ = 8002
-[INFO] 00:59:49:872 El Diego/(15495:15495): IP_FM9 = 127.0.0.1
-[INFO] 00:59:49:872 El Diego/(15495:15495): PUERTO_FM9 = 8003
-[INFO] 00:59:49:872 El Diego/(15495:15495): TRANSFER_SIZE = 16
-[INFO] 00:59:49:872 El Diego/(15495:15495): -----------------------
-[INFO] 00:59:49:873 El Diego/(15495:15495): Conexion con S-AFA exitosa
-[ERROR] 00:59:49:873 El Diego/(15495:15495): connect
-[ERROR] 00:59:49:873 El Diego/(15495:15495): Error al conectar con MDJ
-[INFO] 01:02:26:849 El Diego/(15909:15909): Inicio del proceso
+[INFO] 02:26:00:565 El Diego/(25854:25854): ---- Configuracion ----
+[INFO] 02:26:00:566 El Diego/(25854:25854): PUERTO = 8001
+[INFO] 02:26:00:566 El Diego/(25854:25854): IP_SAFA = 127.0.0.1
+[INFO] 02:26:00:566 El Diego/(25854:25854): PUERTO_SAFA = 8000
+[INFO] 02:26:00:566 El Diego/(25854:25854): IP_MDJ = 127.0.0.1
+[INFO] 02:26:00:566 El Diego/(25854:25854): PUERTO_MDJ = 8002
+[INFO] 02:26:00:566 El Diego/(25854:25854): IP_FM9 = 127.0.0.1
+[INFO] 02:26:00:566 El Diego/(25854:25854): PUERTO_FM9 = 8003
+[INFO] 02:26:00:566 El Diego/(25854:25854): TRANSFER_SIZE = 16
+[INFO] 02:26:00:566 El Diego/(25854:25854): -----------------------
+[INFO] 02:26:00:567 El Diego/(25854:25854): Conexion con S-AFA exitosa
+[INFO] 02:26:00:568 El Diego/(25854:25854): Conexion con MDJ exitosa
+[INFO] 02:26:00:568 El Diego/(25854:25854): Conexion con FM9 exitosa
+[INFO] 02:26:03:771 El Diego/(25854:25854): Nueva conexion de CPU
 
-[INFO] 01:02:26:849 El Diego/(15909:15909): ---- Configuracion ----
-[INFO] 01:02:26:849 El Diego/(15909:15909): PUERTO = 8001
-[INFO] 01:02:26:849 El Diego/(15909:15909): IP_SAFA = 127.0.0.1
-[INFO] 01:02:26:849 El Diego/(15909:15909): PUERTO_SAFA = 8000
-[INFO] 01:02:26:849 El Diego/(15909:15909): IP_MDJ = 127.0.0.1
-[INFO] 01:02:26:849 El Diego/(15909:15909): PUERTO_MDJ = 8002
-[INFO] 01:02:26:849 El Diego/(15909:15909): IP_FM9 = 127.0.0.1
-[INFO] 01:02:26:849 El Diego/(15909:15909): PUERTO_FM9 = 8003
-[INFO] 01:02:26:849 El Diego/(15909:15909): TRANSFER_SIZE = 16
-[INFO] 01:02:26:849 El Diego/(15909:15909): -----------------------
-[INFO] 01:02:26:849 El Diego/(15909:15909): Conexion con S-AFA exitosa
-[ERROR] 01:02:26:850 El Diego/(15909:15909): connect
-[ERROR] 01:02:26:850 El Diego/(15909:15909): Error al conectar con MDJ
-[INFO] 01:05:12:59 El Diego/(15990:15990): Inicio del proceso
+[INFO] 02:27:30:421 El Diego/(25923:25923): Inicio del proceso
 
-[INFO] 01:05:12:59 El Diego/(15990:15990): ---- Configuracion ----
-[INFO] 01:05:12:59 El Diego/(15990:15990): PUERTO = 8001
-[INFO] 01:05:12:59 El Diego/(15990:15990): IP_SAFA = 127.0.0.1
-[INFO] 01:05:12:59 El Diego/(15990:15990): PUERTO_SAFA = 8000
-[INFO] 01:05:12:59 El Diego/(15990:15990): IP_MDJ = 127.0.0.1
-[INFO] 01:05:12:59 El Diego/(15990:15990): PUERTO_MDJ = 8002
-[INFO] 01:05:12:59 El Diego/(15990:15990): IP_FM9 = 127.0.0.1
-[INFO] 01:05:12:60 El Diego/(15990:15990): PUERTO_FM9 = 8003
-[INFO] 01:05:12:60 El Diego/(15990:15990): TRANSFER_SIZE = 16
-[INFO] 01:05:12:60 El Diego/(15990:15990): -----------------------
-[INFO] 01:08:21:455 El Diego/(16132:16132): Inicio del proceso
+[INFO] 02:27:30:421 El Diego/(25923:25923): ---- Configuracion ----
+[INFO] 02:27:30:422 El Diego/(25923:25923): PUERTO = 8001
+[INFO] 02:27:30:422 El Diego/(25923:25923): IP_SAFA = 127.0.0.1
+[INFO] 02:27:30:422 El Diego/(25923:25923): PUERTO_SAFA = 8000
+[INFO] 02:27:30:422 El Diego/(25923:25923): IP_MDJ = 127.0.0.1
+[INFO] 02:27:30:422 El Diego/(25923:25923): PUERTO_MDJ = 8002
+[INFO] 02:27:30:422 El Diego/(25923:25923): IP_FM9 = 127.0.0.1
+[INFO] 02:27:30:422 El Diego/(25923:25923): PUERTO_FM9 = 8003
+[INFO] 02:27:30:422 El Diego/(25923:25923): TRANSFER_SIZE = 16
+[INFO] 02:27:30:422 El Diego/(25923:25923): -----------------------
+[INFO] 02:27:30:422 El Diego/(25923:25923): Conexion con S-AFA exitosa
+[INFO] 02:27:30:422 El Diego/(25923:25923): Conexion con MDJ exitosa
+[INFO] 02:27:30:422 El Diego/(25923:25923): Conexion con FM9 exitosa
+[INFO] 02:27:33:139 El Diego/(25923:25923): Nueva conexion de CPU
 
-[INFO] 01:08:21:456 El Diego/(16132:16132): ---- Configuracion ----
-[INFO] 01:08:21:456 El Diego/(16132:16132): PUERTO = 8001
-[INFO] 01:08:21:456 El Diego/(16132:16132): IP_SAFA = 127.0.0.1
-[INFO] 01:08:21:456 El Diego/(16132:16132): PUERTO_SAFA = 8000
-[INFO] 01:08:21:456 El Diego/(16132:16132): IP_MDJ = 127.0.0.1
-[INFO] 01:08:21:456 El Diego/(16132:16132): PUERTO_MDJ = 8002
-[INFO] 01:08:21:456 El Diego/(16132:16132): IP_FM9 = 127.0.0.1
-[INFO] 01:08:21:456 El Diego/(16132:16132): PUERTO_FM9 = 8003
-[INFO] 01:08:21:456 El Diego/(16132:16132): TRANSFER_SIZE = 16
-[INFO] 01:08:21:456 El Diego/(16132:16132): -----------------------
-[INFO] 01:08:21:456 El Diego/(16132:16132): Conexion con S-AFA exitosa
-[INFO] 01:08:21:456 El Diego/(16132:16132): Conexion con MDJ exitosa
-[ERROR] 01:08:21:457 El Diego/(16132:16132): connect
-[ERROR] 01:08:21:457 El Diego/(16132:16132): Error al conectar con FM9
-[INFO] 01:11:17:918 El Diego/(16208:16208): Inicio del proceso
+[INFO] 02:32:00:64 El Diego/(26280:26280): Inicio del proceso
 
-[INFO] 01:11:17:918 El Diego/(16208:16208): ---- Configuracion ----
-[INFO] 01:11:17:918 El Diego/(16208:16208): PUERTO = 8001
-[INFO] 01:11:17:918 El Diego/(16208:16208): IP_SAFA = 127.0.0.1
-[INFO] 01:11:17:918 El Diego/(16208:16208): PUERTO_SAFA = 8000
-[INFO] 01:11:17:918 El Diego/(16208:16208): IP_MDJ = 127.0.0.1
-[INFO] 01:11:17:918 El Diego/(16208:16208): PUERTO_MDJ = 8002
-[INFO] 01:11:17:918 El Diego/(16208:16208): IP_FM9 = 127.0.0.1
-[INFO] 01:11:17:918 El Diego/(16208:16208): PUERTO_FM9 = 8003
-[INFO] 01:11:17:918 El Diego/(16208:16208): TRANSFER_SIZE = 16
-[INFO] 01:11:17:918 El Diego/(16208:16208): -----------------------
-[INFO] 01:11:17:919 El Diego/(16208:16208): Conexion con S-AFA exitosa
-[INFO] 01:11:17:919 El Diego/(16208:16208): Conexion con MDJ exitosa
-[ERROR] 01:15:03:252 El Diego/(16208:16208): connect
-[ERROR] 01:15:03:252 El Diego/(16208:16208): Error al conectar con FM9
-[INFO] 01:18:50:361 El Diego/(16562:16562): Inicio del proceso
+[INFO] 02:32:00:65 El Diego/(26280:26280): ---- Configuracion ----
+[INFO] 02:32:00:65 El Diego/(26280:26280): PUERTO = 8001
+[INFO] 02:32:00:65 El Diego/(26280:26280): IP_SAFA = 127.0.0.1
+[INFO] 02:32:00:65 El Diego/(26280:26280): PUERTO_SAFA = 8000
+[INFO] 02:32:00:65 El Diego/(26280:26280): IP_MDJ = 127.0.0.1
+[INFO] 02:32:00:65 El Diego/(26280:26280): PUERTO_MDJ = 8002
+[INFO] 02:32:00:65 El Diego/(26280:26280): IP_FM9 = 127.0.0.1
+[INFO] 02:32:00:65 El Diego/(26280:26280): PUERTO_FM9 = 8003
+[INFO] 02:32:00:65 El Diego/(26280:26280): TRANSFER_SIZE = 16
+[INFO] 02:32:00:66 El Diego/(26280:26280): -----------------------
+[INFO] 02:32:00:67 El Diego/(26280:26280): Conexion con S-AFA exitosa
+[INFO] 02:32:00:67 El Diego/(26280:26280): Conexion con MDJ exitosa
+[INFO] 02:32:00:67 El Diego/(26280:26280): Conexion con FM9 exitosa
+[INFO] 02:32:02:504 El Diego/(26280:26280): Nueva conexion de CPU
 
-[INFO] 01:18:50:361 El Diego/(16562:16562): ---- Configuracion ----
-[INFO] 01:18:50:361 El Diego/(16562:16562): PUERTO = 8001
-[INFO] 01:18:50:361 El Diego/(16562:16562): IP_SAFA = 127.0.0.1
-[INFO] 01:18:50:361 El Diego/(16562:16562): PUERTO_SAFA = 8000
-[INFO] 01:18:50:361 El Diego/(16562:16562): IP_MDJ = 127.0.0.1
-[INFO] 01:18:50:361 El Diego/(16562:16562): PUERTO_MDJ = 8002
-[INFO] 01:18:50:361 El Diego/(16562:16562): IP_FM9 = 127.0.0.1
-[INFO] 01:18:50:361 El Diego/(16562:16562): PUERTO_FM9 = 8003
-[INFO] 01:18:50:361 El Diego/(16562:16562): TRANSFER_SIZE = 16
-[INFO] 01:18:50:361 El Diego/(16562:16562): -----------------------
-[INFO] 01:18:50:361 El Diego/(16562:16562): Conexion con S-AFA exitosa
-[INFO] 01:18:50:361 El Diego/(16562:16562): Conexion con MDJ exitosa
-[INFO] 01:18:50:362 El Diego/(16562:16562): Conexion con FM9 exitosa
-[INFO] 01:24:15:893 El Diego/(16562:16562): Nueva conexion de CPU
+[INFO] 02:35:10:557 El Diego/(26410:26410): Inicio del proceso
 
-[ERROR] 01:33:25:677 El Diego/(16562:16562): Se desconecto una CPU al intentar recibir un tarea...
-[INFO] 01:35:19:21 El Diego/(17279:17279): Inicio del proceso
+[INFO] 02:35:10:558 El Diego/(26410:26410): ---- Configuracion ----
+[INFO] 02:35:10:558 El Diego/(26410:26410): PUERTO = 8001
+[INFO] 02:35:10:558 El Diego/(26410:26410): IP_SAFA = 127.0.0.1
+[INFO] 02:35:10:558 El Diego/(26410:26410): PUERTO_SAFA = 8000
+[INFO] 02:35:10:558 El Diego/(26410:26410): IP_MDJ = 127.0.0.1
+[INFO] 02:35:10:558 El Diego/(26410:26410): PUERTO_MDJ = 8002
+[INFO] 02:35:10:558 El Diego/(26410:26410): IP_FM9 = 127.0.0.1
+[INFO] 02:35:10:558 El Diego/(26410:26410): PUERTO_FM9 = 8003
+[INFO] 02:35:10:558 El Diego/(26410:26410): TRANSFER_SIZE = 16
+[INFO] 02:35:10:558 El Diego/(26410:26410): -----------------------
+[INFO] 02:35:10:559 El Diego/(26410:26410): Conexion con S-AFA exitosa
+[INFO] 02:35:10:560 El Diego/(26410:26410): Conexion con MDJ exitosa
+[INFO] 02:35:10:560 El Diego/(26410:26410): Conexion con FM9 exitosa
+[INFO] 02:35:13:845 El Diego/(26410:26410): Nueva conexion de CPU
 
-[INFO] 01:35:19:21 El Diego/(17279:17279): ---- Configuracion ----
-[INFO] 01:35:19:21 El Diego/(17279:17279): PUERTO = 8001
-[INFO] 01:35:19:21 El Diego/(17279:17279): IP_SAFA = 127.0.0.1
-[INFO] 01:35:19:21 El Diego/(17279:17279): PUERTO_SAFA = 8000
-[INFO] 01:35:19:21 El Diego/(17279:17279): IP_MDJ = 127.0.0.1
-[INFO] 01:35:19:21 El Diego/(17279:17279): PUERTO_MDJ = 8002
-[INFO] 01:35:19:21 El Diego/(17279:17279): IP_FM9 = 127.0.0.1
-[INFO] 01:35:19:21 El Diego/(17279:17279): PUERTO_FM9 = 8003
-[INFO] 01:35:19:21 El Diego/(17279:17279): TRANSFER_SIZE = 16
-[INFO] 01:35:19:21 El Diego/(17279:17279): -----------------------
-[INFO] 01:35:19:22 El Diego/(17279:17279): Conexion con S-AFA exitosa
-[INFO] 01:35:19:22 El Diego/(17279:17279): Conexion con MDJ exitosa
-[INFO] 01:35:19:22 El Diego/(17279:17279): Conexion con FM9 exitosa
-[INFO] 01:35:37:324 El Diego/(17279:17279): Nueva conexion de CPU
+[ERROR] 02:37:42:155 El Diego/(26410:26410): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 02:37:50:282 El Diego/(26533:26533): Inicio del proceso
 
-[INFO] 01:36:11:917 El Diego/(17305:17305): Inicio del proceso
+[INFO] 02:37:50:282 El Diego/(26533:26533): ---- Configuracion ----
+[INFO] 02:37:50:282 El Diego/(26533:26533): PUERTO = 8001
+[INFO] 02:37:50:282 El Diego/(26533:26533): IP_SAFA = 127.0.0.1
+[INFO] 02:37:50:282 El Diego/(26533:26533): PUERTO_SAFA = 8000
+[INFO] 02:37:50:282 El Diego/(26533:26533): IP_MDJ = 127.0.0.1
+[INFO] 02:37:50:282 El Diego/(26533:26533): PUERTO_MDJ = 8002
+[INFO] 02:37:50:282 El Diego/(26533:26533): IP_FM9 = 127.0.0.1
+[INFO] 02:37:50:282 El Diego/(26533:26533): PUERTO_FM9 = 8003
+[INFO] 02:37:50:282 El Diego/(26533:26533): TRANSFER_SIZE = 16
+[INFO] 02:37:50:282 El Diego/(26533:26533): -----------------------
+[INFO] 02:37:50:284 El Diego/(26533:26533): Conexion con S-AFA exitosa
+[INFO] 02:37:50:284 El Diego/(26533:26533): Conexion con MDJ exitosa
+[INFO] 02:37:50:284 El Diego/(26533:26533): Conexion con FM9 exitosa
+[INFO] 02:37:52:252 El Diego/(26533:26533): Nueva conexion de CPU
 
-[INFO] 01:36:11:917 El Diego/(17305:17305): ---- Configuracion ----
-[INFO] 01:36:11:917 El Diego/(17305:17305): PUERTO = 8001
-[INFO] 01:36:11:918 El Diego/(17305:17305): IP_SAFA = 127.0.0.1
-[INFO] 01:36:11:918 El Diego/(17305:17305): PUERTO_SAFA = 8000
-[INFO] 01:36:11:918 El Diego/(17305:17305): IP_MDJ = 127.0.0.1
-[INFO] 01:36:11:918 El Diego/(17305:17305): PUERTO_MDJ = 8002
-[INFO] 01:36:11:918 El Diego/(17305:17305): IP_FM9 = 127.0.0.1
-[INFO] 01:36:11:918 El Diego/(17305:17305): PUERTO_FM9 = 8003
-[INFO] 01:36:11:918 El Diego/(17305:17305): TRANSFER_SIZE = 16
-[INFO] 01:36:11:918 El Diego/(17305:17305): -----------------------
-[INFO] 01:36:11:918 El Diego/(17305:17305): Conexion con S-AFA exitosa
-[INFO] 01:36:11:918 El Diego/(17305:17305): Conexion con MDJ exitosa
-[INFO] 01:36:11:918 El Diego/(17305:17305): Conexion con FM9 exitosa
-[INFO] 01:36:13:572 El Diego/(17305:17305): Nueva conexion de CPU
+[INFO] 02:43:26:210 El Diego/(26730:26730): Inicio del proceso
 
-[ERROR] 01:36:35:837 El Diego/(17305:17305): Se desconecto una CPU al intentar recibir un tarea...
-[INFO] 01:37:39:380 El Diego/(17580:17580): Inicio del proceso
+[INFO] 02:43:26:210 El Diego/(26730:26730): ---- Configuracion ----
+[INFO] 02:43:26:210 El Diego/(26730:26730): PUERTO = 8001
+[INFO] 02:43:26:211 El Diego/(26730:26730): IP_SAFA = 127.0.0.1
+[INFO] 02:43:26:211 El Diego/(26730:26730): PUERTO_SAFA = 8000
+[INFO] 02:43:26:211 El Diego/(26730:26730): IP_MDJ = 127.0.0.1
+[INFO] 02:43:26:211 El Diego/(26730:26730): PUERTO_MDJ = 8002
+[INFO] 02:43:26:211 El Diego/(26730:26730): IP_FM9 = 127.0.0.1
+[INFO] 02:43:26:211 El Diego/(26730:26730): PUERTO_FM9 = 8003
+[INFO] 02:43:26:211 El Diego/(26730:26730): TRANSFER_SIZE = 16
+[INFO] 02:43:26:211 El Diego/(26730:26730): -----------------------
+[INFO] 02:43:26:212 El Diego/(26730:26730): Conexion con S-AFA exitosa
+[INFO] 02:43:26:212 El Diego/(26730:26730): Conexion con MDJ exitosa
+[INFO] 02:43:26:212 El Diego/(26730:26730): Conexion con FM9 exitosa
+[INFO] 02:43:28:783 El Diego/(26730:26730): Nueva conexion de CPU
 
-[INFO] 01:37:39:380 El Diego/(17580:17580): ---- Configuracion ----
-[INFO] 01:37:39:380 El Diego/(17580:17580): PUERTO = 8001
-[INFO] 01:37:39:380 El Diego/(17580:17580): IP_SAFA = 127.0.0.1
-[INFO] 01:37:39:380 El Diego/(17580:17580): PUERTO_SAFA = 8000
-[INFO] 01:37:39:380 El Diego/(17580:17580): IP_MDJ = 127.0.0.1
-[INFO] 01:37:39:380 El Diego/(17580:17580): PUERTO_MDJ = 8002
-[INFO] 01:37:39:380 El Diego/(17580:17580): IP_FM9 = 127.0.0.1
-[INFO] 01:37:39:380 El Diego/(17580:17580): PUERTO_FM9 = 8003
-[INFO] 01:37:39:380 El Diego/(17580:17580): TRANSFER_SIZE = 16
-[INFO] 01:37:39:380 El Diego/(17580:17580): -----------------------
-[INFO] 01:37:39:380 El Diego/(17580:17580): Conexion con S-AFA exitosa
-[INFO] 01:37:39:381 El Diego/(17580:17580): Conexion con MDJ exitosa
-[INFO] 01:37:39:381 El Diego/(17580:17580): Conexion con FM9 exitosa
-[INFO] 01:37:44:416 El Diego/(17580:17580): Nueva conexion de CPU
+[ERROR] 03:03:23:52 El Diego/(26730:26730): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 03:04:36:967 El Diego/(27467:27467): Inicio del proceso
 
-[ERROR] 01:40:32:798 El Diego/(17580:17580): Se desconecto una CPU al intentar recibir un tarea...
-[INFO] 01:41:45:528 El Diego/(18038:18038): Inicio del proceso
+[INFO] 03:04:36:967 El Diego/(27467:27467): ---- Configuracion ----
+[INFO] 03:04:36:967 El Diego/(27467:27467): PUERTO = 8001
+[INFO] 03:04:36:968 El Diego/(27467:27467): IP_SAFA = 127.0.0.1
+[INFO] 03:04:36:968 El Diego/(27467:27467): PUERTO_SAFA = 8000
+[INFO] 03:04:36:968 El Diego/(27467:27467): IP_MDJ = 127.0.0.1
+[INFO] 03:04:36:968 El Diego/(27467:27467): PUERTO_MDJ = 8002
+[INFO] 03:04:36:968 El Diego/(27467:27467): IP_FM9 = 127.0.0.1
+[INFO] 03:04:36:968 El Diego/(27467:27467): PUERTO_FM9 = 8003
+[INFO] 03:04:36:968 El Diego/(27467:27467): TRANSFER_SIZE = 16
+[INFO] 03:04:36:968 El Diego/(27467:27467): -----------------------
+[INFO] 03:04:36:969 El Diego/(27467:27467): Conexion con S-AFA exitosa
+[INFO] 03:04:36:969 El Diego/(27467:27467): Conexion con MDJ exitosa
+[INFO] 03:04:36:970 El Diego/(27467:27467): Conexion con FM9 exitosa
+[INFO] 03:05:19:931 El Diego/(27467:27467): Nueva conexion de CPU
 
-[INFO] 01:41:45:528 El Diego/(18038:18038): ---- Configuracion ----
-[INFO] 01:41:45:528 El Diego/(18038:18038): PUERTO = 8001
-[INFO] 01:41:45:528 El Diego/(18038:18038): IP_SAFA = 127.0.0.1
-[INFO] 01:41:45:528 El Diego/(18038:18038): PUERTO_SAFA = 8000
-[INFO] 01:41:45:528 El Diego/(18038:18038): IP_MDJ = 127.0.0.1
-[INFO] 01:41:45:528 El Diego/(18038:18038): PUERTO_MDJ = 8002
-[INFO] 01:41:45:529 El Diego/(18038:18038): IP_FM9 = 127.0.0.1
-[INFO] 01:41:45:529 El Diego/(18038:18038): PUERTO_FM9 = 8003
-[INFO] 01:41:45:529 El Diego/(18038:18038): TRANSFER_SIZE = 16
-[INFO] 01:41:45:529 El Diego/(18038:18038): -----------------------
-[INFO] 01:41:45:529 El Diego/(18038:18038): Conexion con S-AFA exitosa
-[INFO] 01:41:45:529 El Diego/(18038:18038): Conexion con MDJ exitosa
-[INFO] 01:41:45:529 El Diego/(18038:18038): Conexion con FM9 exitosa
-[INFO] 01:41:50:540 El Diego/(18038:18038): Nueva conexion de CPU
+[INFO] 03:06:56:423 El Diego/(27731:27731): Inicio del proceso
 
-[ERROR] 01:44:43:687 El Diego/(18038:18038): Se desconecto una CPU al intentar recibir un tarea...
-[INFO] 01:45:26:112 El Diego/(18305:18305): Inicio del proceso
+[INFO] 03:06:56:423 El Diego/(27731:27731): ---- Configuracion ----
+[INFO] 03:06:56:423 El Diego/(27731:27731): PUERTO = 8001
+[INFO] 03:06:56:423 El Diego/(27731:27731): IP_SAFA = 127.0.0.1
+[INFO] 03:06:56:423 El Diego/(27731:27731): PUERTO_SAFA = 8000
+[INFO] 03:06:56:423 El Diego/(27731:27731): IP_MDJ = 127.0.0.1
+[INFO] 03:06:56:423 El Diego/(27731:27731): PUERTO_MDJ = 8002
+[INFO] 03:06:56:423 El Diego/(27731:27731): IP_FM9 = 127.0.0.1
+[INFO] 03:06:56:424 El Diego/(27731:27731): PUERTO_FM9 = 8003
+[INFO] 03:06:56:424 El Diego/(27731:27731): TRANSFER_SIZE = 16
+[INFO] 03:06:56:424 El Diego/(27731:27731): -----------------------
+[INFO] 03:06:56:424 El Diego/(27731:27731): Conexion con S-AFA exitosa
+[INFO] 03:06:56:424 El Diego/(27731:27731): Conexion con MDJ exitosa
+[INFO] 03:06:56:424 El Diego/(27731:27731): Conexion con FM9 exitosa
+[INFO] 03:07:20:20 El Diego/(27731:27731): Nueva conexion de CPU
 
-[INFO] 01:45:26:112 El Diego/(18305:18305): ---- Configuracion ----
-[INFO] 01:45:26:112 El Diego/(18305:18305): PUERTO = 8001
-[INFO] 01:45:26:112 El Diego/(18305:18305): IP_SAFA = 127.0.0.1
-[INFO] 01:45:26:112 El Diego/(18305:18305): PUERTO_SAFA = 8000
-[INFO] 01:45:26:112 El Diego/(18305:18305): IP_MDJ = 127.0.0.1
-[INFO] 01:45:26:112 El Diego/(18305:18305): PUERTO_MDJ = 8002
-[INFO] 01:45:26:112 El Diego/(18305:18305): IP_FM9 = 127.0.0.1
-[INFO] 01:45:26:112 El Diego/(18305:18305): PUERTO_FM9 = 8003
-[INFO] 01:45:26:112 El Diego/(18305:18305): TRANSFER_SIZE = 16
-[INFO] 01:45:26:112 El Diego/(18305:18305): -----------------------
-[INFO] 01:45:26:112 El Diego/(18305:18305): Conexion con S-AFA exitosa
-[INFO] 01:45:26:113 El Diego/(18305:18305): Conexion con MDJ exitosa
-[INFO] 01:45:26:113 El Diego/(18305:18305): Conexion con FM9 exitosa
-[INFO] 01:45:28:716 El Diego/(18305:18305): Nueva conexion de CPU
+[INFO] 03:09:26:109 El Diego/(27839:27839): Inicio del proceso
 
-[ERROR] 02:14:37:65 El Diego/(18305:18305): Se desconecto una CPU al intentar recibir un tarea...
-[INFO] 02:16:37:481 El Diego/(19209:19209): Inicio del proceso
+[INFO] 03:09:26:109 El Diego/(27839:27839): ---- Configuracion ----
+[INFO] 03:09:26:109 El Diego/(27839:27839): PUERTO = 8001
+[INFO] 03:09:26:109 El Diego/(27839:27839): IP_SAFA = 127.0.0.1
+[INFO] 03:09:26:109 El Diego/(27839:27839): PUERTO_SAFA = 8000
+[INFO] 03:09:26:109 El Diego/(27839:27839): IP_MDJ = 127.0.0.1
+[INFO] 03:09:26:109 El Diego/(27839:27839): PUERTO_MDJ = 8002
+[INFO] 03:09:26:109 El Diego/(27839:27839): IP_FM9 = 127.0.0.1
+[INFO] 03:09:26:109 El Diego/(27839:27839): PUERTO_FM9 = 8003
+[INFO] 03:09:26:109 El Diego/(27839:27839): TRANSFER_SIZE = 16
+[INFO] 03:09:26:109 El Diego/(27839:27839): -----------------------
+[INFO] 03:09:26:110 El Diego/(27839:27839): Conexion con S-AFA exitosa
+[INFO] 03:09:26:110 El Diego/(27839:27839): Conexion con MDJ exitosa
+[INFO] 03:09:26:113 El Diego/(27839:27839): Conexion con FM9 exitosa
+[INFO] 03:30:23:349 El Diego/(28975:28975): Inicio del proceso
 
-[INFO] 02:16:37:482 El Diego/(19209:19209): ---- Configuracion ----
-[INFO] 02:16:37:482 El Diego/(19209:19209): PUERTO = 8001
-[INFO] 02:16:37:482 El Diego/(19209:19209): IP_SAFA = 127.0.0.1
-[INFO] 02:16:37:483 El Diego/(19209:19209): PUERTO_SAFA = 8000
-[INFO] 02:16:37:483 El Diego/(19209:19209): IP_MDJ = 127.0.0.1
-[INFO] 02:16:37:483 El Diego/(19209:19209): PUERTO_MDJ = 8002
-[INFO] 02:16:37:483 El Diego/(19209:19209): IP_FM9 = 127.0.0.1
-[INFO] 02:16:37:483 El Diego/(19209:19209): PUERTO_FM9 = 8003
-[INFO] 02:16:37:483 El Diego/(19209:19209): TRANSFER_SIZE = 16
-[INFO] 02:16:37:483 El Diego/(19209:19209): -----------------------
-[INFO] 02:16:37:483 El Diego/(19209:19209): Conexion con S-AFA exitosa
-[INFO] 02:16:37:483 El Diego/(19209:19209): Conexion con MDJ exitosa
-[INFO] 02:16:37:484 El Diego/(19209:19209): Conexion con FM9 exitosa
-[INFO] 02:16:41:371 El Diego/(19209:19209): Nueva conexion de CPU
+[INFO] 03:30:23:349 El Diego/(28975:28975): ---- Configuracion ----
+[INFO] 03:30:23:349 El Diego/(28975:28975): PUERTO = 8001
+[INFO] 03:30:23:349 El Diego/(28975:28975): IP_SAFA = 127.0.0.1
+[INFO] 03:30:23:349 El Diego/(28975:28975): PUERTO_SAFA = 8000
+[INFO] 03:30:23:349 El Diego/(28975:28975): IP_MDJ = 127.0.0.1
+[INFO] 03:30:23:349 El Diego/(28975:28975): PUERTO_MDJ = 8002
+[INFO] 03:30:23:349 El Diego/(28975:28975): IP_FM9 = 127.0.0.1
+[INFO] 03:30:23:349 El Diego/(28975:28975): PUERTO_FM9 = 8003
+[INFO] 03:30:23:349 El Diego/(28975:28975): TRANSFER_SIZE = 16
+[INFO] 03:30:23:349 El Diego/(28975:28975): -----------------------
+[ERROR] 03:30:23:349 El Diego/(28975:28975): connect
+[ERROR] 03:30:23:349 El Diego/(28975:28975): Error al conectar con S-AFA
+[INFO] 03:30:27:9 El Diego/(28988:28988): Inicio del proceso
 
-[ERROR] 02:18:57:334 El Diego/(19209:19209): Se desconecto una CPU al intentar recibir un tarea...
-[INFO] 03:31:19:596 El Diego/(21883:21883): Inicio del proceso
+[INFO] 03:30:27:9 El Diego/(28988:28988): ---- Configuracion ----
+[INFO] 03:30:27:10 El Diego/(28988:28988): PUERTO = 8001
+[INFO] 03:30:27:10 El Diego/(28988:28988): IP_SAFA = 127.0.0.1
+[INFO] 03:30:27:10 El Diego/(28988:28988): PUERTO_SAFA = 8000
+[INFO] 03:30:27:10 El Diego/(28988:28988): IP_MDJ = 127.0.0.1
+[INFO] 03:30:27:10 El Diego/(28988:28988): PUERTO_MDJ = 8002
+[INFO] 03:30:27:10 El Diego/(28988:28988): IP_FM9 = 127.0.0.1
+[INFO] 03:30:27:10 El Diego/(28988:28988): PUERTO_FM9 = 8003
+[INFO] 03:30:27:10 El Diego/(28988:28988): TRANSFER_SIZE = 16
+[INFO] 03:30:27:10 El Diego/(28988:28988): -----------------------
+[INFO] 03:30:27:11 El Diego/(28988:28988): Conexion con S-AFA exitosa
+[INFO] 03:30:27:11 El Diego/(28988:28988): Conexion con MDJ exitosa
+[INFO] 03:30:27:11 El Diego/(28988:28988): Conexion con FM9 exitosa
+[INFO] 03:30:28:501 El Diego/(28988:28988): Nueva conexion de CPU
 
-[INFO] 03:31:19:597 El Diego/(21883:21883): ---- Configuracion ----
-[INFO] 03:31:19:597 El Diego/(21883:21883): PUERTO = 8001
-[INFO] 03:31:19:597 El Diego/(21883:21883): IP_SAFA = 127.0.0.1
-[INFO] 03:31:19:597 El Diego/(21883:21883): PUERTO_SAFA = 8000
-[INFO] 03:31:19:597 El Diego/(21883:21883): IP_MDJ = 127.0.0.1
-[INFO] 03:31:19:598 El Diego/(21883:21883): PUERTO_MDJ = 8002
-[INFO] 03:31:19:598 El Diego/(21883:21883): IP_FM9 = 127.0.0.1
-[INFO] 03:31:19:598 El Diego/(21883:21883): PUERTO_FM9 = 8003
-[INFO] 03:31:19:598 El Diego/(21883:21883): TRANSFER_SIZE = 16
-[INFO] 03:31:19:598 El Diego/(21883:21883): -----------------------
-[INFO] 03:31:19:598 El Diego/(21883:21883): Conexion con S-AFA exitosa
-[INFO] 03:31:19:598 El Diego/(21883:21883): Conexion con MDJ exitosa
-[INFO] 03:31:19:598 El Diego/(21883:21883): Conexion con FM9 exitosa
-[INFO] 03:31:21:824 El Diego/(21883:21883): Nueva conexion de CPU
+[ERROR] 03:35:22:725 El Diego/(28988:28988): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 03:35:25:864 El Diego/(28988:28988): Nueva conexion de CPU
 
-[ERROR] 03:31:44:11 El Diego/(21883:21883): Se desconecto una CPU al intentar recibir un tarea...
-[INFO] 03:42:11:801 El Diego/(22384:22384): Inicio del proceso
+[ERROR] 03:36:27:82 El Diego/(28988:28988): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 03:36:28:968 El Diego/(28988:28988): Nueva conexion de CPU
 
-[INFO] 03:42:11:803 El Diego/(22384:22384): ---- Configuracion ----
-[INFO] 03:42:11:803 El Diego/(22384:22384): PUERTO = 8001
-[INFO] 03:42:11:803 El Diego/(22384:22384): IP_SAFA = 127.0.0.1
-[INFO] 03:42:11:803 El Diego/(22384:22384): PUERTO_SAFA = 8000
-[INFO] 03:42:11:803 El Diego/(22384:22384): IP_MDJ = 127.0.0.1
-[INFO] 03:42:11:803 El Diego/(22384:22384): PUERTO_MDJ = 8002
-[INFO] 03:42:11:803 El Diego/(22384:22384): IP_FM9 = 127.0.0.1
-[INFO] 03:42:11:803 El Diego/(22384:22384): PUERTO_FM9 = 8003
-[INFO] 03:42:11:803 El Diego/(22384:22384): TRANSFER_SIZE = 16
-[INFO] 03:42:11:803 El Diego/(22384:22384): -----------------------
-[INFO] 03:42:11:804 El Diego/(22384:22384): Conexion con S-AFA exitosa
-[INFO] 03:42:11:804 El Diego/(22384:22384): Conexion con MDJ exitosa
-[INFO] 03:42:11:804 El Diego/(22384:22384): Conexion con FM9 exitosa
-[INFO] 03:42:18:296 El Diego/(22384:22384): Nueva conexion de CPU
+[ERROR] 03:37:28:613 El Diego/(28988:28988): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 07:10:14:244 El Diego/(1579:1579): Inicio del proceso
 
-[ERROR] 03:42:52:138 El Diego/(22384:22384): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 07:10:14:244 El Diego/(1579:1579): ---- Configuracion ----
+[INFO] 07:10:14:245 El Diego/(1579:1579): PUERTO = 8001
+[INFO] 07:10:14:245 El Diego/(1579:1579): IP_SAFA = 127.0.0.1
+[INFO] 07:10:14:245 El Diego/(1579:1579): PUERTO_SAFA = 8000
+[INFO] 07:10:14:245 El Diego/(1579:1579): IP_MDJ = 127.0.0.1
+[INFO] 07:10:14:245 El Diego/(1579:1579): PUERTO_MDJ = 8002
+[INFO] 07:10:14:245 El Diego/(1579:1579): IP_FM9 = 127.0.0.1
+[INFO] 07:10:14:245 El Diego/(1579:1579): PUERTO_FM9 = 8003
+[INFO] 07:10:14:245 El Diego/(1579:1579): TRANSFER_SIZE = 16
+[INFO] 07:10:14:245 El Diego/(1579:1579): -----------------------
+[INFO] 07:10:14:246 El Diego/(1579:1579): Conexion con S-AFA exitosa
+[INFO] 07:10:14:246 El Diego/(1579:1579): Conexion con MDJ exitosa
+[INFO] 07:10:14:247 El Diego/(1579:1579): Conexion con FM9 exitosa
+[INFO] 07:10:21:992 El Diego/(1579:1579): Nueva conexion de CPU
+
+[ERROR] 07:10:38:723 El Diego/(1579:1579): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 07:15:25:924 El Diego/(1796:1796): Inicio del proceso
+
+[INFO] 07:15:25:925 El Diego/(1796:1796): ---- Configuracion ----
+[INFO] 07:15:25:925 El Diego/(1796:1796): PUERTO = 8001
+[INFO] 07:15:25:925 El Diego/(1796:1796): IP_SAFA = 127.0.0.1
+[INFO] 07:15:25:925 El Diego/(1796:1796): PUERTO_SAFA = 8000
+[INFO] 07:15:25:925 El Diego/(1796:1796): IP_MDJ = 127.0.0.1
+[INFO] 07:15:25:925 El Diego/(1796:1796): PUERTO_MDJ = 8002
+[INFO] 07:15:25:925 El Diego/(1796:1796): IP_FM9 = 127.0.0.1
+[INFO] 07:15:25:925 El Diego/(1796:1796): PUERTO_FM9 = 8003
+[INFO] 07:15:25:925 El Diego/(1796:1796): TRANSFER_SIZE = 16
+[INFO] 07:15:25:926 El Diego/(1796:1796): -----------------------
+[INFO] 07:15:25:926 El Diego/(1796:1796): Conexion con S-AFA exitosa
+[INFO] 07:15:25:927 El Diego/(1796:1796): Conexion con MDJ exitosa
+[INFO] 07:15:25:927 El Diego/(1796:1796): Conexion con FM9 exitosa
+[INFO] 07:15:28:474 El Diego/(1796:1796): Nueva conexion de CPU
+
+[ERROR] 07:15:28:474 El Diego/(1796:1796): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 07:16:45:579 El Diego/(1892:1892): Inicio del proceso
+
+[INFO] 07:16:45:580 El Diego/(1892:1892): ---- Configuracion ----
+[INFO] 07:16:45:580 El Diego/(1892:1892): PUERTO = 8001
+[INFO] 07:16:45:580 El Diego/(1892:1892): IP_SAFA = 127.0.0.1
+[INFO] 07:16:45:580 El Diego/(1892:1892): PUERTO_SAFA = 8000
+[INFO] 07:16:45:580 El Diego/(1892:1892): IP_MDJ = 127.0.0.1
+[INFO] 07:16:45:580 El Diego/(1892:1892): PUERTO_MDJ = 8002
+[INFO] 07:16:45:580 El Diego/(1892:1892): IP_FM9 = 127.0.0.1
+[INFO] 07:16:45:580 El Diego/(1892:1892): PUERTO_FM9 = 8003
+[INFO] 07:16:45:580 El Diego/(1892:1892): TRANSFER_SIZE = 16
+[INFO] 07:16:45:580 El Diego/(1892:1892): -----------------------
+[INFO] 07:16:45:582 El Diego/(1892:1892): Conexion con S-AFA exitosa
+[INFO] 07:16:45:582 El Diego/(1892:1892): Conexion con MDJ exitosa
+[INFO] 07:16:45:582 El Diego/(1892:1892): Conexion con FM9 exitosa
+[INFO] 07:16:47:120 El Diego/(1892:1892): Nueva conexion de CPU
+
+[ERROR] 07:16:59:481 El Diego/(1892:1892): ServerThread (openFile) - La CPU fue desconectada al intentar recibir un pid
+
+[INFO] 07:17:22:763 El Diego/(1934:1934): Inicio del proceso
+
+[INFO] 07:17:22:764 El Diego/(1934:1934): ---- Configuracion ----
+[INFO] 07:17:22:764 El Diego/(1934:1934): PUERTO = 8001
+[INFO] 07:17:22:764 El Diego/(1934:1934): IP_SAFA = 127.0.0.1
+[INFO] 07:17:22:764 El Diego/(1934:1934): PUERTO_SAFA = 8000
+[INFO] 07:17:22:764 El Diego/(1934:1934): IP_MDJ = 127.0.0.1
+[INFO] 07:17:22:764 El Diego/(1934:1934): PUERTO_MDJ = 8002
+[INFO] 07:17:22:764 El Diego/(1934:1934): IP_FM9 = 127.0.0.1
+[INFO] 07:17:22:764 El Diego/(1934:1934): PUERTO_FM9 = 8003
+[INFO] 07:17:22:764 El Diego/(1934:1934): TRANSFER_SIZE = 16
+[INFO] 07:17:22:764 El Diego/(1934:1934): -----------------------
+[INFO] 07:17:22:766 El Diego/(1934:1934): Conexion con S-AFA exitosa
+[INFO] 07:17:22:766 El Diego/(1934:1934): Conexion con MDJ exitosa
+[INFO] 07:17:22:766 El Diego/(1934:1934): Conexion con FM9 exitosa
+[INFO] 07:17:25:518 El Diego/(1934:1934): Nueva conexion de CPU
+
+[ERROR] 07:17:39:436 El Diego/(1934:1934): ServerThread (openFile) - La CPU fue desconectada al intentar recibir un pid
+
+[INFO] 07:19:21:251 El Diego/(1934:1934): Nueva conexion de CPU
+
+[ERROR] 07:20:36:940 El Diego/(1934:1934): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 07:21:00:198 El Diego/(2064:2064): Inicio del proceso
+
+[INFO] 07:21:00:199 El Diego/(2064:2064): ---- Configuracion ----
+[INFO] 07:21:00:199 El Diego/(2064:2064): PUERTO = 8001
+[INFO] 07:21:00:200 El Diego/(2064:2064): IP_SAFA = 127.0.0.1
+[INFO] 07:21:00:200 El Diego/(2064:2064): PUERTO_SAFA = 8000
+[INFO] 07:21:00:200 El Diego/(2064:2064): IP_MDJ = 127.0.0.1
+[INFO] 07:21:00:200 El Diego/(2064:2064): PUERTO_MDJ = 8002
+[INFO] 07:21:00:200 El Diego/(2064:2064): IP_FM9 = 127.0.0.1
+[INFO] 07:21:00:200 El Diego/(2064:2064): PUERTO_FM9 = 8003
+[INFO] 07:21:00:200 El Diego/(2064:2064): TRANSFER_SIZE = 16
+[INFO] 07:21:00:200 El Diego/(2064:2064): -----------------------
+[INFO] 07:21:00:202 El Diego/(2064:2064): Conexion con S-AFA exitosa
+[INFO] 07:21:00:202 El Diego/(2064:2064): Conexion con MDJ exitosa
+[INFO] 07:21:00:202 El Diego/(2064:2064): Conexion con FM9 exitosa
+[INFO] 07:21:04:186 El Diego/(2064:2064): Nueva conexion de CPU
+
+[ERROR] 07:22:00:416 El Diego/(2064:2064): ServerThread (openFile) - La CPU fue desconectada al intentar recibir un pid
+
+[INFO] 07:25:07:414 El Diego/(2216:2216): Inicio del proceso
+
+[INFO] 07:25:07:415 El Diego/(2216:2216): ---- Configuracion ----
+[INFO] 07:25:07:415 El Diego/(2216:2216): PUERTO = 8001
+[INFO] 07:25:07:415 El Diego/(2216:2216): IP_SAFA = 127.0.0.1
+[INFO] 07:25:07:415 El Diego/(2216:2216): PUERTO_SAFA = 8000
+[INFO] 07:25:07:415 El Diego/(2216:2216): IP_MDJ = 127.0.0.1
+[INFO] 07:25:07:415 El Diego/(2216:2216): PUERTO_MDJ = 8002
+[INFO] 07:25:07:415 El Diego/(2216:2216): IP_FM9 = 127.0.0.1
+[INFO] 07:25:07:415 El Diego/(2216:2216): PUERTO_FM9 = 8003
+[INFO] 07:25:07:416 El Diego/(2216:2216): TRANSFER_SIZE = 16
+[INFO] 07:25:07:416 El Diego/(2216:2216): -----------------------
+[INFO] 07:25:07:416 El Diego/(2216:2216): Conexion con S-AFA exitosa
+[INFO] 07:25:07:416 El Diego/(2216:2216): Conexion con MDJ exitosa
+[INFO] 07:25:07:418 El Diego/(2216:2216): Conexion con FM9 exitosa
+[INFO] 07:25:13:78 El Diego/(2216:2216): Nueva conexion de CPU
+
+[ERROR] 07:25:23:932 El Diego/(2216:2216): ServerThread (openFile) - La CPU fue desconectada al intentar recibir un pid
+
+[INFO] 07:31:28:961 El Diego/(2579:2579): Inicio del proceso
+
+[INFO] 07:31:28:963 El Diego/(2579:2579): ---- Configuracion ----
+[INFO] 07:31:28:963 El Diego/(2579:2579): PUERTO = 8001
+[INFO] 07:31:28:963 El Diego/(2579:2579): IP_SAFA = 127.0.0.1
+[INFO] 07:31:28:963 El Diego/(2579:2579): PUERTO_SAFA = 8000
+[INFO] 07:31:28:963 El Diego/(2579:2579): IP_MDJ = 127.0.0.1
+[INFO] 07:31:28:963 El Diego/(2579:2579): PUERTO_MDJ = 8002
+[INFO] 07:31:28:963 El Diego/(2579:2579): IP_FM9 = 127.0.0.1
+[INFO] 07:31:28:963 El Diego/(2579:2579): PUERTO_FM9 = 8003
+[INFO] 07:31:28:963 El Diego/(2579:2579): TRANSFER_SIZE = 16
+[INFO] 07:31:28:963 El Diego/(2579:2579): -----------------------
+[INFO] 07:31:28:966 El Diego/(2579:2579): Conexion con S-AFA exitosa
+[INFO] 07:31:28:966 El Diego/(2579:2579): Conexion con MDJ exitosa
+[INFO] 07:31:28:966 El Diego/(2579:2579): Conexion con FM9 exitosa
+[INFO] 07:31:31:918 El Diego/(2579:2579): Nueva conexion de CPU
+
+[ERROR] 07:31:44:344 El Diego/(2579:2579): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 07:32:50:581 El Diego/(2689:2689): Inicio del proceso
+
+[INFO] 07:32:50:582 El Diego/(2689:2689): ---- Configuracion ----
+[INFO] 07:32:50:582 El Diego/(2689:2689): PUERTO = 8001
+[INFO] 07:32:50:582 El Diego/(2689:2689): IP_SAFA = 127.0.0.1
+[INFO] 07:32:50:582 El Diego/(2689:2689): PUERTO_SAFA = 8000
+[INFO] 07:32:50:582 El Diego/(2689:2689): IP_MDJ = 127.0.0.1
+[INFO] 07:32:50:582 El Diego/(2689:2689): PUERTO_MDJ = 8002
+[INFO] 07:32:50:582 El Diego/(2689:2689): IP_FM9 = 127.0.0.1
+[INFO] 07:32:50:582 El Diego/(2689:2689): PUERTO_FM9 = 8003
+[INFO] 07:32:50:582 El Diego/(2689:2689): TRANSFER_SIZE = 16
+[INFO] 07:32:50:582 El Diego/(2689:2689): -----------------------
+[INFO] 07:32:50:583 El Diego/(2689:2689): Conexion con S-AFA exitosa
+[INFO] 07:32:50:584 El Diego/(2689:2689): Conexion con MDJ exitosa
+[INFO] 07:32:50:584 El Diego/(2689:2689): Conexion con FM9 exitosa
+[INFO] 07:32:52:483 El Diego/(2689:2689): Nueva conexion de CPU
+
+[ERROR] 07:33:03:472 El Diego/(2689:2689): Se intento abrir el archivo "/Archivos/scripts/simple.escriptorio", pero el mismo no se encuentra en la ruta especificada o no existe
+[ERROR] 08:04:08:362 El Diego/(2689:2689): Se desconecto una CPU al intentar recibir un tarea...

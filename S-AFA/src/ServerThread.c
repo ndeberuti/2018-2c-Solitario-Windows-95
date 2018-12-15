@@ -14,6 +14,7 @@ void server()
 	int32_t command; //Client command
 	uint32_t nbytes;
 	uint32_t addrlen;
+	int32_t result;
 	FD_ZERO(&master); //Delete master & read sets
 	FD_ZERO(&read_fds);
 
@@ -33,15 +34,29 @@ void server()
 	else
 		fdmax = configFileInotifyFD;
 
+	struct timeval selectTimeout;
+	selectTimeout.tv_sec = 5;	//The select returns due to a timeout every 5 seconds
+	selectTimeout.tv_usec = 0;
+
 	//Main loop
 	while (!terminateModule)
 	{
 		read_fds = master; //Copy the master set
-		if (select(fdmax + 1, &read_fds, NULL, NULL, NULL) == -1)
+
+		pthread_mutex_lock(&canCommunicateWithCPUs);
+
+		if((result = select(fdmax + 1, &read_fds, NULL, NULL, &selectTimeout)) < 0)
 		{
 			log_error(consoleLog, "Error en select");
 			exit(EXIT_FAILURE);
 		}
+		else if(result == 0)	//The select returned due to a timeout
+		{
+			pthread_mutex_unlock(&canCommunicateWithCPUs);
+			sleep(0.5);	//To allow other threads to take the above lock
+			continue;
+		}
+
 
 		//Check existent connections to see if there is any data to read
 		for (uint32_t i = 0; i <= fdmax; i++)
@@ -93,6 +108,10 @@ void server()
 				}
 			} // if (FD_ISSET(i, &read_fds))
 		}
+
+		pthread_mutex_unlock(&canCommunicateWithCPUs);	//Only after executing a CPUs request can the other threads communicate with that or other CPUs
+		sleep(0.5);	//To allow other threads to take the above lock
+
 	} // while (true)
 }
 
@@ -100,17 +119,22 @@ void moduleHandler(uint32_t command, uint32_t _socket)
 {
 	if(command == NEW_DMA_CONNECTION)
 	{
-						  
 		log_info(consoleLog, "Nueva conexion desde el DMA");
 		dmaSocket = _socket;
 	}
 	else if(command == NEW_CPU_CONNECTION)
 		handleCpuConnection(_socket);
 	else if((command >= LIM_INF_TAREAS_CPU) && (command <= LIM_SUP_TAREAS_CPU)) //The CPU task codes range from 3 to 12
+	{
+		log_info(schedulerLog, "Se recibio una tarea de la CPU");
 		cpuTaskHandler(command, _socket);
+	}
 
 	else if((command >= LIM_INF_TAREAS_DMA) && (command <= LIM_SUP_TAREAS_DMA)) //The DMA task codes range from 13 to 18
+	{
+		log_info(schedulerLog, "Se recibio una tarea del DMA");
 		dmaTaskHandler(command, _socket);
+	}
 
 	else
 		log_error(consoleLog, "ServerThread - La tarea recibida, con codigo %d, es incorrecta", command);
@@ -121,7 +145,10 @@ void dmaTaskHandler(uint32_t task, uint32_t _socket)
 	switch(task)
 	{
 		case UNLOCK_PROCESS:
+		{
+			log_info(schedulerLog, "El DMA solicita desbloquear un proceso");
 			unlockProcess(_socket);
+		}
 		break;
 
 		default:
@@ -132,28 +159,32 @@ void dmaTaskHandler(uint32_t task, uint32_t _socket)
 
 void cpuTaskHandler(uint32_t task, uint32_t _socket)
 {
+	uint32_t process;
+
 	switch(task)
 	{
 		case COMPLETED_INSTRUCTION:
+			log_info(schedulerLog, "Se completo una instruccion de un proceso en ejecucion");
 			pthread_mutex_lock(&metricsGlobalvariablesMutex);
 			executedInstructions++;
 			pthread_mutex_unlock(&metricsGlobalvariablesMutex);
 		break;
 
 		case BLOCK_PROCESS_INIT:
-			blockProcessInit(_socket);
+			blockProcessInit(_socket, &process);
 		break;
 
 		case BLOCK_PROCESS:
-			_blockProcess(_socket);
+			_blockProcess(_socket, &process);
 		break;
 
 		case PROCESS_ERROR:		//TODO - Maybe it should receive the type of error and print it in the console...
-			_killProcess(_socket);	//This PROCESS_ERROR message could be sent by the CPU or the DMA
+								//This PROCESS_ERROR message could be sent by the CPU or the DMA
+			_killProcess(_socket);
 		break;
 
 		case QUANTUM_END:
-			processQuantumEnd(_socket);
+			processQuantumEnd(_socket, &process);
 		break;
 
 		case CHECK_IF_FILE_OPEN:		//Checks if the given file is open for the issuing process, and tries to open it
@@ -182,17 +213,30 @@ void cpuTaskHandler(uint32_t task, uint32_t _socket)
 
 	}
 
-	//If any of these tasks were received, the CPU became free, so it can be assigned to another process
-	if((task == BLOCK_PROCESS_INIT) || (task == BLOCK_PROCESS_INIT) ||
-			(task == BLOCK_PROCESS_INIT) || (task == BLOCK_PROCESS_INIT))
-	{
-		cpu_t* currentCPU = findCPUBy_socket(_socket);
+	if((task == BLOCK_PROCESS) || (task == BLOCK_PROCESS_INIT) || (task == QUANTUM_END))	//If any of this happened, it means a process left a CPU
+	{																						//In that case, check if that process must be killed
+		pthread_mutex_lock(&executingProcessesToKillMutex);
 
-		checkAndInitializeProcesses(currentCPU); //check if there are any processes left to initialize, and do it with the free CPU
+		uint32_t processesToKill = list_size(executingProcessesToKill);
+
+		bool _process_and_socket_equal_current_ones(processToKillData* data)
+		{
+			return ((data->processToBeKilled == process) && (data->cpuSocketProcessWasExecutingOn == _socket));
+		}
+
+		bool currentProcessHasToBeKilled = list_any_satisfy(executingProcessesToKill, _process_and_socket_equal_current_ones);
+
+		if((processesToKill > 0) && currentProcessHasToBeKilled)
+		{
+			killProcess(process);
+			list_remove_by_condition(executingProcessesToKill, _process_and_socket_equal_current_ones);
+		}
+
+		pthread_mutex_unlock(&executingProcessesToKillMutex);
 	}
 }
 
-void blockProcessInit(uint32_t _socket)
+void blockProcessInit(uint32_t _socket, int* process)
 {
 	int32_t pid;
 	int32_t nbytes;	//This cannot be unsigned; check the recv below
@@ -204,8 +248,9 @@ void blockProcessInit(uint32_t _socket)
 		else
 			log_error(consoleLog, "ServerThread (blockProcessInit) - Error al recibir un pid de la CPU");
 
-		closeSocketAndRemoveCPU(_socket);
+
 		FD_CLR(_socket, &master);
+		closeSocketAndRemoveCPU(_socket);
 
 		//TODO (optional):
 		//		 If a CPU disconnects while executing a process, it should tell all the other
@@ -226,26 +271,31 @@ void blockProcessInit(uint32_t _socket)
 	}
 	else
 	{
+		log_info(schedulerLog, "La CPU solicito que el proceso con id %d sea bloqueado luego de intentar inicializarlo", pid);
+
 		blockProcess(pid, true);
 		freeCPUBySocket(_socket);
+
+		(*process) = pid;
 	}
 }
 
-void _blockProcess(uint32_t _socket)
+void _blockProcess(uint32_t _socket, int* process)
 {
 	int32_t nbytes;
 	PCB_t* processToBlock = NULL;
 	int32_t isDmaCall;
 
-	if((nbytes = recvPCB(_socket, processToBlock)) <= 0)
+	if((nbytes = recvPCB(_socket, &processToBlock)) <= 0)
 	{
 			if(nbytes == 0)
 				log_error(consoleLog, "ServerThread (_blockProcess) - La CPU fue desconectada al intentar recibir un PCB");
 			else
 				log_error(consoleLog, "ServerThread (_blockProcess) - Error al recibir PCB de la CPU");
 
-			closeSocketAndRemoveCPU(_socket);
+
 			FD_CLR(_socket, &master);
+			closeSocketAndRemoveCPU(_socket);
 	}
 	else if((nbytes = receive_int(_socket, &isDmaCall)) <= 0)
 	{
@@ -254,17 +304,14 @@ void _blockProcess(uint32_t _socket)
 			else
 				log_error(consoleLog, "ServerThread (_blockProcess) - Error al recibir un entero de la CPU");
 
-			closeSocketAndRemoveCPU(_socket);
+
 			FD_CLR(_socket, &master);
-	}
-	else if((nbytes = send_int(_socket, MESSAGE_RECEIVED)) < 0)
-	{
-		log_error(consoleLog, "ServerThread (_blockProcess) - Error al indicar a la CPU que se recibio un PCB correctamente");
-		return;
-		//TODO (optional) - Send error handling
+			closeSocketAndRemoveCPU(_socket);
 	}
 	else
 	{
+		log_info(schedulerLog, "La CPU solicita que se bloquee un proceso");
+
 		uint32_t operationOk = updatePCBInExecutionQueue(processToBlock);
 
 		if(!operationOk)
@@ -275,6 +322,8 @@ void _blockProcess(uint32_t _socket)
 		blockProcess(processToBlock->pid, isDmaCall); //Could send the PCB to that function, but it is also used by the
 													  //function that blocks a process being initialized (which has no
 													  //new PCB to send to the blockProcess function)
+
+		(*process) = processToBlock->pid;
 	}
 }
 
@@ -297,28 +346,27 @@ void _killProcess(uint32_t _socket)
 				exit(EXIT_FAILURE);
 		}
 
+		log_info(schedulerLog, "El DMA solicito la terminacion del proceso con id %d debido a un error", processPidToKill);
+
 		killProcess(processPidToKill);
 	}
 	else	//If the CPU sent a process error, receive the PCB, update it in the execution queue and kill the process
 	{
-		if((nbytes = recvPCB(_socket, processToKill)) <= 0)
+		if((nbytes = recvPCB(_socket, &processToKill)) <= 0)
 		{
 			if(nbytes == 0)
 				log_error(schedulerLog, "ServerThread (_killProcess) - La CPU fue desconectada al intentar recibir un PCB\n");
 			else
 				log_error(schedulerLog, "ServerThread (_killProcess) - Error al recibir un PCB de la CPU\n");
 
-			closeSocketAndRemoveCPU(_socket);
+
 			FD_CLR(_socket, &master);
-		}
-		else if((nbytes = send_int(_socket, MESSAGE_RECEIVED)) < 0)
-		{
-			log_error(consoleLog, "ServerThread (_blockProcess) - Error al indicar a la CPU que se recibio un PCB correctamente");
-			return;
-			//TODO (optional) - Send error handling
+			closeSocketAndRemoveCPU(_socket);
 		}
 		else
 		{
+			log_info(schedulerLog, "La CPU solicito la terminacion del proceso con id %d debido a un error durante su ejecucion", processToKill);
+
 			uint32_t operationOk = updatePCBInExecutionQueue(processToKill);
 
 			if(!operationOk)
@@ -332,50 +380,45 @@ void _killProcess(uint32_t _socket)
 	}
 }
 
-void processQuantumEnd(uint32_t _socket)
+void processQuantumEnd(uint32_t _socket, int* process)
 {
 	int32_t nbytes;
 	PCB_t* updatedPCB = NULL;
 
-	if((nbytes = recvPCB(_socket, updatedPCB)) <= 0)
+	if((nbytes = recvPCB(_socket, &updatedPCB)) <= 0)
 	{
 		if(nbytes == 0)
 			log_error(consoleLog, "ServerThread (processQuantumEnd) - La CPU fue desconectada al intentar recibir un PCB");
 		else
 			log_error(consoleLog, "ServerThread (processQuantumEnd) - Error al recibir un PCB de la CPU");
 
-		closeSocketAndRemoveCPU(_socket);
+
 		FD_CLR(_socket, &master);
-	}
-	else if((nbytes = send_int(_socket, MESSAGE_RECEIVED)) < 0)
-	{
-		log_error(consoleLog, "ServerThread (processQuantumEnd) - Error al indicar a la CPU que se recibio un PCB correctamente");
-		return;
-		//TODO (Optional) - Send Error Handling
+		closeSocketAndRemoveCPU(_socket);
 	}
 	else
 	{
-		updatePCBInExecutionQueue(updatedPCB);
-
 		log_info(schedulerLog, "El proceso con id %d se quedo sin quantum", updatedPCB->pid);
 
+		updatePCBInExecutionQueue(updatedPCB);
+
 		moveProcessToReadyQueue(updatedPCB, false);
+
+		(*process) = updatedPCB->pid;
 	}
 }
 
 cpu_t* findCPUBy_socket(uint32_t _socket)
 {
-	pthread_mutex_lock(&cpuListMutex);
+	//No need to lock the CPUsList here, it is already locked in the function that calls this one (freeCPUBySocket)
+
+	cpu_t* _cpu = NULL;
 
 	bool _cpu_has_given__socket(cpu_t* cpu)
 	{
 		return cpu->clientSocket == _socket;
 	}
-
-	cpu_t* _cpu = NULL;
 	_cpu = (cpu_t*) list_find(connectedCPUs, _cpu_has_given__socket);
-
-	pthread_mutex_unlock(&cpuListMutex);
 
 	return _cpu;
 }
@@ -389,7 +432,7 @@ cpu_t* findCPUBy_socket(uint32_t _socket)
 
 uint32_t updatePCBInExecutionQueue(PCB_t* updatedPCB)
 {
-	pthread_mutex_lock(&executionQueueMutex);
+	PCB_t* oldPCB = NULL;
 
 	bool _process_has_given_id(PCB_t* pcb)
 	{
@@ -399,7 +442,8 @@ uint32_t updatePCBInExecutionQueue(PCB_t* updatedPCB)
 	//The old pcb gets deleted from the executionQueue and the updated one gets added because I do not
 	//have a proper function to replace an object in a list following a given condition
 
-	PCB_t* oldPCB = NULL;
+	pthread_mutex_lock(&executionQueueMutex);
+
 	oldPCB = list_remove_by_condition(executionQueue, _process_has_given_id);
 
 	if(oldPCB == NULL)
@@ -409,12 +453,12 @@ uint32_t updatePCBInExecutionQueue(PCB_t* updatedPCB)
 		return 0;
 	}
 
-	free(oldPCB->scriptPathInFS);
-	free(oldPCB);
-
 	list_add(executionQueue, updatedPCB);	//Do not care about PCB arrival order in that queue
 
 	pthread_mutex_unlock(&executionQueueMutex);
+
+	free(oldPCB->scriptPathInFS);
+	free(oldPCB);
 
 	log_info(schedulerLog, "El PCB con id %d de la cola de ejecucion fue actualizado", updatedPCB->pid);
 	return 1;
@@ -427,8 +471,6 @@ void checkIfFileOpen(uint32_t _socket) //Receives pid, fileName length, fileName
 	bool result;
 	int32_t pid;
 
-	pthread_mutex_lock(&fileTableMutex);
-
 	if((nbytes = receive_int(_socket, &pid)) <= 0)
 	{
 		if(nbytes == 0)
@@ -436,8 +478,9 @@ void checkIfFileOpen(uint32_t _socket) //Receives pid, fileName length, fileName
 		else
 			log_error(consoleLog, "ServerThread (checkIfFileOpen) - Error al recibir un pid de la CPU");
 
-		closeSocketAndRemoveCPU(_socket);
+
 		FD_CLR(_socket, &master);
+		closeSocketAndRemoveCPU(_socket);
 	}
 	else if((nbytes = receive_string(_socket, &fileName)) <= 0)
 	{
@@ -446,11 +489,16 @@ void checkIfFileOpen(uint32_t _socket) //Receives pid, fileName length, fileName
 		else
 			log_error(consoleLog, "ServerThread (checkIfFileOpen) - Error al recibir un nombre de archivo de la CPU");
 
-		closeSocketAndRemoveCPU(_socket);
+
 		FD_CLR(_socket, &master);
+		closeSocketAndRemoveCPU(_socket);
 	}
 	else
 	{
+		log_info(schedulerLog, "El proceso %d solicito verificar si el archivo \"%s\" fue abierto por algun proceso", pid, fileName);
+
+		pthread_mutex_lock(&fileTableMutex);
+
 		result = dictionary_has_key(fileTable, fileName);
 
 		if(!result)	//Key not in the dictionary
@@ -461,6 +509,8 @@ void checkIfFileOpen(uint32_t _socket) //Receives pid, fileName length, fileName
 				return;
 				//TODO (Optional) - Send Error Handling
 			}
+
+			log_info(schedulerLog, "El archivo \"%s\" no fue abierto por ningun proceso. Se le informara a la CPU para que le pida al DMA que lo cargue en memoria", fileName);
 		}
 		else	//Key is in the dictionary
 		{
@@ -475,12 +525,7 @@ void checkIfFileOpen(uint32_t _socket) //Receives pid, fileName length, fileName
 					//TODO (Optional) - Send Error Handling
 				}
 
-				if((nbytes = send_int_with_delay(_socket, data->memoryStartAddress)) < 0)
-				{
-					log_error(consoleLog, "ServerThread (checkIfFileOpen) - Error al indicar a la CPU que un archivo estaba abierto");
-					return;
-					//TODO (Optional) - Send Error Handling
-				}
+				log_info(schedulerLog, "El archivo \"%s\" fue abierto por el proceso que solicito la verificacion. Es posible continuar con la ejecucion");
 			}
 			else if(data->processFileIsAssignedTo == 0)	//File is not claimed by any process; the requesting process will claim the file
 			{
@@ -489,6 +534,15 @@ void checkIfFileOpen(uint32_t _socket) //Receives pid, fileName length, fileName
 				//					here
 
 				data->processFileIsAssignedTo = pid;
+
+				if((nbytes = send_int_with_delay(_socket, FILE_OPEN)) < 0)
+				{
+					log_error(consoleLog, "ServerThread (checkIfFileOpen) - Error al indicar a la CPU que un archivo estaba abierto");
+					return;
+					//TODO (Optional) - Send Error Handling
+				}
+
+				log_info(schedulerLog, "El archivo \"%s\" se encuentra en la tabla de archivos pero no esta asignado a ningun proceso. Se le asignara al proceso %d", fileName, pid);
 			}
 			else	//If file not open by requesting process, send confirmation so the CPU asks to block the process; then add the process to the file waiting list
 			{
@@ -498,6 +552,8 @@ void checkIfFileOpen(uint32_t _socket) //Receives pid, fileName length, fileName
 					return;
 					//TODO (Optional) - Send Error Handling
 				}
+
+				log_info(schedulerLog, "El archivo \"%s\" fue abierto por el proceso %d. El proceso que lo solicitaba (con id %d) sera agregado a la lista de espera del archivo", data->processFileIsAssignedTo, pid);
 
 				t_list* fileWaitingList = data->processesWaitingForFile;
 
@@ -536,9 +592,6 @@ void saveFileDataToFileTable(uint32_t _socket, uint32_t pid) //Receives pid, fil
 	bool result;
 	fileTableData* data = NULL;
 
-	pthread_mutex_lock(&fileTableMutex);
-	pthread_mutex_lock(&fileTableKeysMutex);
-
 	if((nbytes = receive_string(_socket, &fileName)) <= 0)
 	{
 		if(nbytes == 0)
@@ -546,11 +599,15 @@ void saveFileDataToFileTable(uint32_t _socket, uint32_t pid) //Receives pid, fil
 		else
 			log_error(consoleLog, "ServerThread (saveFileDataToFileTable) - Error al recibir un nombre de archivo del DMA");
 
-		closeSocketAndRemoveCPU(_socket);
+
 		FD_CLR(_socket, &master);
+		closeSocketAndRemoveCPU(_socket);
 	}
 	else
 	{
+		pthread_mutex_lock(&fileTableMutex);
+		pthread_mutex_lock(&fileTableKeysMutex);
+
 		result = dictionary_has_key(fileTable, fileName);
 
 		if(result)	//The key is in the fileTable, maybe because there are processes waiting for it
@@ -563,6 +620,8 @@ void saveFileDataToFileTable(uint32_t _socket, uint32_t pid) //Receives pid, fil
 				//TODO - ERROR - Another process claimed the file before this one; should never happen
 				//				 because processes claim the files before requesting the DMA to
 				//				 load them in memory
+
+				log_error(schedulerLog, "ERROR - El archivo \"%s\" fue reservado por el proceso %d, y no podra ser asignado al proceso %d (el cual el DMA solicito desbloquear)", data->processFileIsAssignedTo, pid);
 			}
 			else if(data->processFileIsAssignedTo == 0)
 			{
@@ -572,6 +631,8 @@ void saveFileDataToFileTable(uint32_t _socket, uint32_t pid) //Receives pid, fil
 				////TODO (Optional) - Maybe change this whole function, so the files get claimed here
 				//					  exactly when this condition is met. In that scenario, the above
 				//					  condition could be possible and should be handled properly
+
+				log_error(schedulerLog, "ERROR - El archivo \"%s\" no fue reservado por el proceso %d antes de solicitar al DMA que lo cargue en memoria", pid);
 			}
 		}
 		else //Key is not in the fileTable; add the key and fill the key data with the values obtained from the DMA
@@ -583,11 +644,13 @@ void saveFileDataToFileTable(uint32_t _socket, uint32_t pid) //Receives pid, fil
 
 			dictionary_put(fileTable, fileName, data);
 			list_add(fileTableKeys, fileName);
-		}
-	}
 
-	pthread_mutex_unlock(&fileTableMutex);
-	pthread_mutex_unlock(&fileTableKeysMutex);
+			log_info(schedulerLog, "Se agrego una entrada a la tabla de archivos para el archivo \"%s\", el cual fue asignado al proceso %d", fileName, pid);
+		}
+
+		pthread_mutex_unlock(&fileTableMutex);
+		pthread_mutex_unlock(&fileTableKeysMutex);
+	}
 }
 
 void closeFile(uint32_t _socket)
@@ -600,8 +663,6 @@ void closeFile(uint32_t _socket)
 	char* fileName = NULL;
 	bool result;
 
-	pthread_mutex_lock(&fileTableMutex);
-	pthread_mutex_lock(&fileTableKeysMutex);
 
 	if((nbytes = receive_int(_socket, &pid)) <= 0)
 	{
@@ -610,8 +671,9 @@ void closeFile(uint32_t _socket)
 		else
 			log_error(consoleLog, "ServerThread (checkIfFileOpen) - Error al recibir un pid de la CPU");
 
-		closeSocketAndRemoveCPU(_socket);
+
 		FD_CLR(_socket, &master);
+		closeSocketAndRemoveCPU(_socket);
 	}
 	else if((nbytes = receive_string(_socket, &fileName)) <= 0)
 	{
@@ -620,11 +682,15 @@ void closeFile(uint32_t _socket)
 		else
 			log_error(consoleLog, "ServerThread (checkIfFileOpen) - Error al recibir un nombre de archivo de la CPU");
 
-		closeSocketAndRemoveCPU(_socket);
+
 		FD_CLR(_socket, &master);
+		closeSocketAndRemoveCPU(_socket);
 	}
 	else
 	{
+		pthread_mutex_lock(&fileTableMutex);
+		pthread_mutex_lock(&fileTableKeysMutex);
+
 		result = dictionary_has_key(fileTable, fileName);
 
 		if(result)	 //The fileTable has the key, it can be removed
@@ -637,6 +703,8 @@ void closeFile(uint32_t _socket)
 			//from the fileTable and the memory. If 1 or more processes are blocked waiting for the file,
 			//all of them are unblocked...
 
+			log_info(schedulerLog, "El archivo \"%s\" sera quitado de la tabla de archivos, ya que el proceso %d solicito cerrarlo", fileName, pid);
+
 			if(processesWaitingForFile == 0) //No processes waiting for the file; the key can be removed
 			{
 				dataToRemove = dictionary_remove(fileTable, fileName);
@@ -644,18 +712,37 @@ void closeFile(uint32_t _socket)
 
 				list_destroy(dataToRemove->processesWaitingForFile);
 				free(dataToRemove);
+
+				log_info(schedulerLog, "No existen procesos esperando a que el archivo \"%s\" sea liberado");
 			}
-			else	//Unblock the waiting processes and remove the key
+			else	//Unblock the waiting processes and remove the key; a process should not request to close a file if it was not assigned to it, so no need to check if the file is assignet to that process
 			{
-				for(uint32_t i = 0; i < processesWaitingForFile; i++)
+				processToUnblock = (uint32_t) list_remove(processWaitList, 0);
+
+				char* processId = string_itoa(processToUnblock);
+				char* procWaitingForFileString = string_new();
+				string_append(&procWaitingForFileString, processId);
+
+				free(processId);
+
+				for(uint32_t i = 1; i < processesWaitingForFile; i++)
 				{
 					processToUnblock = (uint32_t) list_remove(processWaitList, i);
 					unblockProcess(processToUnblock, false);
+
+					processId = string_from_format(", %d", processToUnblock);
+					string_append(&procWaitingForFileString, processId);
+
+					free(processId);
 				}
 
 				dataToRemove = dictionary_remove(fileTable, fileName);
 				list_destroy(dataToRemove->processesWaitingForFile);
 				free(dataToRemove);
+
+				log_info(schedulerLog, "Los siguientes procesos esperaban por la liberacion del archivo \"%s\" y fueron desbloqueados: %s", fileName, processesWaitingForFile);
+
+				free(procWaitingForFileString);
 			}
 		}
 		else	//The fileTable does not have the key
@@ -665,10 +752,10 @@ void closeFile(uint32_t _socket)
 
 			log_error(schedulerLog, "Se intento cerrar el archivo \"%s\", pero el mismo no esta presente en la tabla de archivos", fileName);
 		}
-	}
 
-	pthread_mutex_unlock(&fileTableMutex);
-	pthread_mutex_unlock(&fileTableKeysMutex);
+		pthread_mutex_unlock(&fileTableMutex);
+		pthread_mutex_unlock(&fileTableKeysMutex);
+	}
 }
 
 void unlockProcess(uint32_t _socket)
@@ -683,8 +770,9 @@ void unlockProcess(uint32_t _socket)
 		else
 			log_error(consoleLog, "ServerThread (unlockProcess) - Error al recibir un pid del DMA");
 
-		close(_socket);
+
 		FD_CLR(_socket, &master);
+		close(_socket);
 	}
 	else
 	{
@@ -705,8 +793,6 @@ void signalResource(uint32_t _socket)
 	bool result;
 	semaphoreData* data = NULL;
 
-	pthread_mutex_lock(&semaphoreListMutex);
-
 	if((nbytes = receive_string(_socket, &semaphoreName)) <= 0)
 	{
 		if(nbytes == 0)
@@ -714,11 +800,14 @@ void signalResource(uint32_t _socket)
 		else
 			log_error(consoleLog, "ServerThread (waitResource) - Error al recibir un nombre de semaforo de la CPU");
 
-		closeSocketAndRemoveCPU(_socket);
+
 		FD_CLR(_socket, &master);
+		closeSocketAndRemoveCPU(_socket);
 	}
 	else
 	{
+		pthread_mutex_lock(&semaphoreListMutex);
+
 		result = dictionary_has_key(semaphoreList, semaphoreName);
 
 		if(result)
@@ -732,6 +821,8 @@ void signalResource(uint32_t _socket)
 				return;
 				//TODO (Optional) - Send Error Handling
 			}
+
+			log_info(schedulerLog, "No existia ningun semaforo con el nombre \"%s\", por lo que este fue creado e inicializado con valor 1", semaphoreName);
 		}
 		else	//The key is not in the dictionary, create it with value 1
 		{
@@ -745,10 +836,12 @@ void signalResource(uint32_t _socket)
 				return;
 				//TODO (Optional) - Send Error Handling
 			}
-		}
-	}
 
-	pthread_mutex_unlock(&semaphoreListMutex);
+			log_info(schedulerLog, "El valor del semaforo \"%s\" fue incrementado", semaphoreName);
+		}
+
+		pthread_mutex_unlock(&semaphoreListMutex);
+	}
 }
 
 void waitResource(uint32_t _socket)
@@ -767,8 +860,9 @@ void waitResource(uint32_t _socket)
 		else
 			log_error(consoleLog, "ServerThread (waitResource) - Error al recibir un pid de la CPU");
 
-		closeSocketAndRemoveCPU(_socket);
+
 		FD_CLR(_socket, &master);
+		closeSocketAndRemoveCPU(_socket);
 	}
 	else if((nbytes = receive_string(_socket, &semaphoreName)) <= 0)
 	{
@@ -777,11 +871,14 @@ void waitResource(uint32_t _socket)
 		else
 			log_error(consoleLog, "ServerThread (waitResource) - Error al recibir un nombre de semaforo de la CPU");
 
-		closeSocketAndRemoveCPU(_socket);
+
 		FD_CLR(_socket, &master);
+		closeSocketAndRemoveCPU(_socket);
 	}
 	else
 	{
+		pthread_mutex_lock(&semaphoreListMutex);
+
 		dictionaryHasKey = dictionary_has_key(semaphoreList, semaphoreName);
 
 		if(dictionaryHasKey)
@@ -800,6 +897,8 @@ void waitResource(uint32_t _socket)
 					return;
 					//TODO (Optional) - Send Error Handling
 				}
+
+				log_info(schedulerLog, "Se reservo una instancia del semaforo \"%s\" para el proceso %d", semaphoreName, pid);
 			}
 			else	//Add the process to the semaphore wait list, and tell the CPU the wait could not be done, so it requests a process block
 			{
@@ -811,6 +910,8 @@ void waitResource(uint32_t _socket)
 					return;
 					//TODO (Optional) - Send Error Handling
 				}
+
+				log_info(schedulerLog, "El proceso %d solicito una instancia del semaforo \"%s\", pero este no tiene instancias disponibles. El proceso sera agregado a la lista de espera del semaforo", pid, semaphoreName);
 			}
 		}
 		else	//The key is not in the dictionary, create it with value 1 and let the process wait on it
@@ -821,7 +922,12 @@ void waitResource(uint32_t _socket)
 			data->processesUsingTheSemaphore = list_create();
 
 			dictionary_put(semaphoreList, semaphoreName, data);
+
+			pthread_mutex_lock(&semaphoreListKeysMutex);
+
 			list_add(semaphoreListKeys, semaphoreName);
+
+			pthread_mutex_unlock(&semaphoreListKeysMutex);
 
 			if((nbytes = send_int_with_delay(_socket, WAIT_OK)) < 0)
 			{
@@ -829,17 +935,39 @@ void waitResource(uint32_t _socket)
 				return;
 				//TODO (Optional) - Send Error Handling
 			}
+
+			log_info(schedulerLog, "El semaforo \"%s\" no existia, por lo que fue creado con 1 instancia y asignado al proceso %d", semaphoreName, pid);
 		}
 	}
 }
 
 void freeCPUBySocket(uint32_t _socket)
 {
+	//Need to lock the CPUsList here, so no there is no risk of the current CPU getting modified when this function is running
+
+	pthread_mutex_lock(&cpuListMutex);
+
 	cpu_t* cpuToFree =  NULL;
 	cpuToFree = findCPUBy_socket(_socket);
 
 	cpuToFree->currentProcess = 0;
 	cpuToFree->isFree = true;
+
+	checkAndInitializeProcesses(cpuToFree); //check if there are any processes left to inialize, and do it with the new CPU
+
+	if((cpuToFree->isFree) && (stsWantsToExecute))	//If after trying to initialize a process, the CPU is still free, check if the STS wants to run and wake it up
+	{
+		log_info(schedulerLog, "El STS queria ejecutarse y se conecto una CPU. Se le permitira ejecutar al STS");
+
+		uint32_t semaphoreValue;
+
+		sem_getvalue(&shortTermScheduler, &semaphoreValue);
+
+		if(semaphoreValue == 0)		//If semaphore value < 0, the STS may already been executing
+			sem_post(&shortTermScheduler);
+	}
+
+	pthread_mutex_unlock(&cpuListMutex);
 }
 
 void handleCpuConnection(uint32_t _socket)
@@ -869,51 +997,31 @@ void handleCpuConnection(uint32_t _socket)
 		}
 	}
 
-	if((nbytes = receive_string(_socket, &cpuIp)) <= 0)
-	{
-		if(nbytes == 0)
-			log_error(consoleLog, "ServerThread (handleCpuConnection) - La CPU fue desconectada al intentar recibir su direccion ip de servidor");
-		else
-			log_error(consoleLog, "ServerThread (handleCpuConnection) - Error al recibir la direccion ip de servidor de la CPU");
 
-		close(_socket);
-		FD_CLR(_socket, &master);
-		return;
-	}
 
-	if((nbytes = receive_int(_socket, &cpuPort)) <= 0)
-	{
-		if(nbytes == 0)
-			log_error(consoleLog, "ServerThread (handleCpuConnection) - La CPU fue desconectada al intentar recibir su puerto de servidor");
-		else
-			log_error(consoleLog, "ServerThread (handleCpuConnection) - Error al recibir el puerto de servidor de la CPU");
-
-		close(_socket);
-		FD_CLR(_socket, &master);
-		return;
-	}
-
-	if((nbytes = send_int_with_delay(_socket, MESSAGE_RECEIVED)) < 0)
-	{
-		log_error(consoleLog, "ServerThread (handleCpuConnection) - Error al indicar a la CPU que el primer mensaje de handshake fue recibido");
-		return;
-		//TODO (Optional) - Send Error Handling
-	}
-
-	cpu_t* cpuConnection = calloc(1, sizeof(cpu_t));
-	cpuConnection->cpuId = ++totalConnectedCpus;
-	cpuConnection->currentProcess = 0;
-	cpuConnection->isFree = true;
-	cpuConnection->clientSocket = _socket;
-	cpuConnection->serverPort = cpuPort;
-	cpuConnection->serverIp = cpuIp;
-	cpuConnection->serverSocket = 0;
+	cpu_t* newCPU = calloc(1, sizeof(cpu_t));
+	newCPU->cpuId = ++totalConnectedCpus;
+	newCPU->currentProcess = 0;
+	newCPU->isFree = true;
+	newCPU->clientSocket = _socket;
 
 	pthread_mutex_lock(&cpuListMutex);
 
-	list_add(connectedCPUs, cpuConnection);
+	list_add(connectedCPUs, newCPU);
+	checkAndInitializeProcesses(newCPU); //check if there are any processes left to inialize, and do it with the new CPU
 
-	checkAndInitializeProcesses(cpuConnection); //check if there are any processes left to inialize, and do it with the new CPU
+	if((newCPU->isFree) && (stsWantsToExecute))	//If after trying to initialize a process, the CPU is still free, check if the STS wants to run and wake it up
+	{
+		log_info(schedulerLog, "El STS queria ejecutarse y se conecto una CPU. Se le permitira ejecutar al STS");
+
+		int32_t semaphoreValue;
+
+		sem_getvalue(&shortTermScheduler, &semaphoreValue);
+
+		if(semaphoreValue == 0)		//If semaphore value < 0, the STS may already been executing
+			sem_post(&shortTermScheduler);
+	}
+
 	pthread_mutex_unlock(&cpuListMutex);
 }
 
@@ -922,21 +1030,16 @@ void terminateProcess(uint32_t _socket)
 	int32_t nbytes;
 	PCB_t* updatedPCB = NULL;
 
-	if((nbytes = recvPCB(_socket, updatedPCB)) <= 0)
+	if((nbytes = recvPCB(_socket, &updatedPCB)) <= 0)
 	{
 		if(nbytes == 0)
 			log_error(consoleLog, "ServerThread (terminateProcess) - La CPU fue desconectada al intentar recibir un PCB");
 		else
 			log_error(consoleLog, "ServerThread (terminateProcess) - Error al recibir un PCB de la CPU");
 
-		closeSocketAndRemoveCPU(_socket);
+
 		FD_CLR(_socket, &master);
-	}
-	else if((nbytes = send_int(_socket, MESSAGE_RECEIVED)) < 0)
-	{
-		log_error(consoleLog, "ServerThread (terminateProcess) - Error al indicar a la CPU que se recibio un PCB correctamente");
-		return;
-		//TODO (Optional) - Send Error Handling
+		closeSocketAndRemoveCPU(_socket);
 	}
 
 	updatePCBInExecutionQueue(updatedPCB);
@@ -954,7 +1057,11 @@ void handleConfigFileChanged()
 
 	if(event->mask == IN_MODIFY)	//If the event was because of a modification
 	{
+		pthread_mutex_lock(&configFileMutex);
+
 		int32_t result = getConfigs();
+
+		pthread_mutex_unlock(&configFileMutex);
 
 		if(result < 0)
 		{

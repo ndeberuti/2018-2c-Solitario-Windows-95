@@ -70,9 +70,6 @@ typedef struct
 	bool isFree;
 	uint32_t currentProcess; //the process that a cpu is executing; 0 if it is free
 	uint32_t clientSocket;
-	uint32_t serverSocket;
-	uint32_t serverPort;
-	char* serverIp;
 	//maybe new fields?
 } cpu_t;
 
@@ -93,6 +90,13 @@ typedef struct
 	t_list* waitingProcesses;				//Processes waiting for the semaphore to be freed
 	//maybe new fields
 }semaphoreData;
+
+typedef struct
+{
+	uint32_t processToBeKilled;
+	uint32_t cpuSocketProcessWasExecutingOn;
+	//
+}processToKillData;
 
 
 t_log* consoleLog;
@@ -120,6 +124,8 @@ t_list* finishedQueue;
 t_list* connectedCPUs;
 t_list* ioReadyQueue;
 
+t_list* executingProcessesToKill;
+
 t_list* fileTableKeys;		//Because we could not add a keys list to the dictionary implementation provided by the teachers due to problems with
 t_list* semaphoreListKeys;	//what we tried to implement (adding a t_list* to the dictionary struct, and modifying the corresponding functions to
 							//add or remove keys from that list), to avoid problems we chose to create the key lists outside the dictionary
@@ -129,6 +135,7 @@ bool killThreads;
 bool STSAlreadyExecuting;
 bool LTSAlreadyExecuting;
 bool terminateModule;
+bool stsWantsToExecute; 		//The LTS tried to wake the STS, but there were no free CPUs; when a CPU is free, it must wake the STS
 sem_t shortTermScheduler;
 sem_t schedulerNotRunning;
 sem_t longTermScheduler;
@@ -143,9 +150,16 @@ pthread_mutex_t finishedQueueMutex;
 pthread_mutex_t fileTableMutex;
 pthread_mutex_t fileTableKeysMutex;
 pthread_mutex_t semaphoreListMutex;
+pthread_mutex_t semaphoreListKeysMutex;
 pthread_mutex_t processIOTimesTableMutex;
 pthread_mutex_t metricsGlobalvariablesMutex; //mutex for the "executedInstructions", "dma_executedInstructions"
 											 //"killProcessInstructions", "systemResponseTime" variables
+
+pthread_mutex_t executingProcessesToKillMutex;
+pthread_mutex_t canCommunicateWithCPUs;	//Only the ServerThread, the STS or the LTS can send messages to CPUs at a time
+										//(the ServerThread processes CPUs requests, the LTS initializes processes, and the STS sends
+										//processes to be executed or asks CPUs to count instructions for a script).
+										//This is to avoid communications mixing between threads, and thus, to avoid modules breaking
 
 
 void (*scheduleProcesses)(); //Plointer to a function that takes an returns no values
@@ -184,7 +198,8 @@ t_list* getSchedulableProcesses();
 void removeKeyFromList(t_list*, char*);
 void showConfigs();
 int32_t send_PCB_with_delay(PCB_t*, uint32_t);
-void checkAndInitializeProcesses();
+void checkAndInitializeProcesses(cpu_t*);
+void checkAndInitializeProcessesLoop();
 
 //Algorithms
 void roundRobinScheduler();
@@ -200,17 +215,17 @@ void getSystemMetrics();
 void getProcessStatus(uint32_t);
 void getQueuesStatus();
 void terminateProcessConsole(uint32_t);
-PCB_t* getProcessFromSchedulingQueues(uint32_t, char*);
+PCB_t* getProcessFromSchedulingQueues(uint32_t, char**);
 
 //ServerThread functions
 void server();
 void moduleHandler(uint32_t, uint32_t);
 void dmaTaskHandler(uint32_t, uint32_t);
 void cpuTaskHandler(uint32_t, uint32_t);
-void blockProcessInit(uint32_t);
-void _blockProcess(uint32_t);
+void blockProcessInit(uint32_t, int*);
+void _blockProcess(uint32_t, int*);
 void _killProcess(uint32_t);
-void processQuantumEnd(uint32_t);
+void processQuantumEnd(uint32_t, int*);
 cpu_t* findCPUBySocket(uint32_t);
 uint32_t updatePCBInExecutionQueue(PCB_t*);
 void checkIfFileOpen(uint32_t);

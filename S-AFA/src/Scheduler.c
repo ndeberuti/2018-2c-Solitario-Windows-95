@@ -12,7 +12,11 @@ void shortTermSchedulerThread()
 
 		//TODO: Review that last semaphore wait?
 
+		pthread_mutex_lock(&canCommunicateWithCPUs);	//To avoid the other threads to message CPUs when this one needs to do so
+
 		STSAlreadyExecuting = true;
+
+		log_info(schedulerLog, "STS: Comenzando ejecucion");
 
 		pthread_mutex_lock(&readyQueueMutex);
 		pthread_mutex_lock(&ioReadyQueueMutex);
@@ -31,9 +35,12 @@ void shortTermSchedulerThread()
 		pthread_mutex_unlock(&readyQueueMutex);
 		pthread_mutex_unlock(&ioReadyQueueMutex);
 
+		pthread_mutex_unlock(&canCommunicateWithCPUs);
+
 		STSAlreadyExecuting = false;
 
 		sem_post(&schedulerNotRunning);
+		log_info(schedulerLog, "STS: Ejecucion finalizada");
 	}
 }
 
@@ -50,8 +57,12 @@ void longTermSchedulerThread()
 
 		LTSAlreadyExecuting = true;
 
+		pthread_mutex_lock(&canCommunicateWithCPUs);	//To avoid the other threads to message CPUs when this one needs to do so
+
 		pthread_mutex_lock(&newQueueMutex);		//Need to prevent the threads accessing the readyQueue/newQueue
 		pthread_mutex_lock(&readyQueueMutex); 	//at the same time. Otherwise, unexpected things may happen...
+
+		log_info(schedulerLog, "LTS: Comenzando ejecucion...");
 
 		if(list_size(newQueue) == 0)
 		{
@@ -72,6 +83,8 @@ void longTermSchedulerThread()
 		}
 		else
 		{
+			pthread_mutex_lock(&cpuListMutex);	//As the connectedCPUs list is accessed multiple times in this function, to avoid results changing due to a CPU being modified, I must lock it
+
 			for(uint32_t i = 0; i < list_size(newQueue); i++)
 			{
 				processToInitialize = list_remove(newQueue, 0);
@@ -81,7 +94,7 @@ void longTermSchedulerThread()
 					log_info(schedulerLog, "No hay CPUs disponibles para inicializar el proceso con id %d. Se dejara en la cola de listos (sin poder ser planificado) a la espera de que se libere una CPU", processToInitialize->pid);
 				else
 				{
-					checkAndInitializeProcesses();	//Initializes all the processes waiting in the readyQueue to be initialized
+					checkAndInitializeProcessesLoop();	//Initializes all the processes waiting in the readyQueue to be initialized
 				}
 
 				//tengo que agregar el nuevo pcb a la cola de listos para guardar el espacio y despues a la cola de ejecucion, para poder mandar el proceso a la cola de bloqueados,
@@ -95,13 +108,22 @@ void longTermSchedulerThread()
 					break;
 			}
 
+			pthread_mutex_lock(&executionQueueMutex);
+
 			_checkExecProc_and_algorithm();
+
+			pthread_mutex_unlock(&executionQueueMutex);
+
+			pthread_mutex_unlock(&cpuListMutex);
 		}
 
 		pthread_mutex_unlock(&readyQueueMutex);
 		pthread_mutex_unlock(&newQueueMutex);
 
+		pthread_mutex_unlock(&canCommunicateWithCPUs);
+
 		LTSAlreadyExecuting = false;
+		log_info(schedulerLog, "LTS: Ejecucion finalizada");
 	}
 }
 
@@ -109,8 +131,7 @@ void _checkExecProc_and_algorithm()
 {
 	int32_t semaphoreValue;
 
-	log_info(schedulerLog, "LTS: Se encontraron procesos en la cola de listos. Se intentara activar el STS");
-	log_info(schedulerLog, "LTS: No se encontraron procesos en la cola de listos. No se activara el STS");
+	log_info(schedulerLog, "LTS: Se intentara activar el STS");
 
 	if((list_size(executionQueue) == 0) || (getFreeCPUsQty() > 0))
 	{
@@ -119,6 +140,11 @@ void _checkExecProc_and_algorithm()
 		if(semaphoreValue == 0)		//If semaphore value < 0, the STS may already been executing
 			sem_post(&shortTermScheduler); //If no process is executing at this moment, must activate the STS, no matter if
 													   	   //the STS algorithm is preemptive or not
+	}
+	else
+	{
+		log_info(schedulerLog, "LTS: Debido a que no hay CPUs disponibles, no se puede activar el STS (ya que este no podra ejecutar ningun proceso)");
+		stsWantsToExecute = true;
 	}
 }
 
@@ -152,6 +178,7 @@ void initializeVariables()
 	ioReadyQueue = list_create();
 	fileTableKeys = list_create();
 	semaphoreListKeys = list_create();
+	executingProcessesToKill = list_create();
 
 	fileTable = dictionary_create();
 	semaphoreList = dictionary_create();
@@ -198,7 +225,7 @@ void freeResources()
 {
 	free(config.schedulingAlgorithm);
 
-	list_destroy_and_destroy_elements(connectedCPUs, freeCpuElement);
+	list_destroy_and_destroy_elements(connectedCPUs, free);
 	list_destroy_and_destroy_elements(newQueue, freePCB);
 	list_destroy_and_destroy_elements(readyQueue, freePCB);
 	list_destroy_and_destroy_elements(blockedQueue, freePCB);

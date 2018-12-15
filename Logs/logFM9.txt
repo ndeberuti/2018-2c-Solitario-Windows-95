@@ -1,145 +1,114 @@
-[INFO] 23:27:53:609 Proceso FM9/(10514:10514): Inicio del proceso
-[INFO] 23:27:53:609 Proceso FM9/(10514:10514): ---- Configuracion ----
-[INFO] 23:27:53:609 Proceso FM9/(10514:10514): PUERTO = 8003
-[INFO] 23:27:53:609 Proceso FM9/(10514:10514): MODO = SEG
-[INFO] 23:27:53:609 Proceso FM9/(10514:10514): TAMANIO = 2048
-[INFO] 23:27:53:609 Proceso FM9/(10514:10514): MAX_LINEA = 128
-[INFO] 23:27:53:609 Proceso FM9/(10514:10514): TAM_PAGINA = 1024
-[INFO] 23:27:53:609 Proceso FM9/(10514:10514): -----------------------
-[INFO] 23:27:53:610 Proceso FM9/(10514:10514): Segmentación Simple seteada
-[INFO] 23:27:53:610 Proceso FM9/(10514:10514): Inicialización de memoria exitosa
-[INFO] 23:42:42:881 Proceso FM9/(11676:11676): Inicio del proceso
-[INFO] 23:42:42:881 Proceso FM9/(11676:11676): ---- Configuracion ----
-[INFO] 23:42:42:882 Proceso FM9/(11676:11676): PUERTO = 8003
-[INFO] 23:42:42:882 Proceso FM9/(11676:11676): MODO = SEG
-[INFO] 23:42:42:882 Proceso FM9/(11676:11676): TAMANIO = 2048
-[INFO] 23:42:42:882 Proceso FM9/(11676:11676): MAX_LINEA = 128
-[INFO] 23:42:42:882 Proceso FM9/(11676:11676): TAM_PAGINA = 1024
-[INFO] 23:42:42:882 Proceso FM9/(11676:11676): -----------------------
-[INFO] 23:42:42:882 Proceso FM9/(11676:11676): Segmentación Simple seteada
-[INFO] 23:42:42:882 Proceso FM9/(11676:11676): Inicialización de memoria exitosa
-[INFO] 00:59:40:37 Proceso FM9/(15478:15478): Inicio del proceso
-[INFO] 00:59:40:37 Proceso FM9/(15478:15478): ---- Configuracion ----
-[INFO] 00:59:40:37 Proceso FM9/(15478:15478): PUERTO = 8003
-[INFO] 00:59:40:37 Proceso FM9/(15478:15478): MODO = SEG
-[INFO] 00:59:40:37 Proceso FM9/(15478:15478): TAMANIO = 2048
-[INFO] 00:59:40:37 Proceso FM9/(15478:15478): MAX_LINEA = 128
-[INFO] 00:59:40:38 Proceso FM9/(15478:15478): TAM_PAGINA = 1024
-[INFO] 00:59:40:38 Proceso FM9/(15478:15478): -----------------------
-[INFO] 00:59:40:38 Proceso FM9/(15478:15478): Segmentación Simple seteada
-[INFO] 00:59:40:38 Proceso FM9/(15478:15478): Inicialización de memoria exitosa
-[INFO] 01:02:21:414 Proceso FM9/(15904:15904): Inicio del proceso
-[INFO] 01:02:21:414 Proceso FM9/(15904:15904): ---- Configuracion ----
-[INFO] 01:02:21:414 Proceso FM9/(15904:15904): PUERTO = 8003
-[INFO] 01:02:21:415 Proceso FM9/(15904:15904): MODO = SEG
-[INFO] 01:02:21:415 Proceso FM9/(15904:15904): TAMANIO = 2048
-[INFO] 01:02:21:415 Proceso FM9/(15904:15904): MAX_LINEA = 128
-[INFO] 01:02:21:415 Proceso FM9/(15904:15904): TAM_PAGINA = 1024
-[INFO] 01:02:21:415 Proceso FM9/(15904:15904): -----------------------
-[INFO] 01:02:21:415 Proceso FM9/(15904:15904): Segmentación Simple seteada
-[INFO] 01:02:21:415 Proceso FM9/(15904:15904): Inicialización de memoria exitosa
-[INFO] 01:18:43:607 Proceso FM9/(16553:16553): Inicio del proceso
-[INFO] 01:18:43:607 Proceso FM9/(16553:16553): ---- Configuracion ----
-[INFO] 01:18:43:607 Proceso FM9/(16553:16553): PUERTO = 8003
-[INFO] 01:18:43:607 Proceso FM9/(16553:16553): MODO = SEG
-[INFO] 01:18:43:608 Proceso FM9/(16553:16553): TAMANIO = 2048
-[INFO] 01:18:43:608 Proceso FM9/(16553:16553): MAX_LINEA = 128
-[INFO] 01:18:43:608 Proceso FM9/(16553:16553): TAM_PAGINA = 1024
-[INFO] 01:18:43:608 Proceso FM9/(16553:16553): -----------------------
-[INFO] 01:18:43:608 Proceso FM9/(16553:16553): Segmentación Simple seteada
-[INFO] 01:18:43:608 Proceso FM9/(16553:16553): Inicialización de memoria exitosa
-[INFO] 01:18:50:362 Consola FM9/(16553:16553): Nueva conexion desde El Diego
-[INFO] 01:24:15:893 Consola FM9/(16553:16553): Nueva conexion de CPU
-[INFO] 01:33:25:677 Consola FM9/(16553:16553): CPU desconectada
-[INFO] 01:35:16:633 Consola FM9/(16553:16553): Se desconecto El Diego
-[INFO] 01:35:19:22 Consola FM9/(16553:16553): Nueva conexion desde El Diego
-[INFO] 01:35:37:324 Consola FM9/(16553:16553): Nueva conexion de CPU
-[INFO] 01:36:05:752 Consola FM9/(16553:16553): Se desconecto El Diego
-[INFO] 01:36:08:864 Consola FM9/(16553:16553): CPU desconectada
-[INFO] 01:36:11:918 Consola FM9/(16553:16553): Nueva conexion desde El Diego
-[INFO] 01:36:13:572 Consola FM9/(16553:16553): Nueva conexion de CPU
-[INFO] 01:36:35:837 Consola FM9/(16553:16553): CPU desconectada
-[INFO] 01:36:45:957 Consola FM9/(16553:16556): Linea leida: dump
-[INFO] 01:36:45:957 Consola FM9/(16553:16556): dump: falta el parametro ID del DTB
-
-[INFO] 01:36:57:245 Consola FM9/(16553:16556): Linea leida: dump 10
-[ERROR] 01:36:57:245 Proceso FM9/(16553:16556): La tabla de segmentos y la memoria estan vacias
-[ERROR] 01:37:06:24 Consola FM9/(16553:16553): select
-[INFO] 01:37:27:568 Proceso FM9/(17566:17566): Inicio del proceso
-[INFO] 01:37:27:568 Proceso FM9/(17566:17566): ---- Configuracion ----
-[INFO] 01:37:27:568 Proceso FM9/(17566:17566): PUERTO = 8003
-[INFO] 01:37:27:568 Proceso FM9/(17566:17566): MODO = SEG
-[INFO] 01:37:27:568 Proceso FM9/(17566:17566): TAMANIO = 2048
-[INFO] 01:37:27:568 Proceso FM9/(17566:17566): MAX_LINEA = 128
-[INFO] 01:37:27:568 Proceso FM9/(17566:17566): TAM_PAGINA = 1024
-[INFO] 01:37:27:568 Proceso FM9/(17566:17566): -----------------------
-[INFO] 01:37:27:568 Proceso FM9/(17566:17566): Segmentación Simple seteada
-[INFO] 01:37:27:568 Proceso FM9/(17566:17566): Inicialización de memoria exitosa
-[INFO] 01:37:39:381 Consola FM9/(17566:17566): Nueva conexion desde El Diego
-[INFO] 01:37:44:416 Consola FM9/(17566:17566): Nueva conexion de CPU
-[INFO] 01:40:32:798 Consola FM9/(17566:17566): CPU desconectada
-[ERROR] 01:40:34:338 Consola FM9/(17566:17566): select
-[INFO] 01:41:40:899 Proceso FM9/(18032:18032): Inicio del proceso
-[INFO] 01:41:40:899 Proceso FM9/(18032:18032): ---- Configuracion ----
-[INFO] 01:41:40:899 Proceso FM9/(18032:18032): PUERTO = 8003
-[INFO] 01:41:40:899 Proceso FM9/(18032:18032): MODO = SEG
-[INFO] 01:41:40:899 Proceso FM9/(18032:18032): TAMANIO = 2048
-[INFO] 01:41:40:899 Proceso FM9/(18032:18032): MAX_LINEA = 128
-[INFO] 01:41:40:899 Proceso FM9/(18032:18032): TAM_PAGINA = 1024
-[INFO] 01:41:40:899 Proceso FM9/(18032:18032): -----------------------
-[INFO] 01:41:40:899 Proceso FM9/(18032:18032): Segmentación Simple seteada
-[INFO] 01:41:40:899 Proceso FM9/(18032:18032): Inicialización de memoria exitosa
-[INFO] 01:41:45:529 Consola FM9/(18032:18032): Nueva conexion desde El Diego
-[INFO] 01:41:50:540 Consola FM9/(18032:18032): Nueva conexion de CPU
-[ERROR] 01:42:25:747 Consola FM9/(18032:18032): select
-[INFO] 01:45:23:228 Proceso FM9/(18300:18300): Inicio del proceso
-[INFO] 01:45:23:228 Proceso FM9/(18300:18300): ---- Configuracion ----
-[INFO] 01:45:23:228 Proceso FM9/(18300:18300): PUERTO = 8003
-[INFO] 01:45:23:228 Proceso FM9/(18300:18300): MODO = SEG
-[INFO] 01:45:23:228 Proceso FM9/(18300:18300): TAMANIO = 2048
-[INFO] 01:45:23:228 Proceso FM9/(18300:18300): MAX_LINEA = 128
-[INFO] 01:45:23:228 Proceso FM9/(18300:18300): TAM_PAGINA = 1024
-[INFO] 01:45:23:228 Proceso FM9/(18300:18300): -----------------------
-[INFO] 01:45:23:228 Proceso FM9/(18300:18300): Segmentación Simple seteada
-[INFO] 01:45:23:229 Proceso FM9/(18300:18300): Inicialización de memoria exitosa
-[INFO] 01:45:26:113 Consola FM9/(18300:18300): Nueva conexion desde El Diego
-[INFO] 01:45:28:716 Consola FM9/(18300:18300): Nueva conexion de CPU
-[INFO] 01:45:56:646 Consola FM9/(18300:18303): Linea leida: dump 10
-[ERROR] 01:45:56:646 Proceso FM9/(18300:18303): La tabla de segmentos y la memoria estan vacias
-[INFO] 02:14:37:65 Consola FM9/(18300:18300): CPU desconectada
-[INFO] 02:14:39:956 Consola FM9/(18300:18300): Se desconecto El Diego
-[ERROR] 02:14:44:320 Consola FM9/(18300:18300): select
-[INFO] 02:16:35:260 Proceso FM9/(19204:19204): Inicio del proceso
-[INFO] 02:16:35:261 Proceso FM9/(19204:19204): ---- Configuracion ----
-[INFO] 02:16:35:261 Proceso FM9/(19204:19204): PUERTO = 8003
-[INFO] 02:16:35:261 Proceso FM9/(19204:19204): MODO = SEG
-[INFO] 02:16:35:261 Proceso FM9/(19204:19204): TAMANIO = 2048
-[INFO] 02:16:35:261 Proceso FM9/(19204:19204): MAX_LINEA = 128
-[INFO] 02:16:35:261 Proceso FM9/(19204:19204): TAM_PAGINA = 1024
-[INFO] 02:16:35:261 Proceso FM9/(19204:19204): -----------------------
-[INFO] 02:16:35:261 Proceso FM9/(19204:19204): Segmentación Simple seteada
-[INFO] 02:16:35:261 Proceso FM9/(19204:19204): Inicialización de memoria exitosa
-[INFO] 02:16:37:483 Consola FM9/(19204:19204): Nueva conexion desde El Diego
-[INFO] 02:16:41:371 Consola FM9/(19204:19204): Nueva conexion de CPU
-[INFO] 02:18:57:334 Consola FM9/(19204:19204): CPU desconectada
-[INFO] 02:21:53:165 Consola FM9/(19204:19204): Se desconecto El Diego
-[ERROR] 03:31:11:461 Consola FM9/(19204:19204): select
-[INFO] 03:31:17:830 Proceso FM9/(21878:21878): Inicio del proceso
-[INFO] 03:31:17:831 Proceso FM9/(21878:21878): ---- Configuracion ----
-[INFO] 03:31:17:831 Proceso FM9/(21878:21878): PUERTO = 8003
-[INFO] 03:31:17:831 Proceso FM9/(21878:21878): MODO = SEG
-[INFO] 03:31:17:831 Proceso FM9/(21878:21878): TAMANIO = 2048
-[INFO] 03:31:17:831 Proceso FM9/(21878:21878): MAX_LINEA = 128
-[INFO] 03:31:17:831 Proceso FM9/(21878:21878): TAM_PAGINA = 1024
-[INFO] 03:31:17:831 Proceso FM9/(21878:21878): -----------------------
-[INFO] 03:31:17:831 Proceso FM9/(21878:21878): Segmentación Simple seteada
-[INFO] 03:31:17:831 Proceso FM9/(21878:21878): Inicialización de memoria exitosa
-[INFO] 03:31:19:598 Consola FM9/(21878:21878): Nueva conexion desde El Diego
-[INFO] 03:31:21:824 Consola FM9/(21878:21878): Nueva conexion de CPU
-[INFO] 03:31:44:11 Consola FM9/(21878:21878): CPU desconectada
-[INFO] 03:42:05:721 Consola FM9/(21878:21878): Se desconecto El Diego
-[INFO] 03:42:11:804 Consola FM9/(21878:21878): Nueva conexion desde El Diego
-[INFO] 03:42:18:296 Consola FM9/(21878:21878): Nueva conexion de CPU
-[INFO] 03:42:52:138 Consola FM9/(21878:21878): CPU desconectada
-[INFO] 03:42:55:191 Consola FM9/(21878:21878): Se desconecto El Diego
-[ERROR] 03:42:56:574 Consola FM9/(21878:21878): select
+[INFO] 19:51:38:293 Proceso FM9/(16569:16569): Inicio del proceso
+[INFO] 19:51:38:293 Proceso FM9/(16569:16569): ---- Configuracion ----
+[INFO] 19:51:38:293 Proceso FM9/(16569:16569): PUERTO = 8003
+[INFO] 19:51:38:293 Proceso FM9/(16569:16569): MODO = SEG
+[INFO] 19:51:38:293 Proceso FM9/(16569:16569): TAMANIO = 2048
+[INFO] 19:51:38:294 Proceso FM9/(16569:16569): MAX_LINEA = 128
+[INFO] 19:51:38:294 Proceso FM9/(16569:16569): TAM_PAGINA = 1024
+[INFO] 19:51:38:294 Proceso FM9/(16569:16569): -----------------------
+[INFO] 19:51:38:294 Proceso FM9/(16569:16569): Segmentación Simple seteada
+[INFO] 19:51:38:294 Proceso FM9/(16569:16569): Inicialización de memoria exitosa
+[INFO] 19:52:00:183 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 19:52:11:466 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 19:52:25:263 Consola FM9/(16569:16569): CPU desconectada
+[INFO] 19:55:59:155 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 19:56:08:235 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 19:56:13:291 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 19:56:33:796 Consola FM9/(16569:16569): CPU desconectada
+[INFO] 20:31:18:379 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 20:31:22:435 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 20:31:24:564 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 20:31:50:318 Consola FM9/(16569:16569): CPU desconectada
+[INFO] 02:18:37:928 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 02:18:47:425 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 02:18:50:662 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 02:25:31:112 Consola FM9/(16569:16569): CPU desconectada
+[INFO] 02:25:32:221 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 02:26:00:568 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 02:26:03:772 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 02:26:51:65 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 02:26:52:112 Consola FM9/(16569:16569): CPU desconectada
+[INFO] 02:27:30:422 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 02:27:33:140 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 02:31:51:348 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 02:31:52:124 Consola FM9/(16569:16569): CPU desconectada
+[INFO] 02:32:00:67 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 02:32:02:505 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 02:34:37:155 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 02:34:37:942 Consola FM9/(16569:16569): CPU desconectada
+[INFO] 02:35:10:560 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 02:35:13:846 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 02:37:42:155 Consola FM9/(16569:16569): CPU desconectada
+[INFO] 02:37:42:822 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 02:37:50:284 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 02:37:52:253 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 02:43:20:186 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 02:43:21:106 Consola FM9/(16569:16569): CPU desconectada
+[INFO] 02:43:26:212 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 02:43:28:784 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 03:03:23:52 Consola FM9/(16569:16569): CPU desconectada
+[INFO] 03:03:24:204 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 03:04:36:970 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 03:05:19:931 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 03:06:41:793 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 03:06:53:426 Consola FM9/(16569:16569): CPU desconectada
+[INFO] 03:06:56:424 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 03:07:20:21 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 03:09:01:145 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 03:09:05:943 Consola FM9/(16569:16569): CPU desconectada
+[ERROR] 03:09:08:64 Consola FM9/(16569:16569): select
+[INFO] 03:09:19:532 Proceso FM9/(27828:27828): Inicio del proceso
+[INFO] 03:09:19:532 Proceso FM9/(27828:27828): ---- Configuracion ----
+[INFO] 03:09:19:532 Proceso FM9/(27828:27828): PUERTO = 8003
+[INFO] 03:09:19:532 Proceso FM9/(27828:27828): MODO = SEG
+[INFO] 03:09:19:532 Proceso FM9/(27828:27828): TAMANIO = 2048
+[INFO] 03:09:19:532 Proceso FM9/(27828:27828): MAX_LINEA = 128
+[INFO] 03:09:19:533 Proceso FM9/(27828:27828): TAM_PAGINA = 1024
+[INFO] 03:09:19:533 Proceso FM9/(27828:27828): -----------------------
+[INFO] 03:09:19:533 Proceso FM9/(27828:27828): Segmentación Simple seteada
+[INFO] 03:09:19:533 Proceso FM9/(27828:27828): Inicialización de memoria exitosa
+[INFO] 03:09:26:113 Consola FM9/(27828:27828): Nueva conexion desde El Diego
+[INFO] 03:30:04:997 Consola FM9/(27828:27828): Se desconecto El Diego
+[INFO] 03:30:27:11 Consola FM9/(27828:27828): Nueva conexion desde El Diego
+[INFO] 03:30:28:501 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 03:35:22:725 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 03:35:25:864 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 03:36:27:82 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 03:36:28:968 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 03:37:28:613 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 07:10:06:287 Consola FM9/(27828:27828): Se desconecto El Diego
+[INFO] 07:10:14:246 Consola FM9/(27828:27828): Nueva conexion desde El Diego
+[INFO] 07:10:21:992 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 07:10:38:723 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 07:15:21:466 Consola FM9/(27828:27828): Se desconecto El Diego
+[INFO] 07:15:25:927 Consola FM9/(27828:27828): Nueva conexion desde El Diego
+[INFO] 07:15:28:474 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 07:15:28:474 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 07:16:41:2 Consola FM9/(27828:27828): Se desconecto El Diego
+[INFO] 07:16:45:582 Consola FM9/(27828:27828): Nueva conexion desde El Diego
+[INFO] 07:16:47:120 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 07:16:59:481 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 07:17:13:336 Consola FM9/(27828:27828): Se desconecto El Diego
+[INFO] 07:17:22:766 Consola FM9/(27828:27828): Nueva conexion desde El Diego
+[INFO] 07:17:25:519 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 07:17:39:436 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 07:19:21:251 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 07:20:36:940 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 07:20:57:919 Consola FM9/(27828:27828): Se desconecto El Diego
+[INFO] 07:21:00:202 Consola FM9/(27828:27828): Nueva conexion desde El Diego
+[INFO] 07:21:04:186 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 07:22:00:416 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 07:22:02:660 Consola FM9/(27828:27828): Se desconecto El Diego
+[INFO] 07:25:07:418 Consola FM9/(27828:27828): Nueva conexion desde El Diego
+[INFO] 07:25:13:81 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 07:25:23:932 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 07:31:25:661 Consola FM9/(27828:27828): Se desconecto El Diego
+[INFO] 07:31:28:966 Consola FM9/(27828:27828): Nueva conexion desde El Diego
+[INFO] 07:31:31:919 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 07:31:44:344 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 07:32:44:661 Consola FM9/(27828:27828): Se desconecto El Diego
+[INFO] 07:32:50:584 Consola FM9/(27828:27828): Nueva conexion desde El Diego
+[INFO] 07:32:52:484 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 08:04:08:362 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 08:04:11:926 Consola FM9/(27828:27828): Se desconecto El Diego
+[ERROR] 08:04:17:789 Consola FM9/(27828:27828): select
