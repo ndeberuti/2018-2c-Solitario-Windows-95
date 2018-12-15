@@ -13,13 +13,13 @@
 #include <pthread.h>
 #include <errno.h>
 #include "funciones/funciones.h"
-#include <commons/config.h>
+#include "commons/config.h"
 #include "commons/string.h"
 #include "servidor/servidor.h"
+#include <semaphore.h>
 #include "enums.h"
 #include "PCB.h"
 
-#define CONEXION_CPU 4
 
 typedef struct
 {
@@ -40,17 +40,15 @@ t_log* cpuLog;
 t_log* socketErrorLog;		//select/recv/send error log
 config_t config;
 uint32_t schedulerServerSocket;	//The one obtained when this module connects to the scheduler
-uint32_t schedulerClientSocket;	//The one obtained when the scheduler connects to this module's server
+//uint32_t schedulerClientSocket;	//The one obtained when the scheduler connects to this module's server
 uint32_t dmaServerSocket;
 uint32_t memoryServerSocket;
 uint32_t instructionsExecuted;	//Instructions executed for the actual process
 uint32_t currentProcessQuantum;
 uint32_t currentProgramCounter;
-PCB_t* processInExecutionPCB;	//Has the PCB of the process being executed
+
+PCB_t** processInExecutionPCB;	//Has the PCB of the process being executed
 bool terminateModule;			//Used to tell all the threads the process must be closed
-bool stopExecution;				//Used to stop execution when needing to kill a process from the scheduler's console
-bool killExecutingProcess;
-bool blockExecutingProcess;
 bool usingCustomSchedulingAlgorithm;
 fd_set master; //Master File Descriptors Set
 pthread_t serverThread;
@@ -60,11 +58,13 @@ pthread_t serverThread;
 void initializeVariables();
 
 //ServerThread
+/*
 void server();
 void moduleHandler(uint32_t, uint32_t);
 void schedulerTaskHandler(uint32_t, uint32_t);
 void killProcess(uint32_t);
 void blockProcess(uint32_t);
+*/
 
 //CpuFunctions
 int32_t getConfigs();
@@ -101,6 +101,7 @@ void countProcessInstructions();
 char* requestScriptFromMemory();
 void showConfigs();
 void sendOpenFileRequestToDMA(char*);
+void freePCB(PCB_t*);
 
 
 #endif /* SRC_CPU_H_ */

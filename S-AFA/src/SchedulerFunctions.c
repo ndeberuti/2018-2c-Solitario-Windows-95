@@ -421,13 +421,7 @@ t_list* getFreeCPUs()
 
 	log_info(schedulerLog, "Buscando CPUs libres...");
 
-
-	pthread_mutex_lock(&cpuListMutex);
-
 	freeCPUs = list_filter(connectedCPUs, _cpu_is_free);
-
-	pthread_mutex_unlock(&cpuListMutex);
-
 
 	if(list_size(freeCPUs) > 0)
 	{
@@ -473,6 +467,9 @@ void initializeOrExecuteProcess(PCB_t* process, cpu_t* selectedCPU)
 
 	pthread_mutex_unlock(&executionQueueMutex);
 
+	//As this is a request from the scheduler to the CPU, and to avoid communications mixing with the requests
+	//made from the CPUs to the scheduler's serverThread, all the communication from this function with the CPUs is mathe through the CPUs serverThread
+
 	if(!process->wasInitialized)
 	{
 		if((nbytes = send_int_with_delay(selectedCPU->clientSocket, INITIALIZE_PROCESS)) < 0)
@@ -502,20 +499,10 @@ void initializeOrExecuteProcess(PCB_t* process, cpu_t* selectedCPU)
 		return;
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = receive_int(selectedCPU->clientSocket, &message)) <= 0)
-	{
-		if(nbytes == 0)
-			log_error(consoleLog, "SchedulerFunctions (executeProcess) - La CPU fue desconectada al intentar recibir la confirmacion de recepcion de PCB");
-		else
-			log_error(consoleLog, "SchedulerFunctions (executeProcess) - Error al intentar recibir la confirmacion de recepcion de PCB de la CPU");
-
-		closeSocketAndRemoveCPU(selectedCPU->clientSocket);
-		FD_CLR(selectedCPU->clientSocket, &master);
-	}
 
 	//TODO - With send errors, which should appear if the selectedCPU disconnects or something like that, a new CPU should be selected, which has different id than the current one
 
-	log_info(schedulerLog, "El proceso con id %d fue enviado para %s en la CPU con id %d", taskMessage, process->pid,  selectedCPU->cpuId);
+	log_info(schedulerLog, "El proceso con id %d fue enviado para %s en la CPU con id %d", process->pid, taskMessage,  selectedCPU->cpuId);
 }
 
 void killProcess(uint32_t pid)
@@ -634,12 +621,10 @@ void checkAndFreeProcessFiles(uint32_t processId)	//Checks if there are any file
 	//t_list* fileTableKeys = dictionary_get_keys(fileTable);
 	uint32_t fileTableKeysQty = list_size(fileTableKeys);
 	char* currentFile = NULL;
-	char* procIdToUnblockString = NULL;
 	fileTableData* data = NULL;
 	fileTableData* dataToRemove = NULL;
 	uint32_t processToUnblock;
 	t_list* processWaitList = NULL;
-	bool processHadFilesTaken = false;
 	uint32_t processesWaitingForFile;
 
 	pthread_mutex_lock(&fileTableMutex);
@@ -800,12 +785,6 @@ int32_t send_PCB_with_delay(PCB_t* pcb, uint32_t _socket)
 	return nbytes;
 }
 
-void freeCpuElement(cpu_t* cpu)
-{
-	free(cpu->serverIp);
-	free(cpu);
-}
-
 void freePCB(PCB_t* pcb)
 {
 	free(pcb->scriptPathInFS);
@@ -849,11 +828,78 @@ t_list* getSchedulableProcesses()
 	return list_filter(readyQueue, processCanBeScheduled);
 }
 
-
-void checkAndInitializeProcesses()
+void checkAndInitializeProcesses(cpu_t* freeCPU)
 {
-	//Check if there are any uninitialized processes in the readyQueue. If there are any, remove the
-	//first one from that queue and initialize it with the given CPU
+	//Takes any of the uninitialized processes from the readyQueue, and initializes it with the
+	//given CPU (this function is called when a CPU connects or is freed)
+
+	//No need to lock the connectedCPUs list here, it is already locked by the functions that call this one
+
+	pthread_mutex_lock(&readyQueueMutex);	//This list works with a process from the readyQueue, so I need to lock that queue too to avoid the process being modified
+
+	PCB_t* processToInitialize = NULL;
+	t_list* uninitializedProcesses = NULL;
+	uint32_t uninitializedProcessesQty;
+
+
+	bool _process_is_uninitialized(PCB_t* pcb)
+	{
+		return !(pcb->wasInitialized);
+	}
+/*
+	bool _process_has_given_id(PCB_t* pcb)		//Cannot place this here because processToInitialize is null
+	{
+		return (pcb->pid == processToInitialize->pid);
+	}
+*/
+
+	//The new list should have all the uninitialized processes ordered by the time they arrived
+	//to the readyQueue
+	uninitializedProcesses = list_filter(readyQueue, _process_is_uninitialized);
+	uninitializedProcessesQty = list_size(uninitializedProcesses);
+
+	if(uninitializedProcessesQty > 0)
+	{
+		log_info(schedulerLog, "Hay %d procesos sin inicializar. Debido a que hay una CPU libre, se inicializara el primer proceso sin inicializar de la cola de listos", uninitializedProcessesQty);
+	}
+	else
+	{
+		log_info(schedulerLog, "No hay procesos para inicializar");
+
+		pthread_mutex_unlock(&readyQueueMutex);
+
+		return;
+	}
+
+	log_info(schedulerLog, "");
+
+	processToInitialize = list_get(uninitializedProcesses, 0);
+	processToInitialize->wasInitialized = false;
+
+	bool _process_has_given_id(PCB_t* pcb)	//As 'processToInitialize' is assigned above, I have to create this function here for it to work
+	{
+		return (pcb->pid == processToInitialize->pid);
+	}
+
+	log_info(schedulerLog, "Se inicializara el proceso con id %d", processToInitialize->pid);
+
+	list_remove_by_condition(readyQueue, _process_has_given_id);
+
+	initializeOrExecuteProcess(processToInitialize, freeCPU);
+
+	log_info(schedulerLog, "LTS: El proceso %d fue enviado a una CPU para ser inicializado...", processToInitialize->pid);
+
+
+	pthread_mutex_unlock(&cpuListMutex);
+	pthread_mutex_unlock(&readyQueueMutex);
+}
+
+void checkAndInitializeProcessesLoop()
+{
+	//Takes all the uninitialized processes from the readyQueue, and initializes them with the available CPUs (Used in the LTS thread)
+
+	//No need to lock the connectedCPUs list, it is already locked in the LTS that calls this function
+
 
 	PCB_t* processToInitialize = NULL;
 	t_list* uninitializedProcesses = NULL;
@@ -873,6 +919,8 @@ void checkAndInitializeProcesses()
 		return (pcb->pid == processToInitialize->pid);
 	}
 */
+
+	//There is no need to lock the readyQueue, because It already got locked by the LTS that called this function
 
 	//The new list should have all the uninitialized processes ordered by the time they arrived
 	//to the readyQueue
@@ -897,7 +945,7 @@ void checkAndInitializeProcesses()
 	{
 		freeCPU = list_get(freeCPUs, 0);
 
-		PCB_t* processToInitialize = list_get(uninitializedProcesses, i);
+		processToInitialize = list_get(uninitializedProcesses, i);
 		processToInitialize->wasInitialized = false;
 
 		bool _process_has_given_id(PCB_t* pcb)	//As 'processToInitialize' is assigned above, I have to create this function here for it to work

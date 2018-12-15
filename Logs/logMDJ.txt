@@ -1,0 +1,68 @@
+[INFO] 19:51:49:577 Proceso MDJ/(16587:16587): Inicio del proceso
+[INFO] 19:51:49:577 Proceso MDJ/(16587:16587): ---- Configuracion ----
+[INFO] 19:51:49:577 Proceso MDJ/(16587:16587): PUERTO = 8002
+[INFO] 19:51:49:577 Proceso MDJ/(16587:16587): PUNTO_MONTAJE = /home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/FIFA_FS/
+[INFO] 19:51:49:577 Proceso MDJ/(16587:16587): RETARDO = 500 milisegundos
+[INFO] 19:51:49:577 Proceso MDJ/(16587:16587): -----------------------
+[INFO] 19:51:49:578 Proceso MDJ/(16587:16587): ----- File System -----
+[INFO] 19:51:49:578 Proceso MDJ/(16587:16587): TAMANIO_BLOQUES = 64
+[INFO] 19:51:49:578 Proceso MDJ/(16587:16587): CANTIDAD_BLOQUES = 256
+[INFO] 19:51:49:578 Proceso MDJ/(16587:16587): MAGIC_NUMBER = FIFA
+[INFO] 19:51:49:578 Proceso MDJ/(16587:16587): -----------------------
+[INFO] 19:52:00:183 Consola MDJ/(16587:16590): Nueva conexion desde El Diego
+[INFO] 19:55:59:155 Consola MDJ/(16587:16590): Se desconecto El Diego
+[INFO] 19:56:08:235 Consola MDJ/(16587:16590): Nueva conexion desde El Diego
+[INFO] 20:31:18:379 Consola MDJ/(16587:16590): Se desconecto El Diego
+[INFO] 20:31:22:435 Consola MDJ/(16587:16590): Nueva conexion desde El Diego
+[INFO] 02:18:37:931 Consola MDJ/(16587:16590): Se desconecto El Diego
+[INFO] 02:18:47:425 Consola MDJ/(16587:16590): Nueva conexion desde El Diego
+[INFO] 02:25:32:221 Consola MDJ/(16587:16590): Se desconecto El Diego
+[INFO] 02:26:00:568 Consola MDJ/(16587:16590): Nueva conexion desde El Diego
+[INFO] 02:26:51:65 Consola MDJ/(16587:16590): Se desconecto El Diego
+[INFO] 02:27:30:422 Consola MDJ/(16587:16590): Nueva conexion desde El Diego
+[INFO] 02:31:51:350 Consola MDJ/(16587:16590): Se desconecto El Diego
+[INFO] 02:32:00:67 Consola MDJ/(16587:16590): Nueva conexion desde El Diego
+[INFO] 02:34:37:155 Consola MDJ/(16587:16590): Se desconecto El Diego
+[INFO] 02:35:10:560 Consola MDJ/(16587:16590): Nueva conexion desde El Diego
+[INFO] 02:37:42:822 Consola MDJ/(16587:16590): Se desconecto El Diego
+[INFO] 02:37:50:284 Consola MDJ/(16587:16590): Nueva conexion desde El Diego
+[INFO] 02:43:20:186 Consola MDJ/(16587:16590): Se desconecto El Diego
+[INFO] 02:43:26:212 Consola MDJ/(16587:16590): Nueva conexion desde El Diego
+[INFO] 03:03:24:204 Consola MDJ/(16587:16590): Se desconecto El Diego
+[INFO] 03:04:36:969 Consola MDJ/(16587:16590): Nueva conexion desde El Diego
+[INFO] 03:06:41:794 Consola MDJ/(16587:16590): Se desconecto El Diego
+[INFO] 03:06:56:424 Consola MDJ/(16587:16590): Nueva conexion desde El Diego
+[INFO] 03:09:01:145 Consola MDJ/(16587:16590): Se desconecto El Diego
+[INFO] 03:09:15:549 Proceso MDJ/(27822:27822): Inicio del proceso
+[INFO] 03:09:15:550 Proceso MDJ/(27822:27822): ---- Configuracion ----
+[INFO] 03:09:15:550 Proceso MDJ/(27822:27822): PUERTO = 8002
+[INFO] 03:09:15:550 Proceso MDJ/(27822:27822): PUNTO_MONTAJE = /home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/FIFA_FS/
+[INFO] 03:09:15:550 Proceso MDJ/(27822:27822): RETARDO = 500 milisegundos
+[INFO] 03:09:15:550 Proceso MDJ/(27822:27822): -----------------------
+[INFO] 03:09:15:551 Proceso MDJ/(27822:27822): ----- File System -----
+[INFO] 03:09:15:551 Proceso MDJ/(27822:27822): TAMANIO_BLOQUES = 64
+[INFO] 03:09:15:551 Proceso MDJ/(27822:27822): CANTIDAD_BLOQUES = 256
+[INFO] 03:09:15:551 Proceso MDJ/(27822:27822): MAGIC_NUMBER = FIFA
+[INFO] 03:09:15:551 Proceso MDJ/(27822:27822): -----------------------
+[INFO] 03:09:26:110 Consola MDJ/(27822:27825): Nueva conexion desde El Diego
+[INFO] 03:30:04:997 Consola MDJ/(27822:27825): Se desconecto El Diego
+[INFO] 03:30:27:11 Consola MDJ/(27822:27825): Nueva conexion desde El Diego
+[INFO] 07:10:06:287 Consola MDJ/(27822:27825): Se desconecto El Diego
+[INFO] 07:10:14:246 Consola MDJ/(27822:27825): Nueva conexion desde El Diego
+[INFO] 07:15:21:466 Consola MDJ/(27822:27825): Se desconecto El Diego
+[INFO] 07:15:25:927 Consola MDJ/(27822:27825): Nueva conexion desde El Diego
+[INFO] 07:16:41:2 Consola MDJ/(27822:27825): Se desconecto El Diego
+[INFO] 07:16:45:582 Consola MDJ/(27822:27825): Nueva conexion desde El Diego
+[INFO] 07:17:13:336 Consola MDJ/(27822:27825): Se desconecto El Diego
+[INFO] 07:17:22:766 Consola MDJ/(27822:27825): Nueva conexion desde El Diego
+[INFO] 07:20:57:919 Consola MDJ/(27822:27825): Se desconecto El Diego
+[INFO] 07:21:00:202 Consola MDJ/(27822:27825): Nueva conexion desde El Diego
+[INFO] 07:22:02:660 Consola MDJ/(27822:27825): Se desconecto El Diego
+[INFO] 07:25:07:416 Consola MDJ/(27822:27825): Nueva conexion desde El Diego
+[INFO] 07:31:25:661 Consola MDJ/(27822:27825): Se desconecto El Diego
+[INFO] 07:31:28:966 Consola MDJ/(27822:27825): Nueva conexion desde El Diego
+[INFO] 07:32:44:661 Consola MDJ/(27822:27825): Se desconecto El Diego
+[INFO] 07:32:50:584 Consola MDJ/(27822:27825): Nueva conexion desde El Diego
+[INFO] 07:33:03:471 Consola MDJ/(27822:27825): Operacion VALIDAR_ARCHIVO recibida
+[INFO] 07:33:03:472 Consola MDJ/(27822:27825): No existe el archivo /Archivos/scripts/simple.escriptorio
+[INFO] 08:04:11:926 Consola MDJ/(27822:27825): Se desconecto El Diego

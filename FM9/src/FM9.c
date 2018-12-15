@@ -27,10 +27,8 @@ int main(void) {
 
 	setear_modo();
 
-	guardar_archivo_segmentacion_paginada(10, 120, 3," Three years ago we set out to make The Guardian sustainable by deepening our relationship with our readers. The same technologies that connected us with a global audience had also shifted advertising revenues away from news publishers. We decided to seek an approach that would allow us to keep our journalism open and accessible to everyone, regardless of where they live or what they can afford.\0");
-	guardar_archivo_segmentacion_paginada(10, 11, 5," GREEN DAY    ning our relationship with our readers. The same technologies that connected us with a global audience had also shifted advertising revenues away from news publishers. We decided to seek an approach that would allow us to keep our journalism open and accessible to everyone, regardless of where they live or what they can afford.\0");
 
-	dump(10);
+
 
 
 	//close_process_segmentacion_paginada(diego, 10);

@@ -122,7 +122,7 @@ int32_t getConfigs()
 	}
 
 	free(configurationPath);
-	config_destroy(configFile);
+	//config_destroy(configFile);
 
 	config = tempConfig;	//This is to avoid modifying the original config values if an error occurs after modifying the configFile in runtime
 
@@ -185,40 +185,6 @@ int32_t handshakeScheduler(uint32_t socket)
 		exit(EXIT_FAILURE);
 	}
 
-	if((nbytes = send_string(socket, config.cpuIp)) < 0)
-	{
-		log_error(cpuLog, "Error al enviar al planificador la direccion ip de la CPU\n");
-		log_error(socketErrorLog, "Send error: %s", strerror(errno));
-		return nbytes;
-		//TODO (Optional) - Send Error Handling
-	}
-
-	if((nbytes = send_int(socket, config.cpuPort)) < 0)
-	{
-		log_error(cpuLog, "Error al enviar al planificador la el puerto de la CPU\n");
-		log_error(socketErrorLog, "Send error: %s", strerror(errno));
-		return nbytes;
-		//TODO (Optional) - Send Error Handling
-	}
-
-	if((nbytes = receive_int(socket, &message)) <= 0)
-	{
-		if(nbytes == 0)
-		{
-			log_error(cpuLog, "Error al recibir mensaje de confirmacion de handshake del planificador\n");
-		}
-		else
-		{
-			log_error(cpuLog, "Error al recibir mensaje de confirmacion de handshake del planificador\n");
-
-			close(socket);
-			FD_CLR(socket, &master);
-		}
-
-		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
-		return nbytes;
-	}
-
 	log_info(cpuLog, "El handshake con el planificador se ha realizado correctamente!\n");
 
 	return 0;
@@ -226,32 +192,34 @@ int32_t handshakeScheduler(uint32_t socket)
 
 void connectToServers()
 {
-	uint32_t socket;
+	uint32_t _socket;
 	int32_t result;
 
-	if ((socket = connect_server(config.schedulerIp, config.schedulerPort, -1, cpuLog)) == 0)
+	if ((_socket = connect_server(config.schedulerIp, config.schedulerPort, -1, cpuLog)) == 0)
 	{
 		log_error(cpuLog, "Error al conectar con S-AFA");
 		exit(EXIT_FAILURE);
 	}
 	else
 	{
-		if((result = handshakeScheduler(socket)) < 0)		//Error receiving handshake messages (for example, a recv call took too long to receive messages)
+		if((result = handshakeScheduler(_socket)) < 0)		//Error receiving handshake messages (for example, a recv call took too long to receive messages)
 		{
 			log_error(cpuLog, "Error al conectar con S-AFA");
 			exit(EXIT_FAILURE);
 		}
 
-		schedulerServerSocket = socket;
+		schedulerServerSocket = _socket;
 
 		log_info(cpuLog, "Conexion con S-AFA exitosa");
 	}
 
-	if ((socket = connect_server(config.dmaIp, config.dmaPort, NEW_CPU_CONNECTION, cpuLog)) == 0)
+	if ((_socket = connect_server(config.dmaIp, config.dmaPort, NEW_CPU_CONNECTION, cpuLog)) == 0)
 	{
 		log_error(cpuLog, "Error al conectar con El Diego");
 		exit(EXIT_FAILURE);
 	}
+	else
+		dmaServerSocket = _socket;
 /*	else
 	{
 		if((result = handshakeProcess(socket)) < 0)		//Error receiving handshake messages (for example, a recv call took too long to receive messages)
@@ -267,11 +235,13 @@ void connectToServers()
 
 	log_info(cpuLog, "Conexion con El Diego exitosa");
 
-	if ((socket = connect_server(config.memoryIp, config.memoryPort, NEW_CPU_CONNECTION, cpuLog)) == 0)
+	if ((_socket = connect_server(config.memoryIp, config.memoryPort, NEW_CPU_CONNECTION, cpuLog)) == 0)
 	{
 		log_error(cpuLog, "Error al conectar con FM9");
 		exit(EXIT_FAILURE);
 	}
+	else
+		memoryServerSocket = _socket;
 
 	log_info(cpuLog, "Conexion con FM9 exitosa");
 /*	else
@@ -301,7 +271,7 @@ void executeProcess()
 
 	log_info(cpuLog, "El planificador solicita la incializacion de un proceso");
 
-	if((nbytes = recvPCB(schedulerServerSocket, processToExecute)) <= 0)
+	if((nbytes = recvPCB(schedulerServerSocket, &processToExecute)) <= 0)
 	{
 		if(nbytes == 0)
 			log_error(cpuLog, "EL planificador fue desconectado al intentar recibir un PCB del mismo\n");
@@ -315,24 +285,16 @@ void executeProcess()
 		exit(EXIT_FAILURE);
 	}
 
+	processInExecutionPCB = &processToExecute;
+
 	log_info(cpuLog, "Se recibio del planificador el PCB correspondiente al proceso %d", processToExecute->pid);
 
-	if((nbytes = send_int(schedulerServerSocket, MESSAGE_RECEIVED)) < 0)
-	{
-		log_error(cpuLog, "Error al indicar al planificador que se recibio un PCB correctamente\n");
 
-		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+	(*processInExecutionPCB) = processToExecute;
 
-		log_error(socketErrorLog, "Send error: %s", strerror(errno));
-
-		exit(EXIT_FAILURE);
-		//TODO (Optional) - Send Error Handling
-	}
-
-	processInExecutionPCB = processToExecute;
 	instructionsExecuted = 0;
-	currentProcessQuantum = processInExecutionPCB->remainingQuantum;
-	currentProgramCounter = processInExecutionPCB->programCounter;	//The program counter is the number of line of the last instruction that was executed (in the script, lines index starts at 1)
+	currentProcessQuantum = (*processInExecutionPCB)->remainingQuantum;
+	currentProgramCounter = (*processInExecutionPCB)->programCounter;	//The program counter is the number of line of the last instruction that was executed (in the script, lines index starts at 1)
 																	//So, after receiving the PCB, to get the next instruction to execute, I
 																	//must increment the programCounter by 1.
 																	//If this is the first execution for that PCB, the currentProgramCounter == 0
@@ -344,7 +306,7 @@ void executeProcess()
 
 	//Execute instructions until the program counter (that starts at index 1) exceeds the number
 	//of instructions of the script, or until the process runs out of quantum
-	while((currentProcessQuantum != 0) && (currentProgramCounter < instructionsQty) && (!stopExecution))
+	while((currentProcessQuantum != 0) && (currentProgramCounter < instructionsQty))
 	{
 		//This variables get changed here and not at the end of the while, because if a PCB must be sent back to the scheduler inside
 		//the "checkAndExecuteInstruction" function, when it gets updated, its variables get updated correctly with this ones
@@ -394,29 +356,19 @@ void executeProcess()
 										//(maybe a file did not get closed by an instruction), I send it a message telling it to
 										//free all data related to the ending process...
 
-		log_info(cpuLog, "El proceso %d finalizo su ejecucion (por fin de script) luego de ejecutar %d instrucciones", processInExecutionPCB->pid, instructionsExecuted);
+		log_info(cpuLog, "El proceso %d finalizo su ejecucion (por fin de script) luego de ejecutar %d instrucciones", (*processInExecutionPCB)->pid, instructionsExecuted);
 	}
 	else if(currentProcessQuantum == 0)	//Reached the end of the quantum
 	{
 		updatePCBAndSendExecutionEndMessage(QUANTUM_END);
 
-		log_info(cpuLog, "El proceso %d finalizo su ejecucion (por fin de quantum) luego de ejecutar %d instrucciones", processInExecutionPCB->pid, instructionsExecuted);
-	}
-	else if(killExecutingProcess)
-	{
-		updatePCBAndSendExecutionEndMessage(PROCESS_ERROR);
-
-		killExecutingProcess = false;
-		stopExecution = false;
-
-		log_info(cpuLog, "Se ha finalizado la ejecucion del proceso con ID %d de forma prematura por peticion del planificador\n", processInExecutionPCB->pid);
+		log_info(cpuLog, "El proceso %d finalizo su ejecucion (por fin de quantum) luego de ejecutar %d instrucciones", (*processInExecutionPCB)->pid, instructionsExecuted);
 	}
 
 	processInExecutionPCB = NULL;
 	instructionsExecuted = 0;
 	currentProcessQuantum = 0;
 	currentProgramCounter = 0;
-
 
 	free(processInExecutionPCB);  //After an execution, and after sending the PCB back to the scheduler, its structure must be cleaned
 	list_destroy_and_destroy_elements(parsedScript, free);  //Free the parsed script and all its elements (that are "char*")
@@ -430,7 +382,7 @@ void initializeProcess()
 
 	log_info(cpuLog, "El planificador solicita la incializacion de un proceso");
 
-	if((nbytes = recvPCB(schedulerServerSocket, processToInitialize)) <= 0)
+	if((nbytes = recvPCB(schedulerServerSocket, &processToInitialize)) <= 0)
 	{
 		if(nbytes == 0)
 			log_error(cpuLog, "EL planificador fue desconectado al intentar recibir un PCB del mismo\n");
@@ -444,19 +396,9 @@ void initializeProcess()
 		exit(EXIT_FAILURE);
 	}
 
+	processInExecutionPCB = &processToInitialize;
+
 	log_info(cpuLog, "Se recibio del planificador el PCB correspondiente al proceso %d", processToInitialize->pid);
-
-	if((nbytes = send_int(schedulerServerSocket, MESSAGE_RECEIVED)) < 0)
-	{
-		log_error(cpuLog, "Error al indicar al planificador que se recibio un PCB correctamente\n");
-
-		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
-
-		log_error(socketErrorLog, "Send error: %s", strerror(errno));
-
-		exit(EXIT_FAILURE);
-		//TODO (Optional) - Send Error Handling
-	}
 
 	sendOpenFileRequestToDMA(processToInitialize->scriptPathInFS);
 
@@ -499,7 +441,8 @@ t_list* parseScript(char* script)
 
 t_list* parseLine(char* line)	//The first element of the list is the instruction, the other elements are the arguments in order of appearance
 {
-	return string_split_to_list(line, " ");
+	return string_n_split_to_list(line, 4, " ");	//As the maximum number of arguments an instruction can have is 3, each line
+													//must be separated in 4 strings (instruction + 3 arguments)
 }
 
 bool checkAndExecuteInstruction(t_list* parsedLine)	//The 'parsedLine' list should be destroyed after calling this function
@@ -710,7 +653,7 @@ void openFile(char* filePathInFS)
 
 		case FILE_OPEN:
 			//Do Nothing, no need to open the file again; go to the next instruction
-			log_info(cpuLog, "Se solicito la apertura del archivo del path \"%s\", pero este ya fue abierto por el proceso %d\n", filePathInFS, processInExecutionPCB->pid);
+			log_info(cpuLog, "Se solicito la apertura del archivo del path \"%s\", pero este ya fue abierto por el proceso %d\n", filePathInFS, (*processInExecutionPCB)->pid);
 		break;
 	}
 }
@@ -757,7 +700,7 @@ void waitSemaphore(char* semaphoreName)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int(schedulerServerSocket, processInExecutionPCB->pid)) < 0)
+	if((nbytes = send_int(schedulerServerSocket, (*processInExecutionPCB)->pid)) < 0)
 	{
 		log_error(cpuLog, "Error al enviar al planificador el pid del proceso para el cual debe hacer un WAIT\n");
 
@@ -825,7 +768,7 @@ void signalSemaphore(char* semaphoreName)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int(schedulerServerSocket, processInExecutionPCB->pid)) < 0)
+	if((nbytes = send_int(schedulerServerSocket, (*processInExecutionPCB)->pid)) < 0)
 	{
 		log_error(cpuLog, "Error al enviar al planificador el pid del proceso para el cual debe hacer un SIGNAL\n");
 
@@ -941,7 +884,7 @@ void createFile(char* filePathInFS, uint32_t numberOfLines)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int(dmaServerSocket, processInExecutionPCB->pid)) < 0)
+	if((nbytes = send_int(dmaServerSocket, (*processInExecutionPCB)->pid)) < 0)
 	{
 		log_error(cpuLog, "Error al enviar al DMA el pid del proceso para el cual se debe crear un archivo\n");
 
@@ -991,7 +934,7 @@ void deleteFile(char* filePathInFS)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int(dmaServerSocket, processInExecutionPCB->pid)) < 0)
+	if((nbytes = send_int(dmaServerSocket, (*processInExecutionPCB)->pid)) < 0)
 	{
 		log_error(cpuLog, "Error al enviar al DMA el pid del proceso para el cual se debe elimninar un archivo\n");
 
@@ -1034,7 +977,7 @@ uint32_t askSchedulerIfFileOpen(char* filePathInFS)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int(schedulerServerSocket, processInExecutionPCB->pid)) < 0)
+	if((nbytes = send_int(schedulerServerSocket, (*processInExecutionPCB)->pid)) < 0)
 	{
 		log_error(cpuLog, "Error al enviar al planificador el pid del proceso para el cual verificar si un archivo esta abierto\n");
 
@@ -1087,7 +1030,7 @@ void handleFileNotOpen(char* filePathInFS, bool raiseError)
 	}
 	else
 	{
-		log_error(cpuLog, "Se solicito una operacion sobre un archivo no abierto por el proceso %d\nEl proceso sera terminado..\n", processInExecutionPCB->pid);
+		log_error(cpuLog, "Se solicito una operacion sobre un archivo no abierto por el proceso %d\nEl proceso sera terminado..\n", (*processInExecutionPCB)->pid);
 		handleProcessError();
 	}
 }
@@ -1099,12 +1042,12 @@ void handleFileOpenedByOtherProcess(char* filePathInFS, bool raiseError)
 
 	if(!raiseError)
 	{
-		log_info(cpuLog, "Se solicito la apertura del archivo del path \"%s\" para el proceso %d, pero dicho archivo ya fue abierto por otro proceso\nEl proceso actual sera bloqueado\n", filePathInFS, processInExecutionPCB->pid);
+		log_info(cpuLog, "Se solicito la apertura del archivo del path \"%s\" para el proceso %d, pero dicho archivo ya fue abierto por otro proceso\nEl proceso actual sera bloqueado\n", filePathInFS, (*processInExecutionPCB)->pid);
 		tellSchedulerToBlockProcess(false);
 	}
 	else
 	{
-		log_error(cpuLog, "Se solicito una operacion sobre un archivo no abierto por el proceso %d\nEl proceso sera terminado..\n", processInExecutionPCB->pid);
+		log_error(cpuLog, "Se solicito una operacion sobre un archivo no abierto por el proceso %d\nEl proceso sera terminado..\n", (*processInExecutionPCB)->pid);
 		handleProcessError();
 	}
 }
@@ -1130,7 +1073,7 @@ void handleProcessError()
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = sendPCB(schedulerServerSocket, processInExecutionPCB)) < 0)
+	if((nbytes = sendPCB(schedulerServerSocket, (*processInExecutionPCB))) < 0)
 	{
 		log_error(cpuLog, "Error al enviar al planificador el PCB del proceso en ejecucion\n");
 
@@ -1141,25 +1084,12 @@ void handleProcessError()
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	//The scheduler sends a message telling the CPU it received the PCB
-	if((nbytes = receive_int(schedulerServerSocket, &message)) <= 0)
-	{
-		if(nbytes == 0)
-			log_error(cpuLog, "EL planificador fue desconectado al intentar recibir la confirmacion de recepcion de un PCB");
-		if(nbytes < 0)
-			log_error(cpuLog, "Error al intentar recibir la confirmacion de recepcion de un PCB del planificador");
 
-		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
-
-		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
-
-		exit(EXIT_FAILURE);
-	}
 
 
 	tellMemoryToFreeProcessData();
 
-	log_info(cpuLog, "El proceso %d finalizo su ejecucion (debido a un error) luego de ejecutar %d instrucciones", processInExecutionPCB->pid, instructionsExecuted);
+	log_info(cpuLog, "El proceso %d finalizo su ejecucion (debido a un error) luego de ejecutar %d instrucciones", (*processInExecutionPCB)->pid, instructionsExecuted);
 }
 
 void tellMemoryToFreeProcessData()
@@ -1178,7 +1108,7 @@ void tellMemoryToFreeProcessData()
 		exit(EXIT_FAILURE);
 			//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int(memoryServerSocket, processInExecutionPCB->pid)) < 0)
+	if((nbytes = send_int(memoryServerSocket, (*processInExecutionPCB)->pid)) < 0)
 	{
 		log_error(cpuLog, "Error al indicar a la memoria que ocurrio un error en la ejecucion\n");
 
@@ -1219,7 +1149,7 @@ void tellMemoryToFreeProcessData()
 	}
 	else if(message == OK)
 	{
-		log_info(cpuLog, "Se han quitado de la memoria todos los archivos para el proceso %d de forma exitosa", processInExecutionPCB->pid);
+		log_info(cpuLog, "Se han quitado de la memoria todos los archivos para el proceso %d de forma exitosa", (*processInExecutionPCB)->pid);
 	}
 }
 
@@ -1242,7 +1172,7 @@ void tellSchedulerToBlockProcess(bool isDmaCall)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = sendPCB(schedulerServerSocket, processInExecutionPCB)) < 0)
+	if((nbytes = sendPCB(schedulerServerSocket, (*processInExecutionPCB))) < 0)
 	{
 		log_error(cpuLog, "Error al enviar al planificador el PCB del proceso en ejecucion\n");
 
@@ -1264,22 +1194,9 @@ void tellSchedulerToBlockProcess(bool isDmaCall)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	//The scheduler sends a message telling the CPU it received the PCB
-	if((nbytes = receive_int(schedulerServerSocket, &message)) <= 0)
-	{
-		if(nbytes == 0)
-			log_error(cpuLog, "EL planificador fue desconectado al intentar recibir la confirmacion de recepcion de un PCB");
-		if(nbytes < 0)
-			log_error(cpuLog, "Error al intentar recibir la confirmacion de recepcion de un PCB del planificador");
 
-		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
 
-		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
-
-		exit(EXIT_FAILURE);
-	}
-
-	log_info(cpuLog, "El proceso %d finalizo su ejecucion (por bloqueo), luego de ejecutar %d instrucciones", processInExecutionPCB->pid, instructionsExecuted);
+	log_info(cpuLog, "El proceso %d finalizo su ejecucion (por bloqueo), luego de ejecutar %d instrucciones", (*processInExecutionPCB)->pid, instructionsExecuted);
 }
 
 void handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToAssign)
@@ -1382,7 +1299,7 @@ void handleFlushFile(char* filePathInFS)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int(dmaServerSocket, processInExecutionPCB->pid)) < 0)
+	if((nbytes = send_int(dmaServerSocket, (*processInExecutionPCB)->pid)) < 0)
 	{
 		log_error(cpuLog, "Error al enviar al planificador el PCB del proceso en ejecucion\n");
 
@@ -1427,7 +1344,7 @@ void handleCloseFile(char* filePathInFS)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int(schedulerServerSocket, processInExecutionPCB->pid)) < 0)
+	if((nbytes = send_int(schedulerServerSocket, (*processInExecutionPCB)->pid)) < 0)
 	{
 		log_error(cpuLog, "Error al enviar al planificador el pid del proceso para el cual debe cerrar un archivo\n");
 
@@ -1503,21 +1420,21 @@ void handleCloseFile(char* filePathInFS)
 
 void updateCurrentPCB()
 {
-	processInExecutionPCB->totalInstructionsExecuted += instructionsExecuted;
-	processInExecutionPCB->instructionsExecutedOnLastExecution = instructionsExecuted;
-	processInExecutionPCB->programCounter += instructionsExecuted;
-	processInExecutionPCB->remainingQuantum -= instructionsExecuted;
+	(*processInExecutionPCB)->totalInstructionsExecuted += instructionsExecuted;
+	(*processInExecutionPCB)->instructionsExecutedOnLastExecution = instructionsExecuted;
+	(*processInExecutionPCB)->programCounter += instructionsExecuted;
+	(*processInExecutionPCB)->remainingQuantum -= instructionsExecuted;
 
 	if(usingCustomSchedulingAlgorithm)
 	{
-		if(processInExecutionPCB->instructionsUntilIoOrEnd < instructionsExecuted)
+		if((*processInExecutionPCB)->instructionsUntilIoOrEnd < instructionsExecuted)
 		{
 			//More instructions were executed than the ones left to the next IO which means the process already called an IO instruction
 			//Or it may be that the scheduling algorithm used when this process started executing did not require to check the instructions left until IO or end of script
-			processInExecutionPCB->instructionsUntilIoOrEnd = 0;
+			(*processInExecutionPCB)->instructionsUntilIoOrEnd = 0;
 		}
 		else
-			processInExecutionPCB-> instructionsUntilIoOrEnd -= instructionsExecuted;
+			(*processInExecutionPCB)-> instructionsUntilIoOrEnd -= instructionsExecuted;
 
 	}
 }
@@ -1540,7 +1457,7 @@ void updatePCBAndSendExecutionEndMessage(uint32_t messageCode)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = sendPCB(schedulerServerSocket, processInExecutionPCB)) < 0)
+	if((nbytes = sendPCB(schedulerServerSocket, (*processInExecutionPCB))) < 0)
 	{
 		log_error(cpuLog, "Error al enviar al planificador el PCB del proceso en ejecucion\n");
 
@@ -1551,20 +1468,7 @@ void updatePCBAndSendExecutionEndMessage(uint32_t messageCode)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	//The scheduler sends a message telling the CPU it received the PCB
-	if((nbytes = receive_int(schedulerServerSocket, &message)) <= 0)
-	{
-		if(nbytes == 0)
-			log_error(cpuLog, "EL planificador fue desconectado al intentar recibir la confirmacion de recepcion de un PCB");
-		if(nbytes < 0)
-			log_error(cpuLog, "Error al intentar recibir la confirmacion de recepcion de un PCB del planificador");
 
-		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
-
-		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
-
-		exit(EXIT_FAILURE);
-	}
 }
 
 void removeCommentsFromScript(t_list* script)
@@ -1710,7 +1614,7 @@ char* requestScriptFromMemory()
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_string(memoryServerSocket, processInExecutionPCB->scriptPathInFS)) < 0)
+	if((nbytes = send_string(memoryServerSocket, (*processInExecutionPCB)->scriptPathInFS)) < 0)
 	{
 		log_error(cpuLog, "Error al enviar a la memoria el nombre del script requerido\n");
 
@@ -1746,20 +1650,20 @@ void sendOpenFileRequestToDMA(char* filePathInFS)
 	//Send the task to the DMA, the process ID and the path of the file to open
 	if((nbytes = send_int(dmaServerSocket, OPEN_FILE)) < 0)
 	{
-		log_error(cpuLog, "Error al solicitar al planificador que bloquee el proceso en ejecucion\n");
+		log_error(cpuLog, "Error al solicitar al DMA que abra un archivo\n");
 
-		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+		log_info(cpuLog, "Debido a una desconexion del DMA, este proceso se cerrara\n");
 
 		log_error(socketErrorLog, "Send error: %s", strerror(errno));
 
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int(dmaServerSocket, processInExecutionPCB->pid)) < 0)
+	if((nbytes = send_int(dmaServerSocket, (*processInExecutionPCB)->pid)) < 0)
 	{
-		log_error(cpuLog, "Error al enviar al planificador el PCB del proceso en ejecucion\n");
+		log_error(cpuLog, "Error al enviar al DMA elid del proceso para el cual debe abrir un archivo\n");
 
-		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+		log_info(cpuLog, "Debido a una desconexion del DMA, este proceso se cerrara\n");
 
 		log_error(socketErrorLog, "Send error: %s", strerror(errno));
 
@@ -1768,9 +1672,9 @@ void sendOpenFileRequestToDMA(char* filePathInFS)
 	}
 	if((nbytes = send_string(dmaServerSocket, filePathInFS)) < 0)
 	{
-		log_error(cpuLog, "Error al enviar al planificador el PCB del proceso en ejecucion\n");
+		log_error(cpuLog, "Error al enviar al DMA el path del archivo que debe abrir\n");
 
-		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+		log_info(cpuLog, "Debido a una desconexion del DMA, este proceso se cerrara\n");
 
 		log_error(socketErrorLog, "Send error: %s", strerror(errno));
 
@@ -1778,5 +1682,11 @@ void sendOpenFileRequestToDMA(char* filePathInFS)
 		//TODO (Optional) - Send Error Handling
 	}
 
-	log_info(cpuLog, "Se solicito al DMA la apertura del archivo del path \"%s\", para el proceso %d\n", filePathInFS, processInExecutionPCB->pid);
+	log_info(cpuLog, "Se solicito al DMA la apertura del archivo del path \"%s\", para el proceso %d\n", filePathInFS, (*processInExecutionPCB)->pid);
+}
+
+void freePCB(PCB_t* pcb)
+{
+	free(pcb->scriptPathInFS);
+	free(pcb);
 }

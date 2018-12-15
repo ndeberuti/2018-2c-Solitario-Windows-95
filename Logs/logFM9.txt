@@ -1,0 +1,114 @@
+[INFO] 19:51:38:293 Proceso FM9/(16569:16569): Inicio del proceso
+[INFO] 19:51:38:293 Proceso FM9/(16569:16569): ---- Configuracion ----
+[INFO] 19:51:38:293 Proceso FM9/(16569:16569): PUERTO = 8003
+[INFO] 19:51:38:293 Proceso FM9/(16569:16569): MODO = SEG
+[INFO] 19:51:38:293 Proceso FM9/(16569:16569): TAMANIO = 2048
+[INFO] 19:51:38:294 Proceso FM9/(16569:16569): MAX_LINEA = 128
+[INFO] 19:51:38:294 Proceso FM9/(16569:16569): TAM_PAGINA = 1024
+[INFO] 19:51:38:294 Proceso FM9/(16569:16569): -----------------------
+[INFO] 19:51:38:294 Proceso FM9/(16569:16569): Segmentación Simple seteada
+[INFO] 19:51:38:294 Proceso FM9/(16569:16569): Inicialización de memoria exitosa
+[INFO] 19:52:00:183 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 19:52:11:466 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 19:52:25:263 Consola FM9/(16569:16569): CPU desconectada
+[INFO] 19:55:59:155 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 19:56:08:235 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 19:56:13:291 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 19:56:33:796 Consola FM9/(16569:16569): CPU desconectada
+[INFO] 20:31:18:379 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 20:31:22:435 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 20:31:24:564 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 20:31:50:318 Consola FM9/(16569:16569): CPU desconectada
+[INFO] 02:18:37:928 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 02:18:47:425 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 02:18:50:662 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 02:25:31:112 Consola FM9/(16569:16569): CPU desconectada
+[INFO] 02:25:32:221 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 02:26:00:568 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 02:26:03:772 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 02:26:51:65 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 02:26:52:112 Consola FM9/(16569:16569): CPU desconectada
+[INFO] 02:27:30:422 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 02:27:33:140 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 02:31:51:348 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 02:31:52:124 Consola FM9/(16569:16569): CPU desconectada
+[INFO] 02:32:00:67 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 02:32:02:505 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 02:34:37:155 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 02:34:37:942 Consola FM9/(16569:16569): CPU desconectada
+[INFO] 02:35:10:560 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 02:35:13:846 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 02:37:42:155 Consola FM9/(16569:16569): CPU desconectada
+[INFO] 02:37:42:822 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 02:37:50:284 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 02:37:52:253 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 02:43:20:186 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 02:43:21:106 Consola FM9/(16569:16569): CPU desconectada
+[INFO] 02:43:26:212 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 02:43:28:784 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 03:03:23:52 Consola FM9/(16569:16569): CPU desconectada
+[INFO] 03:03:24:204 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 03:04:36:970 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 03:05:19:931 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 03:06:41:793 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 03:06:53:426 Consola FM9/(16569:16569): CPU desconectada
+[INFO] 03:06:56:424 Consola FM9/(16569:16569): Nueva conexion desde El Diego
+[INFO] 03:07:20:21 Consola FM9/(16569:16569): Nueva conexion de CPU
+[INFO] 03:09:01:145 Consola FM9/(16569:16569): Se desconecto El Diego
+[INFO] 03:09:05:943 Consola FM9/(16569:16569): CPU desconectada
+[ERROR] 03:09:08:64 Consola FM9/(16569:16569): select
+[INFO] 03:09:19:532 Proceso FM9/(27828:27828): Inicio del proceso
+[INFO] 03:09:19:532 Proceso FM9/(27828:27828): ---- Configuracion ----
+[INFO] 03:09:19:532 Proceso FM9/(27828:27828): PUERTO = 8003
+[INFO] 03:09:19:532 Proceso FM9/(27828:27828): MODO = SEG
+[INFO] 03:09:19:532 Proceso FM9/(27828:27828): TAMANIO = 2048
+[INFO] 03:09:19:532 Proceso FM9/(27828:27828): MAX_LINEA = 128
+[INFO] 03:09:19:533 Proceso FM9/(27828:27828): TAM_PAGINA = 1024
+[INFO] 03:09:19:533 Proceso FM9/(27828:27828): -----------------------
+[INFO] 03:09:19:533 Proceso FM9/(27828:27828): Segmentación Simple seteada
+[INFO] 03:09:19:533 Proceso FM9/(27828:27828): Inicialización de memoria exitosa
+[INFO] 03:09:26:113 Consola FM9/(27828:27828): Nueva conexion desde El Diego
+[INFO] 03:30:04:997 Consola FM9/(27828:27828): Se desconecto El Diego
+[INFO] 03:30:27:11 Consola FM9/(27828:27828): Nueva conexion desde El Diego
+[INFO] 03:30:28:501 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 03:35:22:725 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 03:35:25:864 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 03:36:27:82 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 03:36:28:968 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 03:37:28:613 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 07:10:06:287 Consola FM9/(27828:27828): Se desconecto El Diego
+[INFO] 07:10:14:246 Consola FM9/(27828:27828): Nueva conexion desde El Diego
+[INFO] 07:10:21:992 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 07:10:38:723 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 07:15:21:466 Consola FM9/(27828:27828): Se desconecto El Diego
+[INFO] 07:15:25:927 Consola FM9/(27828:27828): Nueva conexion desde El Diego
+[INFO] 07:15:28:474 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 07:15:28:474 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 07:16:41:2 Consola FM9/(27828:27828): Se desconecto El Diego
+[INFO] 07:16:45:582 Consola FM9/(27828:27828): Nueva conexion desde El Diego
+[INFO] 07:16:47:120 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 07:16:59:481 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 07:17:13:336 Consola FM9/(27828:27828): Se desconecto El Diego
+[INFO] 07:17:22:766 Consola FM9/(27828:27828): Nueva conexion desde El Diego
+[INFO] 07:17:25:519 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 07:17:39:436 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 07:19:21:251 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 07:20:36:940 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 07:20:57:919 Consola FM9/(27828:27828): Se desconecto El Diego
+[INFO] 07:21:00:202 Consola FM9/(27828:27828): Nueva conexion desde El Diego
+[INFO] 07:21:04:186 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 07:22:00:416 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 07:22:02:660 Consola FM9/(27828:27828): Se desconecto El Diego
+[INFO] 07:25:07:418 Consola FM9/(27828:27828): Nueva conexion desde El Diego
+[INFO] 07:25:13:81 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 07:25:23:932 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 07:31:25:661 Consola FM9/(27828:27828): Se desconecto El Diego
+[INFO] 07:31:28:966 Consola FM9/(27828:27828): Nueva conexion desde El Diego
+[INFO] 07:31:31:919 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 07:31:44:344 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 07:32:44:661 Consola FM9/(27828:27828): Se desconecto El Diego
+[INFO] 07:32:50:584 Consola FM9/(27828:27828): Nueva conexion desde El Diego
+[INFO] 07:32:52:484 Consola FM9/(27828:27828): Nueva conexion de CPU
+[INFO] 08:04:08:362 Consola FM9/(27828:27828): CPU desconectada
+[INFO] 08:04:11:926 Consola FM9/(27828:27828): Se desconecto El Diego
+[ERROR] 08:04:17:789 Consola FM9/(27828:27828): select

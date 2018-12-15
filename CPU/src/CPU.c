@@ -6,15 +6,13 @@ void initializeVariables()
 	socketErrorLog = init_log("../../Logs/CPUSocketErrors.log", "CPU", false, LOG_LEVEL_INFO);
 
 	terminateModule = false;
-	stopExecution = false;
-	killExecutingProcess = false;
 	usingCustomSchedulingAlgorithm = false;
-	blockExecutingProcess = false;
 
 	processInExecutionPCB = NULL;
 	instructionsExecuted = 0;
 	currentProcessQuantum = 0;
 	currentProgramCounter = 0;
+
 
 	int32_t result = getConfigs();
 	showConfigs();
@@ -34,15 +32,14 @@ void initializeVariables()
 		exit(CONFIG_LOAD_ERROR);
 	}
 
-	pthread_attr_t* threadAttributes = malloc(sizeof(pthread_attr_t));
+/*	pthread_attr_t* threadAttributes = malloc(sizeof(pthread_attr_t));
 	pthread_attr_init(threadAttributes);
-	pthread_attr_setdetachstate(threadAttributes, PTHREAD_CREATE_DETACHED);
+	pthread_attr_setdetachstate(threadAttributes, PTHREAD_CREATE_DETACHED);	//CPUs cannot be servers
 
 	pthread_create(&serverThread, threadAttributes, (void *)server, NULL);
+*/
 
 	connectToServers();
-
-	free(threadAttributes);
 }
 
 void executeProcesses()
@@ -52,14 +49,16 @@ void executeProcesses()
 
 	while(!terminateModule)
 	{
+		//No need to ask this module (from the scheduler) to kill a process, because that message will be gotten when a process finished its execution
+		//(so there will be no process to kill in that CPU)
+
 		if((nbytes = receive_int(schedulerServerSocket, &task)) <= 0)
 		{
 			if(nbytes == 0)
-				log_error(cpuLog, "EL planificador fue desconectado al intentar recibir una tarea del mismo\n");
-			if(nbytes < 0)
-				log_error(cpuLog, "Error al intentar recibir una tarea del planificador\n");
+				log_error(cpuLog, "El planificador se desconecto al intentar recibir una tarea del mismo");
+			else
+				log_error(cpuLog, "Error al intentar recibir una tarea del planificador");
 
-			log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
 			exit(EXIT_FAILURE);
 		}
 
@@ -82,6 +81,8 @@ void executeProcesses()
 			break;
 		}
 	}
+
+	freePCB(processInExecutionPCB);
 
 	//TODO - main execution loop
 	//should use a "while(true)" wait for the scheduler to tell this module to execute or initialize a process and, in case the process is

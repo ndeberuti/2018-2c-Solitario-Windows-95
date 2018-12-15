@@ -1,0 +1,210 @@
+[INFO] 15:16:38:510 TestClient/(7096:7096): Se recibira un PCB del servidor
+[INFO] 15:16:38:588 TestClient/(7096:7096): Error al recibir pid del PCB
+[INFO] 15:43:05:755 TestClient/(8302:8302): Se recibira un PCB del servidor
+[INFO] 15:43:05:850 TestClient/(8302:8302): Se recibio pid del PCB
+[INFO] 15:43:05:850 TestClient/(8302:8302): Se recibio scriptLength del PCB
+[INFO] 15:43:05:854 TestClient/(8302:8302): Se recibio scriptPathInFS del PCB
+[INFO] 15:43:05:854 TestClient/(8302:8302): Se recibio programCounter del PCB
+[INFO] 15:43:05:855 TestClient/(8302:8302): Se recibio wasInitialized del PCB
+[INFO] 15:43:05:856 TestClient/(8302:8302): Se recibio canBeScheduled del PCB
+[INFO] 15:43:05:856 TestClient/(8302:8302): Se recibio executionState del PCB
+[INFO] 15:43:05:857 TestClient/(8302:8302): Se recibio cpuProcessIsAssignedTo del PCB
+[INFO] 15:43:05:857 TestClient/(8302:8302): Se recibio remainingQuantum del PCB
+[INFO] 15:43:05:858 TestClient/(8302:8302): Se recibio newQueueArrivalTime del PCB
+[INFO] 15:44:36:502 TestClient/(8302:8302): Error al recibir newQueueLeaveTime del PCB
+[INFO] 15:44:56:248 TestClient/(8397:8397): Se recibira un PCB del servidor
+[INFO] 15:44:56:339 TestClient/(8397:8397): Se recibio pid del PCB
+[INFO] 15:44:56:340 TestClient/(8397:8397): Se recibio scriptLength del PCB
+[INFO] 15:44:56:341 TestClient/(8397:8397): Se recibio scriptPathInFS del PCB
+[INFO] 15:44:56:341 TestClient/(8397:8397): Se recibio programCounter del PCB
+[INFO] 15:44:56:342 TestClient/(8397:8397): Se recibio wasInitialized del PCB
+[INFO] 15:44:56:343 TestClient/(8397:8397): Se recibio canBeScheduled del PCB
+[INFO] 15:44:56:343 TestClient/(8397:8397): Se recibio executionState del PCB
+[INFO] 15:44:56:344 TestClient/(8397:8397): Se recibio cpuProcessIsAssignedTo del PCB
+[INFO] 15:44:56:345 TestClient/(8397:8397): Se recibio remainingQuantum del PCB
+[INFO] 15:44:56:345 TestClient/(8397:8397): Se recibio newQueueArrivalTime del PCB
+[INFO] 15:44:56:345 TestClient/(8397:8397): Se recibio newQueueLeaveTime del PCB
+[INFO] 15:44:56:346 TestClient/(8397:8397): Se recibio totalInstructionsExecuted del PCB
+[INFO] 15:44:56:346 TestClient/(8397:8397): Se recibio instructionsExecutedOnLastExecution del PCB
+[INFO] 15:44:56:347 TestClient/(8397:8397): Se recibio instructionsUntilIoOrEnd del PCB
+[INFO] 15:44:56:347 TestClient/(8397:8397): Se recibio dmaCalls del PCB
+[INFO] 15:44:56:348 TestClient/(8397:8397): Se recibio lastIOStartTime del PCB
+[INFO] 15:44:56:348 TestClient/(8397:8397): Se recibio responseTimes del PCB
+[INFO] 15:44:56:349 TestClient/(8397:8397): PCB recibido por completo de forma exitosa!
+[INFO] 15:48:45:980 TestClient/(8618:8618): Se recibira un PCB del servidor
+[INFO] 15:48:46:63 TestClient/(8618:8618): Se recibio pid del PCB
+[INFO] 15:48:46:64 TestClient/(8618:8618): Se recibio scriptLength del PCB
+[INFO] 15:48:46:65 TestClient/(8618:8618): Se recibio scriptPathInFS del PCB
+[INFO] 15:48:46:66 TestClient/(8618:8618): Se recibio programCounter del PCB
+[INFO] 15:48:46:66 TestClient/(8618:8618): Se recibio wasInitialized del PCB
+[INFO] 15:48:46:67 TestClient/(8618:8618): Se recibio canBeScheduled del PCB
+[INFO] 15:48:46:68 TestClient/(8618:8618): Se recibio executionState del PCB
+[INFO] 15:48:46:68 TestClient/(8618:8618): Se recibio cpuProcessIsAssignedTo del PCB
+[INFO] 15:48:46:69 TestClient/(8618:8618): Se recibio remainingQuantum del PCB
+[INFO] 15:48:46:69 TestClient/(8618:8618): Se recibio newQueueArrivalTime del PCB
+[INFO] 15:48:46:70 TestClient/(8618:8618): Se recibio newQueueLeaveTime del PCB
+[INFO] 15:48:46:70 TestClient/(8618:8618): Se recibio totalInstructionsExecuted del PCB
+[INFO] 15:48:46:71 TestClient/(8618:8618): Se recibio instructionsExecutedOnLastExecution del PCB
+[INFO] 15:48:46:71 TestClient/(8618:8618): Se recibio instructionsUntilIoOrEnd del PCB
+[INFO] 15:48:46:72 TestClient/(8618:8618): Se recibio dmaCalls del PCB
+[INFO] 15:48:46:72 TestClient/(8618:8618): Se recibio lastIOStartTime del PCB
+[INFO] 15:48:46:73 TestClient/(8618:8618): Se recibio responseTimes del PCB
+[INFO] 15:48:46:74 TestClient/(8618:8618): PCB recibido por completo de forma exitosa!
+[INFO] 15:48:46:75 TestClient/(8618:8618): -----Valores de las variables del PCB con id 1-----
+[INFO] 15:48:46:75 TestClient/(8618:8618): 	scriptName: HolaSoyUnPath
+[INFO] 15:48:46:76 TestClient/(8618:8618): 	programCounter: 0
+[INFO] 15:48:46:76 TestClient/(8618:8618): 	wasInitialized: FALSE
+[INFO] 15:48:46:76 TestClient/(8618:8618): 	canBeScheduled: FALSE
+[INFO] 15:48:46:77 TestClient/(8618:8618): 	executionState: READY
+[INFO] 15:48:46:77 TestClient/(8618:8618): 	cpuProcessIsAssignedTo: 2
+[INFO] 15:48:46:77 TestClient/(8618:8618): 	remainingQuantum: 6
+[INFO] 15:48:46:78 TestClient/(8618:8618): 	newQueueArrivalTime: 0
+[INFO] 15:48:46:78 TestClient/(8618:8618): 	newQueueLeaveTime: 5
+[INFO] 15:48:46:79 TestClient/(8618:8618): 	instructionsExecuted: 0
+[INFO] 15:48:46:79 TestClient/(8618:8618): 	instructionsExecutedOnLastExecution: 9
+[INFO] 15:48:46:79 TestClient/(8618:8618): 	instructionsUntilIoOrEnd: 2
+[INFO] 15:48:46:80 TestClient/(8618:8618): 	completedDmaCalls: 40
+[INFO] 15:48:46:80 TestClient/(8618:8618): 	lastIOStartTime: 7
+[INFO] 15:48:46:80 TestClient/(8618:8618): 	responseTimes: 60
+[INFO] 15:48:46:81 TestClient/(8618:8618): 	executionState: 33554432
+[INFO] 15:57:38:925 TestClient/(8851:8851): Se recibira un PCB del servidor
+[INFO] 15:57:39:6 TestClient/(8851:8851): Se recibio pid del PCB
+[INFO] 15:57:39:7 TestClient/(8851:8851): Se recibio scriptLength del PCB
+[INFO] 15:57:39:8 TestClient/(8851:8851): Se recibio scriptPathInFS del PCB
+[INFO] 15:57:39:8 TestClient/(8851:8851): Se recibio programCounter del PCB
+[INFO] 15:57:39:9 TestClient/(8851:8851): Se recibio wasInitialized del PCB
+[INFO] 15:57:39:10 TestClient/(8851:8851): Se recibio canBeScheduled del PCB
+[INFO] 15:57:39:10 TestClient/(8851:8851): Se recibio executionState del PCB
+[INFO] 15:57:39:11 TestClient/(8851:8851): Se recibio cpuProcessIsAssignedTo del PCB
+[INFO] 15:57:39:11 TestClient/(8851:8851): Se recibio remainingQuantum del PCB
+[INFO] 15:57:39:12 TestClient/(8851:8851): Se recibio newQueueArrivalTime del PCB
+[INFO] 15:57:39:12 TestClient/(8851:8851): Se recibio newQueueLeaveTime del PCB
+[INFO] 15:57:39:13 TestClient/(8851:8851): Se recibio totalInstructionsExecuted del PCB
+[INFO] 15:57:39:13 TestClient/(8851:8851): Se recibio instructionsExecutedOnLastExecution del PCB
+[INFO] 15:57:39:14 TestClient/(8851:8851): Se recibio instructionsUntilIoOrEnd del PCB
+[INFO] 15:57:39:14 TestClient/(8851:8851): Se recibio dmaCalls del PCB
+[INFO] 15:57:39:15 TestClient/(8851:8851): Se recibio lastIOStartTime del PCB
+[INFO] 15:57:39:15 TestClient/(8851:8851): Se recibio responseTimes del PCB
+[INFO] 15:57:39:16 TestClient/(8851:8851): PCB recibido por completo de forma exitosa!
+[INFO] 15:57:39:17 TestClient/(8851:8851): -----Valores de las variables del PCB con id 1-----
+[INFO] 15:57:39:17 TestClient/(8851:8851): 	scriptName: HolaSoyUnPath
+[INFO] 15:57:39:18 TestClient/(8851:8851): 	programCounter: 0
+[INFO] 15:57:39:18 TestClient/(8851:8851): 	wasInitialized: FALSE
+[INFO] 15:57:39:18 TestClient/(8851:8851): 	canBeScheduled: FALSE
+[INFO] 15:57:39:19 TestClient/(8851:8851): 	executionState: READY
+[INFO] 15:57:39:19 TestClient/(8851:8851): 	cpuProcessIsAssignedTo: 2
+[INFO] 15:57:39:20 TestClient/(8851:8851): 	remainingQuantum: 6
+[INFO] 15:57:39:20 TestClient/(8851:8851): 	newQueueArrivalTime: 0
+[INFO] 15:57:39:20 TestClient/(8851:8851): 	newQueueLeaveTime: 5
+[INFO] 15:57:39:21 TestClient/(8851:8851): 	instructionsExecuted: 0
+[INFO] 15:57:39:21 TestClient/(8851:8851): 	instructionsExecutedOnLastExecution: 9
+[INFO] 15:57:39:21 TestClient/(8851:8851): 	instructionsUntilIoOrEnd: 2
+[INFO] 15:57:39:22 TestClient/(8851:8851): 	completedDmaCalls: 40
+[INFO] 15:57:39:22 TestClient/(8851:8851): 	lastIOStartTime: 7
+[INFO] 15:57:39:23 TestClient/(8851:8851): 	responseTimes: 60
+[INFO] 15:57:39:23 TestClient/(8851:8851): 	executionState: 33554432
+[INFO] 17:02:15:246 TestClient/(10571:10571): Se recibira un PCB del servidor
+[INFO] 17:02:15:400 TestClient/(10571:10571): Se recibio pid del PCB
+[INFO] 17:02:15:403 TestClient/(10571:10571): Se recibio scriptPathInFS del PCB
+[INFO] 17:02:15:404 TestClient/(10571:10571): Se recibio programCounter del PCB
+[INFO] 17:02:15:405 TestClient/(10571:10571): Se recibio wasInitialized del PCB
+[INFO] 17:02:15:415 TestClient/(10571:10571): Se recibio canBeScheduled del PCB
+[INFO] 17:02:15:416 TestClient/(10571:10571): Se recibio executionState del PCB
+[INFO] 17:02:15:417 TestClient/(10571:10571): Se recibio cpuProcessIsAssignedTo del PCB
+[INFO] 17:02:15:418 TestClient/(10571:10571): Se recibio remainingQuantum del PCB
+[INFO] 17:02:15:419 TestClient/(10571:10571): Se recibio newQueueArrivalTime del PCB
+[INFO] 17:02:15:420 TestClient/(10571:10571): Se recibio newQueueLeaveTime del PCB
+[INFO] 17:02:15:421 TestClient/(10571:10571): Se recibio totalInstructionsExecuted del PCB
+[INFO] 17:02:15:428 TestClient/(10571:10571): Se recibio instructionsExecutedOnLastExecution del PCB
+[INFO] 17:02:15:429 TestClient/(10571:10571): Se recibio instructionsUntilIoOrEnd del PCB
+[INFO] 17:02:15:430 TestClient/(10571:10571): Se recibio dmaCalls del PCB
+[INFO] 17:02:15:431 TestClient/(10571:10571): Se recibio lastIOStartTime del PCB
+[INFO] 17:02:15:432 TestClient/(10571:10571): Se recibio responseTimes del PCB
+[INFO] 17:02:15:433 TestClient/(10571:10571): PCB recibido por completo de forma exitosa!
+[INFO] 17:02:15:434 TestClient/(10571:10571): -----Valores de las variables del PCB con id 1-----
+[INFO] 17:02:15:435 TestClient/(10571:10571): 	scriptName: HolaSoyUnPath
+[INFO] 17:02:15:436 TestClient/(10571:10571): 	programCounter: 0
+[INFO] 17:02:15:437 TestClient/(10571:10571): 	wasInitialized: FALSE
+[INFO] 17:02:15:437 TestClient/(10571:10571): 	canBeScheduled: FALSE
+[INFO] 17:02:15:437 TestClient/(10571:10571): 	executionState: READY
+[INFO] 17:02:15:438 TestClient/(10571:10571): 	cpuProcessIsAssignedTo: 6
+[INFO] 17:02:15:444 TestClient/(10571:10571): 	remainingQuantum: 0
+[INFO] 17:02:15:448 TestClient/(10571:10571): 	newQueueArrivalTime: 5
+[INFO] 17:02:15:448 TestClient/(10571:10571): 	newQueueLeaveTime: 0
+[INFO] 17:02:15:449 TestClient/(10571:10571): 	instructionsExecuted: 9
+[INFO] 17:02:15:449 TestClient/(10571:10571): 	instructionsExecutedOnLastExecution: 2
+[INFO] 17:02:15:449 TestClient/(10571:10571): 	instructionsUntilIoOrEnd: 40
+[INFO] 17:02:15:450 TestClient/(10571:10571): 	completedDmaCalls: 7
+[INFO] 17:02:15:450 TestClient/(10571:10571): 	lastIOStartTime: 60
+[INFO] 17:02:15:451 TestClient/(10571:10571): 	responseTimes: 50
+[INFO] 17:02:15:451 TestClient/(10571:10571): 	executionState: 2
+[INFO] 17:15:58:636 TestClient/(11472:11472): Se recibira un PCB del servidor
+[INFO] 17:15:58:637 TestClient/(11472:11472): Se recibio pid del PCB
+[INFO] 17:15:58:637 TestClient/(11472:11472): Se recibio scriptPathInFS del PCB
+[INFO] 17:15:58:637 TestClient/(11472:11472): Se recibio programCounter del PCB
+[INFO] 17:15:58:637 TestClient/(11472:11472): Se recibio wasInitialized del PCB
+[INFO] 17:15:58:637 TestClient/(11472:11472): Se recibio canBeScheduled del PCB
+[INFO] 17:15:58:637 TestClient/(11472:11472): Se recibio executionState del PCB
+[INFO] 17:15:58:637 TestClient/(11472:11472): Se recibio cpuProcessIsAssignedTo del PCB
+[INFO] 17:15:58:638 TestClient/(11472:11472): Se recibio remainingQuantum del PCB
+[INFO] 17:15:58:638 TestClient/(11472:11472): Se recibio newQueueArrivalTime del PCB
+[INFO] 17:15:58:638 TestClient/(11472:11472): Se recibio newQueueLeaveTime del PCB
+[INFO] 17:15:58:638 TestClient/(11472:11472): Se recibio totalInstructionsExecuted del PCB
+[INFO] 17:15:58:638 TestClient/(11472:11472): Se recibio instructionsExecutedOnLastExecution del PCB
+[INFO] 17:15:58:638 TestClient/(11472:11472): Se recibio instructionsUntilIoOrEnd del PCB
+[INFO] 17:15:58:638 TestClient/(11472:11472): Se recibio dmaCalls del PCB
+[INFO] 17:15:58:638 TestClient/(11472:11472): Se recibio lastIOStartTime del PCB
+[INFO] 17:15:58:638 TestClient/(11472:11472): Se recibio responseTimes del PCB
+[INFO] 17:15:58:638 TestClient/(11472:11472): PCB recibido por completo de forma exitosa!
+[INFO] 17:15:58:638 TestClient/(11472:11472): -----Valores de las variables del PCB con id 1-----
+[INFO] 17:15:58:638 TestClient/(11472:11472): 	scriptName: HolaSoyUnPath
+[INFO] 17:15:58:638 TestClient/(11472:11472): 	programCounter: 0
+[INFO] 17:15:58:638 TestClient/(11472:11472): 	wasInitialized: FALSE
+[INFO] 17:15:58:638 TestClient/(11472:11472): 	canBeScheduled: FALSE
+[INFO] 17:15:58:638 TestClient/(11472:11472): 	executionState: READY
+[INFO] 17:15:58:638 TestClient/(11472:11472): 	cpuProcessIsAssignedTo: 6
+[INFO] 17:15:58:638 TestClient/(11472:11472): 	remainingQuantum: 0
+[INFO] 17:15:58:638 TestClient/(11472:11472): 	newQueueArrivalTime: 5
+[INFO] 17:15:58:638 TestClient/(11472:11472): 	newQueueLeaveTime: 0
+[INFO] 17:15:58:638 TestClient/(11472:11472): 	instructionsExecuted: 9
+[INFO] 17:15:58:638 TestClient/(11472:11472): 	instructionsExecutedOnLastExecution: 2
+[INFO] 17:15:58:638 TestClient/(11472:11472): 	instructionsUntilIoOrEnd: 40
+[INFO] 17:15:58:638 TestClient/(11472:11472): 	completedDmaCalls: 7
+[INFO] 17:15:58:638 TestClient/(11472:11472): 	lastIOStartTime: 60
+[INFO] 17:15:58:638 TestClient/(11472:11472): 	responseTimes: 50
+[INFO] 17:15:58:638 TestClient/(11472:11472): 	executionState: 2
+[INFO] 17:16:21:616 TestClient/(11492:11492): Se recibira un PCB del servidor
+[INFO] 17:16:21:695 TestClient/(11492:11492): Se recibio pid del PCB
+[INFO] 17:16:21:697 TestClient/(11492:11492): Se recibio scriptPathInFS del PCB
+[INFO] 17:16:21:698 TestClient/(11492:11492): Se recibio programCounter del PCB
+[INFO] 17:16:21:700 TestClient/(11492:11492): Se recibio wasInitialized del PCB
+[INFO] 17:16:21:701 TestClient/(11492:11492): Se recibio canBeScheduled del PCB
+[INFO] 17:16:21:702 TestClient/(11492:11492): Se recibio executionState del PCB
+[INFO] 17:16:21:703 TestClient/(11492:11492): Se recibio cpuProcessIsAssignedTo del PCB
+[INFO] 17:16:21:704 TestClient/(11492:11492): Se recibio remainingQuantum del PCB
+[INFO] 17:16:21:705 TestClient/(11492:11492): Se recibio newQueueArrivalTime del PCB
+[INFO] 17:16:21:706 TestClient/(11492:11492): Se recibio newQueueLeaveTime del PCB
+[INFO] 17:16:21:707 TestClient/(11492:11492): Se recibio totalInstructionsExecuted del PCB
+[INFO] 17:16:21:708 TestClient/(11492:11492): Se recibio instructionsExecutedOnLastExecution del PCB
+[INFO] 17:16:21:709 TestClient/(11492:11492): Se recibio instructionsUntilIoOrEnd del PCB
+[INFO] 17:16:21:710 TestClient/(11492:11492): Se recibio dmaCalls del PCB
+[INFO] 17:16:21:711 TestClient/(11492:11492): Se recibio lastIOStartTime del PCB
+[INFO] 17:16:21:712 TestClient/(11492:11492): Se recibio responseTimes del PCB
+[INFO] 17:16:21:713 TestClient/(11492:11492): PCB recibido por completo de forma exitosa!
+[INFO] 17:16:21:714 TestClient/(11492:11492): -----Valores de las variables del PCB con id 1-----
+[INFO] 17:16:21:715 TestClient/(11492:11492): 	scriptName: HolaSoyUnPath
+[INFO] 17:16:21:715 TestClient/(11492:11492): 	programCounter: 0
+[INFO] 17:16:21:716 TestClient/(11492:11492): 	wasInitialized: FALSE
+[INFO] 17:16:21:717 TestClient/(11492:11492): 	canBeScheduled: FALSE
+[INFO] 17:16:21:717 TestClient/(11492:11492): 	executionState: READY
+[INFO] 17:16:21:718 TestClient/(11492:11492): 	cpuProcessIsAssignedTo: 6
+[INFO] 17:16:21:718 TestClient/(11492:11492): 	remainingQuantum: 0
+[INFO] 17:16:21:718 TestClient/(11492:11492): 	newQueueArrivalTime: 5
+[INFO] 17:16:21:719 TestClient/(11492:11492): 	newQueueLeaveTime: 0
+[INFO] 17:16:21:723 TestClient/(11492:11492): 	instructionsExecuted: 9
+[INFO] 17:16:21:723 TestClient/(11492:11492): 	instructionsExecutedOnLastExecution: 2
+[INFO] 17:16:21:724 TestClient/(11492:11492): 	instructionsUntilIoOrEnd: 40
+[INFO] 17:16:21:724 TestClient/(11492:11492): 	completedDmaCalls: 7
+[INFO] 17:16:21:724 TestClient/(11492:11492): 	lastIOStartTime: 60
+[INFO] 17:16:21:725 TestClient/(11492:11492): 	responseTimes: 50
+[INFO] 17:16:21:725 TestClient/(11492:11492): 	executionState: 2

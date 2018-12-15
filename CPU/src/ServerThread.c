@@ -1,4 +1,9 @@
+/*
+
 #include "CPU.h"
+
+//This will not be used, as the CPUs cannot be servers(because if I want to run several CPus in the same computer with the
+//same config, only one can run using the same port)
 
 #define SCHEDULER_MIN_TASK_NUMBER 6
 #define SCHEDULER_MAX_TASK_NUMBER 29
@@ -22,7 +27,7 @@ void server()
 	FD_SET(serverSocket, &master);
 
 	//Main loop
-	while (!terminateModule)
+	while (true)
 	{
 		read_fds = master; //Copy the master set
 		if (select(fdmax + 1, &read_fds, NULL, NULL, NULL) == -1)
@@ -53,6 +58,8 @@ void server()
 						if (newfd > fdmax) //Update the max fd
 							fdmax = newfd;
 					}
+
+					log_info(cpuLog, "Se conecto un cliente al server");
 				}
 				else
 				{
@@ -91,8 +98,7 @@ void moduleHandler(uint32_t command, uint32_t _socket)
 {
 	if(command == NEW_SCHEDULER_CONNECTION)
 	{
-						  
-			log_info(cpuLog, "Nueva conexion desde el DMA\n");
+			log_info(cpuLog, "Nueva conexion desde el planificador\n");
 			schedulerClientSocket = _socket;
 	}
 	else if((command >= SCHEDULER_MIN_TASK_NUMBER) && (command <= SCHEDULER_MAX_TASK_NUMBER))
@@ -121,8 +127,36 @@ void schedulerTaskHandler(uint32_t task, uint32_t _socket)
 			usingCustomSchedulingAlgorithm = false;
 		break;
 
+		case INITIALIZE_PROCESS:
+			pthread_mutex_lock(&taskFromSchedulerMutex);
+
+			taskFromScheduler = task;
+			sem_post(&taskReceivedFromScheduler);
+
+			pthread_mutex_unlock(&taskFromSchedulerMutex);
+		break;
+
+		case EXECUTE_PROCESS:
+			pthread_mutex_lock(&taskFromSchedulerMutex);
+
+			taskFromScheduler = task;
+			sem_post(&taskReceivedFromScheduler);
+
+			pthread_mutex_unlock(&taskFromSchedulerMutex);
+		break;
+
+		case COUNT_INSTRUCTIONS:		 //Receives the scriptPath, program counter and pid from a PCB (No need to send the complete pcb), and
+										 //returns the number of instructions left before an IO instruction or the end of the script
+			pthread_mutex_lock(&taskFromSchedulerMutex);
+
+			taskFromScheduler = task;
+			sem_post(&taskReceivedFromScheduler);
+
+			pthread_mutex_unlock(&taskFromSchedulerMutex);
+		break;
+
 		default:
-			log_error(cpuLog, "ServerThread - Se recibio una tarea incorrecta del DMA (codigo = %d)\n", task);
+			log_error(cpuLog, "ServerThread - Se recibio una tarea incorrecta del planificador (codigo = %d)\n", task);
 		break;
 	}
 }
@@ -138,3 +172,5 @@ void blockProcess(uint32_t _socket)
 	stopExecution = true;
 	blockExecutingProcess = true;
 }
+
+*/

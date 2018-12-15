@@ -55,7 +55,7 @@ typedef struct
 
 uint32_t sendPCB(uint32_t, PCB_t*);	//Returns an error code (< 0) or the number of bytes sent, if OK
 
-uint32_t recvPCB(uint32_t, PCB_t*); //Returns an error code (<= 0) or the number of bytes received, if OK
+uint32_t recvPCB(uint32_t, PCB_t**); //Returns an error code (<= 0) or the number of bytes received, if OK
 								    //The 'pcb' pointer variable must be created before calling this function and retrieving the data (no need to malloc it)
 
 #endif /* PCB_H_ */
