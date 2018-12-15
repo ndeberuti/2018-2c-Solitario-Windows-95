@@ -27,8 +27,10 @@ int main(void) {
 
 	setear_modo();
 
+	guardar_archivo_segmentacion_paginada(10, 120, 3," Three years ago we set out to make The Guardian sustainable by deepening our relationship with our readers. The same technologies that connected us with a global audience had also shifted advertising revenues away from news publishers. We decided to seek an approach that would allow us to keep our journalism open and accessible to everyone, regardless of where they live or what they can afford.\0");
+	guardar_archivo_segmentacion_paginada(10, 11, 5," GREEN DAY    ning our relationship with our readers. The same technologies that connected us with a global audience had also shifted advertising revenues away from news publishers. We decided to seek an approach that would allow us to keep our journalism open and accessible to everyone, regardless of where they live or what they can afford.\0");
 
-
+	dump(10);
 
 
 	//close_process_segmentacion_paginada(diego, 10);
@@ -576,7 +578,7 @@ void dump(int pid){
 					dump_segmentacion_simple(pid);
 				}
 				else if(strcmp("TPI", config.MODO)== 0){
-					//dump_paginacion(pid);
+
 					dump_paginacion_invertida(pid);
 				}
 				else if(strcmp("SPI", config.MODO)== 0){
@@ -1136,7 +1138,6 @@ int max_bit = bitarray_get_max_bit(bitarray_memoria);
 
 
 
-
 segmento->offset = cantidad_lineas;
 segmento->segmento = base;
 
@@ -1183,7 +1184,7 @@ if(tamanio_bitarray_sp % 8 > 0){
 
 		tabla_de_segmentos_sp = list_create();
 
-		puntero_memoria_sp = malloc(config.TAMANIO);
+		puntero_memoria_sp = calloc(1,config.TAMANIO);
 
 
 
@@ -1820,7 +1821,7 @@ void inicializar_memoria_paginacion_invertida(){
 			if(config.TAMANIO / config.TAM_PAGINA == 0){
 
 					forzar_bitarray = 1;
-					tamanio_bitarray_sp = 1;
+					tamanio_bitarray_paginada = 1;
 				}else {
 
 					forzar_bitarray = config.TAMANIO / config.TAM_PAGINA / 8;
@@ -2259,13 +2260,17 @@ void dump_paginacion_invertida(int pid){
 	entrada_tabla_invertida_t * entrada_buscada;
 			t_list* lista_filtrada;
 
-							int frame, aciertos;
+
+
+
+
+
 
 							int offset = 0;
 							int contador = 0;
 
 							int paginas;
-							int numero_pagina;
+
 
 
 
@@ -2279,16 +2284,21 @@ void dump_paginacion_invertida(int pid){
 							lista_filtrada = list_filter(tabla_de_paginas, (void*) es_pid);
 
 
+
+
 							paginas = list_size(lista_filtrada);
+
+							printf("TAMANIO LISTA : %d", paginas);
 
 							if(paginas >0){
 							log_info(log_fm9, "------DUMP------\n");
 
 							log_info(log_fm9, "PID PROCESO = %d\n", pid);
 
-							char * buffer_muestra =  malloc(config.TAM_PAGINA);
+							char * buffer_muestra = malloc(config.TAM_PAGINA);
 
 							while(contador < paginas){
+								int frame = 0;
 
 
 
@@ -2296,27 +2306,28 @@ void dump_paginacion_invertida(int pid){
 								entrada_buscada = list_get(lista_filtrada, contador);
 
 								frame = entrada_buscada->frame;
-									log_info(log_fm9, "ID ARCHIVO = %d\n", entrada_buscada->id);
+								log_info(log_fm9, "ID ARCHIVO = %d\n", entrada_buscada->id);
 
 
-									log_info(log_fm9,"FRAME : %d de PAGINA %d \n", frame, contador);
+								log_info(log_fm9,"FRAME : %d de PAGINA %d \n", frame, contador);
 
-									memcpy(buffer_muestra, puntero_memoria_paginada + (frame * config.TAM_PAGINA), config.TAM_PAGINA);
+								memcpy(buffer_muestra, puntero_memoria_paginada + (frame * config.TAM_PAGINA), config.TAM_PAGINA);
 
-									printf("offset: %d\n", offset);
-									log_info(log_fm9,"CONTENIDO FRAME %d: %s \n",contador, buffer_muestra);
 
-									contador++;
+								log_info(log_fm9,"CONTENIDO FRAME %d: %s \n",frame, buffer_muestra);
+
+
+								contador++;
+								offset+= config.TAM_PAGINA;
+
 							}
-
-
-
 
 
 							}else{
 
 								log_error(log_fm9, "El proceso: %d no se encuentra en memoria\n", pid);
 							}
+
 
 list_destroy(lista_filtrada);
 
@@ -2353,15 +2364,14 @@ int entra_memoria_paginada(int cantidad_paginas){
 }
 
 void paginar(int pid, int id, int cantidad_lineas, char* buffer_recepcion){
-entrada_tabla_invertida_t* entrada_tabla = malloc(sizeof(entrada_tabla_invertida_t));
+	entrada_tabla_invertida_t* entrada_tabla= malloc(sizeof(entrada_tabla_invertida_t));
 
-
-	int contador=0;
-	int numero_frame=0;
 	int offset=0;
+	int contador=0;
+	int n_frame=0;
 
-	entrada_tabla->pid = pid;
-	entrada_tabla->id = id;
+
+
 
 	int cantidad_paginas = cantidad_lineas * config.MAX_LINEA / config.TAM_PAGINA;
 
@@ -2378,27 +2388,36 @@ entrada_tabla_invertida_t* entrada_tabla = malloc(sizeof(entrada_tabla_invertida
 
 		memcpy(buffer_envio, buffer_recepcion, cantidad_lineas * config.MAX_LINEA);
 
+		printf("ESTO SE ESTA GUARDANDO: %s\n", buffer_envio);
+
+
+		entrada_tabla->pid = pid;
+		entrada_tabla->id = id;
+
+		while(n_frame < tamanio_bitarray_paginada && contador < cantidad_paginas){
 
 
 
-		while(numero_frame < tamanio_bitarray_paginada && contador < cantidad_paginas){
+					if(!(bitarray_test_bit(bitarray_memoria, n_frame))){
 
-					if(!(bitarray_test_bit(bitarray_memoria, numero_frame))){
 
-						contador++;
 
-						entrada_tabla->frame = numero_frame;
+
+
+						entrada_tabla->frame = n_frame;
 
 						list_add(tabla_de_paginas, entrada_tabla);
 
-						log_info(log_fm9,  "Guardando pagina en frame: %d \n", numero_frame);
-						bitarray_set_bit(bitarray_memoria, numero_frame);
+						log_info(log_fm9,  "Guardando pagina en frame: %d \n", n_frame);
+						bitarray_set_bit(bitarray_memoria, n_frame);
 
-						memcpy(puntero_memoria_paginada + (numero_frame) * config.TAM_PAGINA, buffer_envio + config.TAM_PAGINA * offset, config.TAM_PAGINA);
-						offset++;
+						memcpy(puntero_memoria_paginada + (n_frame) * config.TAM_PAGINA, buffer_envio +  offset, config.TAM_PAGINA);
+						offset+= config.TAM_PAGINA;
+						contador++;
+
 					}
 
-					numero_frame++;
+					n_frame++;
 
 				}
 
