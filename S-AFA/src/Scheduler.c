@@ -124,6 +124,8 @@ void longTermSchedulerThread()
 
 		LTSAlreadyExecuting = false;
 		log_info(schedulerLog, "LTS: Ejecucion finalizada");
+
+		sem_post(&schedulerNotRunning);
 	}
 }
 
@@ -144,7 +146,8 @@ void _checkExecProc_and_algorithm()
 	else
 	{
 		log_info(schedulerLog, "LTS: Debido a que no hay CPUs disponibles, no se puede activar el STS (ya que este no podra ejecutar ningun proceso)");
-		stsWantsToExecute = true;
+
+		//stsWantsToExecute = true; //This may generate problems with semaphores
 	}
 }
 

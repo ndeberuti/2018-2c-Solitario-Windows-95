@@ -98,7 +98,11 @@ void commandHandler(uint32_t command, uint32_t _socket)
 		break;
 
 		case OPEN_FILE:
-			openFile(_socket);
+			openFile(_socket, false);
+		break;
+
+		case OPEN_SCRIPT:
+			openFile(_socket, true);
 		break;
 
 		case FLUSH_FILE:
@@ -120,12 +124,13 @@ void commandHandler(uint32_t command, uint32_t _socket)
 }
 
 
-void openFile(uint32_t _socket)
+void openFile(uint32_t _socket, bool fileIsScript)
 {
 	int32_t nbytes;
 	int32_t currentProcess;
 	char* currentFilePath = NULL;		//Path of the file to open
 	bool fileIsInFS;
+	bool couldSendDataToMemory;
 
 	if((nbytes = receive_int(_socket, &currentProcess)) <= 0)
 	{
@@ -157,6 +162,7 @@ void openFile(uint32_t _socket)
 	{
 		t_list* parsedFile;
 		uint32_t fileLines;
+		uint32_t bufferSize = 0;
 		char* fileContents = getFileFromFS(currentFilePath);
 		char* fileBuffer = NULL; //Contains a buffer with all the lines of a file, each line contained in a sub-buffer that has the size of a memory line;
 								 //each line is separated by a '\n' character
@@ -174,11 +180,11 @@ void openFile(uint32_t _socket)
 		free(fileContents);
 
 		fileLines = list_size(parsedFile);
-		fileBuffer = convertParsedFileToMemoryBuffer(parsedFile);
+		fileBuffer = convertParsedFileToMemoryBuffer(parsedFile, &bufferSize);
 
 		if(fileBuffer == NULL)	//Error, a file line cannot fit into a memory line -> segmentation fault
 		{
-			sendProcessErrorMessageToScheduler(currentProcess);	//File is not in the FS
+			sendProcessErrorMessageToScheduler(currentProcess);
 			log_error(dmaLog, "Se intento abrir el archivo \"%s\", pero este contiene lineas de tamaño mayor a una linea de memoria");
 
 			free(currentFilePath);
@@ -188,11 +194,19 @@ void openFile(uint32_t _socket)
 			return;
 		}
 
-		sendFileToMemory(currentFilePath, fileLines, fileBuffer, currentProcess);
+		couldSendDataToMemory = sendFileToMemory(currentFilePath, fileLines, fileBuffer, bufferSize, currentProcess);
 
-		log_info(dmaLog, "El archivo \"%s\" fue abierto para el proceso %d de forma exitosa", currentFilePath, currentProcess);
+		if(couldSendDataToMemory)
+		{
+			log_info(dmaLog, "El archivo \"%s\" fue abierto para el proceso %d de forma exitosa", currentFilePath, currentProcess);
 
-		tellSchedulerToUnblockProcess(currentProcess, currentFilePath);
+			tellSchedulerToUnblockProcess(currentProcess, currentFilePath, fileIsScript);
+		}
+		else
+		{
+			sendProcessErrorMessageToScheduler(currentProcess);
+			log_error(dmaLog, "Se intento guardar el contenido del archivo \"%s\" en memoria, para el proceso %d, pero la memoria no tiene espacio suficiente", currentFilePath, currentProcess);
+		}
 
 		list_destroy_and_destroy_elements(parsedFile, free);
 		free(fileBuffer);
@@ -289,7 +303,7 @@ void flushFile(uint32_t _socket)
 
 		log_info(dmaLog, "El archivo \"%s\" fue guardado en el FS para el proceso %d de forma exitosa", currentFilePath, currentProcess);
 
-		tellSchedulerToUnblockProcess(currentProcess, currentFilePath);
+		tellSchedulerToUnblockProcess(currentProcess, currentFilePath, false);
 
 		list_destroy_and_destroy_elements(parsedFile, free);
 		free(fileBuffer);
@@ -398,7 +412,7 @@ void createFile(uint32_t _socket)
 	if(operationResult == OPERACION_OK)
 	{
 		log_info(dmaLog, "Se creo el archivo \"%s\" para el proceso %d de forma exitosa", currentFilePath, currentProcess);
-		tellSchedulerToUnblockProcess(currentProcess, currentFilePath);
+		tellSchedulerToUnblockProcess(currentProcess, currentFilePath, false);
 	}
 	else if(operationResult == BLOQUES_INSUFICIENTES)
 	{
@@ -480,7 +494,7 @@ void deleteFile(uint32_t _socket)
 	if(operationResult == OPERACION_OK)
 	{
 		log_info(dmaLog, "Se elimino el archivo \"%s\" para el proceso %d de forma exitosa", currentFilePath, currentProcess);
-		tellSchedulerToUnblockProcess(currentProcess, currentFilePath);
+		tellSchedulerToUnblockProcess(currentProcess, currentFilePath, false);
 		free(currentFilePath);
 	}
 	else

@@ -205,7 +205,7 @@ void moveProcessToReadyQueue(PCB_t* process, bool addToIoReadyQueue) //To add to
 	process->executionState = READY;
 	process->cpuProcessIsAssignedTo = 0;
 
-	if(addToIoReadyQueue)
+	if(!addToIoReadyQueue)
 	{
 		pthread_mutex_lock(&readyQueueMutex);
 
@@ -333,7 +333,8 @@ void unblockProcess(uint32_t processId, bool unblockedByDMA)
 
 	pthread_mutex_lock(&blockedQueueMutex);
 
-	PCB_t* process = list_remove_by_condition(blockedQueue, _process_has_given_id);
+	PCB_t* process = NULL;
+	process = list_remove_by_condition(blockedQueue, _process_has_given_id);
 
 	pthread_mutex_unlock(&blockedQueueMutex);
 
@@ -377,10 +378,15 @@ void blockProcess(uint32_t pid, bool isDmaCall)
 
 	uint32_t _executedInstructions = executedInstructions;
 
-	pthread_mutex_lock(&metricsGlobalvariablesMutex);
+	pthread_mutex_unlock(&metricsGlobalvariablesMutex);
 
+
+	pthread_mutex_lock(&executionQueueMutex);
 
 	PCB_t* process = list_remove_by_condition(executionQueue, _process_has_given_id);
+
+	pthread_mutex_unlock(&executionQueueMutex);
+
 	process->executionState = BLOCKED;
 	process->cpuProcessIsAssignedTo = 0;
 
@@ -396,7 +402,7 @@ void blockProcess(uint32_t pid, bool isDmaCall)
 	pthread_mutex_unlock(&blockedQueueMutex);
 
 
-	log_info(schedulerLog, "El proceso con id % fue movido a la cola de bloqueados", process->pid);
+	log_info(schedulerLog, "El proceso con id %d fue movido a la cola de bloqueados", process->pid);
 }
 
 uint32_t getFreeCPUsQty()
@@ -571,7 +577,7 @@ void killProcess(uint32_t pid)
 
 	killProcessInstructions++;
 
-	pthread_mutex_lock(&metricsGlobalvariablesMutex);
+	pthread_mutex_unlock(&metricsGlobalvariablesMutex);
 
 
 	processToKill->executionState = TERMINATED;
@@ -890,7 +896,6 @@ void checkAndInitializeProcesses(cpu_t* freeCPU)
 	log_info(schedulerLog, "LTS: El proceso %d fue enviado a una CPU para ser inicializado...", processToInitialize->pid);
 
 
-	pthread_mutex_unlock(&cpuListMutex);
 	pthread_mutex_unlock(&readyQueueMutex);
 }
 

@@ -229,7 +229,7 @@ void processQuantumEnd(uint32_t, int*);
 cpu_t* findCPUBySocket(uint32_t);
 uint32_t updatePCBInExecutionQueue(PCB_t*);
 void checkIfFileOpen(uint32_t);
-void saveFileDataToFileTable(uint32_t, uint32_t);
+bool saveFileDataToFileTable(char*, uint32_t);
 void closeFile(uint32_t);
 void unlockProcess(uint32_t);
 void signalResource(uint32_t);

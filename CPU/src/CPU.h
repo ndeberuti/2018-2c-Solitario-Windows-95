@@ -100,7 +100,7 @@ bool isIoInstruction(t_list*);
 void countProcessInstructions();
 char* requestScriptFromMemory();
 void showConfigs();
-void sendOpenFileRequestToDMA(char*);
+void sendOpenFileRequestToDMA(char*, uint32_t);
 void freePCB(PCB_t*);
 
 

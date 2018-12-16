@@ -400,7 +400,7 @@ void initializeProcess()
 
 	log_info(cpuLog, "Se recibio del planificador el PCB correspondiente al proceso %d", processToInitialize->pid);
 
-	sendOpenFileRequestToDMA(processToInitialize->scriptPathInFS);
+	sendOpenFileRequestToDMA(processToInitialize->scriptPathInFS, OPEN_SCRIPT);
 
 	if((nbytes = send_int(schedulerServerSocket, BLOCK_PROCESS_INIT)) < 0)
 	{
@@ -1025,7 +1025,7 @@ void handleFileNotOpen(char* filePathInFS, bool raiseError)
 
 	if(!raiseError)
 	{
-		sendOpenFileRequestToDMA(filePathInFS);
+		sendOpenFileRequestToDMA(filePathInFS, OPEN_FILE);
 		tellSchedulerToBlockProcess(false);
 	}
 	else
@@ -1643,12 +1643,12 @@ char* requestScriptFromMemory()
 	return scriptContent;
 }
 
-void sendOpenFileRequestToDMA(char* filePathInFS)
+void sendOpenFileRequestToDMA(char* filePathInFS, uint32_t messageCode)
 {
 	int32_t nbytes;
 
 	//Send the task to the DMA, the process ID and the path of the file to open
-	if((nbytes = send_int(dmaServerSocket, OPEN_FILE)) < 0)
+	if((nbytes = send_int(dmaServerSocket, messageCode)) < 0)
 	{
 		log_error(cpuLog, "Error al solicitar al DMA que abra un archivo\n");
 

@@ -200,7 +200,7 @@ void server() {
 	struct sockaddr_in remoteaddr; // dirección del cliente
 	uint32_t fdmax; // número máximo de descriptores de fichero
 	uint32_t newfd; // descriptor de socket de nueva conexión aceptada
-	uint32_t command; // comando del cliente
+	int32_t command; // comando del cliente
 	uint32_t nbytes;
 	uint32_t addrlen;
 	FD_ZERO(&master); // borra los conjuntos maestro y temporal
@@ -321,7 +321,7 @@ void validar_archivo(uint32_t socket) {
 void crear_archivo(uint32_t socket) {
 	char *path;
 	uint32_t rta;
-	uint32_t bytes;
+	int32_t bytes;
 
 	if (receive_string(socket, &path) <= 0) {
 		log_error(log_consola, "recv path (validar_archivo)");
@@ -435,9 +435,9 @@ void crear_archivo(uint32_t socket) {
 
 void obtener_datos(uint32_t socket) {
 	char *path;
-	uint32_t rta;
-	uint32_t size;
-	uint32_t offset;
+	int32_t rta;
+	int32_t size;
+	int32_t offset;
 	char *sub_datos;
 
 	if (receive_string(socket, &path) <= 0) {
@@ -465,7 +465,10 @@ void obtener_datos(uint32_t socket) {
 				free(path_archivo);
 
 				if (datos != NULL) {
-					sub_datos = string_substring(datos, offset, size);
+					if (size < 0)
+						sub_datos = string_substring_from(datos, offset);
+					else
+						sub_datos = string_substring(datos, offset, size);
 
 					log_info(log_consola, "Operacion finalizada con exito");
 					rta = OPERACION_OK;
@@ -496,9 +499,9 @@ void obtener_datos(uint32_t socket) {
 void guardar_datos(uint32_t socket) {
 	char *path;
 	char *buffer;
-	uint32_t rta;
-	uint32_t size;
-	uint32_t offset;
+	int32_t rta;
+	int32_t size;
+	int32_t offset;
 
 	if (receive_string(socket, &path) <= 0) {
 		log_error(log_consola, "recv path (guardar_datos)");

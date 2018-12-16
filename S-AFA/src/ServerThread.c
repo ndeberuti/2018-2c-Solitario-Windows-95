@@ -159,12 +159,13 @@ void dmaTaskHandler(uint32_t task, uint32_t _socket)
 
 void cpuTaskHandler(uint32_t task, uint32_t _socket)
 {
-	uint32_t process;
+	int32_t process;
 
 	switch(task)
 	{
 		case COMPLETED_INSTRUCTION:
 			log_info(schedulerLog, "Se completo una instruccion de un proceso en ejecucion");
+
 			pthread_mutex_lock(&metricsGlobalvariablesMutex);
 			executedInstructions++;
 			pthread_mutex_unlock(&metricsGlobalvariablesMutex);
@@ -585,72 +586,63 @@ void checkIfFileOpen(uint32_t _socket) //Receives pid, fileName length, fileName
 	  */
 }
 
-void saveFileDataToFileTable(uint32_t _socket, uint32_t pid) //Receives pid, fileName length, fileName string
+bool saveFileDataToFileTable(char* filePath, uint32_t pid) //Receives pid, fileName length, fileName string
 {
-	int32_t nbytes;
-	char* fileName = NULL;
 	bool result;
 	fileTableData* data = NULL;
 
-	if((nbytes = receive_string(_socket, &fileName)) <= 0)
+
+	pthread_mutex_lock(&fileTableMutex);
+	pthread_mutex_lock(&fileTableKeysMutex);
+
+	result = dictionary_has_key(fileTable, filePath);
+
+	if(result)	//The key is in the fileTable, maybe because there are processes waiting for it
 	{
-		if(nbytes == 0)
-			log_error(consoleLog, "ServerThread (saveFileDataToFileTable) - El DMA fue desconectado al intentar recibir un nombre de archivo");
-		else
-			log_error(consoleLog, "ServerThread (saveFileDataToFileTable) - Error al recibir un nombre de archivo del DMA");
+		//No need to update anything
+		data = dictionary_get(fileTable, filePath);
+
+		if((data->processFileIsAssignedTo != 0) && (data->processFileIsAssignedTo != pid))
+		{
+			//ERROR - A process is asking for a file that was taken by another process..
+			//		  this should not happen; the requesting process will be terminated
+
+			log_error(schedulerLog, "ERROR - El archivo \"%s\" fue reservado por el proceso %d, y no podra ser asignado al proceso %d (el cual el DMA solicito desbloquear)", data->processFileIsAssignedTo, pid);
+			killProcess(pid);
+			return true;
+
+			//TODO - Remove terminated process' script from the memory (for that, I need to send that request to a CPU)
+		}
+		else if(data->processFileIsAssignedTo == 0)
+		{
+			//ERROR - The file did not get claimed by the process which told
+			//		  the DMA to load it in memory
 
 
-		FD_CLR(_socket, &master);
-		closeSocketAndRemoveCPU(_socket);
+			log_error(schedulerLog, "ERROR - El archivo \"%s\" no fue reservado por el proceso %d antes de solicitar al DMA que lo cargue en memoria", pid);
+			killProcess(pid);
+			return true;
+
+			//TODO - Remove terminated process' script from the memory (for that, I need to send that request to a CPU)
+		}
 	}
-	else
+	else //Key is not in the fileTable; add the key and fill the key data with the values obtained from the DMA
 	{
-		pthread_mutex_lock(&fileTableMutex);
-		pthread_mutex_lock(&fileTableKeysMutex);
+		fileTableData* data = calloc(1, sizeof(fileTableData));
 
-		result = dictionary_has_key(fileTable, fileName);
+		data->processFileIsAssignedTo = pid;
+		data->processesWaitingForFile = list_create();
 
-		if(result)	//The key is in the fileTable, maybe because there are processes waiting for it
-		{
-			//No need to update anything
-			//data = dictionary_get(fileTable, fileName);
+		dictionary_put(fileTable, filePath, data);
+		list_add(fileTableKeys, filePath);
 
-			if((data->processFileIsAssignedTo != 0) && (data->processFileIsAssignedTo != pid))
-			{
-				//TODO - ERROR - Another process claimed the file before this one; should never happen
-				//				 because processes claim the files before requesting the DMA to
-				//				 load them in memory
-
-				log_error(schedulerLog, "ERROR - El archivo \"%s\" fue reservado por el proceso %d, y no podra ser asignado al proceso %d (el cual el DMA solicito desbloquear)", data->processFileIsAssignedTo, pid);
-			}
-			else if(data->processFileIsAssignedTo == 0)
-			{
-				//TODO (optional) - ERROR - The file did not get claimed by the process which told
-				//							the DMA to load it in memory
-
-				////TODO (Optional) - Maybe change this whole function, so the files get claimed here
-				//					  exactly when this condition is met. In that scenario, the above
-				//					  condition could be possible and should be handled properly
-
-				log_error(schedulerLog, "ERROR - El archivo \"%s\" no fue reservado por el proceso %d antes de solicitar al DMA que lo cargue en memoria", pid);
-			}
-		}
-		else //Key is not in the fileTable; add the key and fill the key data with the values obtained from the DMA
-		{
-			fileTableData* data = calloc(1, sizeof(fileTableData));
-
-			data->processFileIsAssignedTo = pid;
-			data->processesWaitingForFile = list_create();
-
-			dictionary_put(fileTable, fileName, data);
-			list_add(fileTableKeys, fileName);
-
-			log_info(schedulerLog, "Se agrego una entrada a la tabla de archivos para el archivo \"%s\", el cual fue asignado al proceso %d", fileName, pid);
-		}
-
-		pthread_mutex_unlock(&fileTableMutex);
-		pthread_mutex_unlock(&fileTableKeysMutex);
+		log_info(schedulerLog, "Se agrego una entrada a la tabla de archivos para el archivo \"%s\", el cual fue asignado al proceso %d", filePath, pid);
 	}
+
+	pthread_mutex_unlock(&fileTableMutex);
+	pthread_mutex_unlock(&fileTableKeysMutex);
+
+	return false;
 }
 
 void closeFile(uint32_t _socket)
@@ -762,6 +754,9 @@ void unlockProcess(uint32_t _socket)
 {
 	int32_t processId;
 	int32_t nbytes;
+	char* filePath = NULL;
+	bool fileIsScript = false;
+	bool processWasKilled = false;
 
 	if((nbytes = receive_int(_socket, &processId)) <= 0)
 	{
@@ -774,6 +769,26 @@ void unlockProcess(uint32_t _socket)
 		FD_CLR(_socket, &master);
 		close(_socket);
 	}
+	else if((nbytes = receive_string(_socket, &filePath)) <= 0)
+	{
+		if(nbytes == 0)
+			log_error(consoleLog, "ServerThread (unlockProcess) - El DMA fue desconectado al intentar recibir el path del archivo abierto");
+		else
+			log_error(consoleLog, "ServerThread (unlockProcess) - Error al recibir el path del archivo abierto del DMA");
+
+		FD_CLR(_socket, &master);
+		close(_socket);
+	}
+	else if((nbytes = receive_int(_socket, &fileIsScript)) <= 0)
+	{
+		if(nbytes == 0)
+			log_error(consoleLog, "ServerThread (unlockProcess) - El DMA fue desconectado al intentar recibir un mensaje indicando si el archivo abierto es un script");
+		else
+			log_error(consoleLog, "ServerThread (unlockProcess) - Error al recibir un mensaje indicando si el archivo abierto es un script del DMA");
+
+		FD_CLR(_socket, &master);
+		close(_socket);
+	}
 	else
 	{
 		//TODO (optional) - Maybe, after modifying the below and the "checkIfFileOpen" functions,
@@ -781,8 +796,11 @@ void unlockProcess(uint32_t _socket)
 		//					me decide whether to unblock the process or not (if the file got claimed by
 		//					another process, the current one should not be unblocked)
 
-		saveFileDataToFileTable(_socket ,processId);
-		unblockProcess(processId, true);
+		if(!fileIsScript)
+			processWasKilled = saveFileDataToFileTable(filePath, processId);
+
+		if(!processWasKilled)
+			unblockProcess(processId, true);
 	}
 }
 
@@ -938,6 +956,8 @@ void waitResource(uint32_t _socket)
 
 			log_info(schedulerLog, "El semaforo \"%s\" no existia, por lo que fue creado con 1 instancia y asignado al proceso %d", semaphoreName, pid);
 		}
+
+		pthread_mutex_unlock(&semaphoreListMutex);
 	}
 }
 
@@ -955,7 +975,7 @@ void freeCPUBySocket(uint32_t _socket)
 
 	checkAndInitializeProcesses(cpuToFree); //check if there are any processes left to inialize, and do it with the new CPU
 
-	if((cpuToFree->isFree) && (stsWantsToExecute))	//If after trying to initialize a process, the CPU is still free, check if the STS wants to run and wake it up
+/*	if((cpuToFree->isFree) && (stsWantsToExecute))	//If after trying to initialize a process, the CPU is still free, check if the STS wants to run and wake it up
 	{
 		log_info(schedulerLog, "El STS queria ejecutarse y se conecto una CPU. Se le permitira ejecutar al STS");
 
@@ -966,6 +986,7 @@ void freeCPUBySocket(uint32_t _socket)
 		if(semaphoreValue == 0)		//If semaphore value < 0, the STS may already been executing
 			sem_post(&shortTermScheduler);
 	}
+*/ //Removed to avoid problems with semaphores
 
 	pthread_mutex_unlock(&cpuListMutex);
 }
@@ -973,8 +994,6 @@ void freeCPUBySocket(uint32_t _socket)
 void handleCpuConnection(uint32_t _socket)
 {
 	int32_t nbytes;
-	char* cpuIp = NULL;
-	int32_t cpuPort;
 
 	log_info(consoleLog, "Nueva conexion de CPU\n");
 
@@ -1010,7 +1029,7 @@ void handleCpuConnection(uint32_t _socket)
 	list_add(connectedCPUs, newCPU);
 	checkAndInitializeProcesses(newCPU); //check if there are any processes left to inialize, and do it with the new CPU
 
-	if((newCPU->isFree) && (stsWantsToExecute))	//If after trying to initialize a process, the CPU is still free, check if the STS wants to run and wake it up
+/*	if((newCPU->isFree) && (stsWantsToExecute))	//If after trying to initialize a process, the CPU is still free, check if the STS wants to run and wake it up
 	{
 		log_info(schedulerLog, "El STS queria ejecutarse y se conecto una CPU. Se le permitira ejecutar al STS");
 
@@ -1021,6 +1040,7 @@ void handleCpuConnection(uint32_t _socket)
 		if(semaphoreValue == 0)		//If semaphore value < 0, the STS may already been executing
 			sem_post(&shortTermScheduler);
 	}
+*/	//Remove to avoid problems with semaphores
 
 	pthread_mutex_unlock(&cpuListMutex);
 }

@@ -46,6 +46,7 @@ enum tareas
 	FLUSH_FILE = 32, 			//The CPU tells the DMA to send a file's data in memory to the FS
 	CREATE_FILE = 33,			//The CPU tells the DMA to create a file
 	DELETE_FILE = 34,			//The CPU tells the DMA to delete a file
+	OPEN_SCRIPT = 63,			//The CPU tells the DMA to open a script
 
 	//CPU-Memory
 	CLOSE_FILE_ERROR = 35,
@@ -54,7 +55,7 @@ enum tareas
 	MODIFY_FILE_ERROR = 38,
 	MODIFY_FILE_OK = 39,
 	REQUEST_SCRIPT = 40,
-	SEGMENTATION_FAULT = 69,
+	SEGMENTATION_FAULT = 62,
 
 	//Misc messages
 	MESSAGE_RECEIVED = 41,

@@ -291,14 +291,16 @@ t_list* parseScript(char* script)
 	return parsedScript;
 }
 
-char* convertParsedFileToMemoryBuffer(t_list* parsedFile)
+char* convertParsedFileToMemoryBuffer(t_list* parsedFile, uint32_t* bufferSize)
 {
 	uint32_t fileLines = list_size(parsedFile);
-	size_t bufferSize = (fileLines * sizeof(char) * memoryLineSize) + 1;	//The '\n' of each line is part of the size of a line
-	char* memoryBuffer = calloc(1, bufferSize);
+	size_t _bufferSize = (fileLines * sizeof(char) * memoryLineSize) + 1;	//The '\n' of each line is part of the size of a line
+	char* memoryBuffer = calloc(1, _bufferSize);
 	char* line = NULL;
 	uint32_t lineSize;
 	uint32_t bufferOffset = 0;
+
+	(*bufferSize) = _bufferSize;
 
 	if(memoryBuffer == NULL)
 	{
@@ -317,7 +319,7 @@ char* convertParsedFileToMemoryBuffer(t_list* parsedFile)
 		}
 
 		memcpy(memoryBuffer + bufferOffset, line, lineSize);
-		bufferOffset += memoryLineSize;	//Move from the beginning of the last line copied to the buffer, to the end of that line, if the line were a memory line (may leave a trail of empty chars)
+		bufferOffset += memoryLineSize - 1;	//Move from the beginning of the last line copied to the buffer, to the end of that line, if the line were a memory line (may leave a trail of empty chars)
 
 		memcpy(memoryBuffer + bufferOffset, "\n", 1);	//Adds a '\n' char after each line
 		bufferOffset++;
@@ -326,7 +328,7 @@ char* convertParsedFileToMemoryBuffer(t_list* parsedFile)
 	return memoryBuffer;
 }
 
-void sendFileToMemory(char* filePath, uint32_t lines, char* buffer, uint32_t process)
+bool sendFileToMemory(char* filePath, uint32_t lines, char* buffer, uint32_t bufferSize, uint32_t process)
 {
 	int32_t nbytes;
 	int32_t operationResult;
@@ -363,7 +365,7 @@ void sendFileToMemory(char* filePath, uint32_t lines, char* buffer, uint32_t pro
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_string(memoryServerSocket, buffer)) < 0)
+	if((nbytes = send(memoryServerSocket, buffer, bufferSize, MSG_WAITALL)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (sendFileToMemory) - Error al enviar a la memoria el contenido del archivo a cargar en ella");
 
@@ -387,14 +389,15 @@ void sendFileToMemory(char* filePath, uint32_t lines, char* buffer, uint32_t pro
 
 	if(operationResult == ESPACIO_INSUFICIENTE)	//Error putting file data into memory
 	{
-		sendProcessErrorMessageToScheduler(process);
-		log_error(dmaLog, "Se intento guardar el contenido del archivo \"%s\" en memoria, para el proceso %d, pero la memoria no tiene espacio suficiente");
+		return false;
 	}
 	else if (operationResult != OK)
 	{
 		log_error(dmaLog, "DMAFunctions (sendFileToMemory) - Se recibio una respuesta incorrecta al esperar el resultado del guardado de datos de un archivo en la memoria. Este proceso sera abortado");
 		exit(EXIT_FAILURE);
 	}
+
+	return true;
 }
 
 char* convertParsedFileToFileSystemBuffer(t_list* parsedFile)
@@ -406,12 +409,13 @@ char* convertParsedFileToFileSystemBuffer(t_list* parsedFile)
 	//of the list, I will allocate a large memory address -> lines * memoryLineSize
 
 	uint32_t fileLines = list_size(parsedFile);
-	size_t bufferSize = (fileLines * sizeof(char) * memoryLineSize) + 1; //The '\n' of each line is part of the line size
-	char* filesystemBuffer = calloc(1, bufferSize);
+	size_t _bufferSize = (fileLines * sizeof(char) * memoryLineSize) + 1; //The '\n' of each line is part of the line size
+	char* filesystemBuffer = calloc(1, _bufferSize);
 	char* line = NULL;
 	uint32_t lineSize;
 	uint32_t bufferOffset = 0;
 	uint32_t fileSize;
+
 
 	if(filesystemBuffer == NULL)
 	{
@@ -572,7 +576,7 @@ int32_t sendFileToFileSystem(char* filePath, char* dataToReplace)
 	return operationResult;
 }
 
-void tellSchedulerToUnblockProcess(uint32_t process, char* filePath)
+void tellSchedulerToUnblockProcess(uint32_t process, char* filePath, bool fileIsScript)
 {
 	int32_t nbytes;
 
@@ -595,6 +599,14 @@ void tellSchedulerToUnblockProcess(uint32_t process, char* filePath)
 	if((nbytes = send_string(schedulerServerSocket, filePath)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (tellSchedulerToUnblockProcess) - Error al enviar al planificador el path del archivo solicitado por el proceso");
+
+		log_info(dmaLog, "Debido a la desconexion del planificador, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_int(schedulerServerSocket, fileIsScript)) < 0)
+	{
+		log_error(dmaLog, "DMAFunctions (tellSchedulerToUnblockProcess) - Error al indicar al planificador si el archivo abierto es un script");
 
 		log_info(dmaLog, "Debido a la desconexion del planificador, este proceso se cerrara");
 		exit(EXIT_FAILURE);

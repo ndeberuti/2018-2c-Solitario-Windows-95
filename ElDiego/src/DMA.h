@@ -52,17 +52,17 @@ bool checkIfFileIsInFS(char*);
 char* getFileFromFS(char*);
 void sendProcessErrorMessageToScheduler(uint32_t);
 t_list* parseScript(char*);
-char* convertParsedFileToMemoryBuffer(t_list*);
-void sendFileToMemory(char*, uint32_t, char*, uint32_t);
+char* convertParsedFileToMemoryBuffer(t_list*, uint32_t*);
+bool sendFileToMemory(char*, uint32_t, char*, uint32_t, uint32_t);
 char* convertParsedFileToFileSystemBuffer(t_list*);
 char* getFileFromMemory(char*);
 int32_t sendFileToFileSystem(char*, char*);
-void tellSchedulerToUnblockProcess(uint32_t, char*);
+void tellSchedulerToUnblockProcess(uint32_t, char*, bool);
 
 //ServerThread
 void server();
 void commandHandler(uint32_t, uint32_t);
-void openFile(uint32_t);
+void openFile(uint32_t, bool);
 void deleteFile(uint32_t);
 void createFile(uint32_t);
 void flushFile(uint32_t);
