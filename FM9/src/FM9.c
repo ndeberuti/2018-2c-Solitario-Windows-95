@@ -29,9 +29,7 @@ int main(void) {
 
 
 
-guardar_archivo_paginas_invertidas(10,101, 7, "El artículo, en morfología lingüística, es un tipo de determinante actualizador, una categoría morfología que emplean algunas lenguas para actualizar o precisar la referencia de un sustantivo, transformándolo de desconocido y abstracto a conocido y concreto.");
-guardar_archivo_paginas_invertidas(10,103, 3, "ecause the article system is so complex and often idiosyncratic, it is especially difficult for non-native English speakers to master. This handout explains three");
-dump(10);
+
 	//close_process_segmentacion_paginada(diego, 10);
 	//guardar_archivo_segmentacion_paginada(11 ,222,8,"fallaaa\0");
 
@@ -637,7 +635,7 @@ void inicializar_memoria_segmentacion_simple(){
 
 	tabla_de_segmentos = list_create();
 
-	b_m_s = calloc(0,config.TAMANIO / config.MAX_LINEA /8);
+	b_m_s = calloc(1,config.TAMANIO / config.MAX_LINEA /8);
 	bitarray_memoria = bitarray_create(b_m_s, config.TAMANIO / config.MAX_LINEA /8);
 
 
