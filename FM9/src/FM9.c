@@ -29,8 +29,9 @@ int main(void) {
 
 
 
-
-
+guardar_archivo_paginas_invertidas(10,101, 7, "El artículo, en morfología lingüística, es un tipo de determinante actualizador, una categoría morfología que emplean algunas lenguas para actualizar o precisar la referencia de un sustantivo, transformándolo de desconocido y abstracto a conocido y concreto.");
+guardar_archivo_paginas_invertidas(10,103, 3, "ecause the article system is so complex and often idiosyncratic, it is especially difficult for non-native English speakers to master. This handout explains three");
+dump(10);
 	//close_process_segmentacion_paginada(diego, 10);
 	//guardar_archivo_segmentacion_paginada(11 ,222,8,"fallaaa\0");
 
@@ -2389,8 +2390,7 @@ void paginar(int pid, int id, int cantidad_lineas, char* buffer_recepcion){
 		printf("ESTO SE ESTA GUARDANDO: %s\n", buffer_envio);
 
 
-		entrada_tabla->pid = pid;
-		entrada_tabla->id = id;
+
 
 		while(n_frame < tamanio_bitarray_paginada && contador < cantidad_paginas){
 
@@ -2398,8 +2398,10 @@ void paginar(int pid, int id, int cantidad_lineas, char* buffer_recepcion){
 
 					if(!(bitarray_test_bit(bitarray_memoria, n_frame))){
 
+						entrada_tabla_invertida_t* entrada_tabla= malloc(sizeof(entrada_tabla_invertida_t));
 
-
+						entrada_tabla->pid = pid;
+						entrada_tabla->id = id;
 
 
 						entrada_tabla->frame = n_frame;
