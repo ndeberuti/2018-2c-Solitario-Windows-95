@@ -146,7 +146,6 @@ void dmaTaskHandler(uint32_t task, uint32_t _socket)
 	{
 		case UNLOCK_PROCESS:
 		{
-			log_info(schedulerLog, "El DMA solicita desbloquear un proceso");
 			unlockProcess(_socket);
 		}
 		break;
@@ -159,7 +158,7 @@ void dmaTaskHandler(uint32_t task, uint32_t _socket)
 
 void cpuTaskHandler(uint32_t task, uint32_t _socket)
 {
-	int32_t process;
+	uint32_t process;
 
 	switch(task)
 	{
@@ -237,7 +236,7 @@ void cpuTaskHandler(uint32_t task, uint32_t _socket)
 	}
 }
 
-void blockProcessInit(uint32_t _socket, int* process)
+void blockProcessInit(uint32_t _socket, uint32_t* process)
 {
 	int32_t pid;
 	int32_t nbytes;	//This cannot be unsigned; check the recv below
@@ -281,7 +280,7 @@ void blockProcessInit(uint32_t _socket, int* process)
 	}
 }
 
-void _blockProcess(uint32_t _socket, int* process)
+void _blockProcess(uint32_t _socket, uint32_t* process)
 {
 	int32_t nbytes;
 	PCB_t* processToBlock = NULL;
@@ -311,7 +310,7 @@ void _blockProcess(uint32_t _socket, int* process)
 	}
 	else
 	{
-		log_info(schedulerLog, "La CPU solicita que se bloquee un proceso");
+		log_info(schedulerLog, "La CPU solicita que se bloquee el proceso %d", processToBlock->pid);
 
 		uint32_t operationOk = updatePCBInExecutionQueue(processToBlock);
 
@@ -323,6 +322,8 @@ void _blockProcess(uint32_t _socket, int* process)
 		blockProcess(processToBlock->pid, isDmaCall); //Could send the PCB to that function, but it is also used by the
 													  //function that blocks a process being initialized (which has no
 													  //new PCB to send to the blockProcess function)
+
+		freeCPUBySocket(_socket);
 
 		(*process) = processToBlock->pid;
 	}
@@ -381,7 +382,7 @@ void _killProcess(uint32_t _socket)
 	}
 }
 
-void processQuantumEnd(uint32_t _socket, int* process)
+void processQuantumEnd(uint32_t _socket, uint32_t* process)
 {
 	int32_t nbytes;
 	PCB_t* updatedPCB = NULL;
@@ -404,6 +405,8 @@ void processQuantumEnd(uint32_t _socket, int* process)
 		updatePCBInExecutionQueue(updatedPCB);
 
 		moveProcessToReadyQueue(updatedPCB, false);
+
+		freeCPUBySocket(_socket);
 
 		(*process) = updatedPCB->pid;
 	}
@@ -450,8 +453,8 @@ uint32_t updatePCBInExecutionQueue(PCB_t* updatedPCB)
 	if(oldPCB == NULL)
 	{
 		//ERROR; the process should not be executing!
-		log_error(schedulerLog, "El PCB con id %d de la cola de ejecucion no pudo ser actualizado", updatedPCB->pid);
-		return 0;
+		log_error(schedulerLog, "El PCB con id %d de la cola de ejecucion no pudo ser actualizado. Dicho proceso no deberia estar en la cola de ejecucion o, debido a un error, no llego a la misma. El modulo sera abortado para que pueda evaluar la situacion", updatedPCB->pid);
+		exit(EXIT_FAILURE);;
 	}
 
 	list_add(executionQueue, updatedPCB);	//Do not care about PCB arrival order in that queue
@@ -755,7 +758,7 @@ void unlockProcess(uint32_t _socket)
 	int32_t processId;
 	int32_t nbytes;
 	char* filePath = NULL;
-	bool fileIsScript = false;
+	int32_t fileIsScript = 0;
 	bool processWasKilled = false;
 
 	if((nbytes = receive_int(_socket, &processId)) <= 0)
@@ -791,6 +794,8 @@ void unlockProcess(uint32_t _socket)
 	}
 	else
 	{
+		log_info(schedulerLog, "El DMA solicita desbloquear el proceso %d", processId);
+
 		//TODO (optional) - Maybe, after modifying the below and the "checkIfFileOpen" functions,
 		//					I could add a "bool" pointer to be modified in the below function, and let
 		//					me decide whether to unblock the process or not (if the file got claimed by
@@ -970,6 +975,12 @@ void freeCPUBySocket(uint32_t _socket)
 	cpu_t* cpuToFree =  NULL;
 	cpuToFree = findCPUBy_socket(_socket);
 
+	if(cpuToFree == NULL)
+	{
+		log_error(schedulerLog, "ERROR - Se indico liberar una CPU por su socket, pero esta no fue encontrada en la lista de CPUs conectadas. El modulo sera abortado aprta que evalue la situacion");
+		exit(EXIT_FAILURE);
+	}
+
 	cpuToFree->currentProcess = 0;
 	cpuToFree->isFree = true;
 
@@ -987,6 +998,20 @@ void freeCPUBySocket(uint32_t _socket)
 			sem_post(&shortTermScheduler);
 	}
 */ //Removed to avoid problems with semaphores
+
+
+	//If after trying to initialize processes with the current CPU, that CPU remains free
+	//(which means no process was send to be initialized to that CPU), then check if there are processes ready to be
+	//executed, and if the STS was not posted as many times as there are ready processes; in that case, post the STS so it executes
+	//the remaining processes with the available CPU
+	int32_t timesTheSTSWasCalled;
+	sem_getvalue(&shortTermScheduler, &timesTheSTSWasCalled);
+
+	if((cpuToFree->isFree) && (processesReadyToExecute > 0) && (processesReadyToExecute > timesTheSTSWasCalled))
+	{
+		sem_post(&shortTermScheduler);
+	}
+
 
 	pthread_mutex_unlock(&cpuListMutex);
 }
@@ -1042,6 +1067,20 @@ void handleCpuConnection(uint32_t _socket)
 	}
 */	//Remove to avoid problems with semaphores
 
+
+	//If after trying to initialize processes with the current CPU, that CPU remains free
+	//(which means no process was send to be initialized to that CPU), then check if there are processes ready to be
+	//executed, and if the STS was not posted as many times as there are ready processes; in that case, post the STS so it executes
+	//the remaining processes with the available CPU
+	int32_t timesTheSTSWasCalled;
+	sem_getvalue(&shortTermScheduler, &timesTheSTSWasCalled);
+
+	if((newCPU->isFree) && (processesReadyToExecute > 0) && (processesReadyToExecute > timesTheSTSWasCalled))
+	{
+		sem_post(&shortTermScheduler);
+	}
+
+
 	pthread_mutex_unlock(&cpuListMutex);
 }
 
@@ -1065,6 +1104,8 @@ void terminateProcess(uint32_t _socket)
 	updatePCBInExecutionQueue(updatedPCB);
 
 	terminateExecutingProcess(updatedPCB->pid);
+
+	freeCPUBySocket(_socket);
 }
 
 void handleConfigFileChanged()

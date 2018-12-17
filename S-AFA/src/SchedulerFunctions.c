@@ -131,7 +131,7 @@ void checkAlgorithm()
 	}
 }
 
-void addProcessToNewQueue(PCB_t *process)
+void addProcessToNewQueue(PCB_t *process)	//This function is used to move uninitialized processes from the newQueue to the readyQueue
 {
 	pthread_mutex_lock(&metricsGlobalvariablesMutex);
 
@@ -226,6 +226,16 @@ void moveProcessToReadyQueue(PCB_t* process, bool addToIoReadyQueue) //To add to
 		log_info(schedulerLog, "El proceso con id %d fue movido a la cola auxiliar de listos", process->pid);
 	}
 
+	//Need to post the STS each time a process is added to the readyQueue, so it can be scheduled...but only post when a initialized process is added
+	//(otherwise the STS will have nothing to schedule). It has to be posted for each process, because the algorithms always take the first process
+	//of the readyQueue; the others are left untouched. If there are no free CPUs, the STS will not be able to schedule processes, and
+	//will inform the user about it
+	//If I try to post the STS only from the LTS, when a uninitialized process is moved to the ready queue, then this module will never schedule processes
+	if(process->wasInitialized)
+	{
+		processesReadyToExecute++;
+		sem_post(&shortTermScheduler);
+	}
 }
 
 void addProcessToBlockedQueue(PCB_t* process)
@@ -258,7 +268,6 @@ PCB_t* createProcess(char* scriptPathInFS)
 	process->programCounter = 0;
 	process->scriptPathInFS = string_duplicate(scriptPathInFS); // scriptName es parte de una estructura que va a ser liberada
 	process->wasInitialized = false;
-	process->canBeScheduled = false;
 	process->executionState = SYSTEM_PROCESS;
 	process->cpuProcessIsAssignedTo = 0;
 	process->completedDmaCalls = 0;
@@ -313,8 +322,12 @@ void terminateExecutingProcess(uint32_t processId)
 
 	log_info(schedulerLog, "El proceso con id %d fue movido a la cola de procesos terminados, ya que se terminaron las instruccciones de su script", processId);
 
-	sem_post(&longTermScheduler); //Post the LITS semaphore; it does not matter if it got
-								  //posted several times by new processes and it runs several times
+	int32_t ltsSemaphore;
+	sem_getvalue(&longTermScheduler, &ltsSemaphore);
+
+	if((ltsSemaphore == 0) && (!list_is_empty(newQueue)))
+		sem_post(&longTermScheduler); //If there are new processes waiting to be accepted, post the LTS semaphore; it does not matter if it got
+										//posted several times by new processes and it runs several times
 }
 
 void unblockProcess(uint32_t processId, bool unblockedByDMA)
@@ -337,6 +350,12 @@ void unblockProcess(uint32_t processId, bool unblockedByDMA)
 	process = list_remove_by_condition(blockedQueue, _process_has_given_id);
 
 	pthread_mutex_unlock(&blockedQueueMutex);
+
+	if(process == NULL)
+	{
+		log_error(schedulerLog, "El proceso %d deberia estar en la cola de bloqueados, pero por alguna razon magica no se encuentra en dicha cola. El modulo se cerrara para que pueda evaluar el error", processId);
+		exit(EXIT_FAILURE);
+	}
 
 	log_info(schedulerLog, "El proceso %d fue quitado de la cola de bloqueados", processId);
 
@@ -429,7 +448,7 @@ t_list* getFreeCPUs()
 
 	freeCPUs = list_filter(connectedCPUs, _cpu_is_free);
 
-	if(list_size(freeCPUs) > 0)
+	if((freeCPUs != NULL) && (list_size(freeCPUs) > 0))
 	{
 		log_info(schedulerLog, "Se han encontrado CPUs libres! :D ");
 	}
@@ -444,7 +463,6 @@ t_list* getFreeCPUs()
 void initializeOrExecuteProcess(PCB_t* process, cpu_t* selectedCPU)
 {
 	int32_t nbytes;
-	int32_t message;
 
 	pthread_mutex_lock(&configFileMutex);
 
@@ -828,7 +846,7 @@ t_list* getSchedulableProcesses()
 
 	bool processCanBeScheduled(PCB_t* pcb)
 	{
-		return pcb->canBeScheduled;
+		return pcb->wasInitialized;
 	}
 
 	return list_filter(readyQueue, processCanBeScheduled);
@@ -864,7 +882,7 @@ void checkAndInitializeProcesses(cpu_t* freeCPU)
 	uninitializedProcesses = list_filter(readyQueue, _process_is_uninitialized);
 	uninitializedProcessesQty = list_size(uninitializedProcesses);
 
-	if(uninitializedProcessesQty > 0)
+	if((uninitializedProcesses != NULL) && (uninitializedProcessesQty > 0))
 	{
 		log_info(schedulerLog, "Hay %d procesos sin inicializar. Debido a que hay una CPU libre, se inicializara el primer proceso sin inicializar de la cola de listos", uninitializedProcessesQty);
 	}
@@ -932,7 +950,7 @@ void checkAndInitializeProcessesLoop()
 	uninitializedProcesses = list_filter(readyQueue, _process_is_uninitialized);
 	uninitializedProcessesQty = list_size(uninitializedProcesses);
 
-	if(uninitializedProcessesQty > 0)
+	if((uninitializedProcesses != NULL) && (uninitializedProcessesQty > 0))
 	{
 		log_info(schedulerLog, "Hay %d procesos sin inicializar. Se comenzara la inicializacion...", uninitializedProcessesQty);
 	}

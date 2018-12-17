@@ -35,7 +35,7 @@
 
 	// constantes
 	char *PATH_LOG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/Logs/logFM9.txt";
-	char *PATH_CONFIG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/FM9/config.txt";
+	char *PATH_CONFIG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/Configs/FM9.cfg";
 
 	#define MAX_PARAMS 1
 

@@ -4,7 +4,7 @@
 //procesos a cada cpu vacia; o por ahi tengo que hacer de a uno para evitar que se
 //llenen todas las cpu y no haya ninguna disponible para inicializar procesos...
 
-void roundRobinScheduler()
+bool roundRobinScheduler()
 {
 	PCB_t* scheduledProcess = NULL;
 	t_list* freeCPUs = getFreeCPUs();
@@ -12,26 +12,33 @@ void roundRobinScheduler()
 
 	bool processCanBeScheduled(PCB_t* pcb)
 	{
-		return pcb->canBeScheduled;
+		return pcb->wasInitialized;
 	}
 
-	if(list_size(freeCPUs) == 0)
+	if(list_is_empty(freeCPUs))
 	{
 		log_info(schedulerLog, "No hay CPUs disponibles para ejecutar el proceso planificado\n");
-		return;
+		return false;
 	}
 
 	//No need to add a mutex here.. this is used by the STS thread, and the readyQueue already got locked before entering here
 
 	scheduledProcess = list_remove_by_condition(readyQueue, processCanBeScheduled); //The ready queue has processes which cannot be scheduled (script not yet loaded in memory)
 
-	selectedCPU = list_get(freeCPUs, 0);
+
+
+	selectedCPU = (cpu_t*) list_get(freeCPUs, 0);
+
+
+
 	initializeOrExecuteProcess(scheduledProcess, selectedCPU);
 
 	list_destroy(freeCPUs);
+	return true;
 }
 
-void virtualRoundRobinScheduler(PCB_t* process)
+
+bool virtualRoundRobinScheduler()
 {
 	PCB_t* scheduledProcess = NULL;
 	t_list* freeCPUs = getFreeCPUs();
@@ -39,13 +46,13 @@ void virtualRoundRobinScheduler(PCB_t* process)
 
 	bool processCanBeScheduled(PCB_t* pcb)
 	{
-		return pcb->canBeScheduled;
+		return pcb->wasInitialized;
 	}
 
-	if(list_size(freeCPUs) == 0)
+	if(list_is_empty(freeCPUs))
 	{
 		log_info(schedulerLog, "No hay CPUs disponibles para ejecutar el proceso planificado\n");
-		return;
+		return false;
 	}
 
 	if(list_size(ioReadyQueue) != 0)
@@ -63,14 +70,14 @@ void virtualRoundRobinScheduler(PCB_t* process)
 		scheduledProcess = list_remove_by_condition(readyQueue, processCanBeScheduled);
 	}
 
-	selectedCPU = list_get(freeCPUs, 0);
-
+	selectedCPU = (cpu_t*) list_get(freeCPUs, 0);
 	initializeOrExecuteProcess(scheduledProcess, selectedCPU);
 
 	list_destroy(freeCPUs);
+	return true;
 }
 
-void customScheduler()
+bool customScheduler()
 {
 	//If the scheduler gets to this point, there is a free CPU
 	PCB_t* scheduledProcess = NULL;
@@ -93,63 +100,54 @@ void customScheduler()
 	}
 
 
-	if(list_size(freeCPUs) == 0)
+	if(list_is_empty(freeCPUs))
 	{
 		log_info(schedulerLog, "No hay CPUs disponibles para ejecutar el proceso planificado\n");
-		return;
+		return false;
 	}
 
-	selectedCPU = list_get(freeCPUs, 0);
+	selectedCPU = (cpu_t*) list_get(freeCPUs, 0);
 
 	list_destroy(freeCPUs);
 
 	//No need to add a mutex here for the readyQueue, cause it got locked by the STS that called this function
 	schedulableProcesses = getSchedulableProcesses();
 
-	if(list_size(schedulableProcesses) == 0)
+	if(list_is_empty(schedulableProcesses))
 	{
-		log_warning(schedulerLog, "Se activo el planificador de corto plazo, pero no existen procesos planificables en la cola READY. Esto no deberia haber pasado\n");
+		log_warning(schedulerLog, "STS: Se activo el planificador de corto plazo, pero no existen procesos planificables en la cola READY. Esto no deberia haber pasado\n");
+		return false;
 	}
 
 	processesToCountInstructions = list_filter(schedulableProcesses, processIOInstructionCounterIsZero);
 	processesToCountInstructionsQty = list_size(processesToCountInstructions);
 
-	if(processesToCountInstructionsQty > 0)
+	for(uint32_t i = 0; i < processesToCountInstructionsQty; i++)
 	{
-		for(uint32_t i = 0; i < processesToCountInstructionsQty; i++)
+		processToCountInstructions = list_get(processesToCountInstructions, i);
+		instructionsUntilIO = countProcessInstructions(processToCountInstructions, selectedCPU);
+
+		if(instructionsUntilIO == -1)	//The CPU was disconnected, select a new one
 		{
-			processToCountInstructions = list_get(processesToCountInstructions, i);
+			closeSocketAndRemoveCPU(selectedCPU->clientSocket);
 
-			instructionsUntilIO = countProcessInstructions(processToCountInstructions, selectedCPU);
+			freeCPUs = getFreeCPUs();
 
-			if(instructionsUntilIO == -1)	//The CPU was disconnected, select a new one
-			{
-				closeSocketAndRemoveCPU(selectedCPU->clientSocket);
+			selectedCPU = list_get(freeCPUs, 0);
 
-				freeCPUs = getFreeCPUs();
-
-				if(list_size(freeCPUs) == 0)
-				{
-					log_warning(schedulerLog, "Se desconecto la ultima CPU libre al intentar planificar un proceso. No es posible planificar mas procesos hasta que haya mas CPUs libres\n");
-					return;
-				}
-
-				selectedCPU = list_get(freeCPUs, 0);
-
-				list_destroy(freeCPUs);
-			}
-
-			processToCountInstructions->instructionsUntilIoOrEnd = instructionsUntilIO;
+			list_destroy(freeCPUs);
 		}
+
+		processToCountInstructions->instructionsUntilIoOrEnd = instructionsUntilIO;
 	}
 
 	list_sort(schedulableProcesses, processHasLessInstructionsUntilIO);
-
 	scheduledProcess = list_get(schedulableProcesses, 0);	//The process with less instructions until the end or an IO instruction is scheduled
-
 	initializeOrExecuteProcess(scheduledProcess, selectedCPU);
 
 	list_destroy(processesToCountInstructions);
+
+	return true;
 }
 
 uint32_t countProcessInstructions(PCB_t* process, cpu_t* selectedCPU)

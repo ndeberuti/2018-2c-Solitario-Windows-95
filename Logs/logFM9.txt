@@ -112,3 +112,318 @@
 [INFO] 08:04:08:362 Consola FM9/(27828:27828): CPU desconectada
 [INFO] 08:04:11:926 Consola FM9/(27828:27828): Se desconecto El Diego
 [ERROR] 08:04:17:789 Consola FM9/(27828:27828): select
+[INFO] 01:29:06:661 Proceso FM9/(13134:13134): Inicio del proceso
+[INFO] 01:29:06:702 Proceso FM9/(13134:13134): ---- Configuracion ----
+[INFO] 01:29:06:703 Proceso FM9/(13134:13134): PUERTO = 8003
+[INFO] 01:29:06:703 Proceso FM9/(13134:13134): MODO = SEG
+[INFO] 01:29:06:704 Proceso FM9/(13134:13134): TAMANIO = 2048
+[INFO] 01:29:06:704 Proceso FM9/(13134:13134): MAX_LINEA = 128
+[INFO] 01:29:06:704 Proceso FM9/(13134:13134): TAM_PAGINA = 1024
+[INFO] 01:29:06:705 Proceso FM9/(13134:13134): -----------------------
+[INFO] 01:29:06:709 Proceso FM9/(13134:13134): Segmentación Simple seteada
+[INFO] 01:29:06:712 Proceso FM9/(13134:13134): Inicialización de memoria exitosa
+[INFO] 01:29:22:217 Consola FM9/(13134:13134): Nueva conexion desde El Diego
+[INFO] 01:29:37:185 Consola FM9/(13134:13134): Nueva conexion de CPU
+[INFO] 01:29:48:611 Consola FM9/(13134:13134): Cargando archivo en memoria
+[INFO] 01:29:48:664 Proceso FM9/(13134:13134): Se guardo el segmento 1 en memoria 
+
+[INFO] 01:29:49:226 Consola FM9/(13134:13134): CPU desconectada
+[INFO] 01:40:51:749 Consola FM9/(13134:13134): Se desconecto El Diego
+[INFO] 01:43:32:319 Consola FM9/(13134:13134): Nueva conexion desde El Diego
+[INFO] 01:43:33:840 Consola FM9/(13134:13134): Nueva conexion de CPU
+[INFO] 01:43:49:23 Consola FM9/(13134:13134): Cargando archivo en memoria
+[INFO] 01:43:49:63 Proceso FM9/(13134:13134): Se guardo el segmento 1 en memoria 
+
+[INFO] 01:50:33:28 Consola FM9/(13134:13134): CPU desconectada
+[INFO] 01:50:39:422 Consola FM9/(13134:13134): Se desconecto El Diego
+[INFO] 01:50:45:179 Consola FM9/(13134:13134): Nueva conexion desde El Diego
+[INFO] 01:50:46:917 Consola FM9/(13134:13134): Nueva conexion de CPU
+[INFO] 01:50:59:463 Consola FM9/(13134:13134): Cargando archivo en memoria
+[ERROR] 01:50:59:500 Proceso FM9/(13134:13134): Archivo no entra en memoria 
+
+[ERROR] 01:51:21:749 Consola FM9/(13134:13134): select
+[INFO] 01:51:32:429 Proceso FM9/(13901:13901): Inicio del proceso
+[INFO] 01:51:32:465 Proceso FM9/(13901:13901): ---- Configuracion ----
+[INFO] 01:51:32:465 Proceso FM9/(13901:13901): PUERTO = 8003
+[INFO] 01:51:32:466 Proceso FM9/(13901:13901): MODO = SEG
+[INFO] 01:51:32:466 Proceso FM9/(13901:13901): TAMANIO = 2048
+[INFO] 01:51:32:467 Proceso FM9/(13901:13901): MAX_LINEA = 128
+[INFO] 01:51:32:467 Proceso FM9/(13901:13901): TAM_PAGINA = 1024
+[INFO] 01:51:32:467 Proceso FM9/(13901:13901): -----------------------
+[INFO] 01:51:32:470 Proceso FM9/(13901:13901): Segmentación Simple seteada
+[INFO] 01:51:32:472 Proceso FM9/(13901:13901): Inicialización de memoria exitosa
+[INFO] 01:51:36:162 Consola FM9/(13901:13901): Nueva conexion desde El Diego
+[INFO] 01:51:37:850 Consola FM9/(13901:13901): Nueva conexion de CPU
+[INFO] 01:51:50:647 Consola FM9/(13901:13901): Cargando archivo en memoria
+[INFO] 01:51:50:695 Proceso FM9/(13901:13901): Se guardo el segmento 1 en memoria 
+
+[INFO] 01:51:51:152 Consola FM9/(13901:13901): CPU desconectada
+[INFO] 02:18:59:975 Consola FM9/(13901:13901): Se desconecto El Diego
+[INFO] 02:19:38:977 Consola FM9/(13901:13901): Nueva conexion desde El Diego
+[INFO] 02:19:40:137 Consola FM9/(13901:13901): Nueva conexion de CPU
+[INFO] 02:19:51:521 Consola FM9/(13901:13901): Cargando archivo en memoria
+[INFO] 02:19:51:563 Proceso FM9/(13901:13901): Se guardo el segmento 1 en memoria 
+
+[INFO] 02:19:52:59 Consola FM9/(13901:13901): CPU desconectada
+[INFO] 02:21:43:18 Consola FM9/(13901:13901): Se desconecto El Diego
+[INFO] 02:21:48:337 Consola FM9/(13901:13901): Nueva conexion desde El Diego
+[INFO] 02:21:49:695 Consola FM9/(13901:13901): Nueva conexion de CPU
+[INFO] 02:22:02:871 Consola FM9/(13901:13901): Cargando archivo en memoria
+[ERROR] 02:22:02:912 Proceso FM9/(13901:13901): Archivo no entra en memoria 
+
+[ERROR] 02:22:12:819 Consola FM9/(13901:13901): select
+[INFO] 02:22:19:636 Proceso FM9/(14811:14811): Inicio del proceso
+[INFO] 02:22:19:672 Proceso FM9/(14811:14811): ---- Configuracion ----
+[INFO] 02:22:19:673 Proceso FM9/(14811:14811): PUERTO = 8003
+[INFO] 02:22:19:673 Proceso FM9/(14811:14811): MODO = SEG
+[INFO] 02:22:19:674 Proceso FM9/(14811:14811): TAMANIO = 2048
+[INFO] 02:22:19:674 Proceso FM9/(14811:14811): MAX_LINEA = 128
+[INFO] 02:22:19:674 Proceso FM9/(14811:14811): TAM_PAGINA = 1024
+[INFO] 02:22:19:675 Proceso FM9/(14811:14811): -----------------------
+[INFO] 02:22:19:678 Proceso FM9/(14811:14811): Segmentación Simple seteada
+[INFO] 02:22:19:680 Proceso FM9/(14811:14811): Inicialización de memoria exitosa
+[INFO] 02:22:21:950 Consola FM9/(14811:14811): Nueva conexion desde El Diego
+[INFO] 02:22:24:748 Consola FM9/(14811:14811): Nueva conexion de CPU
+[INFO] 02:22:56:439 Consola FM9/(14811:14811): Cargando archivo en memoria
+[INFO] 02:22:56:483 Proceso FM9/(14811:14811): Se guardo el segmento 1 en memoria 
+
+[INFO] 02:22:56:839 Consola FM9/(14811:14811): CPU desconectada
+[INFO] 02:30:05:900 Consola FM9/(14811:14811): Se desconecto El Diego
+[ERROR] 02:30:10:498 Consola FM9/(14811:14811): select
+[INFO] 02:30:21:88 Proceso FM9/(15237:15237): Inicio del proceso
+[INFO] 02:30:21:124 Proceso FM9/(15237:15237): ---- Configuracion ----
+[INFO] 02:30:21:125 Proceso FM9/(15237:15237): PUERTO = 8003
+[INFO] 02:30:21:125 Proceso FM9/(15237:15237): MODO = SEG
+[INFO] 02:30:21:125 Proceso FM9/(15237:15237): TAMANIO = 2048
+[INFO] 02:30:21:126 Proceso FM9/(15237:15237): MAX_LINEA = 128
+[INFO] 02:30:21:127 Proceso FM9/(15237:15237): TAM_PAGINA = 1024
+[INFO] 02:30:21:127 Proceso FM9/(15237:15237): -----------------------
+[INFO] 02:30:21:130 Proceso FM9/(15237:15237): Segmentación Simple seteada
+[INFO] 02:30:21:133 Proceso FM9/(15237:15237): Inicialización de memoria exitosa
+[INFO] 02:30:23:164 Consola FM9/(15237:15237): Nueva conexion desde El Diego
+[INFO] 02:30:24:111 Consola FM9/(15237:15237): Nueva conexion de CPU
+[INFO] 02:30:34:579 Consola FM9/(15237:15237): Cargando archivo en memoria
+[INFO] 02:30:34:623 Proceso FM9/(15237:15237): Se guardo el segmento 1 en memoria 
+
+[INFO] 02:30:34:980 Consola FM9/(15237:15237): CPU desconectada
+[INFO] 02:31:38:253 Consola FM9/(15237:15237): Se desconecto El Diego
+[INFO] 02:31:41:283 Consola FM9/(15237:15237): Nueva conexion desde El Diego
+[INFO] 02:31:42:381 Consola FM9/(15237:15237): Nueva conexion de CPU
+[INFO] 02:31:51:996 Consola FM9/(15237:15237): Cargando archivo en memoria
+[INFO] 02:31:52:39 Proceso FM9/(15237:15237): Se guardo el segmento 1 en memoria 
+
+[INFO] 02:31:52:390 Consola FM9/(15237:15237): CPU desconectada
+[INFO] 02:43:33:844 Consola FM9/(15237:15237): Se desconecto El Diego
+[ERROR] 02:43:35:263 Consola FM9/(15237:15237): select
+[INFO] 02:43:40:38 Proceso FM9/(15763:15763): Inicio del proceso
+[INFO] 02:43:40:74 Proceso FM9/(15763:15763): ---- Configuracion ----
+[INFO] 02:43:40:75 Proceso FM9/(15763:15763): PUERTO = 8003
+[INFO] 02:43:40:75 Proceso FM9/(15763:15763): MODO = SEG
+[INFO] 02:43:40:76 Proceso FM9/(15763:15763): TAMANIO = 2048
+[INFO] 02:43:40:76 Proceso FM9/(15763:15763): MAX_LINEA = 128
+[INFO] 02:43:40:76 Proceso FM9/(15763:15763): TAM_PAGINA = 1024
+[INFO] 02:43:40:77 Proceso FM9/(15763:15763): -----------------------
+[INFO] 02:43:40:80 Proceso FM9/(15763:15763): Segmentación Simple seteada
+[INFO] 02:43:40:84 Proceso FM9/(15763:15763): Inicialización de memoria exitosa
+[INFO] 02:43:42:902 Consola FM9/(15763:15763): Nueva conexion desde El Diego
+[INFO] 02:43:44:65 Consola FM9/(15763:15763): Nueva conexion de CPU
+[INFO] 02:43:56:627 Consola FM9/(15763:15763): Cargando archivo en memoria
+[INFO] 02:43:56:675 Proceso FM9/(15763:15763): Se guardo el segmento 1 en memoria 
+
+[INFO] 02:43:57:63 Consola FM9/(15763:15763): CPU desconectada
+[INFO] 02:47:33:622 Consola FM9/(15763:15763): Se desconecto El Diego
+[ERROR] 02:47:36:141 Consola FM9/(15763:15763): select
+[INFO] 02:47:40:55 Proceso FM9/(15940:15940): Inicio del proceso
+[INFO] 02:47:41:135 Proceso FM9/(15940:15940): ---- Configuracion ----
+[INFO] 02:47:41:136 Proceso FM9/(15940:15940): PUERTO = 8003
+[INFO] 02:47:41:137 Proceso FM9/(15940:15940): MODO = SEG
+[INFO] 02:47:41:138 Proceso FM9/(15940:15940): TAMANIO = 2048
+[INFO] 02:47:41:140 Proceso FM9/(15940:15940): MAX_LINEA = 128
+[INFO] 02:47:41:140 Proceso FM9/(15940:15940): TAM_PAGINA = 1024
+[INFO] 02:47:41:141 Proceso FM9/(15940:15940): -----------------------
+[INFO] 02:47:41:150 Proceso FM9/(15940:15940): Segmentación Simple seteada
+[INFO] 02:47:41:153 Proceso FM9/(15940:15940): Inicialización de memoria exitosa
+[INFO] 02:47:41:914 Consola FM9/(15940:15940): Nueva conexion desde El Diego
+[INFO] 02:47:43:875 Consola FM9/(15940:15940): Nueva conexion de CPU
+[INFO] 02:47:54:179 Consola FM9/(15940:15940): Cargando archivo en memoria
+[INFO] 02:47:54:223 Proceso FM9/(15940:15940): Se guardo el segmento 1 en memoria 
+
+[WARNING] 02:47:54:280 Consola FM9/(15940:15940): 40: Comando recibido incorrecto
+[WARNING] 02:47:54:281 Consola FM9/(15940:15940): 28: Comando recibido incorrecto
+[WARNING] 02:47:54:281 Consola FM9/(15940:15940): 1919120175: Comando recibido incorrecto
+[WARNING] 02:47:54:281 Consola FM9/(15940:15940): 1937010793: Comando recibido incorrecto
+[WARNING] 02:47:54:282 Consola FM9/(15940:15940): 1835627311: Comando recibido incorrecto
+[WARNING] 02:47:54:282 Consola FM9/(15940:15940): 778398832: Comando recibido incorrecto
+[WARNING] 02:47:54:282 Consola FM9/(15940:15940): 1919120229: Comando recibido incorrecto
+[WARNING] 02:47:54:283 Consola FM9/(15940:15940): 1869901929: Comando recibido incorrecto
+[WARNING] 02:47:54:283 Consola FM9/(15940:15940): 7301490: Comando recibido incorrecto
+[INFO] 02:58:27:428 Consola FM9/(15940:15940): Se desconecto El Diego
+[ERROR] 02:58:27:896 Consola FM9/(15940:15940): select
+[INFO] 02:58:32:698 Proceso FM9/(16369:16369): Inicio del proceso
+[INFO] 02:58:32:783 Proceso FM9/(16369:16369): ---- Configuracion ----
+[INFO] 02:58:32:785 Proceso FM9/(16369:16369): PUERTO = 8003
+[INFO] 02:58:32:785 Proceso FM9/(16369:16369): MODO = SEG
+[INFO] 02:58:32:787 Proceso FM9/(16369:16369): TAMANIO = 2048
+[INFO] 02:58:32:787 Proceso FM9/(16369:16369): MAX_LINEA = 128
+[INFO] 02:58:32:788 Proceso FM9/(16369:16369): TAM_PAGINA = 1024
+[INFO] 02:58:32:789 Proceso FM9/(16369:16369): -----------------------
+[INFO] 02:58:32:794 Proceso FM9/(16369:16369): Segmentación Simple seteada
+[INFO] 02:58:32:802 Proceso FM9/(16369:16369): Inicialización de memoria exitosa
+[INFO] 02:58:33:497 Consola FM9/(16369:16369): Nueva conexion desde El Diego
+[INFO] 02:58:35:121 Consola FM9/(16369:16369): Nueva conexion de CPU
+[INFO] 02:58:46:331 Consola FM9/(16369:16369): Cargando archivo en memoria
+[INFO] 02:58:46:375 Proceso FM9/(16369:16369): Se guardo el segmento 1 en memoria 
+
+[INFO] 02:58:46:432 Consola FM9/(16369:16369): Leyendo archivo linea
+[INFO] 02:58:46:441 Proceso FM9/(16369:16369): Se envió el archivo 1 al CPU del proceso 1
+[ERROR] 02:58:46:458 Proceso FM9/(16369:16369): El proceso 10 no se encuentra en memoria 
+
+[ERROR] 02:59:16:665 Proceso FM9/(16369:16369): Error recibir char: Connection reset by peer
+[ERROR] 02:59:16:669 Proceso FM9/(16369:16369): El archivo no se encuentra en memoria
+[INFO] 03:00:18:394 Proceso FM9/(16554:16554): Inicio del proceso
+[INFO] 03:00:18:488 Proceso FM9/(16554:16554): ---- Configuracion ----
+[INFO] 03:00:18:489 Proceso FM9/(16554:16554): PUERTO = 8003
+[INFO] 03:00:18:489 Proceso FM9/(16554:16554): MODO = SEG
+[INFO] 03:00:18:490 Proceso FM9/(16554:16554): TAMANIO = 2048
+[INFO] 03:00:18:490 Proceso FM9/(16554:16554): MAX_LINEA = 128
+[INFO] 03:00:18:491 Proceso FM9/(16554:16554): TAM_PAGINA = 1024
+[INFO] 03:00:18:491 Proceso FM9/(16554:16554): -----------------------
+[INFO] 03:00:18:495 Proceso FM9/(16554:16554): Segmentación Simple seteada
+[INFO] 03:00:18:497 Proceso FM9/(16554:16554): Inicialización de memoria exitosa
+[INFO] 03:00:20:361 Consola FM9/(16554:16554): Nueva conexion desde El Diego
+[INFO] 03:00:22:611 Consola FM9/(16554:16554): Nueva conexion de CPU
+[INFO] 03:00:33:175 Consola FM9/(16554:16554): Cargando archivo en memoria
+[INFO] 03:00:33:223 Proceso FM9/(16554:16554): Se guardo el segmento 1 en memoria 
+
+[INFO] 03:00:33:281 Consola FM9/(16554:16554): Leyendo archivo
+[INFO] 03:00:33:297 Proceso FM9/(16554:16554): Se envió el archivo 1 al CPU del proceso 1
+[ERROR] 03:00:33:307 Proceso FM9/(16554:16554): El proceso 10 no se encuentra en memoria 
+
+[ERROR] 03:05:10:972 Proceso FM9/(16554:16554): Error recibir char: Connection reset by peer
+[ERROR] 03:05:10:974 Proceso FM9/(16554:16554): El archivo no se encuentra en memoria
+[INFO] 03:09:33:116 Proceso FM9/(16938:16938): Inicio del proceso
+[INFO] 03:09:33:161 Proceso FM9/(16938:16938): ---- Configuracion ----
+[INFO] 03:09:33:162 Proceso FM9/(16938:16938): PUERTO = 8003
+[INFO] 03:09:33:163 Proceso FM9/(16938:16938): MODO = SEG
+[INFO] 03:09:33:164 Proceso FM9/(16938:16938): TAMANIO = 8192
+[INFO] 03:09:33:164 Proceso FM9/(16938:16938): MAX_LINEA = 64
+[INFO] 03:09:33:164 Proceso FM9/(16938:16938): TAM_PAGINA = 128
+[INFO] 03:09:33:165 Proceso FM9/(16938:16938): -----------------------
+[INFO] 03:09:33:169 Proceso FM9/(16938:16938): Segmentación Simple seteada
+[INFO] 03:09:33:171 Proceso FM9/(16938:16938): Inicialización de memoria exitosa
+[INFO] 03:09:34:733 Consola FM9/(16938:16938): Nueva conexion desde El Diego
+[INFO] 03:09:35:821 Consola FM9/(16938:16938): Nueva conexion de CPU
+[INFO] 03:09:48:195 Consola FM9/(16938:16938): Cargando archivo en memoria
+[INFO] 03:09:48:246 Proceso FM9/(16938:16938): Se guardo el segmento 1 en memoria 
+
+[INFO] 03:09:48:300 Consola FM9/(16938:16938): Leyendo archivo
+[INFO] 03:09:48:311 Proceso FM9/(16938:16938): Se envió el archivo 1 al CPU del proceso 1
+[ERROR] 03:09:48:336 Proceso FM9/(16938:16938): El proceso 10 no se encuentra en memoria 
+
+[ERROR] 03:21:57:338 Proceso FM9/(16938:16938): Error recibir char: Connection reset by peer
+[ERROR] 03:21:57:340 Proceso FM9/(16938:16938): El archivo no se encuentra en memoria
+[INFO] 03:22:07:112 Proceso FM9/(17577:17577): Inicio del proceso
+[INFO] 03:22:07:149 Proceso FM9/(17577:17577): ---- Configuracion ----
+[INFO] 03:22:07:150 Proceso FM9/(17577:17577): PUERTO = 8003
+[INFO] 03:22:07:150 Proceso FM9/(17577:17577): MODO = SEG
+[INFO] 03:22:07:151 Proceso FM9/(17577:17577): TAMANIO = 8192
+[INFO] 03:22:07:151 Proceso FM9/(17577:17577): MAX_LINEA = 64
+[INFO] 03:22:07:151 Proceso FM9/(17577:17577): TAM_PAGINA = 128
+[INFO] 03:22:07:152 Proceso FM9/(17577:17577): -----------------------
+[INFO] 03:22:07:155 Proceso FM9/(17577:17577): Segmentación Simple seteada
+[INFO] 03:22:07:157 Proceso FM9/(17577:17577): Inicialización de memoria exitosa
+[INFO] 03:22:08:208 Consola FM9/(17577:17577): Nueva conexion desde El Diego
+[INFO] 03:22:09:226 Consola FM9/(17577:17577): Nueva conexion de CPU
+[INFO] 03:22:21:195 Consola FM9/(17577:17577): Cargando archivo en memoria
+[INFO] 03:22:21:246 Proceso FM9/(17577:17577): Se guardo el segmento 1 en memoria 
+
+[INFO] 03:22:21:300 Consola FM9/(17577:17577): Leyendo archivo
+[INFO] 03:22:21:311 Proceso FM9/(17577:17577): Se envió el archivo 1 al CPU del proceso 1
+[ERROR] 03:22:21:337 Proceso FM9/(17577:17577): El proceso 10 no se encuentra en memoria 
+
+[ERROR] 03:24:55:957 Proceso FM9/(17577:17577): Error recibir char: Connection reset by peer
+[ERROR] 03:24:55:961 Proceso FM9/(17577:17577): El archivo no se encuentra en memoria
+[INFO] 03:25:05:929 Proceso FM9/(18256:18256): Inicio del proceso
+[INFO] 03:25:05:985 Proceso FM9/(18256:18256): ---- Configuracion ----
+[INFO] 03:25:05:986 Proceso FM9/(18256:18256): PUERTO = 8003
+[INFO] 03:25:05:986 Proceso FM9/(18256:18256): MODO = SEG
+[INFO] 03:25:05:987 Proceso FM9/(18256:18256): TAMANIO = 8192
+[INFO] 03:25:05:988 Proceso FM9/(18256:18256): MAX_LINEA = 64
+[INFO] 03:25:05:988 Proceso FM9/(18256:18256): TAM_PAGINA = 128
+[INFO] 03:25:05:989 Proceso FM9/(18256:18256): -----------------------
+[INFO] 03:25:05:992 Proceso FM9/(18256:18256): Segmentación Simple seteada
+[INFO] 03:25:05:995 Proceso FM9/(18256:18256): Inicialización de memoria exitosa
+[INFO] 03:25:07:507 Consola FM9/(18256:18256): Nueva conexion desde El Diego
+[INFO] 03:25:10:585 Consola FM9/(18256:18256): Nueva conexion de CPU
+[INFO] 03:25:22:541 Consola FM9/(18256:18256): Cargando archivo en memoria
+[INFO] 03:25:22:587 Proceso FM9/(18256:18256): Se guardo el segmento 1 en memoria 
+
+[INFO] 03:25:22:645 Consola FM9/(18256:18256): Leyendo archivo
+[INFO] 03:25:22:657 Proceso FM9/(18256:18256): Se envió el archivo 1 al CPU del proceso 1
+[ERROR] 03:25:22:692 Proceso FM9/(18256:18256): El proceso 10 no se encuentra en memoria 
+
+[ERROR] 03:37:19:414 Proceso FM9/(18256:18256): Error recibir char: Connection reset by peer
+[ERROR] 03:37:19:416 Proceso FM9/(18256:18256): El archivo no se encuentra en memoria
+[INFO] 03:37:25:910 Proceso FM9/(18700:18700): Inicio del proceso
+[INFO] 03:37:25:948 Proceso FM9/(18700:18700): ---- Configuracion ----
+[INFO] 03:37:25:949 Proceso FM9/(18700:18700): PUERTO = 8003
+[INFO] 03:37:25:950 Proceso FM9/(18700:18700): MODO = SEG
+[INFO] 03:37:25:950 Proceso FM9/(18700:18700): TAMANIO = 8192
+[INFO] 03:37:25:950 Proceso FM9/(18700:18700): MAX_LINEA = 64
+[INFO] 03:37:25:951 Proceso FM9/(18700:18700): TAM_PAGINA = 128
+[INFO] 03:37:25:951 Proceso FM9/(18700:18700): -----------------------
+[INFO] 03:37:25:954 Proceso FM9/(18700:18700): Segmentación Simple seteada
+[INFO] 03:37:25:958 Proceso FM9/(18700:18700): Inicialización de memoria exitosa
+[INFO] 03:37:28:390 Consola FM9/(18700:18700): Nueva conexion desde El Diego
+[INFO] 03:37:29:720 Consola FM9/(18700:18700): Nueva conexion de CPU
+[INFO] 03:37:39:823 Consola FM9/(18700:18700): Cargando archivo en memoria
+[INFO] 03:37:39:871 Proceso FM9/(18700:18700): Se guardo el segmento 1 en memoria 
+
+[INFO] 03:37:39:929 Consola FM9/(18700:18700): Leyendo archivo
+[INFO] 03:37:39:943 Proceso FM9/(18700:18700): Se envió el archivo 1 al CPU del proceso 1
+[ERROR] 03:40:10:328 Proceso FM9/(18700:18700): Error recibir char: Connection reset by peer
+[ERROR] 03:40:10:332 Proceso FM9/(18700:18700): El archivo no se encuentra en memoria
+[INFO] 03:54:55:799 Proceso FM9/(19386:19386): Inicio del proceso
+[INFO] 03:54:55:835 Proceso FM9/(19386:19386): ---- Configuracion ----
+[INFO] 03:54:55:836 Proceso FM9/(19386:19386): PUERTO = 8003
+[INFO] 03:54:55:836 Proceso FM9/(19386:19386): MODO = SEG
+[INFO] 03:54:55:837 Proceso FM9/(19386:19386): TAMANIO = 8192
+[INFO] 03:54:55:837 Proceso FM9/(19386:19386): MAX_LINEA = 64
+[INFO] 03:54:55:837 Proceso FM9/(19386:19386): TAM_PAGINA = 128
+[INFO] 03:54:55:838 Proceso FM9/(19386:19386): -----------------------
+[INFO] 03:54:55:842 Proceso FM9/(19386:19386): Segmentación Simple seteada
+[INFO] 03:54:55:847 Proceso FM9/(19386:19386): Inicialización de memoria exitosa
+[INFO] 03:54:56:806 Consola FM9/(19386:19386): Nueva conexion desde El Diego
+[INFO] 03:54:57:908 Consola FM9/(19386:19386): Nueva conexion de CPU
+[INFO] 03:55:08:443 Consola FM9/(19386:19386): Cargando archivo en memoria
+[INFO] 03:55:08:488 Proceso FM9/(19386:19386): Se guardo el segmento 1 en memoria 
+
+[INFO] 03:55:08:548 Consola FM9/(19386:19386): Leyendo archivo
+[INFO] 03:55:08:561 Proceso FM9/(19386:19386): Se envió el archivo 1 al CPU del proceso 1
+[ERROR] 04:08:36:666 Proceso FM9/(19386:19386): Error recibir char: Connection reset by peer
+[ERROR] 04:08:36:670 Proceso FM9/(19386:19386): El archivo no se encuentra en memoria
+[INFO] 04:08:51:614 Proceso FM9/(19914:19914): Inicio del proceso
+[INFO] 04:08:51:723 Proceso FM9/(19914:19914): ---- Configuracion ----
+[INFO] 04:08:51:728 Proceso FM9/(19914:19914): PUERTO = 8003
+[INFO] 04:08:51:731 Proceso FM9/(19914:19914): MODO = SEG
+[INFO] 04:08:51:731 Proceso FM9/(19914:19914): TAMANIO = 8192
+[INFO] 04:08:51:732 Proceso FM9/(19914:19914): MAX_LINEA = 64
+[INFO] 04:08:51:732 Proceso FM9/(19914:19914): TAM_PAGINA = 128
+[INFO] 04:08:51:733 Proceso FM9/(19914:19914): -----------------------
+[INFO] 04:08:51:741 Proceso FM9/(19914:19914): Segmentación Simple seteada
+[INFO] 04:08:51:745 Proceso FM9/(19914:19914): Inicialización de memoria exitosa
+[INFO] 04:08:52:301 Consola FM9/(19914:19914): Nueva conexion desde El Diego
+[INFO] 04:08:54:46 Consola FM9/(19914:19914): Nueva conexion de CPU
+[INFO] 04:09:09:71 Consola FM9/(19914:19914): Cargando archivo en memoria
+[INFO] 04:09:09:120 Proceso FM9/(19914:19914): Se guardo el segmento 1 en memoria 
+
+[INFO] 04:09:09:180 Consola FM9/(19914:19914): Leyendo archivo
+[INFO] 04:09:09:196 Proceso FM9/(19914:19914): Se envió el archivo 1 al CPU del proceso 1
+[ERROR] 04:10:04:874 Proceso FM9/(19914:19914): Error recibir char: Interrupted system call
+[ERROR] 04:10:04:876 Proceso FM9/(19914:19914): El archivo no se encuentra en memoria
+[INFO] 04:10:04:882 Consola FM9/(19914:19914): Closing process
+[INFO] 04:10:04:882 Consola FM9/(19914:19914): Cargando archivo en memoria
+[INFO] 04:10:04:895 Proceso FM9/(19914:19914): Se guardo el segmento 3 en memoria 
+
+[INFO] 04:10:04:941 Consola FM9/(19914:19914): Se desconecto El Diego
+[INFO] 04:10:04:951 Consola FM9/(19914:19914): CPU desconectada

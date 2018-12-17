@@ -231,7 +231,7 @@ void command_handler(uint32_t command, uint32_t socket) {
 		guardar_archivo(socket);
 			break;
 	case LEER_ARCHIVO:
-		log_info(log_consola, "Leyendo archivo linea");
+		log_info(log_consola, "Leyendo archivo");
 		abrir_archivo(socket);
 			break;
 	case ASIGNAR:
@@ -247,7 +247,6 @@ void command_handler(uint32_t command, uint32_t socket) {
 		log_info(log_consola, "Closing file");
 			break;
 	case CLOSE_PROCESS:
-		close_process_segmentacion_simple(diego, 10);
 			close_file(socket);
 			log_info(log_consola, "Closing process");
 			break;
@@ -433,8 +432,7 @@ void abrir_archivo(int socket_cpu){
 
 
 		int longitud_path = recibir_int(socket_cpu);
-		char* buffer =  malloc(longitud_path);
-		buffer = recibir_char(socket_cpu, longitud_path);
+		char* buffer = recibir_char(socket_cpu, longitud_path);
 		int id = transformar_path(buffer);
 		free(buffer);
 

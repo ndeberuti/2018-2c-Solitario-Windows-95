@@ -262,14 +262,14 @@ void executeProcess()
 {
 	uint32_t instructionsQty;
 	int32_t nbytes;
-	bool instructionWasExecuted;
+	uint32_t instructionExecutionResult;
 	PCB_t* processToExecute = NULL;
 	char* scriptContent = NULL; 	//The contents of a script file, which are in memory (all the lines of instructions of that script arranged in a string)
 	char* lineToParse = NULL;
 	t_list* parsedScript;	//This contains an element for each line/instruction the script has
 	t_list* parsedLine;		//This contains the instruction (first element of the list) and its arguments (each is an element of the list)
 
-	log_info(cpuLog, "El planificador solicita la incializacion de un proceso");
+	log_info(cpuLog, "El planificador solicita la ejecucion de un proceso");
 
 	if((nbytes = recvPCB(schedulerServerSocket, &processToExecute)) <= 0)
 	{
@@ -287,10 +287,8 @@ void executeProcess()
 
 	processInExecutionPCB = &processToExecute;
 
-	log_info(cpuLog, "Se recibio del planificador el PCB correspondiente al proceso %d", processToExecute->pid);
+	log_info(cpuLog, "Se recibio del planificador el PCB correspondiente al proceso %d", (*processInExecutionPCB)->pid);
 
-
-	(*processInExecutionPCB) = processToExecute;
 
 	instructionsExecuted = 0;
 	currentProcessQuantum = (*processInExecutionPCB)->remainingQuantum;
@@ -300,12 +298,21 @@ void executeProcess()
 																	//If this is the first execution for that PCB, the currentProgramCounter == 0
 	scriptContent = requestScriptFromMemory();
 
+	if(scriptContent == NULL)	//Error getting the file from the memory
+	{
+		handleProcessError();
+		return;
+	}
+
 	parsedScript = parseScript(scriptContent);
 	instructionsQty = list_size(parsedScript);	//How many instructions the script has
 
+	log_info(cpuLog, "Quedan %d lineas a ejecutar para el proceso %d", (instructionsQty - currentProgramCounter), (*processInExecutionPCB)->pid);
+	log_info(cpuLog, "El proceso %d que va a ejecutar tiene un quantum de %d", (*processInExecutionPCB)->pid, (*processInExecutionPCB)->remainingQuantum);
 
 	//Execute instructions until the program counter (that starts at index 1) exceeds the number
-	//of instructions of the script, or until the process runs out of quantum
+	//of instructions of the script, or until the process runs out of quantum.
+	//As the last line in a script is a '\n' char, I need to read lines until I get to the line with number 'instructionsQty - 1'
 	while((currentProcessQuantum != 0) && (currentProgramCounter < instructionsQty))
 	{
 		//This variables get changed here and not at the end of the while, because if a PCB must be sent back to the scheduler inside
@@ -323,9 +330,10 @@ void executeProcess()
 																					//the index of a list starts at 0
 		parsedLine = parseLine(lineToParse);
 
-		instructionWasExecuted = checkAndExecuteInstruction(parsedLine);
+		instructionExecutionResult = checkAndExecuteInstruction(parsedLine);
 
-		if(instructionWasExecuted)
+
+		if((instructionExecutionResult == INSTRUCTION_EXECUTED) || (instructionExecutionResult == PROCESS_BLOCKED))
 		{
 			if((nbytes = send_int(schedulerServerSocket, COMPLETED_INSTRUCTION)) < 0)
 			{
@@ -339,10 +347,22 @@ void executeProcess()
 				//TODO (Optional) - Send Error Handling
 			}
 		}
-		else	//If no instruction was executed (an empty line was found), decrement the quantum and the instructionsExecuted counter
+		else if((instructionExecutionResult == INSTRUCTION_NOT_EXECUTED) || (instructionExecutionResult == PROCESS_KILLED))
 		{
-			currentProcessQuantum--;
-			instructionsExecuted++;
+			//Do nothing, the error was treated before. Just end the execution
+
+			free(*processInExecutionPCB);
+			list_destroy_and_destroy_elements(parsedScript, free);
+			free(scriptContent);
+
+			return;
+		}
+		else
+		{
+			//Revert changes from the beginning of the while loop
+			currentProgramCounter--;
+			currentProcessQuantum++;
+			instructionsExecuted--;
 		}
 
 		list_destroy_and_destroy_elements(parsedLine, free);	//Each element of the list is a "char*"; this deletes the list and its elements
@@ -370,7 +390,7 @@ void executeProcess()
 	currentProcessQuantum = 0;
 	currentProgramCounter = 0;
 
-	free(processInExecutionPCB);  //After an execution, and after sending the PCB back to the scheduler, its structure must be cleaned
+	free(*processInExecutionPCB);  //After an execution, and after sending the PCB back to the scheduler, its structure must be cleaned
 	list_destroy_and_destroy_elements(parsedScript, free);  //Free the parsed script and all its elements (that are "char*")
 	free(scriptContent);  //Free the script received from the memory
 }
@@ -398,7 +418,7 @@ void initializeProcess()
 
 	processInExecutionPCB = &processToInitialize;
 
-	log_info(cpuLog, "Se recibio del planificador el PCB correspondiente al proceso %d", processToInitialize->pid);
+	log_info(cpuLog, "Se recibio del planificador el PCB correspondiente al proceso %d", (*processInExecutionPCB)->pid);
 
 	sendOpenFileRequestToDMA(processToInitialize->scriptPathInFS, OPEN_SCRIPT);
 
@@ -445,11 +465,12 @@ t_list* parseLine(char* line)	//The first element of the list is the instruction
 													//must be separated in 4 strings (instruction + 3 arguments)
 }
 
-bool checkAndExecuteInstruction(t_list* parsedLine)	//The 'parsedLine' list should be destroyed after calling this function
+uint32_t checkAndExecuteInstruction(t_list* parsedLine)	//The 'parsedLine' list should be destroyed after calling this function
 {
 	//Error handling in this function is optional, as the assignment states that no instructions with
 	//sintax or semantic errors will appear in the script
 
+	uint32_t executionResult = 0;
 	char* instruction = (char*) list_get(parsedLine, 0);
 	uint32_t listSize = list_size(parsedLine);	//listSize == 1 -> Received only the instruction
 												//Each increment after that indicates the number of arguments received for that instruction
@@ -459,6 +480,8 @@ bool checkAndExecuteInstruction(t_list* parsedLine)	//The 'parsedLine' list shou
 		//Received a line without instructions; return and skip to the next line
 		return false;
 	}
+
+	log_info(cpuLog, "Instruccion a ejecutar: %s", instruction);
 
 	if(string_equals_ignore_case("abrir", instruction))
 	{
@@ -476,7 +499,7 @@ bool checkAndExecuteInstruction(t_list* parsedLine)	//The 'parsedLine' list shou
 
 		log_info(cpuLog, "Se comenzara la ejecucion de la instruccion \"abrir\"...\n");
 
-		openFile(filePath);
+		executionResult = openFile(filePath);
 	}
 	else if(string_equals_ignore_case("concentrar", instruction))
 	{
@@ -510,7 +533,7 @@ bool checkAndExecuteInstruction(t_list* parsedLine)	//The 'parsedLine' list shou
 
 		log_info(cpuLog, "Se comenzara la ejecucion de la instruccion \"asignar\"...\n");
 
-		modifyFileLineInMemory(filePath, lineNumberInt, dataToAssign);
+		executionResult = modifyFileLineInMemory(filePath, lineNumberInt, dataToAssign);
 	}
 	else if(string_equals_ignore_case("wait", instruction))
 	{
@@ -527,7 +550,7 @@ bool checkAndExecuteInstruction(t_list* parsedLine)	//The 'parsedLine' list shou
 
 		log_info(cpuLog, "Se comenzara la ejecucion de la instruccion \"wait\"...\n");
 
-		waitSemaphore(semaphoreName);
+		executionResult = waitSemaphore(semaphoreName);
 	}
 	else if(string_equals_ignore_case("signal", instruction))
 	{
@@ -544,7 +567,7 @@ bool checkAndExecuteInstruction(t_list* parsedLine)	//The 'parsedLine' list shou
 
 		log_info(cpuLog, "Se comenzara la ejecucion de la instruccion \"signal\"...\n");
 
-		signalSemaphore(semaphoreName);
+		executionResult = signalSemaphore(semaphoreName);
 	}
 	else if(string_equals_ignore_case("flush", instruction))
 	{
@@ -561,7 +584,7 @@ bool checkAndExecuteInstruction(t_list* parsedLine)	//The 'parsedLine' list shou
 
 		log_info(cpuLog, "Se comenzara la ejecucion de la instruccion \"flush\"...\n");
 
-		flushFile(filePath);
+		executionResult = flushFile(filePath);
 	}
 	else if(string_equals_ignore_case("close", instruction))
 	{
@@ -578,7 +601,7 @@ bool checkAndExecuteInstruction(t_list* parsedLine)	//The 'parsedLine' list shou
 
 		log_info(cpuLog, "Se comenzara la ejecucion de la instruccion \"close\"...\n");
 
-		closeFile(filePath);
+		executionResult = closeFile(filePath);
 	}
 	else if(string_equals_ignore_case("crear", instruction))
 	{
@@ -598,7 +621,7 @@ bool checkAndExecuteInstruction(t_list* parsedLine)	//The 'parsedLine' list shou
 
 		log_info(cpuLog, "Se comenzara la ejecucion de la instruccion \"crear\"...\n");
 
-		createFile(filePath, fileLinesInt);
+		executionResult = createFile(filePath, fileLinesInt);
 	}
 	else if(string_equals_ignore_case("borrar", instruction))
 	{
@@ -615,26 +638,40 @@ bool checkAndExecuteInstruction(t_list* parsedLine)	//The 'parsedLine' list shou
 
 		log_info(cpuLog, "Se comenzara la ejecucion de la instruccion \"borrar\"...\n");
 
-		deleteFile(filePath);
+		executionResult = deleteFile(filePath);
 	}
 	else
 	{
 		//TODO (optional) - Received a wrong instruction, raise an error
 		log_error(cpuLog, "Se ha intentado ejecutar una instruccion incorrecta");
+		handleProcessError();
+		executionResult = INSTRUCTION_NOT_EXECUTED;
 	}
 
-	//Sleep for some time (ExecutionDelay)
-	log_info(cpuLog, "Retardo de ejecucion...\n");
+	if((executionResult == INSTRUCTION_EXECUTED) || (executionResult == PROCESS_BLOCKED))	//Everything went OK
+	{
+		//Sleep for some time (ExecutionDelay)
+		log_info(cpuLog, "Retardo de ejecucion...\n");
 
-	double milisecondsSleep = config.executionDelay / 1000;
-	sleep(milisecondsSleep);
+		double milisecondsSleep = config.executionDelay / 1000;
+		sleep(milisecondsSleep);
 
-	log_info(cpuLog, "Se ha finalizado la ejecucion de la instruccion\n");
+		log_info(cpuLog, "Se ha finalizado la ejecucion de la instruccion\n");
+	}
+	else if((executionResult == INSTRUCTION_NOT_EXECUTED) || (executionResult == PROCESS_KILLED))
+	{
+		log_info(cpuLog, "La ultima instruccion que se intento ejecutar para el proceso %d produjo un error, por lo que se ordeno la terminacion de dicho proceso...", (*processInExecutionPCB)->pid);
+	}
+	else if(executionResult == 0)
+	{
+		log_error(cpuLog, "Se recibio un mensaje in correcto de algun modulo. Se debe revisar la comunicacion con los demas modulos. Este modulo sera abortado debido a ello; se deberian abortar los demas modulos...");
+		exit(EXIT_FAILURE);
+	}
 
-	return true;
+	return executionResult;
 }
 
-void openFile(char* filePathInFS)
+uint32_t openFile(char* filePathInFS)
 {
 	//Check if the file was opened by the current process
 	uint32_t message = (uint32_t) askSchedulerIfFileOpen(filePathInFS);
@@ -643,19 +680,22 @@ void openFile(char* filePathInFS)
 	{
 		case FILE_NOT_OPEN:
 			//If the file is not open, I should send a message to the DMA telling it to open the file, and send a message to the scheduler telling it to block the current process
-			handleFileNotOpen(filePathInFS, false);
+			return handleFileNotOpen(filePathInFS, false);
 		break;
 
 		case FILE_OPENED_BY_ANOTHER_PROCESS:
 			//If the file was opened by other process, I should tell the scheduler to block the current process and wait for the file to be liberated
-			handleFileOpenedByOtherProcess(filePathInFS, false);
+			return handleFileOpenedByOtherProcess(filePathInFS, false);
 		break;
 
 		case FILE_OPEN:
 			//Do Nothing, no need to open the file again; go to the next instruction
 			log_info(cpuLog, "Se solicito la apertura del archivo del path \"%s\", pero este ya fue abierto por el proceso %d\n", filePathInFS, (*processInExecutionPCB)->pid);
+			return INSTRUCTION_EXECUTED;
 		break;
 	}
+
+	return 0; //It never reaches this part
 }
 
 void modifyFileLineInMemory(char* filePathInFS, uint32_t lineNumber, char* dataToAssign)
@@ -820,7 +860,7 @@ void signalSemaphore(char* semaphoreName)
 	}
 }
 
-void flushFile(char* filePathInFS)
+uint32_t flushFile(char* filePathInFS)
 {
 	//Check if the file was opened by the current process
 	uint32_t message = (uint32_t) askSchedulerIfFileOpen(filePathInFS);
@@ -829,19 +869,21 @@ void flushFile(char* filePathInFS)
 	{
 		case FILE_NOT_OPEN:
 			//If the file is not open, it means it is an error to try flushing a file not open by the current process -> Raise an error and tell the scheduler
-			handleFileNotOpen(filePathInFS, true);
+			return handleFileNotOpen(filePathInFS, true);
 		break;
 
 		case FILE_OPENED_BY_ANOTHER_PROCESS:
 			//If the file was opened by other process, it means it is an error to try flushing a file not open by the current process -> Raise an error and tell the scheduler
-			handleFileOpenedByOtherProcess(filePathInFS, true);
+			return handleFileOpenedByOtherProcess(filePathInFS, true);
 		break;
 
 		case FILE_OPEN:
 			//Tell the DMA to flush the file and send the filePath. Then tell the scheduler to block the process
-			handleFlushFile(filePathInFS);
+			return handleFlushFile(filePathInFS);
 		break;
 	}
+
+	return 0; //It never reaches this part
 }
 
 void closeFile(char* filePathInFS)
@@ -918,7 +960,7 @@ void createFile(char* filePathInFS, uint32_t numberOfLines)
 	tellSchedulerToBlockProcess(true);
 }
 
-void deleteFile(char* filePathInFS)
+uint32_t deleteFile(char* filePathInFS)
 {
 	int32_t nbytes;
 
@@ -958,6 +1000,7 @@ void deleteFile(char* filePathInFS)
 	}
 
 	tellSchedulerToBlockProcess(true);
+	return PROCESS_BLOCKED;
 }
 
 uint32_t askSchedulerIfFileOpen(char* filePathInFS)
@@ -1018,7 +1061,7 @@ uint32_t askSchedulerIfFileOpen(char* filePathInFS)
 	return message;
 }
 
-void handleFileNotOpen(char* filePathInFS, bool raiseError)
+uint32_t handleFileNotOpen(char* filePathInFS, bool raiseError)
 {
 	//If this function does not raise an error, it means it should handle the FILE_NOT_OPEN message when trying to execute the openFile instruction
 	//If it raises an error, it has to handle the FILE_NOT_OPEN message when trying to execute another instruction related to files
@@ -1027,15 +1070,17 @@ void handleFileNotOpen(char* filePathInFS, bool raiseError)
 	{
 		sendOpenFileRequestToDMA(filePathInFS, OPEN_FILE);
 		tellSchedulerToBlockProcess(false);
+		return PROCESS_BLOCKED;
 	}
 	else
 	{
 		log_error(cpuLog, "Se solicito una operacion sobre un archivo no abierto por el proceso %d\nEl proceso sera terminado..\n", (*processInExecutionPCB)->pid);
 		handleProcessError();
+		return PROCESS_KILLED;
 	}
 }
 
-void handleFileOpenedByOtherProcess(char* filePathInFS, bool raiseError)
+uint32_t handleFileOpenedByOtherProcess(char* filePathInFS, bool raiseError)
 {
 	//If this function does not raise an error, it means it should handle the FILE_OPENED_BY_ANOTHER_PROCESS message when trying to execute the openFile instruction
 	//If it raises an error, it has to handle the FILE_OPENED_BY_ANOTHER_PROCESS message when trying to execute another instruction related to files
@@ -1044,11 +1089,13 @@ void handleFileOpenedByOtherProcess(char* filePathInFS, bool raiseError)
 	{
 		log_info(cpuLog, "Se solicito la apertura del archivo del path \"%s\" para el proceso %d, pero dicho archivo ya fue abierto por otro proceso\nEl proceso actual sera bloqueado\n", filePathInFS, (*processInExecutionPCB)->pid);
 		tellSchedulerToBlockProcess(false);
+		return PROCESS_BLOCKED;
 	}
 	else
 	{
 		log_error(cpuLog, "Se solicito una operacion sobre un archivo no abierto por el proceso %d\nEl proceso sera terminado..\n", (*processInExecutionPCB)->pid);
 		handleProcessError();
+		return PROCESS_KILLED;
 	}
 }
 
@@ -1283,7 +1330,7 @@ void handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToAssig
 	}
 }
 
-void handleFlushFile(char* filePathInFS)
+uint32_t handleFlushFile(char* filePathInFS)
 {
 	int32_t nbytes;
 
@@ -1325,9 +1372,10 @@ void handleFlushFile(char* filePathInFS)
 	log_info(cpuLog, "Se solicito al DMA la descarga de la informacion en memoria del archivo del path \"%s\"\n", filePathInFS);
 
 	tellSchedulerToBlockProcess(true);
+	return PROCESS_BLOCKED;
 }
 
-void handleCloseFile(char* filePathInFS)
+uint32_t handleCloseFile(char* filePathInFS)
 {
 	int32_t nbytes;
 	int32_t message;
@@ -1411,11 +1459,15 @@ void handleCloseFile(char* filePathInFS)
 		log_info(cpuLog, "El archivo \"%s\" que se intento quitar de memoria no se encuentra en ella. El proceso sera terminado...", filePathInFS);
 
 		handleProcessError();
+		return PROCESS_KILLED;
 	}
 	else if(message == OK)
 	{
 		log_info(cpuLog, "Se ha cerrado exitosamente el archivo de la ruta \"%s\"", filePathInFS);
+		return INSTRUCTION_EXECUTED;
 	}
+
+	return 0; //It should never reach this part
 }
 
 void updateCurrentPCB()
@@ -1601,9 +1653,10 @@ char* requestScriptFromMemory()
 {
 	int32_t nbytes;
 	char* scriptContent = NULL;
+	int32_t result;
 
 	//Ask the memory for the script
-	if((nbytes = send_int(memoryServerSocket, REQUEST_SCRIPT)) < 0)
+	if((nbytes = send_int(memoryServerSocket, LEER_ARCHIVO)) < 0)
 	{
 		log_error(cpuLog, "Error al solicitar a la memoria que envie un script\n");
 
@@ -1626,14 +1679,33 @@ char* requestScriptFromMemory()
 		//TODO (Optional) - Send Error Handling
 	}
 
+	if((nbytes = receive_int(memoryServerSocket, &result)) <= 0)
+	{
+		if(nbytes == 0)
+			log_error(cpuLog, "La memoria fue desconectada al intentar recibir el resultado de pedirle un archivo\n");
+		if(nbytes < 0)
+			log_error(cpuLog, "Error al intentar recibir el resultado de pedirle un archivo a la memoria\n");
+
+		log_info(cpuLog, "Debido a una desconexion de la memoria, este proceso se cerrara\n");
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+
+		exit(EXIT_FAILURE);
+	}
+
+	if(result != OK)
+	{
+		log_error(cpuLog, "La memoria devolvio un error al intentar recibir un archivo de ella. El proceso sera abortado");
+		return NULL;
+	}
+
 	if((nbytes = receive_string(memoryServerSocket, &scriptContent)) <= 0)
 	{
 		if(nbytes == 0)
-			log_error(cpuLog, "EL planificador fue desconectado al intentar recibir un PCB del mismo\n");
+			log_error(cpuLog, "La memoria fue desconectada al intentar recibir un archivo\n");
 		if(nbytes < 0)
-			log_error(cpuLog, "Error al intentar recibir un PCB del planificador\n");
+			log_error(cpuLog, "Error al intentar recibir un archivo de la memoria\n");
 
-		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+		log_info(cpuLog, "Debido a una desconexion de la memoria, este proceso se cerrara\n");
 
 		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
 

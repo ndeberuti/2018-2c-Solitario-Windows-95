@@ -294,3 +294,244 @@
 [INFO] 07:32:52:476 Consola S-AFA/(2682:2686): Nueva conexion de CPU
 
 [INFO] 07:33:03:429 Consola S-AFA/(2682:2682): Linea leida: ejecutar /Archivos/scripts/simple.escriptorio
+[INFO] 01:21:56:588 Consola S-AFA/(12436:12436): ---- Configuracion ----
+[INFO] 01:21:56:608 Consola S-AFA/(12436:12436): Puerto = 8000
+[INFO] 01:21:56:609 Consola S-AFA/(12436:12436): Algoritmo de Planificacion = RR
+[INFO] 01:21:56:609 Consola S-AFA/(12436:12436): Quantum = 2
+[INFO] 01:21:56:610 Consola S-AFA/(12436:12436): Nivel de Multiprogramacion = 3
+[INFO] 01:21:56:610 Consola S-AFA/(12436:12436): Retardo de Planificacion = 500
+[INFO] 01:21:56:610 Consola S-AFA/(12436:12436): -----------------------
+[INFO] 01:28:39:441 Consola S-AFA/(13104:13104): ---- Configuracion ----
+[INFO] 01:28:39:459 Consola S-AFA/(13104:13104): Puerto = 8000
+[INFO] 01:28:39:460 Consola S-AFA/(13104:13104): Algoritmo de Planificacion = RR
+[INFO] 01:28:39:460 Consola S-AFA/(13104:13104): Quantum = 2
+[INFO] 01:28:39:461 Consola S-AFA/(13104:13104): Nivel de Multiprogramacion = 3
+[INFO] 01:28:39:461 Consola S-AFA/(13104:13104): Retardo de Planificacion = 500
+[INFO] 01:28:39:461 Consola S-AFA/(13104:13104): -----------------------
+[INFO] 01:29:22:205 Consola S-AFA/(13104:13107): Nueva conexion desde el DMA
+[ERROR] 01:29:37:173 Consola S-AFA/(13104:13107): ServerThread - La tarea recibida, con codigo -1, es incorrecta
+[INFO] 01:29:37:174 Consola S-AFA/(13104:13107): Nueva conexion de CPU
+
+[INFO] 01:29:46:499 Consola S-AFA/(13104:13104): Linea leida: ejecutar /scripts/simple.escriptorio
+[INFO] 01:43:30:383 Consola S-AFA/(13585:13585): ---- Configuracion ----
+[INFO] 01:43:30:402 Consola S-AFA/(13585:13585): Puerto = 8000
+[INFO] 01:43:30:403 Consola S-AFA/(13585:13585): Algoritmo de Planificacion = RR
+[INFO] 01:43:30:403 Consola S-AFA/(13585:13585): Quantum = 2
+[INFO] 01:43:30:404 Consola S-AFA/(13585:13585): Nivel de Multiprogramacion = 3
+[INFO] 01:43:30:404 Consola S-AFA/(13585:13585): Retardo de Planificacion = 500
+[INFO] 01:43:30:404 Consola S-AFA/(13585:13585): -----------------------
+[INFO] 01:43:32:314 Consola S-AFA/(13585:13588): Nueva conexion desde el DMA
+[ERROR] 01:43:33:827 Consola S-AFA/(13585:13588): ServerThread - La tarea recibida, con codigo -1, es incorrecta
+[INFO] 01:43:33:829 Consola S-AFA/(13585:13588): Nueva conexion de CPU
+
+[INFO] 01:43:46:924 Consola S-AFA/(13585:13585): Linea leida: ejecutar /scripts/simple.escriptorio
+[INFO] 01:50:43:318 Consola S-AFA/(13852:13852): ---- Configuracion ----
+[INFO] 01:50:43:336 Consola S-AFA/(13852:13852): Puerto = 8000
+[INFO] 01:50:43:337 Consola S-AFA/(13852:13852): Algoritmo de Planificacion = RR
+[INFO] 01:50:43:338 Consola S-AFA/(13852:13852): Quantum = 2
+[INFO] 01:50:43:338 Consola S-AFA/(13852:13852): Nivel de Multiprogramacion = 3
+[INFO] 01:50:43:338 Consola S-AFA/(13852:13852): Retardo de Planificacion = 500
+[INFO] 01:50:43:339 Consola S-AFA/(13852:13852): -----------------------
+[INFO] 01:50:45:177 Consola S-AFA/(13852:13855): Nueva conexion desde el DMA
+[ERROR] 01:50:46:900 Consola S-AFA/(13852:13855): ServerThread - La tarea recibida, con codigo -1, es incorrecta
+[INFO] 01:50:46:901 Consola S-AFA/(13852:13855): Nueva conexion de CPU
+
+[INFO] 01:50:57:369 Consola S-AFA/(13852:13852): Linea leida: ejecutar /scripts/simple.escriptorio
+[INFO] 01:51:22:680 Consola S-AFA/(13852:13855): DMA desconectado
+[INFO] 01:51:23:414 Consola S-AFA/(13852:13855): CPU desconectada
+[INFO] 01:51:29:344 Consola S-AFA/(13889:13889): ---- Configuracion ----
+[INFO] 01:51:29:362 Consola S-AFA/(13889:13889): Puerto = 8000
+[INFO] 01:51:29:362 Consola S-AFA/(13889:13889): Algoritmo de Planificacion = RR
+[INFO] 01:51:29:363 Consola S-AFA/(13889:13889): Quantum = 2
+[INFO] 01:51:29:363 Consola S-AFA/(13889:13889): Nivel de Multiprogramacion = 3
+[INFO] 01:51:29:363 Consola S-AFA/(13889:13889): Retardo de Planificacion = 500
+[INFO] 01:51:29:364 Consola S-AFA/(13889:13889): -----------------------
+[INFO] 01:51:36:152 Consola S-AFA/(13889:13892): Nueva conexion desde el DMA
+[ERROR] 01:51:37:833 Consola S-AFA/(13889:13892): ServerThread - La tarea recibida, con codigo -1, es incorrecta
+[INFO] 01:51:37:835 Consola S-AFA/(13889:13892): Nueva conexion de CPU
+
+[INFO] 01:51:48:534 Consola S-AFA/(13889:13889): Linea leida: ejecutar /scripts/simple.escriptorio
+[INFO] 02:19:37:286 Consola S-AFA/(14637:14637): ---- Configuracion ----
+[INFO] 02:19:37:306 Consola S-AFA/(14637:14637): Puerto = 8000
+[INFO] 02:19:37:308 Consola S-AFA/(14637:14637): Algoritmo de Planificacion = RR
+[INFO] 02:19:37:308 Consola S-AFA/(14637:14637): Quantum = 2
+[INFO] 02:19:37:309 Consola S-AFA/(14637:14637): Nivel de Multiprogramacion = 3
+[INFO] 02:19:37:309 Consola S-AFA/(14637:14637): Retardo de Planificacion = 500
+[INFO] 02:19:37:309 Consola S-AFA/(14637:14637): -----------------------
+[INFO] 02:19:38:975 Consola S-AFA/(14637:14641): Nueva conexion desde el DMA
+[ERROR] 02:19:40:115 Consola S-AFA/(14637:14641): ServerThread - La tarea recibida, con codigo -1, es incorrecta
+[INFO] 02:19:40:117 Consola S-AFA/(14637:14641): Nueva conexion de CPU
+
+[INFO] 02:19:49:428 Consola S-AFA/(14637:14637): Linea leida: ejecutar /scripts/simple.escriptorio
+[INFO] 02:21:46:455 Consola S-AFA/(14770:14770): ---- Configuracion ----
+[INFO] 02:21:46:474 Consola S-AFA/(14770:14770): Puerto = 8000
+[INFO] 02:21:46:475 Consola S-AFA/(14770:14770): Algoritmo de Planificacion = RR
+[INFO] 02:21:46:475 Consola S-AFA/(14770:14770): Quantum = 2
+[INFO] 02:21:46:476 Consola S-AFA/(14770:14770): Nivel de Multiprogramacion = 3
+[INFO] 02:21:46:476 Consola S-AFA/(14770:14770): Retardo de Planificacion = 500
+[INFO] 02:21:46:476 Consola S-AFA/(14770:14770): -----------------------
+[INFO] 02:21:48:334 Consola S-AFA/(14770:14773): Nueva conexion desde el DMA
+[ERROR] 02:21:49:676 Consola S-AFA/(14770:14773): ServerThread - La tarea recibida, con codigo -1, es incorrecta
+[INFO] 02:21:49:678 Consola S-AFA/(14770:14773): Nueva conexion de CPU
+
+[INFO] 02:22:00:780 Consola S-AFA/(14770:14770): Linea leida: ejecutar /scripts/simple.escriptorio
+[INFO] 02:22:13:465 Consola S-AFA/(14770:14773): DMA desconectado
+[INFO] 02:22:14:442 Consola S-AFA/(14770:14773): CPU desconectada
+[INFO] 02:22:20:836 Consola S-AFA/(14815:14815): ---- Configuracion ----
+[INFO] 02:22:20:854 Consola S-AFA/(14815:14815): Puerto = 8000
+[INFO] 02:22:20:855 Consola S-AFA/(14815:14815): Algoritmo de Planificacion = RR
+[INFO] 02:22:20:856 Consola S-AFA/(14815:14815): Quantum = 2
+[INFO] 02:22:20:856 Consola S-AFA/(14815:14815): Nivel de Multiprogramacion = 3
+[INFO] 02:22:20:856 Consola S-AFA/(14815:14815): Retardo de Planificacion = 500
+[INFO] 02:22:20:857 Consola S-AFA/(14815:14815): -----------------------
+[INFO] 02:22:21:942 Consola S-AFA/(14815:14818): Nueva conexion desde el DMA
+[ERROR] 02:22:24:736 Consola S-AFA/(14815:14818): ServerThread - La tarea recibida, con codigo -1, es incorrecta
+[INFO] 02:22:24:737 Consola S-AFA/(14815:14818): Nueva conexion de CPU
+
+[INFO] 02:22:54:324 Consola S-AFA/(14815:14815): Linea leida: ejecutar /scripts/simple.escriptorio
+[INFO] 02:30:20:68 Consola S-AFA/(15231:15231): ---- Configuracion ----
+[INFO] 02:30:20:86 Consola S-AFA/(15231:15231): Puerto = 8000
+[INFO] 02:30:20:86 Consola S-AFA/(15231:15231): Algoritmo de Planificacion = RR
+[INFO] 02:30:20:87 Consola S-AFA/(15231:15231): Quantum = 2
+[INFO] 02:30:20:87 Consola S-AFA/(15231:15231): Nivel de Multiprogramacion = 3
+[INFO] 02:30:20:88 Consola S-AFA/(15231:15231): Retardo de Planificacion = 500
+[INFO] 02:30:20:88 Consola S-AFA/(15231:15231): -----------------------
+[INFO] 02:30:23:155 Consola S-AFA/(15231:15234): Nueva conexion desde el DMA
+[ERROR] 02:30:24:89 Consola S-AFA/(15231:15234): ServerThread - La tarea recibida, con codigo -1, es incorrecta
+[INFO] 02:30:24:91 Consola S-AFA/(15231:15234): Nueva conexion de CPU
+
+[INFO] 02:30:32:465 Consola S-AFA/(15231:15231): Linea leida: ejecutar /scripts/simple.escriptorio
+[INFO] 02:31:40:106 Consola S-AFA/(15324:15324): ---- Configuracion ----
+[INFO] 02:31:40:125 Consola S-AFA/(15324:15324): Puerto = 8000
+[INFO] 02:31:40:126 Consola S-AFA/(15324:15324): Algoritmo de Planificacion = RR
+[INFO] 02:31:40:126 Consola S-AFA/(15324:15324): Quantum = 2
+[INFO] 02:31:40:127 Consola S-AFA/(15324:15324): Nivel de Multiprogramacion = 3
+[INFO] 02:31:40:127 Consola S-AFA/(15324:15324): Retardo de Planificacion = 500
+[INFO] 02:31:40:128 Consola S-AFA/(15324:15324): -----------------------
+[INFO] 02:31:41:281 Consola S-AFA/(15324:15327): Nueva conexion desde el DMA
+[ERROR] 02:31:42:366 Consola S-AFA/(15324:15327): ServerThread - La tarea recibida, con codigo -1, es incorrecta
+[INFO] 02:31:42:368 Consola S-AFA/(15324:15327): Nueva conexion de CPU
+
+[INFO] 02:31:49:903 Consola S-AFA/(15324:15324): Linea leida: ejecutar /scripts/simple.escriptorio
+[INFO] 02:43:38:848 Consola S-AFA/(15757:15757): ---- Configuracion ----
+[INFO] 02:43:38:871 Consola S-AFA/(15757:15757): Puerto = 8000
+[INFO] 02:43:38:872 Consola S-AFA/(15757:15757): Algoritmo de Planificacion = RR
+[INFO] 02:43:38:872 Consola S-AFA/(15757:15757): Quantum = 2
+[INFO] 02:43:38:873 Consola S-AFA/(15757:15757): Nivel de Multiprogramacion = 3
+[INFO] 02:43:38:873 Consola S-AFA/(15757:15757): Retardo de Planificacion = 500
+[INFO] 02:43:38:873 Consola S-AFA/(15757:15757): -----------------------
+[INFO] 02:43:42:890 Consola S-AFA/(15757:15760): Nueva conexion desde el DMA
+[ERROR] 02:43:44:48 Consola S-AFA/(15757:15760): ServerThread - La tarea recibida, con codigo -1, es incorrecta
+[INFO] 02:43:44:49 Consola S-AFA/(15757:15760): Nueva conexion de CPU
+
+[INFO] 02:43:54:516 Consola S-AFA/(15757:15757): Linea leida: ejecutar /scripts/simple.escriptorio
+[INFO] 02:47:38:725 Consola S-AFA/(15932:15932): ---- Configuracion ----
+[INFO] 02:47:38:768 Consola S-AFA/(15932:15932): Puerto = 8000
+[INFO] 02:47:38:772 Consola S-AFA/(15932:15932): Algoritmo de Planificacion = RR
+[INFO] 02:47:38:772 Consola S-AFA/(15932:15932): Quantum = 2
+[INFO] 02:47:38:773 Consola S-AFA/(15932:15932): Nivel de Multiprogramacion = 3
+[INFO] 02:47:38:773 Consola S-AFA/(15932:15932): Retardo de Planificacion = 500
+[INFO] 02:47:38:774 Consola S-AFA/(15932:15932): -----------------------
+[INFO] 02:47:41:906 Consola S-AFA/(15932:15937): Nueva conexion desde el DMA
+[ERROR] 02:47:43:852 Consola S-AFA/(15932:15937): ServerThread - La tarea recibida, con codigo -1, es incorrecta
+[INFO] 02:47:43:854 Consola S-AFA/(15932:15937): Nueva conexion de CPU
+
+[INFO] 02:47:52:69 Consola S-AFA/(15932:15932): Linea leida: ejecutar /scripts/simple.escriptorio
+[INFO] 02:58:30:398 Consola S-AFA/(16362:16362): ---- Configuracion ----
+[INFO] 02:58:30:453 Consola S-AFA/(16362:16362): Puerto = 8000
+[INFO] 02:58:30:455 Consola S-AFA/(16362:16362): Algoritmo de Planificacion = RR
+[INFO] 02:58:30:456 Consola S-AFA/(16362:16362): Quantum = 2
+[INFO] 02:58:30:458 Consola S-AFA/(16362:16362): Nivel de Multiprogramacion = 3
+[INFO] 02:58:30:458 Consola S-AFA/(16362:16362): Retardo de Planificacion = 500
+[INFO] 02:58:30:459 Consola S-AFA/(16362:16362): -----------------------
+[INFO] 02:58:33:489 Consola S-AFA/(16362:16366): Nueva conexion desde el DMA
+[ERROR] 02:58:35:102 Consola S-AFA/(16362:16366): ServerThread - La tarea recibida, con codigo -1, es incorrecta
+[INFO] 02:58:35:104 Consola S-AFA/(16362:16366): Nueva conexion de CPU
+
+[INFO] 02:58:44:222 Consola S-AFA/(16362:16362): Linea leida: ejecutar /scripts/simple.escriptorio
+[INFO] 03:00:10:707 Consola S-AFA/(16542:16542): ---- Configuracion ----
+[INFO] 03:00:10:739 Consola S-AFA/(16542:16542): Puerto = 8000
+[INFO] 03:00:10:740 Consola S-AFA/(16542:16542): Algoritmo de Planificacion = RR
+[INFO] 03:00:10:740 Consola S-AFA/(16542:16542): Quantum = 2
+[INFO] 03:00:10:740 Consola S-AFA/(16542:16542): Nivel de Multiprogramacion = 3
+[INFO] 03:00:10:741 Consola S-AFA/(16542:16542): Retardo de Planificacion = 500
+[INFO] 03:00:10:741 Consola S-AFA/(16542:16542): -----------------------
+[INFO] 03:00:20:352 Consola S-AFA/(16542:16545): Nueva conexion desde el DMA
+[ERROR] 03:00:22:599 Consola S-AFA/(16542:16545): ServerThread - La tarea recibida, con codigo -1, es incorrecta
+[INFO] 03:00:22:600 Consola S-AFA/(16542:16545): Nueva conexion de CPU
+
+[INFO] 03:00:31:65 Consola S-AFA/(16542:16542): Linea leida: ejecutar /scripts/simple.escriptorio
+[INFO] 03:09:27:346 Consola S-AFA/(16920:16920): ---- Configuracion ----
+[INFO] 03:09:27:366 Consola S-AFA/(16920:16920): Puerto = 8000
+[INFO] 03:09:27:367 Consola S-AFA/(16920:16920): Algoritmo de Planificacion = RR
+[INFO] 03:09:27:368 Consola S-AFA/(16920:16920): Quantum = 2
+[INFO] 03:09:27:368 Consola S-AFA/(16920:16920): Nivel de Multiprogramacion = 3
+[INFO] 03:09:27:368 Consola S-AFA/(16920:16920): Retardo de Planificacion = 500
+[INFO] 03:09:27:369 Consola S-AFA/(16920:16920): -----------------------
+[INFO] 03:09:30:694 Consola S-AFA/(16920:16923): Nueva conexion desde el DMA
+[INFO] 03:09:30:732 Consola S-AFA/(16920:16923): DMA desconectado
+[INFO] 03:09:34:728 Consola S-AFA/(16920:16923): Nueva conexion desde el DMA
+[ERROR] 03:09:35:803 Consola S-AFA/(16920:16923): ServerThread - La tarea recibida, con codigo -1, es incorrecta
+[INFO] 03:09:35:806 Consola S-AFA/(16920:16923): Nueva conexion de CPU
+
+[INFO] 03:09:46:88 Consola S-AFA/(16920:16920): Linea leida: ejecutar /scripts/simple.escriptorio
+[INFO] 03:22:04:921 Consola S-AFA/(17565:17565): ---- Configuracion ----
+[INFO] 03:22:04:944 Consola S-AFA/(17565:17565): Puerto = 8000
+[INFO] 03:22:04:945 Consola S-AFA/(17565:17565): Algoritmo de Planificacion = RR
+[INFO] 03:22:04:946 Consola S-AFA/(17565:17565): Quantum = 2
+[INFO] 03:22:04:946 Consola S-AFA/(17565:17565): Nivel de Multiprogramacion = 3
+[INFO] 03:22:04:946 Consola S-AFA/(17565:17565): Retardo de Planificacion = 500
+[INFO] 03:22:04:947 Consola S-AFA/(17565:17565): -----------------------
+[INFO] 03:22:08:200 Consola S-AFA/(17565:17569): Nueva conexion desde el DMA
+[ERROR] 03:22:09:202 Consola S-AFA/(17565:17569): ServerThread - La tarea recibida, con codigo -1, es incorrecta
+[INFO] 03:22:09:204 Consola S-AFA/(17565:17569): Nueva conexion de CPU
+
+[INFO] 03:22:19:87 Consola S-AFA/(17565:17565): Linea leida: ejecutar /scripts/simple.escriptorio
+[INFO] 03:25:03:951 Consola S-AFA/(18243:18243): ---- Configuracion ----
+[INFO] 03:25:03:971 Consola S-AFA/(18243:18243): Puerto = 8000
+[INFO] 03:25:03:972 Consola S-AFA/(18243:18243): Algoritmo de Planificacion = RR
+[INFO] 03:25:03:973 Consola S-AFA/(18243:18243): Quantum = 2
+[INFO] 03:25:03:973 Consola S-AFA/(18243:18243): Nivel de Multiprogramacion = 3
+[INFO] 03:25:03:973 Consola S-AFA/(18243:18243): Retardo de Planificacion = 500
+[INFO] 03:25:03:974 Consola S-AFA/(18243:18243): -----------------------
+[INFO] 03:25:07:499 Consola S-AFA/(18243:18246): Nueva conexion desde el DMA
+[ERROR] 03:25:10:573 Consola S-AFA/(18243:18246): ServerThread - La tarea recibida, con codigo -1, es incorrecta
+[INFO] 03:25:10:575 Consola S-AFA/(18243:18246): Nueva conexion de CPU
+
+[INFO] 03:25:20:431 Consola S-AFA/(18243:18243): Linea leida: ejecutar /scripts/simple.escriptorio
+[INFO] 03:37:24:841 Consola S-AFA/(18691:18691): ---- Configuracion ----
+[INFO] 03:37:24:859 Consola S-AFA/(18691:18691): Puerto = 8000
+[INFO] 03:37:24:860 Consola S-AFA/(18691:18691): Algoritmo de Planificacion = RR
+[INFO] 03:37:24:860 Consola S-AFA/(18691:18691): Quantum = 2
+[INFO] 03:37:24:861 Consola S-AFA/(18691:18691): Nivel de Multiprogramacion = 3
+[INFO] 03:37:24:861 Consola S-AFA/(18691:18691): Retardo de Planificacion = 500
+[INFO] 03:37:24:861 Consola S-AFA/(18691:18691): -----------------------
+[INFO] 03:37:28:380 Consola S-AFA/(18691:18697): Nueva conexion desde el DMA
+[ERROR] 03:37:29:707 Consola S-AFA/(18691:18697): ServerThread - La tarea recibida, con codigo -1, es incorrecta
+[INFO] 03:37:29:709 Consola S-AFA/(18691:18697): Nueva conexion de CPU
+
+[INFO] 03:37:37:703 Consola S-AFA/(18691:18691): Linea leida: ejecutar /scripts/simple.escriptorio
+[INFO] 03:54:51:445 Consola S-AFA/(19375:19375): ---- Configuracion ----
+[INFO] 03:54:51:464 Consola S-AFA/(19375:19375): Puerto = 8000
+[INFO] 03:54:51:465 Consola S-AFA/(19375:19375): Algoritmo de Planificacion = RR
+[INFO] 03:54:51:465 Consola S-AFA/(19375:19375): Quantum = 2
+[INFO] 03:54:51:465 Consola S-AFA/(19375:19375): Nivel de Multiprogramacion = 3
+[INFO] 03:54:51:466 Consola S-AFA/(19375:19375): Retardo de Planificacion = 500
+[INFO] 03:54:51:466 Consola S-AFA/(19375:19375): -----------------------
+[INFO] 03:54:56:798 Consola S-AFA/(19375:19378): Nueva conexion desde el DMA
+[ERROR] 03:54:57:894 Consola S-AFA/(19375:19378): ServerThread - La tarea recibida, con codigo -1, es incorrecta
+[INFO] 03:54:57:896 Consola S-AFA/(19375:19378): Nueva conexion de CPU
+
+[INFO] 03:55:06:334 Consola S-AFA/(19375:19375): Linea leida: ejecutar /scripts/simple.escriptorio
+[INFO] 04:08:49:478 Consola S-AFA/(19907:19907): ---- Configuracion ----
+[INFO] 04:08:49:520 Consola S-AFA/(19907:19907): Puerto = 8000
+[INFO] 04:08:49:521 Consola S-AFA/(19907:19907): Algoritmo de Planificacion = RR
+[INFO] 04:08:49:521 Consola S-AFA/(19907:19907): Quantum = 2
+[INFO] 04:08:49:522 Consola S-AFA/(19907:19907): Nivel de Multiprogramacion = 3
+[INFO] 04:08:49:522 Consola S-AFA/(19907:19907): Retardo de Planificacion = 500
+[INFO] 04:08:49:523 Consola S-AFA/(19907:19907): -----------------------
+[INFO] 04:08:52:292 Consola S-AFA/(19907:19911): Nueva conexion desde el DMA
+[ERROR] 04:08:54:33 Consola S-AFA/(19907:19911): ServerThread - La tarea recibida, con codigo -1, es incorrecta
+[INFO] 04:08:54:34 Consola S-AFA/(19907:19911): Nueva conexion de CPU
+
+[INFO] 04:09:06:945 Consola S-AFA/(19907:19907): Linea leida: ejecutar /scripts/simple.escriptorio

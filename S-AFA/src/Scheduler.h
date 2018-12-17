@@ -116,6 +116,7 @@ uint32_t actualProcesses;
 uint32_t totalProcesses;
 uint32_t totalConnectedCpus;
 uint32_t activeProcesses;
+uint32_t processesReadyToExecute;
 t_list* newQueue;
 t_list* readyQueue;
 t_list* blockedQueue;
@@ -162,7 +163,8 @@ pthread_mutex_t canCommunicateWithCPUs;	//Only the ServerThread, the STS or the 
 										//This is to avoid communications mixing between threads, and thus, to avoid modules breaking
 
 
-void (*scheduleProcesses)(); //Plointer to a function that takes an returns no values
+bool (*scheduleProcesses)(); //Pointer to a function that takes no values and returns a bool value indicating if schedule ready processes and
+							 // send a process to a CPU, so it could be executed
 
 
 //Scheduler functions
@@ -202,9 +204,9 @@ void checkAndInitializeProcesses(cpu_t*);
 void checkAndInitializeProcessesLoop();
 
 //Algorithms
-void roundRobinScheduler();
-void virtualRoundRobinScheduler();
-void customScheduler();
+bool roundRobinScheduler();
+bool virtualRoundRobinScheduler();
+bool customScheduler();
 uint32_t countProcessInstructions(PCB_t*, cpu_t*);
 
 //Console functions (to avoid "conflicting types" error)
@@ -222,10 +224,10 @@ void server();
 void moduleHandler(uint32_t, uint32_t);
 void dmaTaskHandler(uint32_t, uint32_t);
 void cpuTaskHandler(uint32_t, uint32_t);
-void blockProcessInit(uint32_t, int*);
-void _blockProcess(uint32_t, int*);
+void blockProcessInit(uint32_t, uint32_t*);
+void _blockProcess(uint32_t, uint32_t*);
 void _killProcess(uint32_t);
-void processQuantumEnd(uint32_t, int*);
+void processQuantumEnd(uint32_t, uint32_t*);
 cpu_t* findCPUBySocket(uint32_t);
 uint32_t updatePCBInExecutionQueue(PCB_t*);
 void checkIfFileOpen(uint32_t);

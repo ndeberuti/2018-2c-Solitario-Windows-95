@@ -13,7 +13,6 @@ typedef struct
 	char* scriptPathInFS;
 	uint32_t programCounter;	//Contains the line number (in the script file) of the last executed instruction
 	bool wasInitialized;
-	bool canBeScheduled;
 	uint32_t executionState;
 	uint32_t cpuProcessIsAssignedTo; //To get the socket of that cpu and send it a message, for example, if i need to
 	uint32_t remainingQuantum;

@@ -413,3 +413,397 @@
 
 [ERROR] 07:33:03:472 El Diego/(2689:2689): Se intento abrir el archivo "/Archivos/scripts/simple.escriptorio", pero el mismo no se encuentra en la ruta especificada o no existe
 [ERROR] 08:04:08:362 El Diego/(2689:2689): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 01:29:22:148 El Diego/(13153:13153): Inicio del proceso
+
+[INFO] 01:29:22:190 El Diego/(13153:13153): ---- Configuracion ----
+[INFO] 01:29:22:191 El Diego/(13153:13153): PUERTO = 8001
+[INFO] 01:29:22:191 El Diego/(13153:13153): IP_SAFA = 127.0.0.1
+[INFO] 01:29:22:192 El Diego/(13153:13153): PUERTO_SAFA = 8000
+[INFO] 01:29:22:193 El Diego/(13153:13153): IP_MDJ = 127.0.0.1
+[INFO] 01:29:22:193 El Diego/(13153:13153): PUERTO_MDJ = 8002
+[INFO] 01:29:22:193 El Diego/(13153:13153): IP_FM9 = 127.0.0.1
+[INFO] 01:29:22:194 El Diego/(13153:13153): PUERTO_FM9 = 8003
+[INFO] 01:29:22:194 El Diego/(13153:13153): TRANSFER_SIZE = 32
+[INFO] 01:29:22:195 El Diego/(13153:13153): -----------------------
+[INFO] 01:29:22:207 El Diego/(13153:13153): Conexion con S-AFA exitosa
+[INFO] 01:29:22:212 El Diego/(13153:13153): Conexion con MDJ exitosa
+[INFO] 01:29:22:221 El Diego/(13153:13153): Conexion con FM9 exitosa
+[INFO] 01:29:37:184 El Diego/(13153:13153): Nueva conexion de CPU
+
+[INFO] 01:29:48:603 El Diego/(13153:13153): Eeeeeeh voy a abrir laaaaa eeeel archivo "/scripts/simple.escriptorio" para mmmmm eeeel proceso 1
+[INFO] 01:29:48:665 El Diego/(13153:13153): El archivo "/scripts/simple.escriptorio" fue abierto para el proceso 1 de forma exitosa
+[ERROR] 01:29:49:232 El Diego/(13153:13153): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 01:43:32:258 El Diego/(13592:13592): Inicio del proceso
+
+[INFO] 01:43:32:299 El Diego/(13592:13592): ---- Configuracion ----
+[INFO] 01:43:32:300 El Diego/(13592:13592): PUERTO = 8001
+[INFO] 01:43:32:300 El Diego/(13592:13592): IP_SAFA = 127.0.0.1
+[INFO] 01:43:32:301 El Diego/(13592:13592): PUERTO_SAFA = 8000
+[INFO] 01:43:32:301 El Diego/(13592:13592): IP_MDJ = 127.0.0.1
+[INFO] 01:43:32:301 El Diego/(13592:13592): PUERTO_MDJ = 8002
+[INFO] 01:43:32:302 El Diego/(13592:13592): IP_FM9 = 127.0.0.1
+[INFO] 01:43:32:303 El Diego/(13592:13592): PUERTO_FM9 = 8003
+[INFO] 01:43:32:303 El Diego/(13592:13592): TRANSFER_SIZE = 32
+[INFO] 01:43:32:304 El Diego/(13592:13592): -----------------------
+[INFO] 01:43:32:316 El Diego/(13592:13592): Conexion con S-AFA exitosa
+[INFO] 01:43:32:317 El Diego/(13592:13592): Conexion con MDJ exitosa
+[INFO] 01:43:32:321 El Diego/(13592:13592): Conexion con FM9 exitosa
+[INFO] 01:43:33:838 El Diego/(13592:13592): Nueva conexion de CPU
+
+[INFO] 01:43:49:15 El Diego/(13592:13592): Eeeeeeh voy a abrir laaaaa eeeel archivo "/scripts/simple.escriptorio" para mmmmm eeeel proceso 1
+[INFO] 01:43:49:64 El Diego/(13592:13592): El archivo "/scripts/simple.escriptorio" fue abierto para el proceso 1 de forma exitosa
+[ERROR] 01:50:33:29 El Diego/(13592:13592): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 01:50:45:120 El Diego/(13858:13858): Inicio del proceso
+
+[INFO] 01:50:45:161 El Diego/(13858:13858): ---- Configuracion ----
+[INFO] 01:50:45:162 El Diego/(13858:13858): PUERTO = 8001
+[INFO] 01:50:45:162 El Diego/(13858:13858): IP_SAFA = 127.0.0.1
+[INFO] 01:50:45:162 El Diego/(13858:13858): PUERTO_SAFA = 8000
+[INFO] 01:50:45:163 El Diego/(13858:13858): IP_MDJ = 127.0.0.1
+[INFO] 01:50:45:163 El Diego/(13858:13858): PUERTO_MDJ = 8002
+[INFO] 01:50:45:164 El Diego/(13858:13858): IP_FM9 = 127.0.0.1
+[INFO] 01:50:45:164 El Diego/(13858:13858): PUERTO_FM9 = 8003
+[INFO] 01:50:45:165 El Diego/(13858:13858): TRANSFER_SIZE = 32
+[INFO] 01:50:45:166 El Diego/(13858:13858): -----------------------
+[INFO] 01:50:45:178 El Diego/(13858:13858): Conexion con S-AFA exitosa
+[INFO] 01:50:45:179 El Diego/(13858:13858): Conexion con MDJ exitosa
+[INFO] 01:50:45:181 El Diego/(13858:13858): Conexion con FM9 exitosa
+[INFO] 01:50:46:912 El Diego/(13858:13858): Nueva conexion de CPU
+
+[INFO] 01:50:59:455 El Diego/(13858:13858): Eeeeeeh voy a abrir laaaaa eeeel archivo "/scripts/simple.escriptorio" para mmmmm eeeel proceso 1
+[ERROR] 01:50:59:501 El Diego/(13858:13858): Se intento guardar el contenido del archivo "/scripts/simple.escriptorio" en memoria, para el proceso 1, pero la memoria no tiene espacio suficiente
+[INFO] 01:51:36:93 El Diego/(13905:13905): Inicio del proceso
+
+[INFO] 01:51:36:138 El Diego/(13905:13905): ---- Configuracion ----
+[INFO] 01:51:36:138 El Diego/(13905:13905): PUERTO = 8001
+[INFO] 01:51:36:139 El Diego/(13905:13905): IP_SAFA = 127.0.0.1
+[INFO] 01:51:36:140 El Diego/(13905:13905): PUERTO_SAFA = 8000
+[INFO] 01:51:36:140 El Diego/(13905:13905): IP_MDJ = 127.0.0.1
+[INFO] 01:51:36:141 El Diego/(13905:13905): PUERTO_MDJ = 8002
+[INFO] 01:51:36:141 El Diego/(13905:13905): IP_FM9 = 127.0.0.1
+[INFO] 01:51:36:141 El Diego/(13905:13905): PUERTO_FM9 = 8003
+[INFO] 01:51:36:142 El Diego/(13905:13905): TRANSFER_SIZE = 32
+[INFO] 01:51:36:142 El Diego/(13905:13905): -----------------------
+[INFO] 01:51:36:153 El Diego/(13905:13905): Conexion con S-AFA exitosa
+[INFO] 01:51:36:158 El Diego/(13905:13905): Conexion con MDJ exitosa
+[INFO] 01:51:36:165 El Diego/(13905:13905): Conexion con FM9 exitosa
+[INFO] 01:51:37:845 El Diego/(13905:13905): Nueva conexion de CPU
+
+[INFO] 01:51:50:639 El Diego/(13905:13905): Eeeeeeh voy a abrir laaaaa eeeel archivo "/scripts/simple.escriptorio" para mmmmm eeeel proceso 1
+[INFO] 01:51:50:696 El Diego/(13905:13905): El archivo "/scripts/simple.escriptorio" fue abierto para el proceso 1 de forma exitosa
+[ERROR] 01:51:51:153 El Diego/(13905:13905): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 02:19:38:914 El Diego/(14644:14644): Inicio del proceso
+
+[INFO] 02:19:38:960 El Diego/(14644:14644): ---- Configuracion ----
+[INFO] 02:19:38:960 El Diego/(14644:14644): PUERTO = 8001
+[INFO] 02:19:38:961 El Diego/(14644:14644): IP_SAFA = 127.0.0.1
+[INFO] 02:19:38:962 El Diego/(14644:14644): PUERTO_SAFA = 8000
+[INFO] 02:19:38:962 El Diego/(14644:14644): IP_MDJ = 127.0.0.1
+[INFO] 02:19:38:963 El Diego/(14644:14644): PUERTO_MDJ = 8002
+[INFO] 02:19:38:963 El Diego/(14644:14644): IP_FM9 = 127.0.0.1
+[INFO] 02:19:38:963 El Diego/(14644:14644): PUERTO_FM9 = 8003
+[INFO] 02:19:38:964 El Diego/(14644:14644): TRANSFER_SIZE = 32
+[INFO] 02:19:38:964 El Diego/(14644:14644): -----------------------
+[INFO] 02:19:38:976 El Diego/(14644:14644): Conexion con S-AFA exitosa
+[INFO] 02:19:38:977 El Diego/(14644:14644): Conexion con MDJ exitosa
+[INFO] 02:19:38:979 El Diego/(14644:14644): Conexion con FM9 exitosa
+[INFO] 02:19:40:133 El Diego/(14644:14644): Nueva conexion de CPU
+
+[INFO] 02:19:51:511 El Diego/(14644:14644): Eeeeeeh voy a abrir laaaaa eeeel archivo "/scripts/simple.escriptorio" para mmmmm eeeel proceso 1
+[INFO] 02:19:51:564 El Diego/(14644:14644): El archivo "/scripts/simple.escriptorio" fue abierto para el proceso 1 de forma exitosa
+[ERROR] 02:19:52:60 El Diego/(14644:14644): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 02:21:48:268 El Diego/(14777:14777): Inicio del proceso
+
+[INFO] 02:21:48:317 El Diego/(14777:14777): ---- Configuracion ----
+[INFO] 02:21:48:318 El Diego/(14777:14777): PUERTO = 8001
+[INFO] 02:21:48:319 El Diego/(14777:14777): IP_SAFA = 127.0.0.1
+[INFO] 02:21:48:319 El Diego/(14777:14777): PUERTO_SAFA = 8000
+[INFO] 02:21:48:319 El Diego/(14777:14777): IP_MDJ = 127.0.0.1
+[INFO] 02:21:48:320 El Diego/(14777:14777): PUERTO_MDJ = 8002
+[INFO] 02:21:48:320 El Diego/(14777:14777): IP_FM9 = 127.0.0.1
+[INFO] 02:21:48:321 El Diego/(14777:14777): PUERTO_FM9 = 8003
+[INFO] 02:21:48:321 El Diego/(14777:14777): TRANSFER_SIZE = 32
+[INFO] 02:21:48:321 El Diego/(14777:14777): -----------------------
+[INFO] 02:21:48:335 El Diego/(14777:14777): Conexion con S-AFA exitosa
+[INFO] 02:21:48:336 El Diego/(14777:14777): Conexion con MDJ exitosa
+[INFO] 02:21:48:339 El Diego/(14777:14777): Conexion con FM9 exitosa
+[INFO] 02:21:49:693 El Diego/(14777:14777): Nueva conexion de CPU
+
+[INFO] 02:22:02:863 El Diego/(14777:14777): Eeeeeeh voy a abrir laaaaa eeeel archivo "/scripts/simple.escriptorio" para mmmmm eeeel proceso 1
+[ERROR] 02:22:02:913 El Diego/(14777:14777): Se intento guardar el contenido del archivo "/scripts/simple.escriptorio" en memoria, para el proceso 1, pero la memoria no tiene espacio suficiente
+[INFO] 02:22:21:885 El Diego/(14821:14821): Inicio del proceso
+
+[INFO] 02:22:21:927 El Diego/(14821:14821): ---- Configuracion ----
+[INFO] 02:22:21:928 El Diego/(14821:14821): PUERTO = 8001
+[INFO] 02:22:21:928 El Diego/(14821:14821): IP_SAFA = 127.0.0.1
+[INFO] 02:22:21:928 El Diego/(14821:14821): PUERTO_SAFA = 8000
+[INFO] 02:22:21:929 El Diego/(14821:14821): IP_MDJ = 127.0.0.1
+[INFO] 02:22:21:929 El Diego/(14821:14821): PUERTO_MDJ = 8002
+[INFO] 02:22:21:930 El Diego/(14821:14821): IP_FM9 = 127.0.0.1
+[INFO] 02:22:21:930 El Diego/(14821:14821): PUERTO_FM9 = 8003
+[INFO] 02:22:21:931 El Diego/(14821:14821): TRANSFER_SIZE = 32
+[INFO] 02:22:21:931 El Diego/(14821:14821): -----------------------
+[INFO] 02:22:21:943 El Diego/(14821:14821): Conexion con S-AFA exitosa
+[INFO] 02:22:21:947 El Diego/(14821:14821): Conexion con MDJ exitosa
+[INFO] 02:22:21:953 El Diego/(14821:14821): Conexion con FM9 exitosa
+[INFO] 02:22:24:746 El Diego/(14821:14821): Nueva conexion de CPU
+
+[INFO] 02:22:56:431 El Diego/(14821:14821): Eeeeeeh voy a abrir laaaaa eeeel archivo "/scripts/simple.escriptorio" para mmmmm eeeel proceso 1
+[INFO] 02:22:56:484 El Diego/(14821:14821): El archivo "/scripts/simple.escriptorio" fue abierto para el proceso 1 de forma exitosa
+[ERROR] 02:22:56:840 El Diego/(14821:14821): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 02:30:23:100 El Diego/(15246:15246): Inicio del proceso
+
+[INFO] 02:30:23:140 El Diego/(15246:15246): ---- Configuracion ----
+[INFO] 02:30:23:141 El Diego/(15246:15246): PUERTO = 8001
+[INFO] 02:30:23:141 El Diego/(15246:15246): IP_SAFA = 127.0.0.1
+[INFO] 02:30:23:142 El Diego/(15246:15246): PUERTO_SAFA = 8000
+[INFO] 02:30:23:142 El Diego/(15246:15246): IP_MDJ = 127.0.0.1
+[INFO] 02:30:23:143 El Diego/(15246:15246): PUERTO_MDJ = 8002
+[INFO] 02:30:23:143 El Diego/(15246:15246): IP_FM9 = 127.0.0.1
+[INFO] 02:30:23:144 El Diego/(15246:15246): PUERTO_FM9 = 8003
+[INFO] 02:30:23:145 El Diego/(15246:15246): TRANSFER_SIZE = 32
+[INFO] 02:30:23:145 El Diego/(15246:15246): -----------------------
+[INFO] 02:30:23:156 El Diego/(15246:15246): Conexion con S-AFA exitosa
+[INFO] 02:30:23:160 El Diego/(15246:15246): Conexion con MDJ exitosa
+[INFO] 02:30:23:166 El Diego/(15246:15246): Conexion con FM9 exitosa
+[INFO] 02:30:24:108 El Diego/(15246:15246): Nueva conexion de CPU
+
+[INFO] 02:30:34:571 El Diego/(15246:15246): Eeeeeeh voy a abrir laaaaa eeeel archivo "/scripts/simple.escriptorio" para mmmmm eeeel proceso 1
+[INFO] 02:30:34:624 El Diego/(15246:15246): El archivo "/scripts/simple.escriptorio" fue abierto para el proceso 1 de forma exitosa
+[ERROR] 02:30:34:981 El Diego/(15246:15246): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 02:31:41:225 El Diego/(15330:15330): Inicio del proceso
+
+[INFO] 02:31:41:266 El Diego/(15330:15330): ---- Configuracion ----
+[INFO] 02:31:41:267 El Diego/(15330:15330): PUERTO = 8001
+[INFO] 02:31:41:267 El Diego/(15330:15330): IP_SAFA = 127.0.0.1
+[INFO] 02:31:41:268 El Diego/(15330:15330): PUERTO_SAFA = 8000
+[INFO] 02:31:41:268 El Diego/(15330:15330): IP_MDJ = 127.0.0.1
+[INFO] 02:31:41:268 El Diego/(15330:15330): PUERTO_MDJ = 8002
+[INFO] 02:31:41:269 El Diego/(15330:15330): IP_FM9 = 127.0.0.1
+[INFO] 02:31:41:269 El Diego/(15330:15330): PUERTO_FM9 = 8003
+[INFO] 02:31:41:270 El Diego/(15330:15330): TRANSFER_SIZE = 32
+[INFO] 02:31:41:271 El Diego/(15330:15330): -----------------------
+[INFO] 02:31:41:282 El Diego/(15330:15330): Conexion con S-AFA exitosa
+[INFO] 02:31:41:283 El Diego/(15330:15330): Conexion con MDJ exitosa
+[INFO] 02:31:41:285 El Diego/(15330:15330): Conexion con FM9 exitosa
+[INFO] 02:31:42:379 El Diego/(15330:15330): Nueva conexion de CPU
+
+[INFO] 02:31:51:987 El Diego/(15330:15330): Eeeeeeh voy a abrir laaaaa eeeel archivo "/scripts/simple.escriptorio" para mmmmm eeeel proceso 1
+[INFO] 02:31:52:40 El Diego/(15330:15330): El archivo "/scripts/simple.escriptorio" fue abierto para el proceso 1 de forma exitosa
+[ERROR] 02:31:52:391 El Diego/(15330:15330): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 02:43:42:819 El Diego/(15772:15772): Inicio del proceso
+
+[INFO] 02:43:42:875 El Diego/(15772:15772): ---- Configuracion ----
+[INFO] 02:43:42:877 El Diego/(15772:15772): PUERTO = 8001
+[INFO] 02:43:42:878 El Diego/(15772:15772): IP_SAFA = 127.0.0.1
+[INFO] 02:43:42:878 El Diego/(15772:15772): PUERTO_SAFA = 8000
+[INFO] 02:43:42:878 El Diego/(15772:15772): IP_MDJ = 127.0.0.1
+[INFO] 02:43:42:879 El Diego/(15772:15772): PUERTO_MDJ = 8002
+[INFO] 02:43:42:879 El Diego/(15772:15772): IP_FM9 = 127.0.0.1
+[INFO] 02:43:42:879 El Diego/(15772:15772): PUERTO_FM9 = 8003
+[INFO] 02:43:42:880 El Diego/(15772:15772): TRANSFER_SIZE = 32
+[INFO] 02:43:42:880 El Diego/(15772:15772): -----------------------
+[INFO] 02:43:42:892 El Diego/(15772:15772): Conexion con S-AFA exitosa
+[INFO] 02:43:42:896 El Diego/(15772:15772): Conexion con MDJ exitosa
+[INFO] 02:43:42:904 El Diego/(15772:15772): Conexion con FM9 exitosa
+[INFO] 02:43:44:58 El Diego/(15772:15772): Nueva conexion de CPU
+
+[INFO] 02:43:56:619 El Diego/(15772:15772): Eeeeeeh voy a abrir laaaaa eeeel archivo "/scripts/simple.escriptorio" para mmmmm eeeel proceso 1
+[INFO] 02:43:56:676 El Diego/(15772:15772): El archivo "/scripts/simple.escriptorio" fue abierto para el proceso 1 de forma exitosa
+[ERROR] 02:43:57:64 El Diego/(15772:15772): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 02:47:41:851 El Diego/(15945:15945): Inicio del proceso
+
+[INFO] 02:47:41:892 El Diego/(15945:15945): ---- Configuracion ----
+[INFO] 02:47:41:892 El Diego/(15945:15945): PUERTO = 8001
+[INFO] 02:47:41:893 El Diego/(15945:15945): IP_SAFA = 127.0.0.1
+[INFO] 02:47:41:893 El Diego/(15945:15945): PUERTO_SAFA = 8000
+[INFO] 02:47:41:894 El Diego/(15945:15945): IP_MDJ = 127.0.0.1
+[INFO] 02:47:41:894 El Diego/(15945:15945): PUERTO_MDJ = 8002
+[INFO] 02:47:41:894 El Diego/(15945:15945): IP_FM9 = 127.0.0.1
+[INFO] 02:47:41:895 El Diego/(15945:15945): PUERTO_FM9 = 8003
+[INFO] 02:47:41:895 El Diego/(15945:15945): TRANSFER_SIZE = 32
+[INFO] 02:47:41:895 El Diego/(15945:15945): -----------------------
+[INFO] 02:47:41:907 El Diego/(15945:15945): Conexion con S-AFA exitosa
+[INFO] 02:47:41:911 El Diego/(15945:15945): Conexion con MDJ exitosa
+[INFO] 02:47:41:920 El Diego/(15945:15945): Conexion con FM9 exitosa
+[INFO] 02:47:43:873 El Diego/(15945:15945): Nueva conexion de CPU
+
+[INFO] 02:47:54:171 El Diego/(15945:15945): Eeeeeeh voy a abrir laaaaa eeeel archivo "/scripts/simple.escriptorio" para mmmmm eeeel proceso 1
+[INFO] 02:47:54:225 El Diego/(15945:15945): El archivo "/scripts/simple.escriptorio" fue abierto para el proceso 1 de forma exitosa
+[INFO] 02:58:33:432 El Diego/(16374:16374): Inicio del proceso
+
+[INFO] 02:58:33:474 El Diego/(16374:16374): ---- Configuracion ----
+[INFO] 02:58:33:474 El Diego/(16374:16374): PUERTO = 8001
+[INFO] 02:58:33:475 El Diego/(16374:16374): IP_SAFA = 127.0.0.1
+[INFO] 02:58:33:475 El Diego/(16374:16374): PUERTO_SAFA = 8000
+[INFO] 02:58:33:476 El Diego/(16374:16374): IP_MDJ = 127.0.0.1
+[INFO] 02:58:33:477 El Diego/(16374:16374): PUERTO_MDJ = 8002
+[INFO] 02:58:33:477 El Diego/(16374:16374): IP_FM9 = 127.0.0.1
+[INFO] 02:58:33:477 El Diego/(16374:16374): PUERTO_FM9 = 8003
+[INFO] 02:58:33:478 El Diego/(16374:16374): TRANSFER_SIZE = 32
+[INFO] 02:58:33:478 El Diego/(16374:16374): -----------------------
+[INFO] 02:58:33:490 El Diego/(16374:16374): Conexion con S-AFA exitosa
+[INFO] 02:58:33:494 El Diego/(16374:16374): Conexion con MDJ exitosa
+[INFO] 02:58:33:500 El Diego/(16374:16374): Conexion con FM9 exitosa
+[INFO] 02:58:35:119 El Diego/(16374:16374): Nueva conexion de CPU
+
+[INFO] 02:58:46:323 El Diego/(16374:16374): Eeeeeeh voy a abrir laaaaa eeeel archivo "/scripts/simple.escriptorio" para mmmmm eeeel proceso 1
+[INFO] 02:58:46:376 El Diego/(16374:16374): El archivo "/scripts/simple.escriptorio" fue abierto para el proceso 1 de forma exitosa
+[ERROR] 02:59:16:653 El Diego/(16374:16374): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 03:00:20:275 El Diego/(16559:16559): Inicio del proceso
+
+[INFO] 03:00:20:334 El Diego/(16559:16559): ---- Configuracion ----
+[INFO] 03:00:20:335 El Diego/(16559:16559): PUERTO = 8001
+[INFO] 03:00:20:335 El Diego/(16559:16559): IP_SAFA = 127.0.0.1
+[INFO] 03:00:20:336 El Diego/(16559:16559): PUERTO_SAFA = 8000
+[INFO] 03:00:20:336 El Diego/(16559:16559): IP_MDJ = 127.0.0.1
+[INFO] 03:00:20:337 El Diego/(16559:16559): PUERTO_MDJ = 8002
+[INFO] 03:00:20:337 El Diego/(16559:16559): IP_FM9 = 127.0.0.1
+[INFO] 03:00:20:337 El Diego/(16559:16559): PUERTO_FM9 = 8003
+[INFO] 03:00:20:338 El Diego/(16559:16559): TRANSFER_SIZE = 32
+[INFO] 03:00:20:338 El Diego/(16559:16559): -----------------------
+[INFO] 03:00:20:353 El Diego/(16559:16559): Conexion con S-AFA exitosa
+[INFO] 03:00:20:358 El Diego/(16559:16559): Conexion con MDJ exitosa
+[INFO] 03:00:20:363 El Diego/(16559:16559): Conexion con FM9 exitosa
+[INFO] 03:00:22:610 El Diego/(16559:16559): Nueva conexion de CPU
+
+[INFO] 03:00:33:167 El Diego/(16559:16559): Eeeeeeh voy a abrir laaaaa eeeel archivo "/scripts/simple.escriptorio" para mmmmm eeeel proceso 1
+[INFO] 03:00:33:226 El Diego/(16559:16559): El archivo "/scripts/simple.escriptorio" fue abierto para el proceso 1 de forma exitosa
+[ERROR] 03:05:10:967 El Diego/(16559:16559): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 03:09:30:639 El Diego/(16932:16932): Inicio del proceso
+
+[INFO] 03:09:30:679 El Diego/(16932:16932): ---- Configuracion ----
+[INFO] 03:09:30:679 El Diego/(16932:16932): PUERTO = 8001
+[INFO] 03:09:30:680 El Diego/(16932:16932): IP_SAFA = 127.0.0.1
+[INFO] 03:09:30:680 El Diego/(16932:16932): PUERTO_SAFA = 8000
+[INFO] 03:09:30:681 El Diego/(16932:16932): IP_MDJ = 127.0.0.1
+[INFO] 03:09:30:681 El Diego/(16932:16932): PUERTO_MDJ = 8002
+[INFO] 03:09:30:681 El Diego/(16932:16932): IP_FM9 = 127.0.0.1
+[INFO] 03:09:30:682 El Diego/(16932:16932): PUERTO_FM9 = 8003
+[INFO] 03:09:30:682 El Diego/(16932:16932): TRANSFER_SIZE = 32
+[INFO] 03:09:30:682 El Diego/(16932:16932): -----------------------
+[INFO] 03:09:30:695 El Diego/(16932:16932): Conexion con S-AFA exitosa
+[INFO] 03:09:30:699 El Diego/(16932:16932): Conexion con MDJ exitosa
+[ERROR] 03:09:30:700 El Diego/(16932:16932): connect
+[ERROR] 03:09:30:700 El Diego/(16932:16932): Error al conectar con FM9
+[INFO] 03:09:34:674 El Diego/(16942:16942): Inicio del proceso
+
+[INFO] 03:09:34:716 El Diego/(16942:16942): ---- Configuracion ----
+[INFO] 03:09:34:717 El Diego/(16942:16942): PUERTO = 8001
+[INFO] 03:09:34:718 El Diego/(16942:16942): IP_SAFA = 127.0.0.1
+[INFO] 03:09:34:718 El Diego/(16942:16942): PUERTO_SAFA = 8000
+[INFO] 03:09:34:718 El Diego/(16942:16942): IP_MDJ = 127.0.0.1
+[INFO] 03:09:34:719 El Diego/(16942:16942): PUERTO_MDJ = 8002
+[INFO] 03:09:34:720 El Diego/(16942:16942): IP_FM9 = 127.0.0.1
+[INFO] 03:09:34:720 El Diego/(16942:16942): PUERTO_FM9 = 8003
+[INFO] 03:09:34:721 El Diego/(16942:16942): TRANSFER_SIZE = 32
+[INFO] 03:09:34:721 El Diego/(16942:16942): -----------------------
+[INFO] 03:09:34:729 El Diego/(16942:16942): Conexion con S-AFA exitosa
+[INFO] 03:09:34:730 El Diego/(16942:16942): Conexion con MDJ exitosa
+[INFO] 03:09:34:736 El Diego/(16942:16942): Conexion con FM9 exitosa
+[INFO] 03:09:35:819 El Diego/(16942:16942): Nueva conexion de CPU
+
+[INFO] 03:09:48:187 El Diego/(16942:16942): Eeeeeeh voy a abrir laaaaa eeeel archivo "/scripts/simple.escriptorio" para mmmmm eeeel proceso 1
+[INFO] 03:09:48:248 El Diego/(16942:16942): El archivo "/scripts/simple.escriptorio" fue abierto para el proceso 1 de forma exitosa
+[ERROR] 03:21:57:336 El Diego/(16942:16942): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 03:22:08:130 El Diego/(17581:17581): Inicio del proceso
+
+[INFO] 03:22:08:184 El Diego/(17581:17581): ---- Configuracion ----
+[INFO] 03:22:08:185 El Diego/(17581:17581): PUERTO = 8001
+[INFO] 03:22:08:185 El Diego/(17581:17581): IP_SAFA = 127.0.0.1
+[INFO] 03:22:08:186 El Diego/(17581:17581): PUERTO_SAFA = 8000
+[INFO] 03:22:08:186 El Diego/(17581:17581): IP_MDJ = 127.0.0.1
+[INFO] 03:22:08:187 El Diego/(17581:17581): PUERTO_MDJ = 8002
+[INFO] 03:22:08:187 El Diego/(17581:17581): IP_FM9 = 127.0.0.1
+[INFO] 03:22:08:187 El Diego/(17581:17581): PUERTO_FM9 = 8003
+[INFO] 03:22:08:188 El Diego/(17581:17581): TRANSFER_SIZE = 32
+[INFO] 03:22:08:189 El Diego/(17581:17581): -----------------------
+[INFO] 03:22:08:200 El Diego/(17581:17581): Conexion con S-AFA exitosa
+[INFO] 03:22:08:205 El Diego/(17581:17581): Conexion con MDJ exitosa
+[INFO] 03:22:08:210 El Diego/(17581:17581): Conexion con FM9 exitosa
+[INFO] 03:22:09:222 El Diego/(17581:17581): Nueva conexion de CPU
+
+[INFO] 03:22:21:187 El Diego/(17581:17581): Eeeeeeh voy a abrir laaaaa eeeel archivo "/scripts/simple.escriptorio" para mmmmm eeeel proceso 1
+[INFO] 03:22:21:247 El Diego/(17581:17581): El archivo "/scripts/simple.escriptorio" fue abierto para el proceso 1 de forma exitosa
+[ERROR] 03:24:55:943 El Diego/(17581:17581): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 03:25:07:443 El Diego/(18260:18260): Inicio del proceso
+
+[INFO] 03:25:07:483 El Diego/(18260:18260): ---- Configuracion ----
+[INFO] 03:25:07:484 El Diego/(18260:18260): PUERTO = 8001
+[INFO] 03:25:07:485 El Diego/(18260:18260): IP_SAFA = 127.0.0.1
+[INFO] 03:25:07:485 El Diego/(18260:18260): PUERTO_SAFA = 8000
+[INFO] 03:25:07:485 El Diego/(18260:18260): IP_MDJ = 127.0.0.1
+[INFO] 03:25:07:486 El Diego/(18260:18260): PUERTO_MDJ = 8002
+[INFO] 03:25:07:486 El Diego/(18260:18260): IP_FM9 = 127.0.0.1
+[INFO] 03:25:07:486 El Diego/(18260:18260): PUERTO_FM9 = 8003
+[INFO] 03:25:07:487 El Diego/(18260:18260): TRANSFER_SIZE = 32
+[INFO] 03:25:07:487 El Diego/(18260:18260): -----------------------
+[INFO] 03:25:07:500 El Diego/(18260:18260): Conexion con S-AFA exitosa
+[INFO] 03:25:07:504 El Diego/(18260:18260): Conexion con MDJ exitosa
+[INFO] 03:25:07:510 El Diego/(18260:18260): Conexion con FM9 exitosa
+[INFO] 03:25:10:583 El Diego/(18260:18260): Nueva conexion de CPU
+
+[INFO] 03:25:22:532 El Diego/(18260:18260): Eeeeeeh voy a abrir laaaaa eeeel archivo "/scripts/simple.escriptorio" para mmmmm eeeel proceso 1
+[INFO] 03:25:22:589 El Diego/(18260:18260): El archivo "/scripts/simple.escriptorio" fue abierto para el proceso 1 de forma exitosa
+[ERROR] 03:37:19:403 El Diego/(18260:18260): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 03:37:28:318 El Diego/(18709:18709): Inicio del proceso
+
+[INFO] 03:37:28:362 El Diego/(18709:18709): ---- Configuracion ----
+[INFO] 03:37:28:364 El Diego/(18709:18709): PUERTO = 8001
+[INFO] 03:37:28:364 El Diego/(18709:18709): IP_SAFA = 127.0.0.1
+[INFO] 03:37:28:365 El Diego/(18709:18709): PUERTO_SAFA = 8000
+[INFO] 03:37:28:365 El Diego/(18709:18709): IP_MDJ = 127.0.0.1
+[INFO] 03:37:28:366 El Diego/(18709:18709): PUERTO_MDJ = 8002
+[INFO] 03:37:28:366 El Diego/(18709:18709): IP_FM9 = 127.0.0.1
+[INFO] 03:37:28:367 El Diego/(18709:18709): PUERTO_FM9 = 8003
+[INFO] 03:37:28:367 El Diego/(18709:18709): TRANSFER_SIZE = 32
+[INFO] 03:37:28:368 El Diego/(18709:18709): -----------------------
+[INFO] 03:37:28:382 El Diego/(18709:18709): Conexion con S-AFA exitosa
+[INFO] 03:37:28:387 El Diego/(18709:18709): Conexion con MDJ exitosa
+[INFO] 03:37:28:393 El Diego/(18709:18709): Conexion con FM9 exitosa
+[INFO] 03:37:29:719 El Diego/(18709:18709): Nueva conexion de CPU
+
+[INFO] 03:37:39:815 El Diego/(18709:18709): Eeeeeeh voy a abrir laaaaa eeeel archivo "/scripts/simple.escriptorio" para mmmmm eeeel proceso 1
+[INFO] 03:37:39:874 El Diego/(18709:18709): El archivo "/scripts/simple.escriptorio" fue abierto para el proceso 1 de forma exitosa
+[ERROR] 03:40:10:322 El Diego/(18709:18709): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 03:54:56:740 El Diego/(19390:19390): Inicio del proceso
+
+[INFO] 03:54:56:783 El Diego/(19390:19390): ---- Configuracion ----
+[INFO] 03:54:56:784 El Diego/(19390:19390): PUERTO = 8001
+[INFO] 03:54:56:785 El Diego/(19390:19390): IP_SAFA = 127.0.0.1
+[INFO] 03:54:56:786 El Diego/(19390:19390): PUERTO_SAFA = 8000
+[INFO] 03:54:56:786 El Diego/(19390:19390): IP_MDJ = 127.0.0.1
+[INFO] 03:54:56:786 El Diego/(19390:19390): PUERTO_MDJ = 8002
+[INFO] 03:54:56:787 El Diego/(19390:19390): IP_FM9 = 127.0.0.1
+[INFO] 03:54:56:787 El Diego/(19390:19390): PUERTO_FM9 = 8003
+[INFO] 03:54:56:787 El Diego/(19390:19390): TRANSFER_SIZE = 32
+[INFO] 03:54:56:788 El Diego/(19390:19390): -----------------------
+[INFO] 03:54:56:799 El Diego/(19390:19390): Conexion con S-AFA exitosa
+[INFO] 03:54:56:803 El Diego/(19390:19390): Conexion con MDJ exitosa
+[INFO] 03:54:56:809 El Diego/(19390:19390): Conexion con FM9 exitosa
+[INFO] 03:54:57:906 El Diego/(19390:19390): Nueva conexion de CPU
+
+[INFO] 03:55:08:435 El Diego/(19390:19390): Eeeeeeh voy a abrir laaaaa eeeel archivo "/scripts/simple.escriptorio" para mmmmm eeeel proceso 1
+[INFO] 03:55:08:490 El Diego/(19390:19390): El archivo "/scripts/simple.escriptorio" fue abierto para el proceso 1 de forma exitosa
+[ERROR] 04:08:36:667 El Diego/(19390:19390): Se desconecto una CPU al intentar recibir un tarea...
+[INFO] 04:08:52:238 El Diego/(19915:19915): Inicio del proceso
+
+[INFO] 04:08:52:277 El Diego/(19915:19915): ---- Configuracion ----
+[INFO] 04:08:52:278 El Diego/(19915:19915): PUERTO = 8001
+[INFO] 04:08:52:278 El Diego/(19915:19915): IP_SAFA = 127.0.0.1
+[INFO] 04:08:52:279 El Diego/(19915:19915): PUERTO_SAFA = 8000
+[INFO] 04:08:52:279 El Diego/(19915:19915): IP_MDJ = 127.0.0.1
+[INFO] 04:08:52:280 El Diego/(19915:19915): PUERTO_MDJ = 8002
+[INFO] 04:08:52:280 El Diego/(19915:19915): IP_FM9 = 127.0.0.1
+[INFO] 04:08:52:280 El Diego/(19915:19915): PUERTO_FM9 = 8003
+[INFO] 04:08:52:281 El Diego/(19915:19915): TRANSFER_SIZE = 32
+[INFO] 04:08:52:281 El Diego/(19915:19915): -----------------------
+[INFO] 04:08:52:293 El Diego/(19915:19915): Conexion con S-AFA exitosa
+[INFO] 04:08:52:298 El Diego/(19915:19915): Conexion con MDJ exitosa
+[INFO] 04:08:52:303 El Diego/(19915:19915): Conexion con FM9 exitosa
+[INFO] 04:08:54:44 El Diego/(19915:19915): Nueva conexion de CPU
+
+[INFO] 04:09:09:63 El Diego/(19915:19915): Eeeeeeh voy a abrir laaaaa eeeel archivo "/scripts/simple.escriptorio" para mmmmm eeeel proceso 1
+[INFO] 04:09:09:124 El Diego/(19915:19915): El archivo "/scripts/simple.escriptorio" fue abierto para el proceso 1 de forma exitosa
+[INFO] 04:09:11:255 El Diego/(19915:19915): Eeeeeeh voy a abrir laaaaa eeeel archivo "/scripts/complejo.escriptorio" para mmmmm eeeel proceso 1
+[INFO] 04:10:04:895 El Diego/(19915:19915): El archivo "/scripts/complejo.escriptorio" fue abierto para el proceso 1 de forma exitosa

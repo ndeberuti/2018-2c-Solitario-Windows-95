@@ -11,7 +11,6 @@ void* serializePCB(PCB_t* pcb)
 	memcpy(buffer + (sizeof(uint32_t) * 2), pcb->scriptPathInFS, scriptNameSize);
 	memcpy(buffer + (sizeof(uint32_t) * 3) + scriptNameSize, &(pcb->programCounter), sizeof(uint32_t));
 	memcpy(buffer + (sizeof(uint32_t) * 4) + scriptNameSize, &(pcb->wasInitialized), sizeof(uint32_t));
-	memcpy(buffer + (sizeof(uint32_t) * 5) + scriptNameSize, &(pcb->canBeScheduled), sizeof(uint32_t));
 	memcpy(buffer + (sizeof(uint32_t) * 6) + scriptNameSize, &(pcb->executionState), sizeof(uint32_t));
 	memcpy(buffer + (sizeof(uint32_t) * 7) + scriptNameSize, &(pcb->cpuProcessIsAssignedTo), sizeof(uint32_t));
 	memcpy(buffer + (sizeof(uint32_t) * 8) + scriptNameSize, &(pcb->remainingQuantum), sizeof(uint32_t));
@@ -86,17 +85,6 @@ uint32_t sendPCB(uint32_t _socket, PCB_t* pcb)
 	{
 		bytesSent += nbytes;
 		//log_info(log, "Se envio wasInitialized del PCB");
-	}
-
-	if((nbytes = send_int(_socket, pcb->canBeScheduled)) < 0)
-	{
-		//log_info(log, "Error al enviar canBeScheduled del PCB");
-		return nbytes;
-	}
-	else
-	{
-		bytesSent += nbytes;
-		//log_info(log, "Se envio canBeScheduled del PCB");
 	}
 
 	if((nbytes = send_int(_socket, pcb->executionState)) < 0)
@@ -228,7 +216,7 @@ uint32_t sendPCB(uint32_t _socket, PCB_t* pcb)
 uint32_t recvPCB(uint32_t _socket, PCB_t** pcb)	//El pcb es una variable que se declara pero se inicializa en la funcion;
 {												//esta hecho asi para permitir detectar errores y actuar acorde a ellos
 
-	uint32_t pid, programCounter, wasInitialized, canBeScheduled, newQueueArrivalTime;
+	uint32_t pid, programCounter, wasInitialized, newQueueArrivalTime;
 	uint32_t newQueueLeaveTime, executionState, cpuProcessIsAssignedTo, remainingQuantum, lastIOStartTime;
 	uint32_t dmaCalls, totalInstructionsExecuted, responseTimes, bytesReceived, nbytes;
 	uint32_t instructionsExecutedOnLastExecution, instructionsUntilIoOrEnd;
@@ -279,17 +267,6 @@ uint32_t recvPCB(uint32_t _socket, PCB_t** pcb)	//El pcb es una variable que se 
 	{
 		bytesReceived += nbytes;
 		//log_info(log, "Se recibio wasInitialized del PCB");
-	}
-
-	if((nbytes = recv(_socket, &canBeScheduled, sizeof(uint32_t), MSG_WAITALL)) <= 0)
-	{
-		//log_info(log, "Error al recibir canBeScheduled del PCB");
-		return nbytes;
-	}
-	else
-	{
-		bytesReceived += nbytes;
-		//log_info(log, "Se recibio canBeScheduled del PCB");
 	}
 
 	if((nbytes = recv(_socket, &executionState, sizeof(uint32_t), MSG_WAITALL)) <= 0)
@@ -419,7 +396,6 @@ uint32_t recvPCB(uint32_t _socket, PCB_t** pcb)	//El pcb es una variable que se 
 	process->scriptPathInFS = scriptPathInFS;
 	process->programCounter = programCounter;
 	process->wasInitialized = wasInitialized;
-	process->canBeScheduled = canBeScheduled;
 	process->executionState = executionState;
 	process->cpuProcessIsAssignedTo = cpuProcessIsAssignedTo;
 	process->remainingQuantum = remainingQuantum;

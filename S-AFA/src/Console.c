@@ -185,7 +185,7 @@ void getProcessStatus(uint32_t processId)
 	pthread_mutex_lock(&finishedQueueMutex);
 
 	char *queueName = NULL;
-	char *scriptName = NULL, *wasInitialized = NULL, *canBeScheduled = NULL;
+	char *scriptName = NULL, *wasInitialized = NULL;
 	uint32_t pid, programCounter, cpuProcessIsAssignedTo, remainingQuantum, newQueueArrivalTime;
 	uint32_t newQueueLeaveTime, instructionsExecuted, completedDmaCalls, lastIOStartTime, responseTimes;
 	uint32_t instructionsExecutedOnLastExecution, instructionsUntilIoOrEnd;
@@ -213,17 +213,11 @@ void getProcessStatus(uint32_t processId)
 		else
 			wasInitialized = "FALSE";
 
-		if(process->canBeScheduled)
-			canBeScheduled = "TRUE";
-		else
-			canBeScheduled = "FALSE";
-
 
 		log_info(schedulerLog, "-----Valores de las variables del PCB con id %d-----", pid);
 		log_info(schedulerLog, "\tscriptName: %s", scriptName);
 		log_info(schedulerLog, "\tprogramCounter: %d", programCounter);
 		log_info(schedulerLog, "\twasInitialized: %s", wasInitialized);
-		log_info(schedulerLog, "\tcanBeScheduled: %s", canBeScheduled);
 		log_info(schedulerLog, "\texecutionState: %s", queueName);
 		log_info(schedulerLog, "\tcpuProcessIsAssignedTo: %d", cpuProcessIsAssignedTo);
 		log_info(schedulerLog, "\tremainingQuantum: %d", remainingQuantum);

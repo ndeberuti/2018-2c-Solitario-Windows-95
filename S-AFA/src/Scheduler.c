@@ -21,15 +21,30 @@ void shortTermSchedulerThread()
 		pthread_mutex_lock(&readyQueueMutex);
 		pthread_mutex_lock(&ioReadyQueueMutex);
 
+		if(getFreeCPUsQty() == 0)
+		{
+			log_info(schedulerLog, "STS: No hay CPUs disponibles para ejecutar procesos. Se debera esperar a que haya un proceso nuevo.");
+
+			pthread_mutex_unlock(&readyQueueMutex);
+			pthread_mutex_unlock(&ioReadyQueueMutex);
+			pthread_mutex_unlock(&canCommunicateWithCPUs);
+			sem_post(&schedulerNotRunning);
+
+			return;
+		}
+
 		schedulableProcesses = getSchedulableProcesses();
 
 		if(list_size(schedulableProcesses) == 0)
 		{
-			log_info(schedulerLog, "No es posible planificar ya que no hay procesos listos\nSe debe crear un nuevo proceso, o desbloquear uno ya existente, para poder planificar");
+			log_info(schedulerLog, "STS: No es posible planificar ya que no hay procesos listos. Se debe crear un nuevo proceso, o desbloquear uno ya existente, para poder planificar");
 		}
 		else
 		{
-			(*scheduleProcesses)();
+			bool aProcessWasExecuted = (*scheduleProcesses)();
+
+			if(aProcessWasExecuted)
+				processesReadyToExecute--;
 		}
 
 		pthread_mutex_unlock(&readyQueueMutex);
@@ -90,29 +105,22 @@ void longTermSchedulerThread()
 				processToInitialize = list_remove(newQueue, 0);
 				processAccepted = addProcessToReadyQueue(processToInitialize);
 
-				if(getFreeCPUsQty() == 0)
-					log_info(schedulerLog, "No hay CPUs disponibles para inicializar el proceso con id %d. Se dejara en la cola de listos (sin poder ser planificado) a la espera de que se libere una CPU", processToInitialize->pid);
-				else
-				{
-					checkAndInitializeProcessesLoop();	//Initializes all the processes waiting in the readyQueue to be initialized
-				}
-
-				//tengo que agregar el nuevo pcb a la cola de listos para guardar el espacio y despues a la cola de ejecucion, para poder mandar el proceso a la cola de bloqueados,
-				//en realidad se pasa a la cola de ejecucion y se asigna a una cpu, pero se le avisa a la cpu que es para inicializar, y no se hace pasar el proceso por el STS
-				//El problema es si no hay ninguna CPU libre para inicializar el proceso... en ese caso tendria que
-				//dejar el pcb en la cola de listos, y cuando se libera o se conecta una nueva cpu, se tiene que verificar si hay procesos pendientes de inicializacion e inicializarlos
-				//(para inicializar procesos, hacer una funcion que busque en la cola de listos todos los procesos que tengan el bool que indica que no se puede planificar, y luego se asigna
-				//cada uno de esos procesos a la cpu liberada/nueva; esto deberia llamarse cuando se libera una cpu y cuando se conecta una nueva)
-
-				if(!processAccepted)
+				if(!processAccepted)	//If a process was not accepted, it means there is no more room for more processes (due to the multiprogrammingLevel)
 					break;
 			}
 
+			if(getFreeCPUsQty() == 0)
+				log_info(schedulerLog, "LTS: No hay CPUs disponibles para inicializar el proceso con id %d. Se dejara en la cola de listos (sin poder ser planificado) a la espera de que se libere una CPU", processToInitialize->pid);
+			else
+			{
+				checkAndInitializeProcessesLoop();	//Initializes all the processes waiting in the readyQueue to be initialized
+			}
+
+			/*
 			pthread_mutex_lock(&executionQueueMutex);
-
-			_checkExecProc_and_algorithm();
-
+				_checkExecProc_and_algorithm();			//This function is wrong; the STS should not be posted when an uninitialized process is added to the readyQueue
 			pthread_mutex_unlock(&executionQueueMutex);
+			*/
 
 			pthread_mutex_unlock(&cpuListMutex);
 		}
@@ -161,6 +169,7 @@ void initializeVariables()
 	killProcessInstructions = 0;
 	systemResponseTime = 0;
 	configFileInotifyFD = 0;
+	processesReadyToExecute = 0;
 
 	killThreads = false;
 	STSAlreadyExecuting = false;

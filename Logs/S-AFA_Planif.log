@@ -580,3 +580,912 @@
 [INFO] 07:33:03:483 Proceso S-AFA/(2682:2686): El DMA solicito la terminacion del proceso con id 1 debido a un error
 [INFO] 07:33:03:484 Proceso S-AFA/(2682:2686): Se intentara terminar el proceso 1 de forma prematura
 [INFO] 07:33:03:485 Proceso S-AFA/(2682:2688): LTS: Ejecucion finalizada
+[INFO] 01:21:56:700 Proceso S-AFA/(12436:12436): Inicio del proceso
+
+[INFO] 01:28:39:555 Proceso S-AFA/(13104:13104): Inicio del proceso
+
+[INFO] 01:29:37:175 Proceso S-AFA/(13104:13107): Se comenzara el envio de un mensaje
+[INFO] 01:29:37:176 Proceso S-AFA/(13104:13107): Delay de envio de mensaje: 500 ms
+[INFO] 01:29:37:177 Proceso S-AFA/(13104:13107): Se ha finalizado el envio de un mensaje
+[INFO] 01:29:37:181 Proceso S-AFA/(13104:13107): No hay procesos para inicializar
+[INFO] 01:29:46:504 Proceso S-AFA/(13104:13104): Se creo un proceso con id 1!
+[INFO] 01:29:46:506 Proceso S-AFA/(13104:13109): LTS: Comenzando ejecucion...
+[INFO] 01:29:46:508 Proceso S-AFA/(13104:13109): El proceso con id 1 fue aceptado en la cola de listos!
+[INFO] 01:29:46:514 Proceso S-AFA/(13104:13109): Buscando CPUs libres...
+[INFO] 01:29:46:515 Proceso S-AFA/(13104:13109): Se han encontrado CPUs libres! :D 
+[INFO] 01:29:46:517 Proceso S-AFA/(13104:13109): Buscando CPUs libres...
+[INFO] 01:29:46:518 Proceso S-AFA/(13104:13109): Se han encontrado CPUs libres! :D 
+[INFO] 01:29:46:519 Proceso S-AFA/(13104:13109): Hay 1 procesos sin inicializar. Se comenzara la inicializacion...
+[INFO] 01:29:46:523 Proceso S-AFA/(13104:13109): Se inicializara el proceso con id 1
+[INFO] 01:29:46:525 Proceso S-AFA/(13104:13109): Se comenzara el envio de un mensaje
+[INFO] 01:29:46:525 Proceso S-AFA/(13104:13109): Delay de envio de mensaje: 500 ms
+[INFO] 01:29:46:527 Proceso S-AFA/(13104:13109): Se ha finalizado el envio de un mensaje
+[INFO] 01:29:46:527 Proceso S-AFA/(13104:13109): Se comenzara el envio de un PCB
+[INFO] 01:29:46:528 Proceso S-AFA/(13104:13109): Delay de envio de mensaje: 500 ms
+[INFO] 01:29:46:545 Proceso S-AFA/(13104:13109): Se ha finalizado el envio de un PCB
+[INFO] 01:29:46:545 Proceso S-AFA/(13104:13109): El proceso con id 1 fue enviado para inicializar en la CPU con id 1
+[INFO] 01:29:46:546 Proceso S-AFA/(13104:13109): LTS: El proceso 1 fue enviado a una CPU para ser inicializado...
+[INFO] 01:29:46:546 Proceso S-AFA/(13104:13109): Buscando CPUs libres...
+[INFO] 01:29:46:547 Proceso S-AFA/(13104:13109): No se han encontrado CPUs libres :( ...
+[INFO] 01:29:46:547 Proceso S-AFA/(13104:13109): LTS: No hay mas CPUs disponibles para inicializar procesos, se continuara con la planificacion...
+[INFO] 01:29:46:553 Proceso S-AFA/(13104:13107): Se recibio una tarea de la CPU
+[INFO] 01:29:46:554 Proceso S-AFA/(13104:13109): LTS: Ejecucion finalizada
+[INFO] 01:29:46:583 Proceso S-AFA/(13104:13107): La CPU solicito que el proceso con id 1 sea bloqueado luego de intentar inicializarlo
+[INFO] 01:29:46:584 Proceso S-AFA/(13104:13107): El proceso con id 1 fue movido a la cola de bloqueados
+[INFO] 01:29:46:586 Proceso S-AFA/(13104:13107): No hay procesos para inicializar
+[INFO] 01:29:48:667 Proceso S-AFA/(13104:13107): Se recibio una tarea del DMA
+[INFO] 01:29:48:668 Proceso S-AFA/(13104:13107): El DMA solicita desbloquear un proceso
+[INFO] 01:29:48:671 Proceso S-AFA/(13104:13107): El proceso 0 fue quitado de la cola de bloqueados
+[INFO] 01:43:30:503 Proceso S-AFA/(13585:13585): Inicio del proceso
+
+[INFO] 01:43:33:830 Proceso S-AFA/(13585:13588): Se comenzara el envio de un mensaje
+[INFO] 01:43:33:830 Proceso S-AFA/(13585:13588): Delay de envio de mensaje: 500 ms
+[INFO] 01:43:33:832 Proceso S-AFA/(13585:13588): Se ha finalizado el envio de un mensaje
+[INFO] 01:43:33:836 Proceso S-AFA/(13585:13588): No hay procesos para inicializar
+[INFO] 01:43:46:929 Proceso S-AFA/(13585:13585): Se creo un proceso con id 1!
+[INFO] 01:43:46:931 Proceso S-AFA/(13585:13590): LTS: Comenzando ejecucion...
+[INFO] 01:43:46:934 Proceso S-AFA/(13585:13590): El proceso con id 1 fue aceptado en la cola de listos!
+[INFO] 01:43:46:940 Proceso S-AFA/(13585:13590): Buscando CPUs libres...
+[INFO] 01:43:46:941 Proceso S-AFA/(13585:13590): Se han encontrado CPUs libres! :D 
+[INFO] 01:43:46:943 Proceso S-AFA/(13585:13590): Buscando CPUs libres...
+[INFO] 01:43:46:944 Proceso S-AFA/(13585:13590): Se han encontrado CPUs libres! :D 
+[INFO] 01:43:46:945 Proceso S-AFA/(13585:13590): Hay 1 procesos sin inicializar. Se comenzara la inicializacion...
+[INFO] 01:43:46:947 Proceso S-AFA/(13585:13590): Se inicializara el proceso con id 1
+[INFO] 01:43:46:949 Proceso S-AFA/(13585:13590): Se comenzara el envio de un mensaje
+[INFO] 01:43:46:952 Proceso S-AFA/(13585:13590): Delay de envio de mensaje: 500 ms
+[INFO] 01:43:46:954 Proceso S-AFA/(13585:13590): Se ha finalizado el envio de un mensaje
+[INFO] 01:43:46:955 Proceso S-AFA/(13585:13590): Se comenzara el envio de un PCB
+[INFO] 01:43:46:956 Proceso S-AFA/(13585:13590): Delay de envio de mensaje: 500 ms
+[INFO] 01:43:46:977 Proceso S-AFA/(13585:13590): Se ha finalizado el envio de un PCB
+[INFO] 01:43:46:981 Proceso S-AFA/(13585:13590): El proceso con id 1 fue enviado para inicializar en la CPU con id 1
+[INFO] 01:43:46:982 Proceso S-AFA/(13585:13590): LTS: El proceso 1 fue enviado a una CPU para ser inicializado...
+[INFO] 01:43:46:983 Proceso S-AFA/(13585:13590): Buscando CPUs libres...
+[INFO] 01:43:46:984 Proceso S-AFA/(13585:13590): No se han encontrado CPUs libres :( ...
+[INFO] 01:43:46:984 Proceso S-AFA/(13585:13590): LTS: No hay mas CPUs disponibles para inicializar procesos, se continuara con la planificacion...
+[INFO] 01:43:46:986 Proceso S-AFA/(13585:13588): Se recibio una tarea de la CPU
+[INFO] 01:43:46:987 Proceso S-AFA/(13585:13590): LTS: Ejecucion finalizada
+[INFO] 01:43:47:15 Proceso S-AFA/(13585:13588): La CPU solicito que el proceso con id 1 sea bloqueado luego de intentar inicializarlo
+[INFO] 01:43:47:16 Proceso S-AFA/(13585:13588): El proceso con id 1 fue movido a la cola de bloqueados
+[INFO] 01:43:47:18 Proceso S-AFA/(13585:13588): No hay procesos para inicializar
+[INFO] 01:43:49:66 Proceso S-AFA/(13585:13588): Se recibio una tarea del DMA
+[INFO] 01:43:49:68 Proceso S-AFA/(13585:13588): El DMA solicita desbloquear el proceso 1
+[INFO] 01:43:49:70 Proceso S-AFA/(13585:13588): El proceso 1 fue quitado de la cola de bloqueados
+[INFO] 01:43:49:71 Proceso S-AFA/(13585:13588): El proceso con id 1 fue movido a la cola de listos
+[INFO] 01:43:49:77 Proceso S-AFA/(13585:13589): STS: Comenzando ejecucion
+[INFO] 01:43:49:77 Proceso S-AFA/(13585:13589): Buscando CPUs libres...
+[INFO] 01:43:49:78 Proceso S-AFA/(13585:13589): Se han encontrado CPUs libres! :D 
+[INFO] 01:43:49:78 Proceso S-AFA/(13585:13589): Obteniendo procesos planificables
+[INFO] 01:43:49:79 Proceso S-AFA/(13585:13589): STS: No es posible planificar ya que no hay procesos listos. Se debe crear un nuevo proceso, o desbloquear uno ya existente, para poder planificar
+[INFO] 01:43:49:80 Proceso S-AFA/(13585:13589): STS: Ejecucion finalizada
+[INFO] 01:50:43:426 Proceso S-AFA/(13852:13852): Inicio del proceso
+
+[INFO] 01:50:46:902 Proceso S-AFA/(13852:13855): Se comenzara el envio de un mensaje
+[INFO] 01:50:46:903 Proceso S-AFA/(13852:13855): Delay de envio de mensaje: 500 ms
+[INFO] 01:50:46:905 Proceso S-AFA/(13852:13855): Se ha finalizado el envio de un mensaje
+[INFO] 01:50:46:908 Proceso S-AFA/(13852:13855): No hay procesos para inicializar
+[INFO] 01:50:57:375 Proceso S-AFA/(13852:13852): Se creo un proceso con id 1!
+[INFO] 01:50:57:377 Proceso S-AFA/(13852:13857): LTS: Comenzando ejecucion...
+[INFO] 01:50:57:380 Proceso S-AFA/(13852:13857): El proceso con id 1 fue aceptado en la cola de listos!
+[INFO] 01:50:57:386 Proceso S-AFA/(13852:13857): Buscando CPUs libres...
+[INFO] 01:50:57:387 Proceso S-AFA/(13852:13857): Se han encontrado CPUs libres! :D 
+[INFO] 01:50:57:391 Proceso S-AFA/(13852:13857): Buscando CPUs libres...
+[INFO] 01:50:57:392 Proceso S-AFA/(13852:13857): Se han encontrado CPUs libres! :D 
+[INFO] 01:50:57:393 Proceso S-AFA/(13852:13857): Hay 1 procesos sin inicializar. Se comenzara la inicializacion...
+[INFO] 01:50:57:394 Proceso S-AFA/(13852:13857): Se inicializara el proceso con id 1
+[INFO] 01:50:57:396 Proceso S-AFA/(13852:13857): Se comenzara el envio de un mensaje
+[INFO] 01:50:57:396 Proceso S-AFA/(13852:13857): Delay de envio de mensaje: 500 ms
+[INFO] 01:50:57:398 Proceso S-AFA/(13852:13857): Se ha finalizado el envio de un mensaje
+[INFO] 01:50:57:398 Proceso S-AFA/(13852:13857): Se comenzara el envio de un PCB
+[INFO] 01:50:57:399 Proceso S-AFA/(13852:13857): Delay de envio de mensaje: 500 ms
+[INFO] 01:50:57:413 Proceso S-AFA/(13852:13857): Se ha finalizado el envio de un PCB
+[INFO] 01:50:57:414 Proceso S-AFA/(13852:13857): El proceso con id 1 fue enviado para inicializar en la CPU con id 1
+[INFO] 01:50:57:414 Proceso S-AFA/(13852:13857): LTS: El proceso 1 fue enviado a una CPU para ser inicializado...
+[INFO] 01:50:57:414 Proceso S-AFA/(13852:13857): Buscando CPUs libres...
+[INFO] 01:50:57:415 Proceso S-AFA/(13852:13857): No se han encontrado CPUs libres :( ...
+[INFO] 01:50:57:416 Proceso S-AFA/(13852:13857): LTS: No hay mas CPUs disponibles para inicializar procesos, se continuara con la planificacion...
+[INFO] 01:50:57:417 Proceso S-AFA/(13852:13855): Se recibio una tarea de la CPU
+[INFO] 01:50:57:418 Proceso S-AFA/(13852:13857): LTS: Ejecucion finalizada
+[INFO] 01:50:57:453 Proceso S-AFA/(13852:13855): La CPU solicito que el proceso con id 1 sea bloqueado luego de intentar inicializarlo
+[INFO] 01:50:57:455 Proceso S-AFA/(13852:13855): El proceso con id 1 fue movido a la cola de bloqueados
+[INFO] 01:50:57:457 Proceso S-AFA/(13852:13855): No hay procesos para inicializar
+[INFO] 01:50:59:504 Proceso S-AFA/(13852:13855): Se recibio una tarea de la CPU
+[INFO] 01:50:59:504 Proceso S-AFA/(13852:13855): El DMA solicito la terminacion del proceso con id 1 debido a un error
+[INFO] 01:50:59:505 Proceso S-AFA/(13852:13855): Se intentara terminar el proceso 1 de forma prematura
+[INFO] 01:50:59:508 Proceso S-AFA/(13852:13855): El proceso 1 no tenia semaforos tomados
+[INFO] 01:50:59:509 Proceso S-AFA/(13852:13855): El proceso 1 fue terminado de forma exitosa, y los recursos que tenia tomados fueron liberados
+[INFO] 01:51:29:457 Proceso S-AFA/(13889:13889): Inicio del proceso
+
+[INFO] 01:51:37:836 Proceso S-AFA/(13889:13892): Se comenzara el envio de un mensaje
+[INFO] 01:51:37:837 Proceso S-AFA/(13889:13892): Delay de envio de mensaje: 500 ms
+[INFO] 01:51:37:839 Proceso S-AFA/(13889:13892): Se ha finalizado el envio de un mensaje
+[INFO] 01:51:37:852 Proceso S-AFA/(13889:13892): No hay procesos para inicializar
+[INFO] 01:51:48:540 Proceso S-AFA/(13889:13889): Se creo un proceso con id 1!
+[INFO] 01:51:48:542 Proceso S-AFA/(13889:13894): LTS: Comenzando ejecucion...
+[INFO] 01:51:48:544 Proceso S-AFA/(13889:13894): El proceso con id 1 fue aceptado en la cola de listos!
+[INFO] 01:51:48:551 Proceso S-AFA/(13889:13894): Buscando CPUs libres...
+[INFO] 01:51:48:552 Proceso S-AFA/(13889:13894): Se han encontrado CPUs libres! :D 
+[INFO] 01:51:48:554 Proceso S-AFA/(13889:13894): Buscando CPUs libres...
+[INFO] 01:51:48:557 Proceso S-AFA/(13889:13894): Se han encontrado CPUs libres! :D 
+[INFO] 01:51:48:558 Proceso S-AFA/(13889:13894): Hay 1 procesos sin inicializar. Se comenzara la inicializacion...
+[INFO] 01:51:48:559 Proceso S-AFA/(13889:13894): Se inicializara el proceso con id 1
+[INFO] 01:51:48:561 Proceso S-AFA/(13889:13894): Se comenzara el envio de un mensaje
+[INFO] 01:51:48:562 Proceso S-AFA/(13889:13894): Delay de envio de mensaje: 500 ms
+[INFO] 01:51:48:563 Proceso S-AFA/(13889:13894): Se ha finalizado el envio de un mensaje
+[INFO] 01:51:48:564 Proceso S-AFA/(13889:13894): Se comenzara el envio de un PCB
+[INFO] 01:51:48:564 Proceso S-AFA/(13889:13894): Delay de envio de mensaje: 500 ms
+[INFO] 01:51:48:581 Proceso S-AFA/(13889:13894): Se ha finalizado el envio de un PCB
+[INFO] 01:51:48:582 Proceso S-AFA/(13889:13894): El proceso con id 1 fue enviado para inicializar en la CPU con id 1
+[INFO] 01:51:48:582 Proceso S-AFA/(13889:13894): LTS: El proceso 1 fue enviado a una CPU para ser inicializado...
+[INFO] 01:51:48:583 Proceso S-AFA/(13889:13894): Buscando CPUs libres...
+[INFO] 01:51:48:587 Proceso S-AFA/(13889:13894): No se han encontrado CPUs libres :( ...
+[INFO] 01:51:48:588 Proceso S-AFA/(13889:13894): LTS: No hay mas CPUs disponibles para inicializar procesos, se continuara con la planificacion...
+[INFO] 01:51:48:589 Proceso S-AFA/(13889:13892): Se recibio una tarea de la CPU
+[INFO] 01:51:48:590 Proceso S-AFA/(13889:13894): LTS: Ejecucion finalizada
+[INFO] 01:51:48:619 Proceso S-AFA/(13889:13892): La CPU solicito que el proceso con id 1 sea bloqueado luego de intentar inicializarlo
+[INFO] 01:51:48:621 Proceso S-AFA/(13889:13892): El proceso con id 1 fue movido a la cola de bloqueados
+[INFO] 01:51:48:622 Proceso S-AFA/(13889:13892): No hay procesos para inicializar
+[INFO] 01:51:50:697 Proceso S-AFA/(13889:13892): Se recibio una tarea del DMA
+[INFO] 01:51:50:703 Proceso S-AFA/(13889:13892): El DMA solicita desbloquear el proceso 1
+[INFO] 01:51:50:705 Proceso S-AFA/(13889:13892): El proceso 1 fue quitado de la cola de bloqueados
+[INFO] 01:51:50:706 Proceso S-AFA/(13889:13892): El proceso con id 1 fue movido a la cola de listos
+[INFO] 01:51:50:707 Proceso S-AFA/(13889:13893): STS: Comenzando ejecucion
+[INFO] 01:51:50:708 Proceso S-AFA/(13889:13893): Buscando CPUs libres...
+[INFO] 01:51:50:708 Proceso S-AFA/(13889:13893): Se han encontrado CPUs libres! :D 
+[INFO] 01:51:50:709 Proceso S-AFA/(13889:13893): Obteniendo procesos planificables
+[INFO] 01:51:50:710 Proceso S-AFA/(13889:13893): Buscando CPUs libres...
+[INFO] 01:51:50:710 Proceso S-AFA/(13889:13893): Se han encontrado CPUs libres! :D 
+[INFO] 02:19:37:399 Proceso S-AFA/(14637:14637): Inicio del proceso
+
+[INFO] 02:19:40:117 Proceso S-AFA/(14637:14641): Se comenzara el envio de un mensaje
+[INFO] 02:19:40:118 Proceso S-AFA/(14637:14641): Delay de envio de mensaje: 500 ms
+[INFO] 02:19:40:122 Proceso S-AFA/(14637:14641): Se ha finalizado el envio de un mensaje
+[INFO] 02:19:40:134 Proceso S-AFA/(14637:14641): No hay procesos para inicializar
+[INFO] 02:19:49:433 Proceso S-AFA/(14637:14637): Se creo un proceso con id 1!
+[INFO] 02:19:49:435 Proceso S-AFA/(14637:14643): LTS: Comenzando ejecucion...
+[INFO] 02:19:49:437 Proceso S-AFA/(14637:14643): El proceso con id 1 fue aceptado en la cola de listos!
+[INFO] 02:19:49:443 Proceso S-AFA/(14637:14643): Buscando CPUs libres...
+[INFO] 02:19:49:444 Proceso S-AFA/(14637:14643): Se han encontrado CPUs libres! :D 
+[INFO] 02:19:49:446 Proceso S-AFA/(14637:14643): Buscando CPUs libres...
+[INFO] 02:19:49:447 Proceso S-AFA/(14637:14643): Se han encontrado CPUs libres! :D 
+[INFO] 02:19:49:450 Proceso S-AFA/(14637:14643): Hay 1 procesos sin inicializar. Se comenzara la inicializacion...
+[INFO] 02:19:49:452 Proceso S-AFA/(14637:14643): Se inicializara el proceso con id 1
+[INFO] 02:19:49:454 Proceso S-AFA/(14637:14643): Se comenzara el envio de un mensaje
+[INFO] 02:19:49:454 Proceso S-AFA/(14637:14643): Delay de envio de mensaje: 500 ms
+[INFO] 02:19:49:455 Proceso S-AFA/(14637:14643): Se ha finalizado el envio de un mensaje
+[INFO] 02:19:49:456 Proceso S-AFA/(14637:14643): Se comenzara el envio de un PCB
+[INFO] 02:19:49:457 Proceso S-AFA/(14637:14643): Delay de envio de mensaje: 500 ms
+[INFO] 02:19:49:471 Proceso S-AFA/(14637:14643): Se ha finalizado el envio de un PCB
+[INFO] 02:19:49:472 Proceso S-AFA/(14637:14643): El proceso con id 1 fue enviado para inicializar en la CPU con id 1
+[INFO] 02:19:49:472 Proceso S-AFA/(14637:14643): LTS: El proceso 1 fue enviado a una CPU para ser inicializado...
+[INFO] 02:19:49:473 Proceso S-AFA/(14637:14643): Buscando CPUs libres...
+[INFO] 02:19:49:473 Proceso S-AFA/(14637:14643): No se han encontrado CPUs libres :( ...
+[INFO] 02:19:49:474 Proceso S-AFA/(14637:14643): LTS: No hay mas CPUs disponibles para inicializar procesos, se continuara con la planificacion...
+[INFO] 02:19:49:475 Proceso S-AFA/(14637:14641): Se recibio una tarea de la CPU
+[INFO] 02:19:49:477 Proceso S-AFA/(14637:14643): LTS: Ejecucion finalizada
+[INFO] 02:19:49:507 Proceso S-AFA/(14637:14641): La CPU solicito que el proceso con id 1 sea bloqueado luego de intentar inicializarlo
+[INFO] 02:19:49:508 Proceso S-AFA/(14637:14641): El proceso con id 1 fue movido a la cola de bloqueados
+[ERROR] 02:19:49:509 Proceso S-AFA/(14637:14641): ERROR - Se indico eliminar 
+[INFO] 02:19:49:513 Proceso S-AFA/(14637:14641): No hay procesos para inicializar
+[INFO] 02:19:51:567 Proceso S-AFA/(14637:14641): Se recibio una tarea del DMA
+[INFO] 02:19:51:569 Proceso S-AFA/(14637:14641): El DMA solicita desbloquear el proceso 1
+[INFO] 02:19:51:575 Proceso S-AFA/(14637:14641): El proceso 1 fue quitado de la cola de bloqueados
+[INFO] 02:19:51:576 Proceso S-AFA/(14637:14641): El proceso con id 1 fue movido a la cola de listos
+[INFO] 02:19:51:577 Proceso S-AFA/(14637:14642): STS: Comenzando ejecucion
+[INFO] 02:19:51:578 Proceso S-AFA/(14637:14642): Buscando CPUs libres...
+[INFO] 02:19:51:578 Proceso S-AFA/(14637:14642): Se han encontrado CPUs libres! :D 
+[INFO] 02:19:51:579 Proceso S-AFA/(14637:14642): Obteniendo procesos planificables
+[INFO] 02:19:51:580 Proceso S-AFA/(14637:14642): Buscando CPUs libres...
+[INFO] 02:19:51:580 Proceso S-AFA/(14637:14642): Se han encontrado CPUs libres! :D 
+[INFO] 02:21:46:572 Proceso S-AFA/(14770:14770): Inicio del proceso
+
+[INFO] 02:21:49:679 Proceso S-AFA/(14770:14773): Se comenzara el envio de un mensaje
+[INFO] 02:21:49:680 Proceso S-AFA/(14770:14773): Delay de envio de mensaje: 500 ms
+[INFO] 02:21:49:682 Proceso S-AFA/(14770:14773): Se ha finalizado el envio de un mensaje
+[INFO] 02:21:49:694 Proceso S-AFA/(14770:14773): No hay procesos para inicializar
+[INFO] 02:22:00:785 Proceso S-AFA/(14770:14770): Se creo un proceso con id 1!
+[INFO] 02:22:00:787 Proceso S-AFA/(14770:14775): LTS: Comenzando ejecucion...
+[INFO] 02:22:00:789 Proceso S-AFA/(14770:14775): El proceso con id 1 fue aceptado en la cola de listos!
+[INFO] 02:22:00:795 Proceso S-AFA/(14770:14775): Buscando CPUs libres...
+[INFO] 02:22:00:796 Proceso S-AFA/(14770:14775): Se han encontrado CPUs libres! :D 
+[INFO] 02:22:00:798 Proceso S-AFA/(14770:14775): Buscando CPUs libres...
+[INFO] 02:22:00:799 Proceso S-AFA/(14770:14775): Se han encontrado CPUs libres! :D 
+[INFO] 02:22:00:800 Proceso S-AFA/(14770:14775): Hay 1 procesos sin inicializar. Se comenzara la inicializacion...
+[INFO] 02:22:00:804 Proceso S-AFA/(14770:14775): Se inicializara el proceso con id 1
+[INFO] 02:22:00:806 Proceso S-AFA/(14770:14775): Se comenzara el envio de un mensaje
+[INFO] 02:22:00:806 Proceso S-AFA/(14770:14775): Delay de envio de mensaje: 500 ms
+[INFO] 02:22:00:808 Proceso S-AFA/(14770:14775): Se ha finalizado el envio de un mensaje
+[INFO] 02:22:00:808 Proceso S-AFA/(14770:14775): Se comenzara el envio de un PCB
+[INFO] 02:22:00:809 Proceso S-AFA/(14770:14775): Delay de envio de mensaje: 500 ms
+[INFO] 02:22:00:823 Proceso S-AFA/(14770:14775): Se ha finalizado el envio de un PCB
+[INFO] 02:22:00:823 Proceso S-AFA/(14770:14775): El proceso con id 1 fue enviado para inicializar en la CPU con id 1
+[INFO] 02:22:00:824 Proceso S-AFA/(14770:14775): LTS: El proceso 1 fue enviado a una CPU para ser inicializado...
+[INFO] 02:22:00:824 Proceso S-AFA/(14770:14775): Buscando CPUs libres...
+[INFO] 02:22:00:825 Proceso S-AFA/(14770:14775): No se han encontrado CPUs libres :( ...
+[INFO] 02:22:00:825 Proceso S-AFA/(14770:14775): LTS: No hay mas CPUs disponibles para inicializar procesos, se continuara con la planificacion...
+[INFO] 02:22:00:826 Proceso S-AFA/(14770:14773): Se recibio una tarea de la CPU
+[INFO] 02:22:00:828 Proceso S-AFA/(14770:14775): LTS: Ejecucion finalizada
+[INFO] 02:22:00:859 Proceso S-AFA/(14770:14773): La CPU solicito que el proceso con id 1 sea bloqueado luego de intentar inicializarlo
+[INFO] 02:22:00:861 Proceso S-AFA/(14770:14773): El proceso con id 1 fue movido a la cola de bloqueados
+[INFO] 02:22:00:865 Proceso S-AFA/(14770:14773): No hay procesos para inicializar
+[INFO] 02:22:02:915 Proceso S-AFA/(14770:14773): Se recibio una tarea de la CPU
+[INFO] 02:22:02:916 Proceso S-AFA/(14770:14773): El DMA solicito la terminacion del proceso con id 1 debido a un error
+[INFO] 02:22:02:917 Proceso S-AFA/(14770:14773): Se intentara terminar el proceso 1 de forma prematura
+[INFO] 02:22:02:926 Proceso S-AFA/(14770:14773): El proceso 1 no tenia semaforos tomados
+[INFO] 02:22:02:927 Proceso S-AFA/(14770:14773): El proceso 1 fue terminado de forma exitosa, y los recursos que tenia tomados fueron liberados
+[INFO] 02:22:20:949 Proceso S-AFA/(14815:14815): Inicio del proceso
+
+[INFO] 02:22:24:738 Proceso S-AFA/(14815:14818): Se comenzara el envio de un mensaje
+[INFO] 02:22:24:739 Proceso S-AFA/(14815:14818): Delay de envio de mensaje: 500 ms
+[INFO] 02:22:24:741 Proceso S-AFA/(14815:14818): Se ha finalizado el envio de un mensaje
+[INFO] 02:22:24:748 Proceso S-AFA/(14815:14818): No hay procesos para inicializar
+[INFO] 02:22:54:329 Proceso S-AFA/(14815:14815): Se creo un proceso con id 1!
+[INFO] 02:22:54:331 Proceso S-AFA/(14815:14820): LTS: Comenzando ejecucion...
+[INFO] 02:22:54:334 Proceso S-AFA/(14815:14820): El proceso con id 1 fue aceptado en la cola de listos!
+[INFO] 02:22:54:340 Proceso S-AFA/(14815:14820): Buscando CPUs libres...
+[INFO] 02:22:54:342 Proceso S-AFA/(14815:14820): Se han encontrado CPUs libres! :D 
+[INFO] 02:22:54:344 Proceso S-AFA/(14815:14820): Buscando CPUs libres...
+[INFO] 02:22:54:345 Proceso S-AFA/(14815:14820): Se han encontrado CPUs libres! :D 
+[INFO] 02:22:54:345 Proceso S-AFA/(14815:14820): Hay 1 procesos sin inicializar. Se comenzara la inicializacion...
+[INFO] 02:22:54:347 Proceso S-AFA/(14815:14820): Se inicializara el proceso con id 1
+[INFO] 02:22:54:352 Proceso S-AFA/(14815:14820): Se comenzara el envio de un mensaje
+[INFO] 02:22:54:353 Proceso S-AFA/(14815:14820): Delay de envio de mensaje: 500 ms
+[INFO] 02:22:54:354 Proceso S-AFA/(14815:14820): Se ha finalizado el envio de un mensaje
+[INFO] 02:22:54:355 Proceso S-AFA/(14815:14820): Se comenzara el envio de un PCB
+[INFO] 02:22:54:356 Proceso S-AFA/(14815:14820): Delay de envio de mensaje: 500 ms
+[INFO] 02:22:54:373 Proceso S-AFA/(14815:14820): Se ha finalizado el envio de un PCB
+[INFO] 02:22:54:374 Proceso S-AFA/(14815:14820): El proceso con id 1 fue enviado para inicializar en la CPU con id 1
+[INFO] 02:22:54:378 Proceso S-AFA/(14815:14820): LTS: El proceso 1 fue enviado a una CPU para ser inicializado...
+[INFO] 02:22:54:379 Proceso S-AFA/(14815:14820): Buscando CPUs libres...
+[INFO] 02:22:54:379 Proceso S-AFA/(14815:14820): No se han encontrado CPUs libres :( ...
+[INFO] 02:22:54:380 Proceso S-AFA/(14815:14820): LTS: No hay mas CPUs disponibles para inicializar procesos, se continuara con la planificacion...
+[INFO] 02:22:54:381 Proceso S-AFA/(14815:14818): Se recibio una tarea de la CPU
+[INFO] 02:22:54:382 Proceso S-AFA/(14815:14820): LTS: Ejecucion finalizada
+[INFO] 02:22:54:411 Proceso S-AFA/(14815:14818): La CPU solicito que el proceso con id 1 sea bloqueado luego de intentar inicializarlo
+[INFO] 02:22:54:412 Proceso S-AFA/(14815:14818): El proceso con id 1 fue movido a la cola de bloqueados
+[INFO] 02:22:54:414 Proceso S-AFA/(14815:14818): No hay procesos para inicializar
+[INFO] 02:22:56:485 Proceso S-AFA/(14815:14818): Se recibio una tarea del DMA
+[INFO] 02:22:56:489 Proceso S-AFA/(14815:14818): El DMA solicita desbloquear el proceso 1
+[INFO] 02:22:56:494 Proceso S-AFA/(14815:14818): El proceso 1 fue quitado de la cola de bloqueados
+[INFO] 02:22:56:495 Proceso S-AFA/(14815:14818): El proceso con id 1 fue movido a la cola de listos
+[INFO] 02:22:56:496 Proceso S-AFA/(14815:14819): STS: Comenzando ejecucion
+[INFO] 02:22:56:497 Proceso S-AFA/(14815:14819): Buscando CPUs libres...
+[INFO] 02:22:56:497 Proceso S-AFA/(14815:14819): Se han encontrado CPUs libres! :D 
+[INFO] 02:22:56:498 Proceso S-AFA/(14815:14819): Obteniendo procesos planificables
+[INFO] 02:22:56:499 Proceso S-AFA/(14815:14819): Buscando CPUs libres...
+[INFO] 02:22:56:500 Proceso S-AFA/(14815:14819): Se han encontrado CPUs libres! :D 
+[INFO] 02:30:20:182 Proceso S-AFA/(15231:15231): Inicio del proceso
+
+[INFO] 02:30:24:92 Proceso S-AFA/(15231:15234): Se comenzara el envio de un mensaje
+[INFO] 02:30:24:93 Proceso S-AFA/(15231:15234): Delay de envio de mensaje: 500 ms
+[INFO] 02:30:24:95 Proceso S-AFA/(15231:15234): Se ha finalizado el envio de un mensaje
+[INFO] 02:30:24:110 Proceso S-AFA/(15231:15234): No hay procesos para inicializar
+[INFO] 02:30:32:470 Proceso S-AFA/(15231:15231): Se creo un proceso con id 1!
+[INFO] 02:30:32:472 Proceso S-AFA/(15231:15236): LTS: Comenzando ejecucion...
+[INFO] 02:30:32:475 Proceso S-AFA/(15231:15236): El proceso con id 1 fue aceptado en la cola de listos!
+[INFO] 02:30:32:481 Proceso S-AFA/(15231:15236): Buscando CPUs libres...
+[INFO] 02:30:32:482 Proceso S-AFA/(15231:15236): Se han encontrado CPUs libres! :D 
+[INFO] 02:30:32:483 Proceso S-AFA/(15231:15236): Buscando CPUs libres...
+[INFO] 02:30:32:487 Proceso S-AFA/(15231:15236): Se han encontrado CPUs libres! :D 
+[INFO] 02:30:32:488 Proceso S-AFA/(15231:15236): Hay 1 procesos sin inicializar. Se comenzara la inicializacion...
+[INFO] 02:30:32:489 Proceso S-AFA/(15231:15236): Se inicializara el proceso con id 1
+[INFO] 02:30:32:491 Proceso S-AFA/(15231:15236): Se comenzara el envio de un mensaje
+[INFO] 02:30:32:491 Proceso S-AFA/(15231:15236): Delay de envio de mensaje: 500 ms
+[INFO] 02:30:32:493 Proceso S-AFA/(15231:15236): Se ha finalizado el envio de un mensaje
+[INFO] 02:30:32:494 Proceso S-AFA/(15231:15236): Se comenzara el envio de un PCB
+[INFO] 02:30:32:494 Proceso S-AFA/(15231:15236): Delay de envio de mensaje: 500 ms
+[INFO] 02:30:32:511 Proceso S-AFA/(15231:15236): Se ha finalizado el envio de un PCB
+[INFO] 02:30:32:512 Proceso S-AFA/(15231:15236): El proceso con id 1 fue enviado para inicializar en la CPU con id 1
+[INFO] 02:30:32:512 Proceso S-AFA/(15231:15236): LTS: El proceso 1 fue enviado a una CPU para ser inicializado...
+[INFO] 02:30:32:513 Proceso S-AFA/(15231:15236): Buscando CPUs libres...
+[INFO] 02:30:32:513 Proceso S-AFA/(15231:15236): No se han encontrado CPUs libres :( ...
+[INFO] 02:30:32:514 Proceso S-AFA/(15231:15236): LTS: No hay mas CPUs disponibles para inicializar procesos, se continuara con la planificacion...
+[INFO] 02:30:32:518 Proceso S-AFA/(15231:15234): Se recibio una tarea de la CPU
+[INFO] 02:30:32:519 Proceso S-AFA/(15231:15236): LTS: Ejecucion finalizada
+[INFO] 02:30:32:548 Proceso S-AFA/(15231:15234): La CPU solicito que el proceso con id 1 sea bloqueado luego de intentar inicializarlo
+[INFO] 02:30:32:549 Proceso S-AFA/(15231:15234): El proceso con id 1 fue movido a la cola de bloqueados
+[INFO] 02:30:32:551 Proceso S-AFA/(15231:15234): No hay procesos para inicializar
+[INFO] 02:30:34:625 Proceso S-AFA/(15231:15234): Se recibio una tarea del DMA
+[INFO] 02:30:34:629 Proceso S-AFA/(15231:15234): El DMA solicita desbloquear el proceso 1
+[INFO] 02:30:34:634 Proceso S-AFA/(15231:15234): El proceso 1 fue quitado de la cola de bloqueados
+[INFO] 02:30:34:637 Proceso S-AFA/(15231:15234): El proceso con id 1 fue movido a la cola de listos
+[INFO] 02:30:34:638 Proceso S-AFA/(15231:15235): STS: Comenzando ejecucion
+[INFO] 02:30:34:639 Proceso S-AFA/(15231:15235): Buscando CPUs libres...
+[INFO] 02:30:34:639 Proceso S-AFA/(15231:15235): Se han encontrado CPUs libres! :D 
+[INFO] 02:30:34:640 Proceso S-AFA/(15231:15235): Obteniendo procesos planificables
+[INFO] 02:30:34:641 Proceso S-AFA/(15231:15235): Buscando CPUs libres...
+[INFO] 02:30:34:641 Proceso S-AFA/(15231:15235): Se han encontrado CPUs libres! :D 
+[INFO] 02:31:40:210 Proceso S-AFA/(15324:15324): Inicio del proceso
+
+[INFO] 02:31:42:369 Proceso S-AFA/(15324:15327): Se comenzara el envio de un mensaje
+[INFO] 02:31:42:369 Proceso S-AFA/(15324:15327): Delay de envio de mensaje: 500 ms
+[INFO] 02:31:42:372 Proceso S-AFA/(15324:15327): Se ha finalizado el envio de un mensaje
+[INFO] 02:31:42:382 Proceso S-AFA/(15324:15327): No hay procesos para inicializar
+[INFO] 02:31:49:908 Proceso S-AFA/(15324:15324): Se creo un proceso con id 1!
+[INFO] 02:31:49:910 Proceso S-AFA/(15324:15329): LTS: Comenzando ejecucion...
+[INFO] 02:31:49:913 Proceso S-AFA/(15324:15329): El proceso con id 1 fue aceptado en la cola de listos!
+[INFO] 02:31:49:918 Proceso S-AFA/(15324:15329): Buscando CPUs libres...
+[INFO] 02:31:49:920 Proceso S-AFA/(15324:15329): Se han encontrado CPUs libres! :D 
+[INFO] 02:31:49:921 Proceso S-AFA/(15324:15329): Buscando CPUs libres...
+[INFO] 02:31:49:923 Proceso S-AFA/(15324:15329): Se han encontrado CPUs libres! :D 
+[INFO] 02:31:49:926 Proceso S-AFA/(15324:15329): Hay 1 procesos sin inicializar. Se comenzara la inicializacion...
+[INFO] 02:31:49:927 Proceso S-AFA/(15324:15329): Se inicializara el proceso con id 1
+[INFO] 02:31:49:929 Proceso S-AFA/(15324:15329): Se comenzara el envio de un mensaje
+[INFO] 02:31:49:929 Proceso S-AFA/(15324:15329): Delay de envio de mensaje: 500 ms
+[INFO] 02:31:49:931 Proceso S-AFA/(15324:15329): Se ha finalizado el envio de un mensaje
+[INFO] 02:31:49:931 Proceso S-AFA/(15324:15329): Se comenzara el envio de un PCB
+[INFO] 02:31:49:932 Proceso S-AFA/(15324:15329): Delay de envio de mensaje: 500 ms
+[INFO] 02:31:49:946 Proceso S-AFA/(15324:15329): Se ha finalizado el envio de un PCB
+[INFO] 02:31:49:946 Proceso S-AFA/(15324:15329): El proceso con id 1 fue enviado para inicializar en la CPU con id 1
+[INFO] 02:31:49:947 Proceso S-AFA/(15324:15329): LTS: El proceso 1 fue enviado a una CPU para ser inicializado...
+[INFO] 02:31:49:948 Proceso S-AFA/(15324:15329): Buscando CPUs libres...
+[INFO] 02:31:49:948 Proceso S-AFA/(15324:15329): No se han encontrado CPUs libres :( ...
+[INFO] 02:31:49:949 Proceso S-AFA/(15324:15329): LTS: No hay mas CPUs disponibles para inicializar procesos, se continuara con la planificacion...
+[INFO] 02:31:49:950 Proceso S-AFA/(15324:15327): Se recibio una tarea de la CPU
+[INFO] 02:31:49:951 Proceso S-AFA/(15324:15329): LTS: Ejecucion finalizada
+[INFO] 02:31:49:983 Proceso S-AFA/(15324:15327): La CPU solicito que el proceso con id 1 sea bloqueado luego de intentar inicializarlo
+[INFO] 02:31:49:985 Proceso S-AFA/(15324:15327): El proceso con id 1 fue movido a la cola de bloqueados
+[INFO] 02:31:49:990 Proceso S-AFA/(15324:15327): No hay procesos para inicializar
+[INFO] 02:31:52:42 Proceso S-AFA/(15324:15327): Se recibio una tarea del DMA
+[INFO] 02:31:52:44 Proceso S-AFA/(15324:15327): El DMA solicita desbloquear el proceso 1
+[INFO] 02:31:52:47 Proceso S-AFA/(15324:15327): El proceso 1 fue quitado de la cola de bloqueados
+[INFO] 02:31:52:50 Proceso S-AFA/(15324:15327): El proceso con id 1 fue movido a la cola de listos
+[INFO] 02:31:52:51 Proceso S-AFA/(15324:15328): STS: Comenzando ejecucion
+[INFO] 02:31:52:51 Proceso S-AFA/(15324:15328): Buscando CPUs libres...
+[INFO] 02:31:52:52 Proceso S-AFA/(15324:15328): Se han encontrado CPUs libres! :D 
+[INFO] 02:31:52:53 Proceso S-AFA/(15324:15328): Obteniendo procesos planificables
+[INFO] 02:31:52:54 Proceso S-AFA/(15324:15328): Buscando CPUs libres...
+[INFO] 02:31:52:55 Proceso S-AFA/(15324:15328): Se han encontrado CPUs libres! :D 
+[INFO] 02:43:38:970 Proceso S-AFA/(15757:15757): Inicio del proceso
+
+[INFO] 02:43:44:50 Proceso S-AFA/(15757:15760): Se comenzara el envio de un mensaje
+[INFO] 02:43:44:51 Proceso S-AFA/(15757:15760): Delay de envio de mensaje: 500 ms
+[INFO] 02:43:44:53 Proceso S-AFA/(15757:15760): Se ha finalizado el envio de un mensaje
+[INFO] 02:43:44:60 Proceso S-AFA/(15757:15760): No hay procesos para inicializar
+[INFO] 02:43:54:523 Proceso S-AFA/(15757:15757): Se creo un proceso con id 1!
+[INFO] 02:43:54:525 Proceso S-AFA/(15757:15762): LTS: Comenzando ejecucion...
+[INFO] 02:43:54:528 Proceso S-AFA/(15757:15762): El proceso con id 1 fue aceptado en la cola de listos!
+[INFO] 02:43:54:533 Proceso S-AFA/(15757:15762): Buscando CPUs libres...
+[INFO] 02:43:54:534 Proceso S-AFA/(15757:15762): Se han encontrado CPUs libres! :D 
+[INFO] 02:43:54:539 Proceso S-AFA/(15757:15762): Buscando CPUs libres...
+[INFO] 02:43:54:541 Proceso S-AFA/(15757:15762): Se han encontrado CPUs libres! :D 
+[INFO] 02:43:54:542 Proceso S-AFA/(15757:15762): Hay 1 procesos sin inicializar. Se comenzara la inicializacion...
+[INFO] 02:43:54:543 Proceso S-AFA/(15757:15762): Se inicializara el proceso con id 1
+[INFO] 02:43:54:545 Proceso S-AFA/(15757:15762): Se comenzara el envio de un mensaje
+[INFO] 02:43:54:546 Proceso S-AFA/(15757:15762): Delay de envio de mensaje: 500 ms
+[INFO] 02:43:54:547 Proceso S-AFA/(15757:15762): Se ha finalizado el envio de un mensaje
+[INFO] 02:43:54:548 Proceso S-AFA/(15757:15762): Se comenzara el envio de un PCB
+[INFO] 02:43:54:548 Proceso S-AFA/(15757:15762): Delay de envio de mensaje: 500 ms
+[INFO] 02:43:54:565 Proceso S-AFA/(15757:15762): Se ha finalizado el envio de un PCB
+[INFO] 02:43:54:569 Proceso S-AFA/(15757:15762): El proceso con id 1 fue enviado para inicializar en la CPU con id 1
+[INFO] 02:43:54:570 Proceso S-AFA/(15757:15762): LTS: El proceso 1 fue enviado a una CPU para ser inicializado...
+[INFO] 02:43:54:570 Proceso S-AFA/(15757:15762): Buscando CPUs libres...
+[INFO] 02:43:54:571 Proceso S-AFA/(15757:15762): No se han encontrado CPUs libres :( ...
+[INFO] 02:43:54:571 Proceso S-AFA/(15757:15762): LTS: No hay mas CPUs disponibles para inicializar procesos, se continuara con la planificacion...
+[INFO] 02:43:54:573 Proceso S-AFA/(15757:15760): Se recibio una tarea de la CPU
+[INFO] 02:43:54:574 Proceso S-AFA/(15757:15762): LTS: Ejecucion finalizada
+[INFO] 02:43:54:603 Proceso S-AFA/(15757:15760): La CPU solicito que el proceso con id 1 sea bloqueado luego de intentar inicializarlo
+[INFO] 02:43:54:605 Proceso S-AFA/(15757:15760): El proceso con id 1 fue movido a la cola de bloqueados
+[INFO] 02:43:54:606 Proceso S-AFA/(15757:15760): No hay procesos para inicializar
+[INFO] 02:43:56:679 Proceso S-AFA/(15757:15760): Se recibio una tarea del DMA
+[INFO] 02:43:56:680 Proceso S-AFA/(15757:15760): El DMA solicita desbloquear el proceso 1
+[INFO] 02:43:56:684 Proceso S-AFA/(15757:15760): El proceso 1 fue quitado de la cola de bloqueados
+[INFO] 02:43:56:687 Proceso S-AFA/(15757:15760): El proceso con id 1 fue movido a la cola de listos
+[INFO] 02:43:56:688 Proceso S-AFA/(15757:15761): STS: Comenzando ejecucion
+[INFO] 02:43:56:688 Proceso S-AFA/(15757:15761): Buscando CPUs libres...
+[INFO] 02:43:56:689 Proceso S-AFA/(15757:15761): Se han encontrado CPUs libres! :D 
+[INFO] 02:43:56:689 Proceso S-AFA/(15757:15761): Obteniendo procesos planificables
+[INFO] 02:43:56:691 Proceso S-AFA/(15757:15761): Buscando CPUs libres...
+[INFO] 02:43:56:691 Proceso S-AFA/(15757:15761): Se han encontrado CPUs libres! :D 
+[INFO] 02:47:38:952 Proceso S-AFA/(15932:15932): Inicio del proceso
+
+[INFO] 02:47:43:854 Proceso S-AFA/(15932:15937): Se comenzara el envio de un mensaje
+[INFO] 02:47:43:855 Proceso S-AFA/(15932:15937): Delay de envio de mensaje: 500 ms
+[INFO] 02:47:43:859 Proceso S-AFA/(15932:15937): Se ha finalizado el envio de un mensaje
+[INFO] 02:47:43:877 Proceso S-AFA/(15932:15937): No hay procesos para inicializar
+[INFO] 02:47:52:74 Proceso S-AFA/(15932:15932): Se creo un proceso con id 1!
+[INFO] 02:47:52:76 Proceso S-AFA/(15932:15939): LTS: Comenzando ejecucion...
+[INFO] 02:47:52:79 Proceso S-AFA/(15932:15939): El proceso con id 1 fue aceptado en la cola de listos!
+[INFO] 02:47:52:84 Proceso S-AFA/(15932:15939): Buscando CPUs libres...
+[INFO] 02:47:52:86 Proceso S-AFA/(15932:15939): Se han encontrado CPUs libres! :D 
+[INFO] 02:47:52:88 Proceso S-AFA/(15932:15939): Buscando CPUs libres...
+[INFO] 02:47:52:92 Proceso S-AFA/(15932:15939): Se han encontrado CPUs libres! :D 
+[INFO] 02:47:52:93 Proceso S-AFA/(15932:15939): Hay 1 procesos sin inicializar. Se comenzara la inicializacion...
+[INFO] 02:47:52:94 Proceso S-AFA/(15932:15939): Se inicializara el proceso con id 1
+[INFO] 02:47:52:96 Proceso S-AFA/(15932:15939): Se comenzara el envio de un mensaje
+[INFO] 02:47:52:97 Proceso S-AFA/(15932:15939): Delay de envio de mensaje: 500 ms
+[INFO] 02:47:52:98 Proceso S-AFA/(15932:15939): Se ha finalizado el envio de un mensaje
+[INFO] 02:47:52:99 Proceso S-AFA/(15932:15939): Se comenzara el envio de un PCB
+[INFO] 02:47:52:99 Proceso S-AFA/(15932:15939): Delay de envio de mensaje: 500 ms
+[INFO] 02:47:52:116 Proceso S-AFA/(15932:15939): Se ha finalizado el envio de un PCB
+[INFO] 02:47:52:118 Proceso S-AFA/(15932:15939): El proceso con id 1 fue enviado para inicializar en la CPU con id 1
+[INFO] 02:47:52:118 Proceso S-AFA/(15932:15939): LTS: El proceso 1 fue enviado a una CPU para ser inicializado...
+[INFO] 02:47:52:122 Proceso S-AFA/(15932:15939): Buscando CPUs libres...
+[INFO] 02:47:52:123 Proceso S-AFA/(15932:15939): No se han encontrado CPUs libres :( ...
+[INFO] 02:47:52:124 Proceso S-AFA/(15932:15939): LTS: No hay mas CPUs disponibles para inicializar procesos, se continuara con la planificacion...
+[INFO] 02:47:52:125 Proceso S-AFA/(15932:15937): Se recibio una tarea de la CPU
+[INFO] 02:47:52:126 Proceso S-AFA/(15932:15939): LTS: Ejecucion finalizada
+[INFO] 02:47:52:156 Proceso S-AFA/(15932:15937): La CPU solicito que el proceso con id 1 sea bloqueado luego de intentar inicializarlo
+[INFO] 02:47:52:158 Proceso S-AFA/(15932:15937): El proceso con id 1 fue movido a la cola de bloqueados
+[INFO] 02:47:52:160 Proceso S-AFA/(15932:15937): No hay procesos para inicializar
+[INFO] 02:47:54:227 Proceso S-AFA/(15932:15937): Se recibio una tarea del DMA
+[INFO] 02:47:54:230 Proceso S-AFA/(15932:15937): El DMA solicita desbloquear el proceso 1
+[INFO] 02:47:54:233 Proceso S-AFA/(15932:15937): El proceso 1 fue quitado de la cola de bloqueados
+[INFO] 02:47:54:235 Proceso S-AFA/(15932:15937): El proceso con id 1 fue movido a la cola de listos
+[INFO] 02:47:54:236 Proceso S-AFA/(15932:15938): STS: Comenzando ejecucion
+[INFO] 02:47:54:237 Proceso S-AFA/(15932:15938): Buscando CPUs libres...
+[INFO] 02:47:54:237 Proceso S-AFA/(15932:15938): Se han encontrado CPUs libres! :D 
+[INFO] 02:47:54:238 Proceso S-AFA/(15932:15938): Obteniendo procesos planificables
+[INFO] 02:47:54:239 Proceso S-AFA/(15932:15938): Buscando CPUs libres...
+[INFO] 02:47:54:239 Proceso S-AFA/(15932:15938): Se han encontrado CPUs libres! :D 
+[INFO] 02:47:54:241 Proceso S-AFA/(15932:15938): Se comenzara el envio de un mensaje
+[INFO] 02:47:54:241 Proceso S-AFA/(15932:15938): Delay de envio de mensaje: 500 ms
+[INFO] 02:47:54:242 Proceso S-AFA/(15932:15938): Se ha finalizado el envio de un mensaje
+[INFO] 02:47:54:242 Proceso S-AFA/(15932:15938): Se comenzara el envio de un PCB
+[INFO] 02:47:54:243 Proceso S-AFA/(15932:15938): Delay de envio de mensaje: 500 ms
+[INFO] 02:47:54:243 Proceso S-AFA/(15932:15938): Se ha finalizado el envio de un PCB
+[INFO] 02:47:54:243 Proceso S-AFA/(15932:15938): El proceso con id 1 fue enviado para ejecutar en la CPU con id 1
+[INFO] 02:47:54:244 Proceso S-AFA/(15932:15938): STS: Ejecucion finalizada
+[INFO] 02:58:30:635 Proceso S-AFA/(16362:16362): Inicio del proceso
+
+[INFO] 02:58:35:105 Proceso S-AFA/(16362:16366): Se comenzara el envio de un mensaje
+[INFO] 02:58:35:106 Proceso S-AFA/(16362:16366): Delay de envio de mensaje: 500 ms
+[INFO] 02:58:35:108 Proceso S-AFA/(16362:16366): Se ha finalizado el envio de un mensaje
+[INFO] 02:58:35:117 Proceso S-AFA/(16362:16366): No hay procesos para inicializar
+[INFO] 02:58:44:227 Proceso S-AFA/(16362:16362): Se creo un proceso con id 1!
+[INFO] 02:58:44:229 Proceso S-AFA/(16362:16368): LTS: Comenzando ejecucion...
+[INFO] 02:58:44:232 Proceso S-AFA/(16362:16368): El proceso con id 1 fue aceptado en la cola de listos!
+[INFO] 02:58:44:237 Proceso S-AFA/(16362:16368): Buscando CPUs libres...
+[INFO] 02:58:44:239 Proceso S-AFA/(16362:16368): Se han encontrado CPUs libres! :D 
+[INFO] 02:58:44:242 Proceso S-AFA/(16362:16368): Buscando CPUs libres...
+[INFO] 02:58:44:244 Proceso S-AFA/(16362:16368): Se han encontrado CPUs libres! :D 
+[INFO] 02:58:44:245 Proceso S-AFA/(16362:16368): Hay 1 procesos sin inicializar. Se comenzara la inicializacion...
+[INFO] 02:58:44:246 Proceso S-AFA/(16362:16368): Se inicializara el proceso con id 1
+[INFO] 02:58:44:248 Proceso S-AFA/(16362:16368): Se comenzara el envio de un mensaje
+[INFO] 02:58:44:248 Proceso S-AFA/(16362:16368): Delay de envio de mensaje: 500 ms
+[INFO] 02:58:44:250 Proceso S-AFA/(16362:16368): Se ha finalizado el envio de un mensaje
+[INFO] 02:58:44:250 Proceso S-AFA/(16362:16368): Se comenzara el envio de un PCB
+[INFO] 02:58:44:251 Proceso S-AFA/(16362:16368): Delay de envio de mensaje: 500 ms
+[INFO] 02:58:44:268 Proceso S-AFA/(16362:16368): Se ha finalizado el envio de un PCB
+[INFO] 02:58:44:269 Proceso S-AFA/(16362:16368): El proceso con id 1 fue enviado para inicializar en la CPU con id 1
+[INFO] 02:58:44:269 Proceso S-AFA/(16362:16368): LTS: El proceso 1 fue enviado a una CPU para ser inicializado...
+[INFO] 02:58:44:273 Proceso S-AFA/(16362:16368): Buscando CPUs libres...
+[INFO] 02:58:44:274 Proceso S-AFA/(16362:16368): No se han encontrado CPUs libres :( ...
+[INFO] 02:58:44:274 Proceso S-AFA/(16362:16368): LTS: No hay mas CPUs disponibles para inicializar procesos, se continuara con la planificacion...
+[INFO] 02:58:44:276 Proceso S-AFA/(16362:16366): Se recibio una tarea de la CPU
+[INFO] 02:58:44:277 Proceso S-AFA/(16362:16366): La CPU solicito que el proceso con id 1 sea bloqueado luego de intentar inicializarlo
+[INFO] 02:58:44:278 Proceso S-AFA/(16362:16366): El proceso con id 1 fue movido a la cola de bloqueados
+[INFO] 02:58:44:280 Proceso S-AFA/(16362:16366): No hay procesos para inicializar
+[INFO] 02:58:44:281 Proceso S-AFA/(16362:16368): LTS: Ejecucion finalizada
+[INFO] 02:58:46:377 Proceso S-AFA/(16362:16366): Se recibio una tarea del DMA
+[INFO] 02:58:46:379 Proceso S-AFA/(16362:16366): El DMA solicita desbloquear el proceso 1
+[INFO] 02:58:46:386 Proceso S-AFA/(16362:16366): El proceso 1 fue quitado de la cola de bloqueados
+[INFO] 02:58:46:387 Proceso S-AFA/(16362:16366): El proceso con id 1 fue movido a la cola de listos
+[INFO] 02:58:46:388 Proceso S-AFA/(16362:16367): STS: Comenzando ejecucion
+[INFO] 02:58:46:389 Proceso S-AFA/(16362:16367): Buscando CPUs libres...
+[INFO] 02:58:46:389 Proceso S-AFA/(16362:16367): Se han encontrado CPUs libres! :D 
+[INFO] 02:58:46:390 Proceso S-AFA/(16362:16367): Obteniendo procesos planificables
+[INFO] 02:58:46:391 Proceso S-AFA/(16362:16367): Buscando CPUs libres...
+[INFO] 02:58:46:391 Proceso S-AFA/(16362:16367): Se han encontrado CPUs libres! :D 
+[INFO] 02:58:46:393 Proceso S-AFA/(16362:16367): Se comenzara el envio de un mensaje
+[INFO] 02:58:46:393 Proceso S-AFA/(16362:16367): Delay de envio de mensaje: 500 ms
+[INFO] 02:58:46:394 Proceso S-AFA/(16362:16367): Se ha finalizado el envio de un mensaje
+[INFO] 02:58:46:395 Proceso S-AFA/(16362:16367): Se comenzara el envio de un PCB
+[INFO] 02:58:46:395 Proceso S-AFA/(16362:16367): Delay de envio de mensaje: 500 ms
+[INFO] 02:58:46:395 Proceso S-AFA/(16362:16367): Se ha finalizado el envio de un PCB
+[INFO] 02:58:46:396 Proceso S-AFA/(16362:16367): El proceso con id 1 fue enviado para ejecutar en la CPU con id 1
+[INFO] 02:58:46:397 Proceso S-AFA/(16362:16367): STS: Ejecucion finalizada
+[INFO] 02:58:46:440 Proceso S-AFA/(16362:16366): Se recibio una tarea de la CPU
+[INFO] 03:00:10:898 Proceso S-AFA/(16542:16542): Inicio del proceso
+
+[INFO] 03:00:22:601 Proceso S-AFA/(16542:16545): Se comenzara el envio de un mensaje
+[INFO] 03:00:22:602 Proceso S-AFA/(16542:16545): Delay de envio de mensaje: 500 ms
+[INFO] 03:00:22:604 Proceso S-AFA/(16542:16545): Se ha finalizado el envio de un mensaje
+[INFO] 03:00:22:616 Proceso S-AFA/(16542:16545): No hay procesos para inicializar
+[INFO] 03:00:31:70 Proceso S-AFA/(16542:16542): Se creo un proceso con id 1!
+[INFO] 03:00:31:72 Proceso S-AFA/(16542:16547): LTS: Comenzando ejecucion...
+[INFO] 03:00:31:74 Proceso S-AFA/(16542:16547): El proceso con id 1 fue aceptado en la cola de listos!
+[INFO] 03:00:31:80 Proceso S-AFA/(16542:16547): Buscando CPUs libres...
+[INFO] 03:00:31:81 Proceso S-AFA/(16542:16547): Se han encontrado CPUs libres! :D 
+[INFO] 03:00:31:83 Proceso S-AFA/(16542:16547): Buscando CPUs libres...
+[INFO] 03:00:31:84 Proceso S-AFA/(16542:16547): Se han encontrado CPUs libres! :D 
+[INFO] 03:00:31:85 Proceso S-AFA/(16542:16547): Hay 1 procesos sin inicializar. Se comenzara la inicializacion...
+[INFO] 03:00:31:89 Proceso S-AFA/(16542:16547): Se inicializara el proceso con id 1
+[INFO] 03:00:31:91 Proceso S-AFA/(16542:16547): Se comenzara el envio de un mensaje
+[INFO] 03:00:31:91 Proceso S-AFA/(16542:16547): Delay de envio de mensaje: 500 ms
+[INFO] 03:00:31:92 Proceso S-AFA/(16542:16547): Se ha finalizado el envio de un mensaje
+[INFO] 03:00:31:93 Proceso S-AFA/(16542:16547): Se comenzara el envio de un PCB
+[INFO] 03:00:31:94 Proceso S-AFA/(16542:16547): Delay de envio de mensaje: 500 ms
+[INFO] 03:00:31:110 Proceso S-AFA/(16542:16547): Se ha finalizado el envio de un PCB
+[INFO] 03:00:31:111 Proceso S-AFA/(16542:16547): El proceso con id 1 fue enviado para inicializar en la CPU con id 1
+[INFO] 03:00:31:111 Proceso S-AFA/(16542:16547): LTS: El proceso 1 fue enviado a una CPU para ser inicializado...
+[INFO] 03:00:31:112 Proceso S-AFA/(16542:16547): Buscando CPUs libres...
+[INFO] 03:00:31:112 Proceso S-AFA/(16542:16547): No se han encontrado CPUs libres :( ...
+[INFO] 03:00:31:113 Proceso S-AFA/(16542:16547): LTS: No hay mas CPUs disponibles para inicializar procesos, se continuara con la planificacion...
+[INFO] 03:00:31:114 Proceso S-AFA/(16542:16545): Se recibio una tarea de la CPU
+[INFO] 03:00:31:116 Proceso S-AFA/(16542:16547): LTS: Ejecucion finalizada
+[INFO] 03:00:31:147 Proceso S-AFA/(16542:16545): La CPU solicito que el proceso con id 1 sea bloqueado luego de intentar inicializarlo
+[INFO] 03:00:31:149 Proceso S-AFA/(16542:16545): El proceso con id 1 fue movido a la cola de bloqueados
+[INFO] 03:00:31:153 Proceso S-AFA/(16542:16545): No hay procesos para inicializar
+[INFO] 03:00:33:229 Proceso S-AFA/(16542:16545): Se recibio una tarea del DMA
+[INFO] 03:00:33:231 Proceso S-AFA/(16542:16545): El DMA solicita desbloquear el proceso 1
+[INFO] 03:00:33:232 Proceso S-AFA/(16542:16545): El proceso 1 fue quitado de la cola de bloqueados
+[INFO] 03:00:33:234 Proceso S-AFA/(16542:16545): El proceso con id 1 fue movido a la cola de listos
+[INFO] 03:00:33:235 Proceso S-AFA/(16542:16546): STS: Comenzando ejecucion
+[INFO] 03:00:33:235 Proceso S-AFA/(16542:16546): Buscando CPUs libres...
+[INFO] 03:00:33:236 Proceso S-AFA/(16542:16546): Se han encontrado CPUs libres! :D 
+[INFO] 03:00:33:236 Proceso S-AFA/(16542:16546): Obteniendo procesos planificables
+[INFO] 03:00:33:237 Proceso S-AFA/(16542:16546): Buscando CPUs libres...
+[INFO] 03:00:33:238 Proceso S-AFA/(16542:16546): Se han encontrado CPUs libres! :D 
+[INFO] 03:00:33:239 Proceso S-AFA/(16542:16546): Se comenzara el envio de un mensaje
+[INFO] 03:00:33:239 Proceso S-AFA/(16542:16546): Delay de envio de mensaje: 500 ms
+[INFO] 03:00:33:241 Proceso S-AFA/(16542:16546): Se ha finalizado el envio de un mensaje
+[INFO] 03:00:33:241 Proceso S-AFA/(16542:16546): Se comenzara el envio de un PCB
+[INFO] 03:00:33:241 Proceso S-AFA/(16542:16546): Delay de envio de mensaje: 500 ms
+[INFO] 03:00:33:242 Proceso S-AFA/(16542:16546): Se ha finalizado el envio de un PCB
+[INFO] 03:00:33:242 Proceso S-AFA/(16542:16546): El proceso con id 1 fue enviado para ejecutar en la CPU con id 1
+[INFO] 03:00:33:243 Proceso S-AFA/(16542:16546): STS: Ejecucion finalizada
+[INFO] 03:00:33:295 Proceso S-AFA/(16542:16545): Se recibio una tarea de la CPU
+[INFO] 03:00:33:304 Proceso S-AFA/(16542:16545): El PCB con id 1 de la cola de ejecucion fue actualizado
+[INFO] 03:00:33:310 Proceso S-AFA/(16542:16545): El proceso 1 fue quitado de la cola de ejecucion (el proceso se esta finalizando)
+[INFO] 03:00:33:313 Proceso S-AFA/(16542:16545): El proceso 1 no tenia semaforos tomados
+[INFO] 03:00:33:316 Proceso S-AFA/(16542:16545): El proceso con id 1 fue movido a la cola de procesos terminados, ya que se terminaron las instruccciones de su script
+[INFO] 03:00:33:321 Proceso S-AFA/(16542:16545): No hay procesos para inicializar
+[INFO] 03:00:33:322 Proceso S-AFA/(16542:16547): LTS: Comenzando ejecucion...
+[INFO] 03:00:33:322 Proceso S-AFA/(16542:16547): LTS: No hay procesos para aceptar
+[INFO] 03:00:33:323 Proceso S-AFA/(16542:16547): Obteniendo procesos planificables
+[INFO] 03:00:33:323 Proceso S-AFA/(16542:16547): LTS: No hay procesos para planificar
+[INFO] 03:00:33:323 Proceso S-AFA/(16542:16547): LTS: Ejecucion finalizada
+[INFO] 03:09:27:457 Proceso S-AFA/(16920:16920): Inicio del proceso
+
+[INFO] 03:09:35:807 Proceso S-AFA/(16920:16923): Se comenzara el envio de un mensaje
+[INFO] 03:09:35:808 Proceso S-AFA/(16920:16923): Delay de envio de mensaje: 500 ms
+[INFO] 03:09:35:810 Proceso S-AFA/(16920:16923): Se ha finalizado el envio de un mensaje
+[INFO] 03:09:35:822 Proceso S-AFA/(16920:16923): No hay procesos para inicializar
+[INFO] 03:09:46:93 Proceso S-AFA/(16920:16920): Se creo un proceso con id 1!
+[INFO] 03:09:46:95 Proceso S-AFA/(16920:16925): LTS: Comenzando ejecucion...
+[INFO] 03:09:46:98 Proceso S-AFA/(16920:16925): El proceso con id 1 fue aceptado en la cola de listos!
+[INFO] 03:09:46:103 Proceso S-AFA/(16920:16925): Buscando CPUs libres...
+[INFO] 03:09:46:105 Proceso S-AFA/(16920:16925): Se han encontrado CPUs libres! :D 
+[INFO] 03:09:46:106 Proceso S-AFA/(16920:16925): Buscando CPUs libres...
+[INFO] 03:09:46:107 Proceso S-AFA/(16920:16925): Se han encontrado CPUs libres! :D 
+[INFO] 03:09:46:108 Proceso S-AFA/(16920:16925): Hay 1 procesos sin inicializar. Se comenzara la inicializacion...
+[INFO] 03:09:46:112 Proceso S-AFA/(16920:16925): Se inicializara el proceso con id 1
+[INFO] 03:09:46:114 Proceso S-AFA/(16920:16925): Se comenzara el envio de un mensaje
+[INFO] 03:09:46:114 Proceso S-AFA/(16920:16925): Delay de envio de mensaje: 500 ms
+[INFO] 03:09:46:116 Proceso S-AFA/(16920:16925): Se ha finalizado el envio de un mensaje
+[INFO] 03:09:46:116 Proceso S-AFA/(16920:16925): Se comenzara el envio de un PCB
+[INFO] 03:09:46:117 Proceso S-AFA/(16920:16925): Delay de envio de mensaje: 500 ms
+[INFO] 03:09:46:133 Proceso S-AFA/(16920:16925): Se ha finalizado el envio de un PCB
+[INFO] 03:09:46:134 Proceso S-AFA/(16920:16925): El proceso con id 1 fue enviado para inicializar en la CPU con id 1
+[INFO] 03:09:46:134 Proceso S-AFA/(16920:16925): LTS: El proceso 1 fue enviado a una CPU para ser inicializado...
+[INFO] 03:09:46:135 Proceso S-AFA/(16920:16925): Buscando CPUs libres...
+[INFO] 03:09:46:135 Proceso S-AFA/(16920:16925): No se han encontrado CPUs libres :( ...
+[INFO] 03:09:46:136 Proceso S-AFA/(16920:16925): LTS: No hay mas CPUs disponibles para inicializar procesos, se continuara con la planificacion...
+[INFO] 03:09:46:137 Proceso S-AFA/(16920:16923): Se recibio una tarea de la CPU
+[INFO] 03:09:46:142 Proceso S-AFA/(16920:16925): LTS: Ejecucion finalizada
+[INFO] 03:09:46:172 Proceso S-AFA/(16920:16923): La CPU solicito que el proceso con id 1 sea bloqueado luego de intentar inicializarlo
+[INFO] 03:09:46:174 Proceso S-AFA/(16920:16923): El proceso con id 1 fue movido a la cola de bloqueados
+[INFO] 03:09:46:175 Proceso S-AFA/(16920:16923): No hay procesos para inicializar
+[INFO] 03:09:48:249 Proceso S-AFA/(16920:16923): Se recibio una tarea del DMA
+[INFO] 03:09:48:252 Proceso S-AFA/(16920:16923): El DMA solicita desbloquear el proceso 1
+[INFO] 03:09:48:254 Proceso S-AFA/(16920:16923): El proceso 1 fue quitado de la cola de bloqueados
+[INFO] 03:09:48:255 Proceso S-AFA/(16920:16923): El proceso con id 1 fue movido a la cola de listos
+[INFO] 03:09:48:256 Proceso S-AFA/(16920:16924): STS: Comenzando ejecucion
+[INFO] 03:09:48:257 Proceso S-AFA/(16920:16924): Buscando CPUs libres...
+[INFO] 03:09:48:257 Proceso S-AFA/(16920:16924): Se han encontrado CPUs libres! :D 
+[INFO] 03:09:48:258 Proceso S-AFA/(16920:16924): Obteniendo procesos planificables
+[INFO] 03:09:48:259 Proceso S-AFA/(16920:16924): Buscando CPUs libres...
+[INFO] 03:09:48:259 Proceso S-AFA/(16920:16924): Se han encontrado CPUs libres! :D 
+[INFO] 03:09:48:261 Proceso S-AFA/(16920:16924): Se comenzara el envio de un mensaje
+[INFO] 03:09:48:261 Proceso S-AFA/(16920:16924): Delay de envio de mensaje: 500 ms
+[INFO] 03:09:48:262 Proceso S-AFA/(16920:16924): Se ha finalizado el envio de un mensaje
+[INFO] 03:09:48:263 Proceso S-AFA/(16920:16924): Se comenzara el envio de un PCB
+[INFO] 03:09:48:263 Proceso S-AFA/(16920:16924): Delay de envio de mensaje: 500 ms
+[INFO] 03:09:48:263 Proceso S-AFA/(16920:16924): Se ha finalizado el envio de un PCB
+[INFO] 03:09:48:264 Proceso S-AFA/(16920:16924): El proceso con id 1 fue enviado para ejecutar en la CPU con id 1
+[INFO] 03:09:48:265 Proceso S-AFA/(16920:16924): STS: Ejecucion finalizada
+[INFO] 03:09:48:322 Proceso S-AFA/(16920:16923): Se recibio una tarea de la CPU
+[INFO] 03:09:48:322 Proceso S-AFA/(16920:16923): Se completo una instruccion de un proceso en ejecucion
+[INFO] 03:09:48:325 Proceso S-AFA/(16920:16923): Se recibio una tarea de la CPU
+[INFO] 03:09:48:333 Proceso S-AFA/(16920:16923): El PCB con id 1 de la cola de ejecucion fue actualizado
+[INFO] 03:09:48:334 Proceso S-AFA/(16920:16923): El proceso 1 fue quitado de la cola de ejecucion (el proceso se esta finalizando)
+[INFO] 03:09:48:347 Proceso S-AFA/(16920:16923): El proceso 1 no tenia semaforos tomados
+[INFO] 03:09:48:348 Proceso S-AFA/(16920:16923): El proceso con id 1 fue movido a la cola de procesos terminados, ya que se terminaron las instruccciones de su script
+[INFO] 03:09:48:349 Proceso S-AFA/(16920:16923): No hay procesos para inicializar
+[INFO] 03:09:48:349 Proceso S-AFA/(16920:16925): LTS: Comenzando ejecucion...
+[INFO] 03:09:48:350 Proceso S-AFA/(16920:16925): LTS: No hay procesos para aceptar
+[INFO] 03:09:48:350 Proceso S-AFA/(16920:16925): Obteniendo procesos planificables
+[INFO] 03:09:48:351 Proceso S-AFA/(16920:16925): LTS: No hay procesos para planificar
+[INFO] 03:09:48:351 Proceso S-AFA/(16920:16925): LTS: Ejecucion finalizada
+[INFO] 03:22:05:51 Proceso S-AFA/(17565:17565): Inicio del proceso
+
+[INFO] 03:22:09:205 Proceso S-AFA/(17565:17569): Se comenzara el envio de un mensaje
+[INFO] 03:22:09:205 Proceso S-AFA/(17565:17569): Delay de envio de mensaje: 500 ms
+[INFO] 03:22:09:207 Proceso S-AFA/(17565:17569): Se ha finalizado el envio de un mensaje
+[INFO] 03:22:09:225 Proceso S-AFA/(17565:17569): No hay procesos para inicializar
+[INFO] 03:22:19:91 Proceso S-AFA/(17565:17565): Se creo un proceso con id 1!
+[INFO] 03:22:19:94 Proceso S-AFA/(17565:17571): LTS: Comenzando ejecucion...
+[INFO] 03:22:19:96 Proceso S-AFA/(17565:17571): El proceso con id 1 fue aceptado en la cola de listos!
+[INFO] 03:22:19:102 Proceso S-AFA/(17565:17571): Buscando CPUs libres...
+[INFO] 03:22:19:103 Proceso S-AFA/(17565:17571): Se han encontrado CPUs libres! :D 
+[INFO] 03:22:19:105 Proceso S-AFA/(17565:17571): Buscando CPUs libres...
+[INFO] 03:22:19:106 Proceso S-AFA/(17565:17571): Se han encontrado CPUs libres! :D 
+[INFO] 03:22:19:107 Proceso S-AFA/(17565:17571): Hay 1 procesos sin inicializar. Se comenzara la inicializacion...
+[INFO] 03:22:19:110 Proceso S-AFA/(17565:17571): Se inicializara el proceso con id 1
+[INFO] 03:22:19:112 Proceso S-AFA/(17565:17571): Se comenzara el envio de un mensaje
+[INFO] 03:22:19:113 Proceso S-AFA/(17565:17571): Delay de envio de mensaje: 500 ms
+[INFO] 03:22:19:114 Proceso S-AFA/(17565:17571): Se ha finalizado el envio de un mensaje
+[INFO] 03:22:19:115 Proceso S-AFA/(17565:17571): Se comenzara el envio de un PCB
+[INFO] 03:22:19:115 Proceso S-AFA/(17565:17571): Delay de envio de mensaje: 500 ms
+[INFO] 03:22:19:132 Proceso S-AFA/(17565:17571): Se ha finalizado el envio de un PCB
+[INFO] 03:22:19:133 Proceso S-AFA/(17565:17571): El proceso con id 1 fue enviado para inicializar en la CPU con id 1
+[INFO] 03:22:19:133 Proceso S-AFA/(17565:17571): LTS: El proceso 1 fue enviado a una CPU para ser inicializado...
+[INFO] 03:22:19:134 Proceso S-AFA/(17565:17571): Buscando CPUs libres...
+[INFO] 03:22:19:134 Proceso S-AFA/(17565:17571): No se han encontrado CPUs libres :( ...
+[INFO] 03:22:19:135 Proceso S-AFA/(17565:17571): LTS: No hay mas CPUs disponibles para inicializar procesos, se continuara con la planificacion...
+[INFO] 03:22:19:136 Proceso S-AFA/(17565:17569): Se recibio una tarea de la CPU
+[INFO] 03:22:19:141 Proceso S-AFA/(17565:17571): LTS: Ejecucion finalizada
+[INFO] 03:22:19:171 Proceso S-AFA/(17565:17569): La CPU solicito que el proceso con id 1 sea bloqueado luego de intentar inicializarlo
+[INFO] 03:22:19:172 Proceso S-AFA/(17565:17569): El proceso con id 1 fue movido a la cola de bloqueados
+[INFO] 03:22:19:174 Proceso S-AFA/(17565:17569): No hay procesos para inicializar
+[INFO] 03:22:21:250 Proceso S-AFA/(17565:17569): Se recibio una tarea del DMA
+[INFO] 03:22:21:252 Proceso S-AFA/(17565:17569): El DMA solicita desbloquear el proceso 1
+[INFO] 03:22:21:253 Proceso S-AFA/(17565:17569): El proceso 1 fue quitado de la cola de bloqueados
+[INFO] 03:22:21:255 Proceso S-AFA/(17565:17569): El proceso con id 1 fue movido a la cola de listos
+[INFO] 03:22:21:256 Proceso S-AFA/(17565:17570): STS: Comenzando ejecucion
+[INFO] 03:22:21:256 Proceso S-AFA/(17565:17570): Buscando CPUs libres...
+[INFO] 03:22:21:257 Proceso S-AFA/(17565:17570): Se han encontrado CPUs libres! :D 
+[INFO] 03:22:21:257 Proceso S-AFA/(17565:17570): Obteniendo procesos planificables
+[INFO] 03:22:21:258 Proceso S-AFA/(17565:17570): Buscando CPUs libres...
+[INFO] 03:22:21:259 Proceso S-AFA/(17565:17570): Se han encontrado CPUs libres! :D 
+[INFO] 03:22:21:260 Proceso S-AFA/(17565:17570): Se comenzara el envio de un mensaje
+[INFO] 03:22:21:260 Proceso S-AFA/(17565:17570): Delay de envio de mensaje: 500 ms
+[INFO] 03:22:21:261 Proceso S-AFA/(17565:17570): Se ha finalizado el envio de un mensaje
+[INFO] 03:22:21:262 Proceso S-AFA/(17565:17570): Se comenzara el envio de un PCB
+[INFO] 03:22:21:262 Proceso S-AFA/(17565:17570): Delay de envio de mensaje: 500 ms
+[INFO] 03:22:21:262 Proceso S-AFA/(17565:17570): Se ha finalizado el envio de un PCB
+[INFO] 03:22:21:263 Proceso S-AFA/(17565:17570): El proceso con id 1 fue enviado para ejecutar en la CPU con id 1
+[INFO] 03:22:21:264 Proceso S-AFA/(17565:17570): STS: Ejecucion finalizada
+[INFO] 03:22:21:323 Proceso S-AFA/(17565:17569): Se recibio una tarea de la CPU
+[INFO] 03:22:21:323 Proceso S-AFA/(17565:17569): Se completo una instruccion de un proceso en ejecucion
+[INFO] 03:22:21:326 Proceso S-AFA/(17565:17569): Se recibio una tarea de la CPU
+[INFO] 03:22:21:333 Proceso S-AFA/(17565:17569): El PCB con id 1 de la cola de ejecucion fue actualizado
+[INFO] 03:22:21:334 Proceso S-AFA/(17565:17569): El proceso 1 fue quitado de la cola de ejecucion (el proceso se esta finalizando)
+[INFO] 03:22:21:346 Proceso S-AFA/(17565:17569): El proceso 1 no tenia semaforos tomados
+[INFO] 03:22:21:348 Proceso S-AFA/(17565:17569): El proceso con id 1 fue movido a la cola de procesos terminados, ya que se terminaron las instruccciones de su script
+[INFO] 03:22:21:349 Proceso S-AFA/(17565:17569): No hay procesos para inicializar
+[INFO] 03:25:04:60 Proceso S-AFA/(18243:18243): Inicio del proceso
+
+[INFO] 03:25:10:575 Proceso S-AFA/(18243:18246): Se comenzara el envio de un mensaje
+[INFO] 03:25:10:576 Proceso S-AFA/(18243:18246): Delay de envio de mensaje: 500 ms
+[INFO] 03:25:10:578 Proceso S-AFA/(18243:18246): Se ha finalizado el envio de un mensaje
+[INFO] 03:25:10:590 Proceso S-AFA/(18243:18246): No hay procesos para inicializar
+[INFO] 03:25:20:435 Proceso S-AFA/(18243:18243): Se creo un proceso con id 1!
+[INFO] 03:25:20:437 Proceso S-AFA/(18243:18248): LTS: Comenzando ejecucion...
+[INFO] 03:25:20:440 Proceso S-AFA/(18243:18248): El proceso con id 1 fue aceptado en la cola de listos!
+[INFO] 03:25:20:445 Proceso S-AFA/(18243:18248): Buscando CPUs libres...
+[INFO] 03:25:20:446 Proceso S-AFA/(18243:18248): Se han encontrado CPUs libres! :D 
+[INFO] 03:25:20:448 Proceso S-AFA/(18243:18248): Buscando CPUs libres...
+[INFO] 03:25:20:450 Proceso S-AFA/(18243:18248): Se han encontrado CPUs libres! :D 
+[INFO] 03:25:20:452 Proceso S-AFA/(18243:18248): Hay 1 procesos sin inicializar. Se comenzara la inicializacion...
+[INFO] 03:25:20:454 Proceso S-AFA/(18243:18248): Se inicializara el proceso con id 1
+[INFO] 03:25:20:456 Proceso S-AFA/(18243:18248): Se comenzara el envio de un mensaje
+[INFO] 03:25:20:456 Proceso S-AFA/(18243:18248): Delay de envio de mensaje: 500 ms
+[INFO] 03:25:20:457 Proceso S-AFA/(18243:18248): Se ha finalizado el envio de un mensaje
+[INFO] 03:25:20:458 Proceso S-AFA/(18243:18248): Se comenzara el envio de un PCB
+[INFO] 03:25:20:459 Proceso S-AFA/(18243:18248): Delay de envio de mensaje: 500 ms
+[INFO] 03:25:20:475 Proceso S-AFA/(18243:18248): Se ha finalizado el envio de un PCB
+[INFO] 03:25:20:475 Proceso S-AFA/(18243:18248): El proceso con id 1 fue enviado para inicializar en la CPU con id 1
+[INFO] 03:25:20:476 Proceso S-AFA/(18243:18248): LTS: El proceso 1 fue enviado a una CPU para ser inicializado...
+[INFO] 03:25:20:476 Proceso S-AFA/(18243:18248): Buscando CPUs libres...
+[INFO] 03:25:20:477 Proceso S-AFA/(18243:18248): No se han encontrado CPUs libres :( ...
+[INFO] 03:25:20:478 Proceso S-AFA/(18243:18248): LTS: No hay mas CPUs disponibles para inicializar procesos, se continuara con la planificacion...
+[INFO] 03:25:20:479 Proceso S-AFA/(18243:18246): Se recibio una tarea de la CPU
+[INFO] 03:25:20:484 Proceso S-AFA/(18243:18248): LTS: Ejecucion finalizada
+[INFO] 03:25:20:511 Proceso S-AFA/(18243:18246): La CPU solicito que el proceso con id 1 sea bloqueado luego de intentar inicializarlo
+[INFO] 03:25:20:512 Proceso S-AFA/(18243:18246): El proceso con id 1 fue movido a la cola de bloqueados
+[INFO] 03:25:20:516 Proceso S-AFA/(18243:18246): No hay procesos para inicializar
+[INFO] 03:25:22:593 Proceso S-AFA/(18243:18246): Se recibio una tarea del DMA
+[INFO] 03:25:22:595 Proceso S-AFA/(18243:18246): El DMA solicita desbloquear el proceso 1
+[INFO] 03:25:22:597 Proceso S-AFA/(18243:18246): El proceso 1 fue quitado de la cola de bloqueados
+[INFO] 03:25:22:600 Proceso S-AFA/(18243:18246): El proceso con id 1 fue movido a la cola de listos
+[INFO] 03:25:22:601 Proceso S-AFA/(18243:18247): STS: Comenzando ejecucion
+[INFO] 03:25:22:601 Proceso S-AFA/(18243:18247): Buscando CPUs libres...
+[INFO] 03:25:22:602 Proceso S-AFA/(18243:18247): Se han encontrado CPUs libres! :D 
+[INFO] 03:25:22:602 Proceso S-AFA/(18243:18247): Obteniendo procesos planificables
+[INFO] 03:25:22:603 Proceso S-AFA/(18243:18247): Buscando CPUs libres...
+[INFO] 03:25:22:604 Proceso S-AFA/(18243:18247): Se han encontrado CPUs libres! :D 
+[INFO] 03:25:22:605 Proceso S-AFA/(18243:18247): Se comenzara el envio de un mensaje
+[INFO] 03:25:22:605 Proceso S-AFA/(18243:18247): Delay de envio de mensaje: 500 ms
+[INFO] 03:25:22:606 Proceso S-AFA/(18243:18247): Se ha finalizado el envio de un mensaje
+[INFO] 03:25:22:608 Proceso S-AFA/(18243:18247): Se comenzara el envio de un PCB
+[INFO] 03:25:22:608 Proceso S-AFA/(18243:18247): Delay de envio de mensaje: 500 ms
+[INFO] 03:25:22:608 Proceso S-AFA/(18243:18247): Se ha finalizado el envio de un PCB
+[INFO] 03:25:22:609 Proceso S-AFA/(18243:18247): El proceso con id 1 fue enviado para ejecutar en la CPU con id 1
+[INFO] 03:25:22:610 Proceso S-AFA/(18243:18247): STS: Ejecucion finalizada
+[INFO] 03:25:22:672 Proceso S-AFA/(18243:18246): Se recibio una tarea de la CPU
+[INFO] 03:25:22:672 Proceso S-AFA/(18243:18246): Se completo una instruccion de un proceso en ejecucion
+[INFO] 03:25:22:675 Proceso S-AFA/(18243:18246): Se recibio una tarea de la CPU
+[INFO] 03:25:22:690 Proceso S-AFA/(18243:18246): El PCB con id 1 de la cola de ejecucion fue actualizado
+[INFO] 03:25:22:696 Proceso S-AFA/(18243:18246): El proceso 1 fue quitado de la cola de ejecucion (el proceso se esta finalizando)
+[INFO] 03:25:22:698 Proceso S-AFA/(18243:18246): El proceso 1 no tenia semaforos tomados
+[INFO] 03:25:22:699 Proceso S-AFA/(18243:18246): El proceso con id 1 fue movido a la cola de procesos terminados, ya que se terminaron las instruccciones de su script
+[INFO] 03:25:22:700 Proceso S-AFA/(18243:18246): No hay procesos para inicializar
+[INFO] 03:37:24:960 Proceso S-AFA/(18691:18691): Inicio del proceso
+
+[INFO] 03:37:29:710 Proceso S-AFA/(18691:18697): Se comenzara el envio de un mensaje
+[INFO] 03:37:29:710 Proceso S-AFA/(18691:18697): Delay de envio de mensaje: 500 ms
+[INFO] 03:37:29:712 Proceso S-AFA/(18691:18697): Se ha finalizado el envio de un mensaje
+[INFO] 03:37:29:718 Proceso S-AFA/(18691:18697): No hay procesos para inicializar
+[INFO] 03:37:37:708 Proceso S-AFA/(18691:18691): Se creo un proceso con id 1!
+[INFO] 03:37:37:710 Proceso S-AFA/(18691:18699): LTS: Comenzando ejecucion...
+[INFO] 03:37:37:712 Proceso S-AFA/(18691:18699): El proceso con id 1 fue aceptado en la cola de listos!
+[INFO] 03:37:37:720 Proceso S-AFA/(18691:18699): Buscando CPUs libres...
+[INFO] 03:37:37:725 Proceso S-AFA/(18691:18699): Se han encontrado CPUs libres! :D 
+[INFO] 03:37:37:728 Proceso S-AFA/(18691:18699): Buscando CPUs libres...
+[INFO] 03:37:37:730 Proceso S-AFA/(18691:18699): Se han encontrado CPUs libres! :D 
+[INFO] 03:37:37:731 Proceso S-AFA/(18691:18699): Hay 1 procesos sin inicializar. Se comenzara la inicializacion...
+[INFO] 03:37:37:732 Proceso S-AFA/(18691:18699): Se inicializara el proceso con id 1
+[INFO] 03:37:37:735 Proceso S-AFA/(18691:18699): Se comenzara el envio de un mensaje
+[INFO] 03:37:37:735 Proceso S-AFA/(18691:18699): Delay de envio de mensaje: 500 ms
+[INFO] 03:37:37:737 Proceso S-AFA/(18691:18699): Se ha finalizado el envio de un mensaje
+[INFO] 03:37:37:738 Proceso S-AFA/(18691:18699): Se comenzara el envio de un PCB
+[INFO] 03:37:37:738 Proceso S-AFA/(18691:18699): Delay de envio de mensaje: 500 ms
+[INFO] 03:37:37:759 Proceso S-AFA/(18691:18699): Se ha finalizado el envio de un PCB
+[INFO] 03:37:37:760 Proceso S-AFA/(18691:18699): El proceso con id 1 fue enviado para inicializar en la CPU con id 1
+[INFO] 03:37:37:760 Proceso S-AFA/(18691:18699): LTS: El proceso 1 fue enviado a una CPU para ser inicializado...
+[INFO] 03:37:37:761 Proceso S-AFA/(18691:18699): Buscando CPUs libres...
+[INFO] 03:37:37:761 Proceso S-AFA/(18691:18699): No se han encontrado CPUs libres :( ...
+[INFO] 03:37:37:762 Proceso S-AFA/(18691:18699): LTS: No hay mas CPUs disponibles para inicializar procesos, se continuara con la planificacion...
+[INFO] 03:37:37:763 Proceso S-AFA/(18691:18697): Se recibio una tarea de la CPU
+[INFO] 03:37:37:764 Proceso S-AFA/(18691:18699): LTS: Ejecucion finalizada
+[INFO] 03:37:37:795 Proceso S-AFA/(18691:18697): La CPU solicito que el proceso con id 1 sea bloqueado luego de intentar inicializarlo
+[INFO] 03:37:37:797 Proceso S-AFA/(18691:18697): El proceso con id 1 fue movido a la cola de bloqueados
+[INFO] 03:37:37:799 Proceso S-AFA/(18691:18697): No hay procesos para inicializar
+[INFO] 03:37:39:877 Proceso S-AFA/(18691:18697): Se recibio una tarea del DMA
+[INFO] 03:37:39:878 Proceso S-AFA/(18691:18697): El DMA solicita desbloquear el proceso 1
+[INFO] 03:37:39:880 Proceso S-AFA/(18691:18697): El proceso 1 fue quitado de la cola de bloqueados
+[INFO] 03:37:39:881 Proceso S-AFA/(18691:18697): El proceso con id 1 fue movido a la cola de listos
+[INFO] 03:37:39:882 Proceso S-AFA/(18691:18698): STS: Comenzando ejecucion
+[INFO] 03:37:39:883 Proceso S-AFA/(18691:18698): Buscando CPUs libres...
+[INFO] 03:37:39:883 Proceso S-AFA/(18691:18698): Se han encontrado CPUs libres! :D 
+[INFO] 03:37:39:884 Proceso S-AFA/(18691:18698): Obteniendo procesos planificables
+[INFO] 03:37:39:885 Proceso S-AFA/(18691:18698): Buscando CPUs libres...
+[INFO] 03:37:39:885 Proceso S-AFA/(18691:18698): Se han encontrado CPUs libres! :D 
+[INFO] 03:37:39:886 Proceso S-AFA/(18691:18698): Se comenzara el envio de un mensaje
+[INFO] 03:37:39:887 Proceso S-AFA/(18691:18698): Delay de envio de mensaje: 500 ms
+[INFO] 03:37:39:888 Proceso S-AFA/(18691:18698): Se ha finalizado el envio de un mensaje
+[INFO] 03:37:39:888 Proceso S-AFA/(18691:18698): Se comenzara el envio de un PCB
+[INFO] 03:37:39:888 Proceso S-AFA/(18691:18698): Delay de envio de mensaje: 500 ms
+[INFO] 03:37:39:889 Proceso S-AFA/(18691:18698): Se ha finalizado el envio de un PCB
+[INFO] 03:37:39:889 Proceso S-AFA/(18691:18698): El proceso con id 1 fue enviado para ejecutar en la CPU con id 1
+[INFO] 03:37:39:890 Proceso S-AFA/(18691:18698): STS: Ejecucion finalizada
+[INFO] 03:37:39:955 Proceso S-AFA/(18691:18697): Se recibio una tarea de la CPU
+[INFO] 03:37:39:955 Proceso S-AFA/(18691:18697): Se completo una instruccion de un proceso en ejecucion
+[INFO] 03:37:39:957 Proceso S-AFA/(18691:18697): Se recibio una tarea de la CPU
+[INFO] 03:37:39:967 Proceso S-AFA/(18691:18697): El PCB con id 1 de la cola de ejecucion fue actualizado
+[INFO] 03:37:39:980 Proceso S-AFA/(18691:18697): El proceso 1 fue quitado de la cola de ejecucion (el proceso se esta finalizando)
+[INFO] 03:37:39:984 Proceso S-AFA/(18691:18697): El proceso 1 no tenia semaforos tomados
+[INFO] 03:37:39:984 Proceso S-AFA/(18691:18697): El proceso con id 1 fue movido a la cola de procesos terminados, ya que se terminaron las instruccciones de su script
+[INFO] 03:37:39:985 Proceso S-AFA/(18691:18697): No hay procesos para inicializar
+[INFO] 03:54:51:551 Proceso S-AFA/(19375:19375): Inicio del proceso
+
+[INFO] 03:54:57:897 Proceso S-AFA/(19375:19378): Se comenzara el envio de un mensaje
+[INFO] 03:54:57:897 Proceso S-AFA/(19375:19378): Delay de envio de mensaje: 500 ms
+[INFO] 03:54:57:900 Proceso S-AFA/(19375:19378): Se ha finalizado el envio de un mensaje
+[INFO] 03:54:57:905 Proceso S-AFA/(19375:19378): No hay procesos para inicializar
+[INFO] 03:55:06:339 Proceso S-AFA/(19375:19375): Se creo un proceso con id 1!
+[INFO] 03:55:06:341 Proceso S-AFA/(19375:19380): LTS: Comenzando ejecucion...
+[INFO] 03:55:06:344 Proceso S-AFA/(19375:19380): El proceso con id 1 fue aceptado en la cola de listos!
+[INFO] 03:55:06:349 Proceso S-AFA/(19375:19380): Buscando CPUs libres...
+[INFO] 03:55:06:350 Proceso S-AFA/(19375:19380): Se han encontrado CPUs libres! :D 
+[INFO] 03:55:06:352 Proceso S-AFA/(19375:19380): Buscando CPUs libres...
+[INFO] 03:55:06:354 Proceso S-AFA/(19375:19380): Se han encontrado CPUs libres! :D 
+[INFO] 03:55:06:355 Proceso S-AFA/(19375:19380): Hay 1 procesos sin inicializar. Se comenzara la inicializacion...
+[INFO] 03:55:06:358 Proceso S-AFA/(19375:19380): Se inicializara el proceso con id 1
+[INFO] 03:55:06:360 Proceso S-AFA/(19375:19380): Se comenzara el envio de un mensaje
+[INFO] 03:55:06:360 Proceso S-AFA/(19375:19380): Delay de envio de mensaje: 500 ms
+[INFO] 03:55:06:362 Proceso S-AFA/(19375:19380): Se ha finalizado el envio de un mensaje
+[INFO] 03:55:06:362 Proceso S-AFA/(19375:19380): Se comenzara el envio de un PCB
+[INFO] 03:55:06:363 Proceso S-AFA/(19375:19380): Delay de envio de mensaje: 500 ms
+[INFO] 03:55:06:379 Proceso S-AFA/(19375:19380): Se ha finalizado el envio de un PCB
+[INFO] 03:55:06:380 Proceso S-AFA/(19375:19380): El proceso con id 1 fue enviado para inicializar en la CPU con id 1
+[INFO] 03:55:06:380 Proceso S-AFA/(19375:19380): LTS: El proceso 1 fue enviado a una CPU para ser inicializado...
+[INFO] 03:55:06:381 Proceso S-AFA/(19375:19380): Buscando CPUs libres...
+[INFO] 03:55:06:382 Proceso S-AFA/(19375:19380): No se han encontrado CPUs libres :( ...
+[INFO] 03:55:06:382 Proceso S-AFA/(19375:19380): LTS: No hay mas CPUs disponibles para inicializar procesos, se continuara con la planificacion...
+[INFO] 03:55:06:383 Proceso S-AFA/(19375:19378): Se recibio una tarea de la CPU
+[INFO] 03:55:06:385 Proceso S-AFA/(19375:19380): LTS: Ejecucion finalizada
+[INFO] 03:55:06:415 Proceso S-AFA/(19375:19378): La CPU solicito que el proceso con id 1 sea bloqueado luego de intentar inicializarlo
+[INFO] 03:55:06:416 Proceso S-AFA/(19375:19378): El proceso con id 1 fue movido a la cola de bloqueados
+[INFO] 03:55:06:421 Proceso S-AFA/(19375:19378): No hay procesos para inicializar
+[INFO] 03:55:08:491 Proceso S-AFA/(19375:19378): Se recibio una tarea del DMA
+[INFO] 03:55:08:493 Proceso S-AFA/(19375:19378): El DMA solicita desbloquear el proceso 1
+[INFO] 03:55:08:498 Proceso S-AFA/(19375:19378): El proceso 1 fue quitado de la cola de bloqueados
+[INFO] 03:55:08:500 Proceso S-AFA/(19375:19378): El proceso con id 1 fue movido a la cola de listos
+[INFO] 03:55:08:502 Proceso S-AFA/(19375:19379): STS: Comenzando ejecucion
+[INFO] 03:55:08:502 Proceso S-AFA/(19375:19379): Buscando CPUs libres...
+[INFO] 03:55:08:503 Proceso S-AFA/(19375:19379): Se han encontrado CPUs libres! :D 
+[INFO] 03:55:08:503 Proceso S-AFA/(19375:19379): Obteniendo procesos planificables
+[INFO] 03:55:08:504 Proceso S-AFA/(19375:19379): Buscando CPUs libres...
+[INFO] 03:55:08:505 Proceso S-AFA/(19375:19379): Se han encontrado CPUs libres! :D 
+[INFO] 03:55:08:506 Proceso S-AFA/(19375:19379): Se comenzara el envio de un mensaje
+[INFO] 03:55:08:507 Proceso S-AFA/(19375:19379): Delay de envio de mensaje: 500 ms
+[INFO] 03:55:08:508 Proceso S-AFA/(19375:19379): Se ha finalizado el envio de un mensaje
+[INFO] 03:55:08:508 Proceso S-AFA/(19375:19379): Se comenzara el envio de un PCB
+[INFO] 03:55:08:508 Proceso S-AFA/(19375:19379): Delay de envio de mensaje: 500 ms
+[INFO] 03:55:08:509 Proceso S-AFA/(19375:19379): Se ha finalizado el envio de un PCB
+[INFO] 03:55:08:509 Proceso S-AFA/(19375:19379): El proceso con id 1 fue enviado para ejecutar en la CPU con id 1
+[INFO] 03:55:08:510 Proceso S-AFA/(19375:19379): STS: Ejecucion finalizada
+[INFO] 03:55:08:573 Proceso S-AFA/(19375:19378): Se recibio una tarea de la CPU
+[INFO] 03:55:08:574 Proceso S-AFA/(19375:19378): Se completo una instruccion de un proceso en ejecucion
+[INFO] 03:55:08:576 Proceso S-AFA/(19375:19378): Se recibio una tarea de la CPU
+[INFO] 03:55:08:584 Proceso S-AFA/(19375:19378): El PCB con id 1 de la cola de ejecucion fue actualizado
+[INFO] 03:55:08:591 Proceso S-AFA/(19375:19378): El proceso 1 fue quitado de la cola de ejecucion (el proceso se esta finalizando)
+[INFO] 03:55:08:594 Proceso S-AFA/(19375:19378): El proceso 1 no tenia semaforos tomados
+[INFO] 03:55:08:596 Proceso S-AFA/(19375:19378): El proceso con id 1 fue movido a la cola de procesos terminados, ya que se terminaron las instruccciones de su script
+[INFO] 03:55:08:597 Proceso S-AFA/(19375:19378): No hay procesos para inicializar
+[INFO] 04:08:49:677 Proceso S-AFA/(19907:19907): Inicio del proceso
+
+[INFO] 04:08:54:35 Proceso S-AFA/(19907:19911): Se comenzara el envio de un mensaje
+[INFO] 04:08:54:36 Proceso S-AFA/(19907:19911): Delay de envio de mensaje: 500 ms
+[INFO] 04:08:54:38 Proceso S-AFA/(19907:19911): Se ha finalizado el envio de un mensaje
+[INFO] 04:08:54:46 Proceso S-AFA/(19907:19911): No hay procesos para inicializar
+[INFO] 04:09:06:950 Proceso S-AFA/(19907:19907): Se creo un proceso con id 1!
+[INFO] 04:09:06:952 Proceso S-AFA/(19907:19913): LTS: Comenzando ejecucion...
+[INFO] 04:09:06:957 Proceso S-AFA/(19907:19913): El proceso con id 1 fue aceptado en la cola de listos!
+[INFO] 04:09:06:963 Proceso S-AFA/(19907:19913): Buscando CPUs libres...
+[INFO] 04:09:06:965 Proceso S-AFA/(19907:19913): Se han encontrado CPUs libres! :D 
+[INFO] 04:09:06:967 Proceso S-AFA/(19907:19913): Buscando CPUs libres...
+[INFO] 04:09:06:969 Proceso S-AFA/(19907:19913): Se han encontrado CPUs libres! :D 
+[INFO] 04:09:06:973 Proceso S-AFA/(19907:19913): Hay 1 procesos sin inicializar. Se comenzara la inicializacion...
+[INFO] 04:09:06:974 Proceso S-AFA/(19907:19913): Se inicializara el proceso con id 1
+[INFO] 04:09:06:976 Proceso S-AFA/(19907:19913): Se comenzara el envio de un mensaje
+[INFO] 04:09:06:977 Proceso S-AFA/(19907:19913): Delay de envio de mensaje: 500 ms
+[INFO] 04:09:06:978 Proceso S-AFA/(19907:19913): Se ha finalizado el envio de un mensaje
+[INFO] 04:09:06:979 Proceso S-AFA/(19907:19913): Se comenzara el envio de un PCB
+[INFO] 04:09:06:980 Proceso S-AFA/(19907:19913): Delay de envio de mensaje: 500 ms
+[INFO] 04:09:06:3 Proceso S-AFA/(19907:19913): Se ha finalizado el envio de un PCB
+[INFO] 04:09:07:4 Proceso S-AFA/(19907:19913): El proceso con id 1 fue enviado para inicializar en la CPU con id 1
+[INFO] 04:09:07:5 Proceso S-AFA/(19907:19913): LTS: El proceso 1 fue enviado a una CPU para ser inicializado...
+[INFO] 04:09:07:6 Proceso S-AFA/(19907:19913): Buscando CPUs libres...
+[INFO] 04:09:07:7 Proceso S-AFA/(19907:19913): No se han encontrado CPUs libres :( ...
+[INFO] 04:09:07:7 Proceso S-AFA/(19907:19913): LTS: No hay mas CPUs disponibles para inicializar procesos, se continuara con la planificacion...
+[INFO] 04:09:07:9 Proceso S-AFA/(19907:19911): Se recibio una tarea de la CPU
+[INFO] 04:09:07:10 Proceso S-AFA/(19907:19913): LTS: Ejecucion finalizada
+[INFO] 04:09:07:43 Proceso S-AFA/(19907:19911): La CPU solicito que el proceso con id 1 sea bloqueado luego de intentar inicializarlo
+[INFO] 04:09:07:44 Proceso S-AFA/(19907:19911): El proceso con id 1 fue movido a la cola de bloqueados
+[INFO] 04:09:07:46 Proceso S-AFA/(19907:19911): No hay procesos para inicializar
+[INFO] 04:09:09:125 Proceso S-AFA/(19907:19911): Se recibio una tarea del DMA
+[INFO] 04:09:09:128 Proceso S-AFA/(19907:19911): El DMA solicita desbloquear el proceso 1
+[INFO] 04:09:09:131 Proceso S-AFA/(19907:19911): El proceso 1 fue quitado de la cola de bloqueados
+[INFO] 04:09:09:133 Proceso S-AFA/(19907:19911): El proceso con id 1 fue movido a la cola de listos
+[INFO] 04:09:09:135 Proceso S-AFA/(19907:19912): STS: Comenzando ejecucion
+[INFO] 04:09:09:135 Proceso S-AFA/(19907:19912): Buscando CPUs libres...
+[INFO] 04:09:09:136 Proceso S-AFA/(19907:19912): Se han encontrado CPUs libres! :D 
+[INFO] 04:09:09:136 Proceso S-AFA/(19907:19912): Obteniendo procesos planificables
+[INFO] 04:09:09:138 Proceso S-AFA/(19907:19912): Buscando CPUs libres...
+[INFO] 04:09:09:138 Proceso S-AFA/(19907:19912): Se han encontrado CPUs libres! :D 
+[INFO] 04:09:09:139 Proceso S-AFA/(19907:19912): Se comenzara el envio de un mensaje
+[INFO] 04:09:09:140 Proceso S-AFA/(19907:19912): Delay de envio de mensaje: 500 ms
+[INFO] 04:09:09:141 Proceso S-AFA/(19907:19912): Se ha finalizado el envio de un mensaje
+[INFO] 04:09:09:141 Proceso S-AFA/(19907:19912): Se comenzara el envio de un PCB
+[INFO] 04:09:09:142 Proceso S-AFA/(19907:19912): Delay de envio de mensaje: 500 ms
+[INFO] 04:09:09:142 Proceso S-AFA/(19907:19912): Se ha finalizado el envio de un PCB
+[INFO] 04:09:09:143 Proceso S-AFA/(19907:19912): El proceso con id 1 fue enviado para ejecutar en la CPU con id 1
+[INFO] 04:09:09:144 Proceso S-AFA/(19907:19912): STS: Ejecucion finalizada
+[INFO] 04:09:09:206 Proceso S-AFA/(19907:19911): Se recibio una tarea de la CPU
+[INFO] 04:09:09:207 Proceso S-AFA/(19907:19911): El proceso 1 solicito verificar si el archivo "/scripts/complejo.escriptorio" fue abierto por algun proceso
+[INFO] 04:09:09:207 Proceso S-AFA/(19907:19911): Se comenzara el envio de un mensaje
+[INFO] 04:09:09:208 Proceso S-AFA/(19907:19911): Delay de envio de mensaje: 500 ms
+[INFO] 04:09:09:208 Proceso S-AFA/(19907:19911): Se ha finalizado el envio de un mensaje
+[INFO] 04:09:09:208 Proceso S-AFA/(19907:19911): El archivo "/scripts/complejo.escriptorio" no fue abierto por ningun proceso. Se le informara a la CPU para que le pida al DMA que lo cargue en memoria
+[INFO] 04:09:09:213 Proceso S-AFA/(19907:19911): Se recibio una tarea de la CPU
+[INFO] 04:09:09:254 Proceso S-AFA/(19907:19911): La CPU solicita que se bloquee el proceso 1
+[INFO] 04:09:09:255 Proceso S-AFA/(19907:19911): El PCB con id 1 de la cola de ejecucion fue actualizado
+[INFO] 04:09:09:256 Proceso S-AFA/(19907:19911): El proceso con id 1 fue movido a la cola de bloqueados
+[INFO] 04:09:09:257 Proceso S-AFA/(19907:19911): No hay procesos para inicializar
+[INFO] 04:09:09:257 Proceso S-AFA/(19907:19911): Se recibio una tarea de la CPU
+[INFO] 04:09:09:258 Proceso S-AFA/(19907:19911): Se completo una instruccion de un proceso en ejecucion
+[INFO] 04:09:09:258 Proceso S-AFA/(19907:19911): Se recibio una tarea de la CPU
+[ERROR] 04:09:09:259 Proceso S-AFA/(19907:19911): El PCB con id 1 de la cola de ejecucion no pudo ser actualizado. Dicho proceso no deberia estar en la cola de ejecucion o, debido a un error, no llego a la misma. El modulo sera abortado para que pueda evaluar la situacion
