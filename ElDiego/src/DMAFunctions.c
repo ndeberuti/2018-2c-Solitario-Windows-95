@@ -318,12 +318,16 @@ char* convertParsedFileToMemoryBuffer(t_list* parsedFile, uint32_t* bufferSize)
 			return NULL;	//A file line's size cannot be more than a memory line's size (because that line would not fit into the memory) -> A line is like a byte for the memory
 		}
 
+
 		memcpy(memoryBuffer + bufferOffset, line, lineSize);
-		bufferOffset += memoryLineSize - 1;	//Move from the beginning of the last line copied to the buffer, to the end of that line, if the line were a memory line (may leave a trail of empty chars)
+		bufferOffset += memoryLineSize - 2;	//Move from the beginning of the last line copied to the buffer, to the end of that line, if the line were a memory line (may leave a trail of empty chars)
+
+
 
 		memcpy(memoryBuffer + bufferOffset, "\n", 1);	//Adds a '\n' char after each line
 		bufferOffset++;
 	}
+
 
 	return memoryBuffer;
 }
@@ -365,6 +369,7 @@ bool sendFileToMemory(char* filePath, uint32_t lines, char* buffer, uint32_t buf
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
+	log_info(dmaLog, "BUFFER DMA: %s\n", buffer );
 	if((nbytes = send(memoryServerSocket, buffer, bufferSize, MSG_WAITALL)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (sendFileToMemory) - Error al enviar a la memoria el contenido del archivo a cargar en ella");

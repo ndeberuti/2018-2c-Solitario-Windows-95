@@ -345,22 +345,17 @@ int obtener_cantidad_lineas(int longitud_paquete){
 
 void guardar_archivo(int socket_diego){
 	int resultado;
-
 	int pid = recibir_int(socket_diego);
 	int longitud_path = recibir_int(socket_diego);
-
-	char* buffer =  malloc(longitud_path);
-	buffer = recibir_char(socket_diego, longitud_path);
-
-
+	char* buffer  = recibir_char(socket_diego, longitud_path);
 	int id = transformar_path(buffer);
+
 	free(buffer);
 
 	int cantidad_lineas = recibir_int(socket_diego);
-
 	int longitud = recibir_int(socket_diego);
-	char* buffer_recepcion = malloc(longitud);
 
+	char* buffer_recepcion = recibir_char(socket_diego, longitud);
 
 	if(strcmp("SEG", config.MODO)== 0){
 		resultado = guardar_archivo_segmentacion_simple(pid ,id , cantidad_lineas,buffer_recepcion);
@@ -609,7 +604,8 @@ int resultado = recv(socket, buffer_recepcion, longitud_paquete, MSG_WAITALL);
 
 if(resultado == -1){
 
-	log_error(log_fm9, "Error en la repcecepción de mensaje");
+	log_error(log_fm9, "Error recibir char: %s", strerror(errno));
+
 	return "Error";}
 
 	else{
@@ -675,6 +671,11 @@ int resultado;
 
 entra_memoria = entra_en_memoria(cantidad_lineas);
 
+if(buffer_recepcion == NULL){
+
+	log_error(log_fm9, "Buffer nulo");
+	resultado = ERROR;
+}else{
 
 
 	if(list_is_empty(tabla_de_segmentos) && entra_memoria){
@@ -695,7 +696,8 @@ entra_memoria = entra_en_memoria(cantidad_lineas);
 
 							list_add(tabla_de_segmentos, entrada_tabla);
 
-
+							printf("CANTIDAD LINEAS RECEPCION: %d\n", cantidad_lineas);
+							printf("ESTA LLEGANDO ESTO DEL DMA: %s\n", buffer_recepcion);
 							memcpy(puntero_memoria_segmentada, buffer_recepcion, cantidad_lineas * config.MAX_LINEA);
 
 							resultado = OK;
@@ -742,6 +744,7 @@ entra_memoria = entra_en_memoria(cantidad_lineas);
 
 
 	}
+}
 free(segmento_nuevo);
 free(entrada_tabla);
 
@@ -2458,17 +2461,17 @@ void inicializar_diccionario(){
 int transformar_path(char* path){
 
  int id;
+char* path_diccionario = strdup(path);
 
+ if(dictionary_has_key(diccionario, path_diccionario)){
 
- if(dictionary_has_key(diccionario, path)){
-
-	id = dictionary_get(diccionario, path);
+	id = dictionary_get(diccionario, path_diccionario);
 
  }else{
 
 	 id = id_nuevo();
 
-	dictionary_put(diccionario, path, id);
+	dictionary_put(diccionario, path_diccionario, id);
 
  }
 
