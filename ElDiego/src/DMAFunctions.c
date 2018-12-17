@@ -369,7 +369,6 @@ bool sendFileToMemory(char* filePath, uint32_t lines, char* buffer, uint32_t buf
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	log_info(dmaLog, "BUFFER DMA: %s\n", buffer );
 	if((nbytes = send(memoryServerSocket, buffer, bufferSize, MSG_WAITALL)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (sendFileToMemory) - Error al enviar a la memoria el contenido del archivo a cargar en ella");

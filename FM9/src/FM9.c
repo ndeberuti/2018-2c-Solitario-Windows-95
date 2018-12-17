@@ -346,16 +346,30 @@ int obtener_cantidad_lineas(int longitud_paquete){
 void guardar_archivo(int socket_diego){
 	int resultado;
 	int pid = recibir_int(socket_diego);
+	printf("PID: %d\n",pid);
+
 	int longitud_path = recibir_int(socket_diego);
+	printf("longitud_path: %d\n",longitud_path);
 	char* buffer  = recibir_char(socket_diego, longitud_path);
+	printf("path: %s\n",buffer);
+
 	int id = transformar_path(buffer);
+
+
 
 	free(buffer);
 
 	int cantidad_lineas = recibir_int(socket_diego);
-	int longitud = recibir_int(socket_diego);
-
+	printf("cantidad_lineas: %d\n",cantidad_lineas);
+	int longitud = cantidad_lineas * config.MAX_LINEA +1;
+	printf("longitud: %d\n",longitud);
 	char* buffer_recepcion = recibir_char(socket_diego, longitud);
+
+	printf("buffer_recepcion: %s\n",buffer_recepcion);
+
+
+
+
 
 	if(strcmp("SEG", config.MODO)== 0){
 		resultado = guardar_archivo_segmentacion_simple(pid ,id , cantidad_lineas,buffer_recepcion);
