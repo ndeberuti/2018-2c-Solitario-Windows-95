@@ -909,7 +909,7 @@ void modificar_linea_segmentacion_simple(int socket_cpu,int id,int numero_linea,
 
 
 void flush_segmentacion_simple(int socket_diego, int id){
-	int resultado;
+	int resultado, cantidad_lineas,tamanio;
 
 	segmento_tabla_t* segmento;
 
@@ -926,17 +926,19 @@ void flush_segmentacion_simple(int socket_diego, int id){
 
 		if(segmento != NULL){
 		resultado = OK;
-
+		tamanio = segmento->limite * config.MAX_LINEA;
+		cantidad_lineas = segmento->limite;
 
 		//TODO - Revisa este envio... comparandolo con el abrir, esta mal... y agregame el envio de cantidad de lineas al final, igual que en el abrir
 
-		char* buffer_envio = malloc(sizeof(int)*2 +(segmento-> limite * config.MAX_LINEA));
+		char* buffer_envio = malloc(sizeof(int)*3 +(segmento-> limite * config.MAX_LINEA));
 
 		memcpy(buffer_envio, &resultado, sizeof(int));
-		memcpy(buffer_envio+ sizeof(int), &(segmento->limite),segmento->limite * config.MAX_LINEA);
+		memcpy(buffer_envio+ sizeof(int), &tamanio,sizeof(int));
 		memcpy(buffer_envio+ sizeof(int) *2 , puntero_memoria_segmentada + (segmento->base * config.MAX_LINEA), (segmento->limite * config.MAX_LINEA));
+		memcpy(buffer_envio+ sizeof(int)*2 + segmento->limite * config.MAX_LINEA, &cantidad_lineas,sizeof(int));
 
-		send(socket_diego, buffer_envio, sizeof(int)*2+ segmento->limite * config.MAX_LINEA, MSG_WAITALL);
+		send(socket_diego, buffer_envio, sizeof(int)*3+ segmento->limite * config.MAX_LINEA, MSG_WAITALL);
 
 		free(buffer_envio);
 
@@ -945,6 +947,7 @@ void flush_segmentacion_simple(int socket_diego, int id){
 }else{
 
 		resultado = ARCHIVO_NO_ABIERTO;
+
 		send(socket_diego, &resultado, sizeof(int), MSG_WAITALL);
 		log_error(log_fm9, "El archivo no está en memoria");
 }
@@ -1492,7 +1495,7 @@ void modificar_linea_segmentacion_paginada(int socket_cpu,int id,int numero_line
 void flush_segmentacion_paginada(int socket_diego,int id){
 
 	segmento_paginado_t * segmento_buscado = malloc(sizeof(segmento_paginado_t));
-			int resultado, frame;
+			int resultado, frame, cantidad_lineas;
 
 			int offset = 0;
 			int paginas;
@@ -1524,16 +1527,17 @@ void flush_segmentacion_paginada(int socket_diego,int id){
 					paginas = list_size(segmento_buscado->tabla_de_paginas_segmento);
 
 					int tamanio_paginas = paginas * config.TAM_PAGINA;
-					char* buffer_envio = malloc(sizeof(int) * 2 +paginas * config.TAM_PAGINA);
+					cantidad_lineas = tamanio_paginas / config.MAX_LINEA;
+					char* buffer_envio = malloc(sizeof(int) * 3 +paginas * config.TAM_PAGINA);
 
 					memcpy(buffer_envio, &resultado, sizeof(int));
 					memcpy(buffer_envio+ sizeof(int), &tamanio_paginas, sizeof(int));
 
 					while(numero_pagina <= paginas ){
 
-						puntero_frame = list_get(segmento_buscado->tabla_de_paginas_segmento, numero_pagina);
+						frame = list_get(segmento_buscado->tabla_de_paginas_segmento, numero_pagina);
 
-						frame = *puntero_frame;
+
 
 						memcpy(buffer_envio + sizeof(int) *2 + offset ,puntero_memoria_sp + (frame * config.TAM_PAGINA), sizeof(config.TAM_PAGINA));
 
@@ -1545,10 +1549,11 @@ void flush_segmentacion_paginada(int socket_diego,int id){
 
 					}
 
+					memcpy(sizeof(int)*2 + paginas*config.TAM_PAGINA,cantidad_lineas, sizeof(int) );
 
 
-					send(socket_diego, buffer_envio, sizeof(int)*2 + paginas* config.TAM_PAGINA, MSG_WAITALL);
-
+					send(socket_diego, buffer_envio, sizeof(int)*3 + paginas* config.TAM_PAGINA, MSG_WAITALL);
+					free(buffer_envio);
 
 
 
@@ -1556,7 +1561,7 @@ void flush_segmentacion_paginada(int socket_diego,int id){
 
 
 
-free(buffer_envio);
+
 
 }
 
@@ -2172,27 +2177,12 @@ void modificar_linea_paginacion(int socket_cpu,int id,int numero_linea,char* lin
 }
 
 void flush_paginacion_invertida(int socket_diego,int id){
-	t_list* paginas_encontradas;
+			t_list* paginas_encontradas;
 			entrada_tabla_invertida_t* entrada_encontrada;
 
-			int resultado, frame, tamanio, paginas;
+			int resultado, frame, tamanio, paginas, cantidad_lineas;
 			int contador = 0;
 			int offset = 0;
-
-			//int numero_pagina = numero_linea/ config.TAM_PAGINA / config.MAX_LINEA ;
-
-			//resto = numero_linea % config.TAM_PAGINA / config.MAX_LINEA;
-
-			//if(resto > 0){
-
-			//	numero_pagina++;
-
-			//}
-
-
-
-			//int corrimiento = numero_linea - (numero_pagina * config.TAM_PAGINA / config.MAX_LINEA);
-
 
 			bool es_id(entrada_tabla_invertida_t* entrada){
 
@@ -2207,16 +2197,18 @@ void flush_paginacion_invertida(int socket_diego,int id){
 
 						resultado = ARCHIVO_NO_ABIERTO ;
 						log_error(log_fm9, "El archivo: %d no se encuentra en la tabla\n", id);
+
+						send(socket_diego, &resultado,sizeof(int), MSG_WAITALL );
 					}else{
 
 						log_info("Abriendo archivo %d\n", id);
 
 
 					tamanio = config.TAM_PAGINA * paginas;
-
+					cantidad_lineas = tamanio / config.MAX_LINEA;
 					resultado = OK;
 
-					char* buffer_envio = malloc(sizeof(int)* 2 + tamanio);
+					char* buffer_envio = malloc(sizeof(int)* 3 + tamanio);
 
 					memcpy(buffer_envio, &resultado, sizeof(int));
 					memcpy(buffer_envio + sizeof(int), &tamanio, sizeof(int));
@@ -2238,15 +2230,15 @@ void flush_paginacion_invertida(int socket_diego,int id){
 					}
 
 
-
-					send(socket_diego, buffer_envio, sizeof(int)* 2 + config.MAX_LINEA * paginas, MSG_WAITALL);
-
+					memcpy(buffer_envio + sizeof(int)*2 + offset, &cantidad_lineas, sizeof(int));
+					send(socket_diego, buffer_envio, sizeof(int)* 3 + config.MAX_LINEA * paginas, MSG_WAITALL);
+					free(buffer_envio);
 
 
 
 		}
 
-		free(buffer_envio);
+
 
 		list_destroy(paginas_encontradas);
 
