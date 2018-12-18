@@ -638,7 +638,8 @@ void inicializar_memoria_segmentacion_simple(){
 
 
 
-	puntero_memoria_segmentada = calloc(1,config.TAMANIO);
+	puntero_memoria_segmentada = malloc(config.TAMANIO);
+	memset(puntero_memoria_segmentada, '\n', config.TAMANIO);
 
 	tabla_de_segmentos = list_create();
 
@@ -1036,6 +1037,9 @@ int close_file_segmentacion_simple(int socket_cpu, int id){
 
 				if(segmento != NULL){
 
+
+					memset(puntero_memoria_segmentada + segmento->base * config.MAX_LINEA,'/n' , segmento->limite*config.MAX_LINEA);
+
 					liberar_segmento(segmento->id, segmento->base, segmento->limite);
 					log_info(log_fm9, "Se cerró el archivo ID: %d en memoria", id);
 					resultado = OK;
@@ -1198,8 +1202,8 @@ if(tamanio_bitarray_sp % 8 > 0){
 
 		tabla_de_segmentos_sp = list_create();
 
-		puntero_memoria_sp = calloc(1,config.TAMANIO);
-
+		puntero_memoria_sp = malloc(config.TAMANIO);
+		memset(puntero_memoria_sp, '\n', config.TAMANIO);
 
 
 		b_m_s = calloc(0,forzar_bitarray);
@@ -1692,6 +1696,9 @@ int close_file_segmentacion_paginada(int socket_cpu,int id){
 
 						printf("FRAME BORRADO: %d \n", frame);
 
+
+						memset(puntero_memoria_sp + frame * config.TAM_PAGINA, '\n', config.TAM_PAGINA);
+
 						bitarray_clean_bit(bitarray_memoria, frame);
 
 
@@ -1833,8 +1840,8 @@ void inicializar_memoria_paginacion_invertida(){
 
 			tabla_de_paginas = list_create();
 
-			puntero_memoria_paginada = calloc(1,config.TAMANIO);
-
+			puntero_memoria_paginada = malloc(config.TAMANIO);
+			memset(puntero_memoria_paginada, '\n', config.TAMANIO);
 
 
 			b_m_s = calloc(1,forzar_bitarray);
@@ -2016,6 +2023,8 @@ int close_file_paginacion(int socket_cpu,int id){
 
 							frame = entrada_buscada->frame;
 
+
+							memset(puntero_memoria_paginada + frame * config.TAM_PAGINA,'\n',config.TAM_PAGINA);
 
 							bitarray_clean_bit(bitarray_memoria, frame);
 
