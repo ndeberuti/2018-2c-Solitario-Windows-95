@@ -927,6 +927,8 @@ void flush_segmentacion_simple(int socket_diego, int id){
 		resultado = OK;
 
 
+		//TODO - Revisa este envio... comparandolo con el abrir, esta mal... y agregame el envio de cantidad de lineas al final, igual que en el abrir
+
 		char* buffer_envio = malloc(sizeof(int)*2 +(segmento-> limite * config.MAX_LINEA));
 
 		memcpy(buffer_envio, &resultado, sizeof(int));

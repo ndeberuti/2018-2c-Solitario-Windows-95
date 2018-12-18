@@ -282,11 +282,47 @@ void sendProcessErrorMessageToScheduler(uint32_t process)
 	}
 }
 
-t_list* parseScript(char* script)
+t_list* parseScriptFromFS(char* script)
 {
 	//Receives the script that the memory sends and transforms it to a list; the line/instruction 1 of the script is the element with index 0 of the list, and so on...
 
 	t_list* parsedScript =  string_split_to_list(script, "\n");
+
+	return parsedScript;
+}
+
+
+//TODO - This is ok for segmentation but maybe not for pagination; this function may be needed to be changed to work well with pagination
+t_list* parseScriptFromMemory(char* script, uint32_t scriptLines)
+{
+	char* buffer;
+	uint32_t currentLineOffset, currentMemoryLineStart, lineLength;
+	t_list* parsedScript = list_create();
+
+	for(uint32_t i = 0; i < scriptLines; i++)
+	{
+		currentMemoryLineStart = i * memoryLineSize; //The beginning of a memoryLine inside the script received from the memory
+		currentLineOffset = currentMemoryLineStart;	 //That memoryLine contains an instruction line ending in '\n' (so I need to read until I find that char)
+
+
+		//This is to see how many chars after
+		while(script[currentLineOffset] != '\n')
+			currentLineOffset++;
+
+
+		lineLength = currentLineOffset - currentMemoryLineStart;  //I need to subtract them because the offset starts with the number of the
+																  //currentLine (see above, at the beginning of the 'for' loop!)
+
+		buffer = calloc(1, lineLength);	//This string has the size of the line calculated above
+										//(the offset is how many chars after the start of the line there are until a '\n' char)
+
+		//'curentLineOffset - 2' is the char before the '\n' (indexes start at 0, so 'currentLineOffset - 1' is the last character of the buffer)
+		//At 'currentLineOffset - 1' there should be a '\0' character (it is a string!) to replace the '\n' char that marked the end of the line
+		//(that '\n' is not needed here)
+		memcpy(buffer, (script + currentMemoryLineStart), (lineLength - 2));
+
+		list_add(parsedScript, buffer);
+	}
 
 	return parsedScript;
 }
@@ -319,13 +355,18 @@ char* convertParsedFileToMemoryBuffer(t_list* parsedFile, uint32_t* bufferSize)
 		}
 
 
-		memcpy(memoryBuffer + bufferOffset, line, lineSize);
-		bufferOffset += memoryLineSize - 2;	//Move from the beginning of the last line copied to the buffer, to the end of that line, if the line were a memory line (may leave a trail of empty chars)
+		//Copy a file line only if the line is not a null string. If that line is a null string, it was a line (the last line of the script or not)
+		//that contained only a '\n' char, and it wat deleted when parsing the file into a list.
+		//That line should only contain a '\n' char, followed by as many '\0' chars as needed to complete that memoryLine
+		if(string_length > 0)
+		{
+			memcpy(memoryBuffer + bufferOffset, line, lineSize);
+			bufferOffset += memoryLineSize - 1;	//Move from the beginning of the last memoryLine (which contains a fileLine), to the end space for that memoryLine
+		}
 
-
-
-		memcpy(memoryBuffer + bufferOffset, "\n", 1);	//Adds a '\n' char after each line
-		bufferOffset++;
+		//In memoryLineSize -1, which is the last space for a memoryLine, copy a '\n' char to end that line
+		memcpy(memoryBuffer + bufferOffset, "\n", 1);
+		bufferOffset++;	//Move the offset 1 space to begin copying the next line from that space (outside of the space of the last line)
 	}
 
 
@@ -445,11 +486,12 @@ char* convertParsedFileToFileSystemBuffer(t_list* parsedFile)
 	return filesystemBuffer;
 }
 
-char* getFileFromMemory(char* filePath)
+char* getFileFromMemory(char* filePath, uint32_t* scriptLines)
 {
 	char* fileContents;
 	int32_t nbytes;
 	int32_t operationResult;
+	uint32_t _scriptLines;
 
 	//Send task and filePath to the memory
 	if((nbytes = send_int(memoryServerSocket, FLUSH)) < 0)
@@ -477,7 +519,7 @@ char* getFileFromMemory(char* filePath)
 		else
 			log_error(dmaLog, "DMAFunctions (getFileFromMemory) - Error al recibir el resultado de obtener los datos de un archivo contenido en la memoria");
 
-		log_info(dmaLog, "Debido a un error en la comunicacion con el FS, este proceso se cerrara");
+		log_info(dmaLog, "Debido a un error en la comunicacion con la memoria, este proceso se cerrara");
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Recv Error Handling
 	}
@@ -495,6 +537,17 @@ char* getFileFromMemory(char* filePath)
 				log_error(dmaLog, "DMAFunctions (getFileFromMemory) - La memoria fue desconectada al intentar recibir el contenido de un archivo");
 			else
 				log_error(dmaLog, "DMAFunctions (getFileFromMemory) - Error al recibir el contenido de un archivo de la memoria");
+
+			log_info(dmaLog, "Debido a un error en la comunicacion con la memoria, este proceso se cerrara");
+			exit(EXIT_FAILURE);
+			//TODO (Optional) - Recv Error Handling
+		}
+		if((nbytes = receive_int(memoryServerSocket, &_scriptLines)) <= 0)
+		{
+			if(nbytes == 0)
+				log_error(dmaLog, "DMAFunctions (getFileFromMemory) - La memoria fue desconectada al intentar recibir la cantidad de lineas del archivo recibido");
+			else
+				log_error(dmaLog, "DMAFunctions (getFileFromMemory) - Error al recibir la cantidad de lineas del archivo recibido de memoria");
 
 			log_info(dmaLog, "Debido a un error en la comunicacion con la memoria, este proceso se cerrara");
 			exit(EXIT_FAILURE);

@@ -144,73 +144,49 @@ void showConfigs()
 	log_info(cpuLog, "-----------------------\n");
 }
 
-int32_t handshakeScheduler(uint32_t socket)
-{
-	int32_t nbytes;
-	int32_t message;
-
-	if((nbytes = send_int(socket, NEW_CPU_CONNECTION)) < 0)
-	{
-		log_error(cpuLog, "Error al indicar al planificador que se esta conectando una CPU\n");
-		return nbytes;
-		//TODO (Optional) - Send Error Handling
-	}
-
-	if((nbytes = receive_int(socket, &message)) <= 0)
-	{
-		if(nbytes == 0)
-		{
-			log_error(cpuLog, "Error al recibir mensaje de confirmacion de handshake del planificador\n");
-		}
-		else
-		{
-			log_error(cpuLog, "Error al recibir mensaje de confirmacion de handshake del planificador\n");
-
-			close(socket);
-			FD_CLR(socket, &master);
-		}
-
-		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
-		return nbytes;
-	}
-
-	if(message == USE_NORMAL_ALGORITHM)
-		usingCustomSchedulingAlgorithm = false;
-
-	else if(message == USE_CUSTOM_ALGORITHM)
-		usingCustomSchedulingAlgorithm = true;
-	else
-	{
-		log_error(cpuLog, "Se recibio un valor incorrecto al esperar el tipo de algoritmo usado por el planificador. Este proceso sera abortado...");
-		exit(EXIT_FAILURE);
-	}
-
-	log_info(cpuLog, "El handshake con el planificador se ha realizado correctamente!\n");
-
-	return 0;
-}
-
 void connectToServers()
 {
 	uint32_t _socket;
-	int32_t result;
+	int32_t nbytes;
+	int32_t schedulerAlgorithm, _memoryLineSize;
 
-	if ((_socket = connect_server(config.schedulerIp, config.schedulerPort, -1, cpuLog)) == 0)
+
+	if ((_socket = connect_server(config.schedulerIp, config.schedulerPort, NEW_CPU_CONNECTION, cpuLog)) == 0)
 	{
 		log_error(cpuLog, "Error al conectar con S-AFA");
 		exit(EXIT_FAILURE);
 	}
+	else if((nbytes = receive_int(_socket, &schedulerAlgorithm)) <= 0)
+	{
+		if(nbytes == 0)
+		{
+			log_error(cpuLog, "Error al recibir el tipo de algoritmo del planificador\n");
+		}
+		else
+		{
+			log_error(cpuLog, "Error al recibir el tipo de algoritmo del planificador\n");
+		}
+
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+		log_error(cpuLog, "Debido a un error en la comunicacion con el planificador, se abortara el modulo");
+		exit(EXIT_FAILURE);
+	}
 	else
 	{
-		if((result = handshakeScheduler(_socket)) < 0)		//Error receiving handshake messages (for example, a recv call took too long to receive messages)
+		if(schedulerAlgorithm == USE_NORMAL_ALGORITHM)
+			usingCustomSchedulingAlgorithm = false;
+
+		else if(schedulerAlgorithm == USE_CUSTOM_ALGORITHM)
+			usingCustomSchedulingAlgorithm = true;
+		else
 		{
-			log_error(cpuLog, "Error al conectar con S-AFA");
+			log_error(cpuLog, "Se recibio un valor incorrecto al esperar el tipo de algoritmo usado por el planificador. Este proceso sera abortado...");
 			exit(EXIT_FAILURE);
 		}
 
 		schedulerServerSocket = _socket;
 
-		log_info(cpuLog, "Conexion con S-AFA exitosa");
+		log_info(cpuLog, "El handshake y la conexion con el planificador se han realizado correctamente!\n");
 	}
 
 	if ((_socket = connect_server(config.dmaIp, config.dmaPort, NEW_CPU_CONNECTION, cpuLog)) == 0)
@@ -219,43 +195,37 @@ void connectToServers()
 		exit(EXIT_FAILURE);
 	}
 	else
-		dmaServerSocket = _socket;
-/*	else
 	{
-		if((result = handshakeProcess(socket)) < 0)		//Error receiving handshake messages (for example, a recv call took too long to receive messages)
-		{
-			log_error(cpuLog, "Error al conectar con El Diego");
-			exit(EXIT_FAILURE);
-		}
-
-		dmaServerSocket = socket;
-
+		dmaServerSocket = _socket;
 		log_info(cpuLog, "Conexion con El Diego exitosa");
-	}*/
-
-	log_info(cpuLog, "Conexion con El Diego exitosa");
+	}
 
 	if ((_socket = connect_server(config.memoryIp, config.memoryPort, NEW_CPU_CONNECTION, cpuLog)) == 0)
 	{
 		log_error(cpuLog, "Error al conectar con FM9");
 		exit(EXIT_FAILURE);
 	}
-	else
-		memoryServerSocket = _socket;
-
-	log_info(cpuLog, "Conexion con FM9 exitosa");
-/*	else
+	else if((nbytes = receive_int(_socket, &_memoryLineSize)) <= 0)
 	{
-		if((result = handshakeProcess(socket)) < 0)		//Error receiving handshake messages (for example, a recv call took too long to receive messages)
+		if(nbytes == 0)
 		{
-			log_error(cpuLog, "Error al conectar con FM9");
-			exit(EXIT_FAILURE);
+			log_error(cpuLog, "La memoria se desconecto al intentar recibir el tamaño de linea de ella\n");
+		}
+		else
+		{
+			log_error(cpuLog, "Error al recibir el tamaño de linea de la memoria\n");
 		}
 
-			memoryServerSocket = socket;
-
-			log_info(cpuLog, "Conexion con FM9 exitosa");
-		}*/
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+		log_error(cpuLog, "Debido a un error en la comunicacion con la memoria, se abortara este modulo");
+		exit(EXIT_FAILURE);
+	}
+	else
+	{
+		memoryServerSocket = _socket;
+		memoryLineSize = _memoryLineSize;
+		log_info(cpuLog, "Conexion con FM9 exitosa");
+	}
 }
 
 void executeProcess()
@@ -263,6 +233,7 @@ void executeProcess()
 	uint32_t instructionsQty;
 	int32_t nbytes;
 	uint32_t instructionExecutionResult;
+	uint32_t scriptLines;
 	PCB_t* processToExecute = NULL;
 	char* scriptContent = NULL; 	//The contents of a script file, which are in memory (all the lines of instructions of that script arranged in a string)
 	char* lineToParse = NULL;
@@ -296,7 +267,7 @@ void executeProcess()
 																	//So, after receiving the PCB, to get the next instruction to execute, I
 																	//must increment the programCounter by 1.
 																	//If this is the first execution for that PCB, the currentProgramCounter == 0
-	scriptContent = requestScriptFromMemory();
+	scriptContent = requestScriptFromMemory(&scriptLines);
 
 	if(scriptContent == NULL)	//Error getting the file from the memory
 	{
@@ -304,7 +275,7 @@ void executeProcess()
 		return;
 	}
 
-	parsedScript = parseScript(scriptContent);
+	parsedScript = parseScript(scriptContent, scriptLines);
 	instructionsQty = list_size(parsedScript);	//How many instructions the script has
 
 	log_info(cpuLog, "Quedan %d lineas a ejecutar para el proceso %d", (instructionsQty - currentProgramCounter), (*processInExecutionPCB)->pid);
@@ -328,6 +299,14 @@ void executeProcess()
 
 		lineToParse = (char*) list_get(parsedScript, (currentProgramCounter - 1));	//The index in a script (for the instructions) starts at 1, but
 																					//the index of a list starts at 0
+
+		if(lineToParse[0] == '#')	//Comment lines start with '#' and must no be executed
+		{
+			currentProcessQuantum++;
+			instructionsExecuted--;
+			continue;
+		}
+
 		parsedLine = parseLine(lineToParse);
 
 		instructionExecutionResult = checkAndExecuteInstruction(parsedLine);
@@ -447,6 +426,12 @@ void initializeProcess()
 	}
 }
 
+/* The below function, I think, does not work for the type of information I need to handle, because
+ * all the built-in linux functions to work with strings stop reading when they reach a '\0' character
+ * and I need to read past those characters (because the '\0' are like paddings to fill a memoryLine
+ * not filled with actual data). After a trail of '\0' chars there may be more information to be read,
+ * that the built-in functions like 'strtok' do not get to because they stop when they reach a '\0')
+ *
 t_list* parseScript(char* script)
 {
 	//Receives the script that the memory sends and transforms it to a list; the line/instruction 1 of the script is the element with index 0 of the list, and so on...
@@ -455,6 +440,60 @@ t_list* parseScript(char* script)
 
 	//Remove the comment lines from the parsedScript list (those are the lines that begin with a '#')
 	removeCommentsFromScript(parsedScript);
+
+	return parsedScript;
+}
+*/
+
+
+//TODO - This is ok for segmentation but maybe not for pagination; this function may be needed to be changed to work well with pagination
+t_list* parseScript(char* script, uint32_t scriptLines)
+{
+	char* buffer;
+	uint32_t currentLineOffset, currentMemoryLineStart, lineLength, aux;
+	t_list* parsedScript = list_create();
+
+	for(uint32_t i = 0; i < scriptLines; i++)
+	{
+		currentMemoryLineStart = i * memoryLineSize; //The beginning of a memoryLine inside the script received from the memory
+		currentLineOffset = currentMemoryLineStart;	 //That memoryLine contains an instruction line ending in '\n' (so I need to read until I find that char)
+
+
+		//This is to see how many chars after
+		while(script[currentLineOffset] != '\n')
+			currentLineOffset++;
+
+
+		lineLength = currentLineOffset - currentMemoryLineStart;  //I need to subtract them because the offset starts with the number of the
+																  //currentLine (see above, at the beginning of the 'for' loop!)
+
+		buffer = calloc(1, lineLength);	//This string has the size of the line calculated above
+										//(the offset is how many chars after the start of the line there are until a '\n' char)
+
+		//'curentLineOffset - 2' is the char before the '\n' (indexes start at 0, so 'currentLineOffset - 1' is the last character of the buffer)
+		//At 'currentLineOffset - 1' there should be a '\0' character (it is a string!) to replace the '\n' char that marked the end of the line
+		//(that '\n' is not needed here)
+		memcpy(buffer, (script + currentMemoryLineStart), (lineLength - 2));
+
+		list_add(parsedScript, buffer);
+
+		aux = currentMemoryLineStart + memoryLineSize;
+
+		/*This was a test, not sure if it is necessary
+		 *
+		if(script[aux] == '\n') //It reached the last line of the script; add an empty line to the list and get out of the loop
+		{
+			buffer = calloc(1, 1);
+			memcpy(buffer, "\0", 1);
+
+			list_add(parsedScript, buffer);
+
+			break;
+		}
+		*/
+	}
+
+	//removeCommentsFromScript(&parsedScript);	//Comment lines are already being skipped when trying to execute them (in the 'executeProcess' function)
 
 	return parsedScript;
 }
@@ -644,8 +683,7 @@ uint32_t checkAndExecuteInstruction(t_list* parsedLine)	//The 'parsedLine' list 
 	{
 		//TODO (optional) - Received a wrong instruction, raise an error
 		log_error(cpuLog, "Se ha intentado ejecutar una instruccion incorrecta");
-		handleProcessError();
-		executionResult = INSTRUCTION_NOT_EXECUTED;
+		executionResult = handleProcessError();
 	}
 
 	if((executionResult == INSTRUCTION_EXECUTED) || (executionResult == PROCESS_BLOCKED))	//Everything went OK
@@ -698,7 +736,7 @@ uint32_t openFile(char* filePathInFS)
 	return 0; //It never reaches this part
 }
 
-void modifyFileLineInMemory(char* filePathInFS, uint32_t lineNumber, char* dataToAssign)
+uint32_t modifyFileLineInMemory(char* filePathInFS, uint32_t lineNumber, char* dataToAssign)
 {
 	//Check if the file was opened by the current process
 	uint32_t message = (uint32_t) askSchedulerIfFileOpen(filePathInFS);
@@ -707,23 +745,25 @@ void modifyFileLineInMemory(char* filePathInFS, uint32_t lineNumber, char* dataT
 	{
 		case FILE_NOT_OPEN:
 				//If the file is not open, it means it is an error to try modifying a file not open by the current process -> Raise an error and tell the scheduler
-			handleFileNotOpen(filePathInFS, true);
+			return handleFileNotOpen(filePathInFS, true);
 		break;
 
 		case FILE_OPENED_BY_ANOTHER_PROCESS:
 			//If the file was opened by other process, it means it is an error to try modifying a file not open by the current process -> Raise an error and tell the scheduler
-			handleFileOpenedByOtherProcess(filePathInFS, true);
+			return handleFileOpenedByOtherProcess(filePathInFS, true);
 		break;
 
 		case FILE_OPEN:
 			//Tell the DMA to modify a file and send the filePath, the number of the line that should be modified, and the data to insert in that line
 			//Wait for the memory to confirm the result of the operation before continuing execution
-			handleModifyFile(filePathInFS, lineNumber, dataToAssign);
+			return handleModifyFile(filePathInFS, lineNumber, dataToAssign);
 		break;
 	}
+
+	return 0;
 }
 
-void waitSemaphore(char* semaphoreName)
+uint32_t waitSemaphore(char* semaphoreName)
 {
 	int32_t nbytes;
 	int32_t message;
@@ -782,16 +822,19 @@ void waitSemaphore(char* semaphoreName)
 	{
 		//If the scheduler could wait on the semaphore, continue execution (so, do nothing here)...
 		log_info(cpuLog, "Se realizo con exito la operacion WAIT sobre el semaforo \"%s\"\n", semaphoreName);
+		return INSTRUCTION_EXECUTED;
 	}
 	else if(message == WAIT_ERROR)
 	{
 		//Send the scheduler a blockProcess request, so the process waits for the semaphore to become free
 		log_info(cpuLog, "Se intento realizar la operacion WAIT sobre el semaforo \"%s\", pero el mismo se encuentra ocupado ocupado (no presenta mas instancias disponibles)\nEl proceso sera bloqueado...\n", semaphoreName);
-		tellSchedulerToBlockProcess(false);
+		return tellSchedulerToBlockProcess(false);
 	}
+
+	return 0;
 }
 
-void signalSemaphore(char* semaphoreName)
+uint32_t signalSemaphore(char* semaphoreName)
 {
 	int32_t nbytes;
 	int32_t message;
@@ -850,14 +893,17 @@ void signalSemaphore(char* semaphoreName)
 	{
 		//If the scheduler could wait on the semaphore, continue execution (so, do nothing here)...
 		log_info(cpuLog, "Se realizo con exito la operacion SIGNAL sobre el semaforo \"%s\"\n", semaphoreName);
+		return INSTRUCTION_EXECUTED;
 	}
 	else if(message == SIGNAL_ERROR)
 	{
 		//This is error is a placeholder; the scheduler never sends a "SIGNAL_ERROR" message, because a signal should never produce an error
 
 		log_info(cpuLog, "Se intento realizar la operacion SIGNAL sobre el semaforo \"%s\", pero ocurrio un error\nEl proceso sera terminado...\n", semaphoreName);
-		handleProcessError();
+		return handleProcessError();
 	}
+
+	return 0;
 }
 
 uint32_t flushFile(char* filePathInFS)
@@ -880,13 +926,14 @@ uint32_t flushFile(char* filePathInFS)
 		case FILE_OPEN:
 			//Tell the DMA to flush the file and send the filePath. Then tell the scheduler to block the process
 			return handleFlushFile(filePathInFS);
+
 		break;
 	}
 
 	return 0; //It never reaches this part
 }
 
-void closeFile(char* filePathInFS)
+uint32_t closeFile(char* filePathInFS)
 {
 	//Check if the file was opened by the current process
 	uint32_t message = (uint32_t) askSchedulerIfFileOpen(filePathInFS);
@@ -895,22 +942,24 @@ void closeFile(char* filePathInFS)
 	{
 		case FILE_NOT_OPEN:
 			//If the file is not open, it means it is an error to try closing a file not open by the current process -> Raise an error and tell the scheduler
-			handleFileNotOpen(filePathInFS, true);
+			return handleFileNotOpen(filePathInFS, true);
 		break;
 
 		case FILE_OPENED_BY_ANOTHER_PROCESS:
 			//If the file was opened by other process, it means it is an error to try closing a file not open by the current process -> Raise an error and tell the scheduler
-			handleFileOpenedByOtherProcess(filePathInFS, true);
+			return handleFileOpenedByOtherProcess(filePathInFS, true);
 		break;
 
 		case FILE_OPEN:
 			//Tell the scheduler to close the file and send the filePath. Then tell the memory to remove the file's data from it
-			handleCloseFile(filePathInFS);
+			return handleCloseFile(filePathInFS);
 		break;
 	}
+
+	return 0;
 }
 
-void createFile(char* filePathInFS, uint32_t numberOfLines)
+uint32_t createFile(char* filePathInFS, uint32_t numberOfLines)
 {
 	int32_t nbytes;
 
@@ -957,7 +1006,7 @@ void createFile(char* filePathInFS, uint32_t numberOfLines)
 		//TODO (Optional) - Send Error Handling
 	}
 
-	tellSchedulerToBlockProcess(true);
+	return tellSchedulerToBlockProcess(true);
 }
 
 uint32_t deleteFile(char* filePathInFS)
@@ -999,8 +1048,7 @@ uint32_t deleteFile(char* filePathInFS)
 		//TODO (Optional) - Send Error Handling
 	}
 
-	tellSchedulerToBlockProcess(true);
-	return PROCESS_BLOCKED;
+	return tellSchedulerToBlockProcess(true);
 }
 
 uint32_t askSchedulerIfFileOpen(char* filePathInFS)
@@ -1069,14 +1117,12 @@ uint32_t handleFileNotOpen(char* filePathInFS, bool raiseError)
 	if(!raiseError)
 	{
 		sendOpenFileRequestToDMA(filePathInFS, OPEN_FILE);
-		tellSchedulerToBlockProcess(false);
-		return PROCESS_BLOCKED;
+		return tellSchedulerToBlockProcess(false);
 	}
 	else
 	{
 		log_error(cpuLog, "Se solicito una operacion sobre un archivo no abierto por el proceso %d\nEl proceso sera terminado..\n", (*processInExecutionPCB)->pid);
-		handleProcessError();
-		return PROCESS_KILLED;
+		return handleProcessError();
 	}
 }
 
@@ -1088,24 +1134,21 @@ uint32_t handleFileOpenedByOtherProcess(char* filePathInFS, bool raiseError)
 	if(!raiseError)
 	{
 		log_info(cpuLog, "Se solicito la apertura del archivo del path \"%s\" para el proceso %d, pero dicho archivo ya fue abierto por otro proceso\nEl proceso actual sera bloqueado\n", filePathInFS, (*processInExecutionPCB)->pid);
-		tellSchedulerToBlockProcess(false);
-		return PROCESS_BLOCKED;
+		return tellSchedulerToBlockProcess(false);
 	}
 	else
 	{
 		log_error(cpuLog, "Se solicito una operacion sobre un archivo no abierto por el proceso %d\nEl proceso sera terminado..\n", (*processInExecutionPCB)->pid);
-		handleProcessError();
-		return PROCESS_KILLED;
+		return handleProcessError();
 	}
 }
 
-void handleProcessError()
+uint32_t handleProcessError()
 {
 	//Send a message to the scheduler telling it to kill the current process due to an error
 	//Also, tell the memory there was an error, so it removes all files opened by this process and discards the changes
 
 	int32_t nbytes;
-	int32_t message;
 
 	updateCurrentPCB();
 
@@ -1137,6 +1180,7 @@ void handleProcessError()
 	tellMemoryToFreeProcessData();
 
 	log_info(cpuLog, "El proceso %d finalizo su ejecucion (debido a un error) luego de ejecutar %d instrucciones", (*processInExecutionPCB)->pid, instructionsExecuted);
+	return PROCESS_ERROR;
 }
 
 void tellMemoryToFreeProcessData()
@@ -1200,10 +1244,9 @@ void tellMemoryToFreeProcessData()
 	}
 }
 
-void tellSchedulerToBlockProcess(bool isDmaCall)
+uint32_t tellSchedulerToBlockProcess(bool isDmaCall)
 {
 	int32_t nbytes;
-	int32_t message;
 
 	updateCurrentPCB();
 
@@ -1244,9 +1287,10 @@ void tellSchedulerToBlockProcess(bool isDmaCall)
 
 
 	log_info(cpuLog, "El proceso %d finalizo su ejecucion (por bloqueo), luego de ejecutar %d instrucciones", (*processInExecutionPCB)->pid, instructionsExecuted);
+	return PROCESS_BLOCKED;
 }
 
-void handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToAssign)
+uint32_t handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToAssign)
 {
 	int32_t nbytes;
 	int32_t message;
@@ -1316,18 +1360,21 @@ void handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToAssig
 	{
 		log_info(cpuLog, "Se intento modificar un archivo en memoria que no se encuentra en ella. El proceso sera terminado...\n");
 
-		handleProcessError();
+		return handleProcessError();
 	}
 	else if(message == OK)
 	{
 		log_info(cpuLog, "Se ha modificado extosamente la linea %d del archivo en la ruta \"%s\"", lineNumber, filePathInFS);
+		return INSTRUCTION_EXECUTED;
 	}
 	else if(message == SEGMENTATION_FAULT)
 	{
 		log_info(cpuLog, "Ocurrio un error de segmentation fault al intentar modificar el contenido de un archivo en memoria. El proceso sera terminado...\n");
 
-		handleProcessError();
+		return handleProcessError();
 	}
+
+	return 0;
 }
 
 uint32_t handleFlushFile(char* filePathInFS)
@@ -1371,8 +1418,7 @@ uint32_t handleFlushFile(char* filePathInFS)
 
 	log_info(cpuLog, "Se solicito al DMA la descarga de la informacion en memoria del archivo del path \"%s\"\n", filePathInFS);
 
-	tellSchedulerToBlockProcess(true);
-	return PROCESS_BLOCKED;
+	return tellSchedulerToBlockProcess(true);
 }
 
 uint32_t handleCloseFile(char* filePathInFS)
@@ -1458,8 +1504,7 @@ uint32_t handleCloseFile(char* filePathInFS)
 	{
 		log_info(cpuLog, "El archivo \"%s\" que se intento quitar de memoria no se encuentra en ella. El proceso sera terminado...", filePathInFS);
 
-		handleProcessError();
-		return PROCESS_KILLED;
+		return handleProcessError();
 	}
 	else if(message == OK)
 	{
@@ -1523,20 +1568,21 @@ void updatePCBAndSendExecutionEndMessage(uint32_t messageCode)
 
 }
 
-void removeCommentsFromScript(t_list* script)
+void removeCommentsFromScript(t_list** script)
 {
-	uint32_t linesQty = list_size(script);
-	char* line;
+	char* line = NULL;
 
-	for(uint32_t i = 0; i < linesQty; i++)
+	bool _line_is_comment(char* _line)
 	{
-		line = (char*) list_get(script, i);
+		return (_line == '#');
+	}
 
-		//If the line starts with a '#' character, it is a comment, it must be removed from the parsed script
-		if(line[0] == '#')
-		{
-			list_remove(script, i);
-		}
+	line = list_remove_by_condition((*script), _line_is_comment);
+
+	while(line != NULL)
+	{
+		free(line);
+		line = list_remove_by_condition((*script), _line_is_comment);
 	}
 }
 
@@ -1587,6 +1633,7 @@ void countProcessInstructions()
 	t_list* parsedScript;
 	char* scriptContent;
 	uint32_t instructionsCounted = 0;
+	uint32_t scriptLines;
 
 	//Receive the pid, programCounter and scriptPath of a process to count instructions
 	if((nbytes = receive_int(schedulerServerSocket, &processId)) <= 0)
@@ -1630,8 +1677,8 @@ void countProcessInstructions()
 	}
 
 
-	scriptContent = requestScriptFromMemory();
-	parsedScript = parseScript(scriptContent);
+	scriptContent = requestScriptFromMemory(&scriptLines);
+	parsedScript = parseScript(scriptContent, scriptLines);
 	instructionsCounted = countInstructionsUntilEndOrIO(parsedScript);
 
 
@@ -1649,11 +1696,12 @@ void countProcessInstructions()
 	}
 }
 
-char* requestScriptFromMemory()
+char* requestScriptFromMemory(uint32_t* scriptLines)
 {
 	int32_t nbytes;
 	char* scriptContent = NULL;
 	int32_t result;
+	int32_t _scriptLines;
 
 	//Ask the memory for the script
 	if((nbytes = send_int(memoryServerSocket, LEER_ARCHIVO)) < 0)
@@ -1711,6 +1759,20 @@ char* requestScriptFromMemory()
 
 		exit(EXIT_FAILURE);
 	}
+	if((nbytes = receive_int(memoryServerSocket, &_scriptLines)) <= 0)
+	{
+		if(nbytes == 0)
+			log_error(cpuLog, "La memoria fue desconectada al intentar recibir el resultado de pedirle un archivo\n");
+		if(nbytes < 0)
+			log_error(cpuLog, "Error al intentar recibir el resultado de pedirle un archivo a la memoria\n");
+
+		log_info(cpuLog, "Debido a una desconexion de la memoria, este proceso se cerrara\n");
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+
+		exit(EXIT_FAILURE);
+	}
+
+	(*scriptLines) = scriptLines;
 
 	return scriptContent;
 }

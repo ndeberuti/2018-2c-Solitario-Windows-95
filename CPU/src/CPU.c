@@ -12,6 +12,7 @@ void initializeVariables()
 	instructionsExecuted = 0;
 	currentProcessQuantum = 0;
 	currentProgramCounter = 0;
+	memoryLineSize = 0;
 
 
 	int32_t result = getConfigs();

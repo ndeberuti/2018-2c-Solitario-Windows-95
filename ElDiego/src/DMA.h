@@ -51,11 +51,12 @@ void showConfigs();
 bool checkIfFileIsInFS(char*);
 char* getFileFromFS(char*);
 void sendProcessErrorMessageToScheduler(uint32_t);
-t_list* parseScript(char*);
+t_list* parseScriptFromMemory(char*, uint32_t);
+t_list* parseScriptFromFS(char*);
 char* convertParsedFileToMemoryBuffer(t_list*, uint32_t*);
 bool sendFileToMemory(char*, uint32_t, char*, uint32_t, uint32_t);
 char* convertParsedFileToFileSystemBuffer(t_list*);
-char* getFileFromMemory(char*);
+char* getFileFromMemory(char*, uint32_t*);
 int32_t sendFileToFileSystem(char*, char*);
 void tellSchedulerToUnblockProcess(uint32_t, char*, bool);
 

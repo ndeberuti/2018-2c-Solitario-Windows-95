@@ -176,8 +176,8 @@ void openFile(uint32_t _socket, bool fileIsScript)
 
 		log_info(dmaLog, "Eeeeeeh voy a abrir laaaaa eeeel archivo \"%s\" para mmmmm eeeel proceso %d", currentFilePath, currentProcess);
 
-		parsedFile = parseScript(fileContents);	//Creates a list, with each element containing a line of the file (in order of appearance)
-		free(fileContents);
+		parsedFile = parseScriptFromFS(fileContents);	//Creates a list, with each element containing a line of the file (in order of appearance)
+ 		free(fileContents);
 
 		fileLines = list_size(parsedFile);
 		fileBuffer = convertParsedFileToMemoryBuffer(parsedFile, &bufferSize);
@@ -256,7 +256,8 @@ void flushFile(uint32_t _socket)
 	if(fileIsInFS)
 	{
 		t_list* parsedFile;
-		char* fileContents = getFileFromMemory(currentFilePath);
+		uint32_t scriptLines;
+		char* fileContents = getFileFromMemory(currentFilePath, &scriptLines);
 		char* fileBuffer = NULL; //Contains a buffer with all the lines of a file, each line contained in a sub-buffer that has the size of a memory line;
 								 //each line is separated by a '\n' character
 
@@ -271,7 +272,7 @@ void flushFile(uint32_t _socket)
 
 		log_info(dmaLog, "Se guardara el archivo \"%s\" en el FS para el proceso %d", currentFilePath, currentProcess);
 
-		parsedFile = parseScript(fileContents);	//Creates a list, with each element containing a line of the file (in order of appearance)
+		parsedFile = parseScriptFromMemory(fileContents, scriptLines);	//Creates a list, with each element containing a line of the file (in order of appearance)
 		free(fileContents);
 
 		fileBuffer = convertParsedFileToFileSystemBuffer(parsedFile);

@@ -37,6 +37,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Bibliotecas/Debug}&quot;"/>
 								</option>
 								<option id="gnu.c.link.option.libs.517120999" name="Libraries (-l)" superClass="gnu.c.link.option.libs" useByScannerDiscovery="false" valueType="libs">
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="commons"/>
 									<listOptionValue builtIn="false" value="Bibliotecas"/>
 									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
