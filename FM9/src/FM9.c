@@ -1440,9 +1440,9 @@ void modificar_linea_segmentacion_paginada(int socket_cpu,int id,int numero_line
 	segmento_paginado_t * segmento_buscado;
 		int resultado, frame, resto;
 
-		int numero_pagina = numero_linea/ config.TAM_PAGINA / config.MAX_LINEA  ;
+		int numero_pagina = (config.MAX_LINEA * numero_linea / config.TAM_PAGINA ) - 1;
 
-		resto = numero_linea % config.TAM_PAGINA / config.MAX_LINEA;
+		resto =  (config.MAX_LINEA * numero_linea) % config.TAM_PAGINA ;
 
 			if(resto > 0){
 
@@ -1452,7 +1452,7 @@ void modificar_linea_segmentacion_paginada(int socket_cpu,int id,int numero_line
 
 
 
-		int corrimiento = numero_linea - (numero_pagina * config.TAM_PAGINA / config.MAX_LINEA);
+		int corrimiento = (numero_pagina * config.TAM_PAGINA / config.MAX_LINEA) - numero_linea -1;
 
 
 		bool es_id(segmento_paginado_t* entrada){
@@ -2124,6 +2124,23 @@ void modificar_linea_paginacion(int socket_cpu,int id,int numero_linea,char* lin
 	t_list* lista_filtrada;
 			int resultado, frame, resto;
 
+
+			int numero_pagina = (config.MAX_LINEA * numero_linea / config.TAM_PAGINA ) - 1;
+
+					resto =  (config.MAX_LINEA * numero_linea) % config.TAM_PAGINA ;
+
+						if(resto > 0){
+
+							numero_pagina++;
+
+						}
+
+
+
+			int corrimiento = (numero_pagina * config.TAM_PAGINA / config.MAX_LINEA) - numero_linea -1;
+
+
+			/*
 			int numero_pagina = numero_linea/ config.TAM_PAGINA / config.MAX_LINEA  ;
 
 			resto = numero_linea % config.TAM_PAGINA / config.MAX_LINEA;
@@ -2137,7 +2154,7 @@ void modificar_linea_paginacion(int socket_cpu,int id,int numero_linea,char* lin
 
 
 			int corrimiento = numero_linea - (numero_pagina * config.TAM_PAGINA / config.MAX_LINEA);
-
+*/
 
 			bool es_id(entrada_tabla_invertida_t* entrada){
 
