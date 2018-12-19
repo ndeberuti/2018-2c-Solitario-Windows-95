@@ -132,8 +132,8 @@ void showConfigs()
 
 bool checkIfFileIsInFS(char* filePath)
 {
-	int32_t nbytes;
-	int32_t isFileInFS;
+	int32_t nbytes = 0;
+	int32_t isFileInFS = 0;
 
 	//Send task and filePath to the FS
 	if((nbytes = send_int(fileSystemServerSocket, VALIDAR_ARCHIVO)) < 0)
@@ -179,9 +179,9 @@ bool checkIfFileIsInFS(char* filePath)
 
 char* getFileFromFS(char* filePath)
 {
-	int32_t nbytes;
-	int32_t operationResult;
-	char* fileContents;
+	int32_t nbytes = 0;
+	int32_t operationResult = 0;
+	char* fileContents = NULL;
 
 	//Send task, filePath, offset & size to the FS;
 	//offset = 0; size = -1  -> means I want to get the whole file (from offset = 0), but I do not know the file size
@@ -262,7 +262,7 @@ char* getFileFromFS(char* filePath)
 
 void sendProcessErrorMessageToScheduler(uint32_t process)
 {
-	int32_t nbytes;
+	int32_t nbytes = 0;
 
 	if((nbytes = send_int(schedulerServerSocket, PROCESS_ERROR)) < 0)
 	{
@@ -286,7 +286,8 @@ t_list* parseScriptFromFS(char* script)
 {
 	//Receives the script that the memory sends and transforms it to a list; the line/instruction 1 of the script is the element with index 0 of the list, and so on...
 
-	t_list* parsedScript =  string_split_to_list(script, "\n");
+	t_list* parsedScript = NULL;
+	parsedScript = string_split_to_list(script, "\n");
 
 	return parsedScript;
 }
@@ -295,9 +296,12 @@ t_list* parseScriptFromFS(char* script)
 //TODO - This is ok for segmentation but maybe not for pagination; this function may be needed to be changed to work well with pagination
 t_list* parseScriptFromMemory(char* script, uint32_t scriptLines)
 {
-	char* buffer;
-	uint32_t currentLineOffset, currentMemoryLineStart, lineLength;
-	t_list* parsedScript = list_create();
+	char* buffer = NULL;
+	uint32_t currentLineOffset = 0;
+	uint32_t currentMemoryLineStart = 0;
+	uint32_t lineLength = 0;
+	t_list* parsedScript = NULL;
+	parsedScript = list_create();
 
 	for(uint32_t i = 0; i < scriptLines; i++)
 	{
@@ -333,7 +337,7 @@ char* convertParsedFileToMemoryBuffer(t_list* parsedFile, uint32_t* bufferSize)
 	size_t _bufferSize = (fileLines * sizeof(char) * memoryLineSize) + 1;	//The '\n' of each line is part of the size of a line
 	char* memoryBuffer = calloc(1, _bufferSize);
 	char* line = NULL;
-	uint32_t lineSize;
+	uint32_t lineSize = 0;
 	uint32_t bufferOffset = 0;
 
 	(*bufferSize) = _bufferSize;
@@ -375,8 +379,8 @@ char* convertParsedFileToMemoryBuffer(t_list* parsedFile, uint32_t* bufferSize)
 
 bool sendFileToMemory(char* filePath, uint32_t lines, char* buffer, uint32_t bufferSize, uint32_t process)
 {
-	int32_t nbytes;
-	int32_t operationResult;
+	int32_t nbytes = 0;
+	int32_t operationResult = 0;
 
 	if((nbytes = send_int(memoryServerSocket, CARGAR_ARCHIVO)) < 0)
 	{
@@ -457,9 +461,9 @@ char* convertParsedFileToFileSystemBuffer(t_list* parsedFile)
 	size_t _bufferSize = (fileLines * sizeof(char) * memoryLineSize) + 1; //The '\n' of each line is part of the line size
 	char* filesystemBuffer = calloc(1, _bufferSize);
 	char* line = NULL;
-	uint32_t lineSize;
+	uint32_t lineSize = 0;
 	uint32_t bufferOffset = 0;
-	uint32_t fileSize;
+	uint32_t fileSize = 0;
 
 
 	if(filesystemBuffer == NULL)
@@ -488,10 +492,10 @@ char* convertParsedFileToFileSystemBuffer(t_list* parsedFile)
 
 char* getFileFromMemory(char* filePath, uint32_t* scriptLines)
 {
-	char* fileContents;
-	int32_t nbytes;
-	int32_t operationResult;
-	uint32_t _scriptLines;
+	char* fileContents = NULL;
+	int32_t nbytes = 0;
+	int32_t operationResult = 0;
+	uint32_t _scriptLines = 0;
 
 	//Send task and filePath to the memory
 	if((nbytes = send_int(memoryServerSocket, FLUSH)) < 0)
@@ -565,8 +569,8 @@ char* getFileFromMemory(char* filePath, uint32_t* scriptLines)
 
 int32_t sendFileToFileSystem(char* filePath, char* dataToReplace)
 {
-	int32_t nbytes;
-	int32_t operationResult;
+	int32_t nbytes = 0;
+	int32_t operationResult = 0;
 
 	//Send the task, filePath, offset, size and data of the file which needs to be flushed
 	//Offset = 0; Size = 0 -> This means that the file is replaced from the beginning (offset = 0) and all data is overwritten (size = 0)
@@ -635,7 +639,7 @@ int32_t sendFileToFileSystem(char* filePath, char* dataToReplace)
 
 void tellSchedulerToUnblockProcess(uint32_t process, char* filePath, bool fileIsScript)
 {
-	int32_t nbytes;
+	int32_t nbytes = 0;
 
 	if((nbytes = send_int(schedulerServerSocket, UNLOCK_PROCESS)) < 0)
 	{

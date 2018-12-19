@@ -9,12 +9,12 @@ void server()
 {
 	fd_set read_fds; //Temporal fd set for the 'select()' function
 	struct sockaddr_in remoteaddr; //Client address
-	uint32_t fdmax; //Number of the max fd I got
-	uint32_t newfd; //Accepted connection _socket
-	int32_t command; //Client command
-	uint32_t nbytes;
-	uint32_t addrlen;
-	int32_t result;
+	uint32_t fdmax = 0; //Number of the max fd I got
+	uint32_t newfd = 0; //Accepted connection _socket
+	int32_t command = 0; //Client command
+	uint32_t nbytes = 0;
+	uint32_t addrlen = 0;
+	int32_t result = 0;
 	FD_ZERO(&master); //Delete master & read sets
 	FD_ZERO(&read_fds);
 
@@ -158,7 +158,7 @@ void dmaTaskHandler(uint32_t task, uint32_t _socket)
 
 void cpuTaskHandler(uint32_t task, uint32_t _socket)
 {
-	uint32_t process;
+	uint32_t process = 0;
 
 	switch(task)
 	{
@@ -238,8 +238,8 @@ void cpuTaskHandler(uint32_t task, uint32_t _socket)
 
 void blockProcessInit(uint32_t _socket, uint32_t* process)
 {
-	int32_t pid;
-	int32_t nbytes;	//This cannot be unsigned; check the recv below
+	int32_t pid = 0;
+	int32_t nbytes = 0;	//This cannot be unsigned; check the recv below
 
 	if((nbytes = receive_int(_socket, &pid)) <= 0)
 	{
@@ -273,7 +273,18 @@ void blockProcessInit(uint32_t _socket, uint32_t* process)
 	{
 		log_info(schedulerLog, "La CPU solicito que el proceso con id %d sea bloqueado luego de intentar inicializarlo", pid);
 
-		blockProcess(pid, true);
+		PCB_t* processToBlock = NULL;
+		processToBlock = removeProcessFromQueueWithId(pid, executionQueue);
+
+		if(processToBlock == NULL)
+		{
+			log_error(schedulerLog, "El proceso %d deberia estar en la cola de ejecucion, pero no se encuentra en ella, por lo que no deberia poder ser bloqueado. Este modulo sera abortado para que evalue la situacion", pid);
+			exit(EXIT_FAILURE);
+		}
+
+		log_info(schedulerLog, "El proceso %d fue quitado de la cola de ejecucion (el sera bloqueado)", processToBlock->pid);
+
+		blockProcess(processToBlock, true);
 		freeCPUBySocket(_socket);
 
 		(*process) = pid;
@@ -282,9 +293,9 @@ void blockProcessInit(uint32_t _socket, uint32_t* process)
 
 void _blockProcess(uint32_t _socket, uint32_t* process)
 {
-	int32_t nbytes;
+	int32_t nbytes = 0;
 	PCB_t* processToBlock = NULL;
-	int32_t isDmaCall;
+	int32_t isDmaCall = 0;
 
 	if((nbytes = recvPCB(_socket, &processToBlock)) <= 0)
 	{
@@ -312,16 +323,20 @@ void _blockProcess(uint32_t _socket, uint32_t* process)
 	{
 		log_info(schedulerLog, "La CPU solicita que se bloquee el proceso %d", processToBlock->pid);
 
-		uint32_t operationOk = updatePCBInExecutionQueue(processToBlock);
+		//uint32_t operationOk = updatePCBInExecutionQueue(processToBlock); //This is useless.. It used to be that the process was updated in the executionQueue and then removed from it whan blocking that process... no more
 
-		if(!operationOk)
+		PCB_t* oldProcess = NULL;
+		oldProcess = removeProcessFromQueueWithId(processToBlock->pid, executionQueue);
+
+		if(oldProcess == NULL)
 		{
-			//TODO (optional) - Handle the error (the process was not in the execution queue)
+			log_error(schedulerLog, "El proceso %d deberia estar en la cola de ejecucion, pero no se encuentra en ella, por lo que no deberia poder ser bloqueado. Este modulo sera abortado para que evalue la situacion", processToBlock->pid);
+			exit(EXIT_FAILURE);
 		}
 
-		blockProcess(processToBlock->pid, isDmaCall); //Could send the PCB to that function, but it is also used by the
-													  //function that blocks a process being initialized (which has no
-													  //new PCB to send to the blockProcess function)
+		log_info(schedulerLog, "El proceso %d fue quitado de la cola de ejecucion (el sera bloqueado)", processToBlock->pid);
+
+		blockProcess(processToBlock, true);	//send the updated process received from the CPU to the blocked queue, not the old one
 
 		freeCPUBySocket(_socket);
 
@@ -331,9 +346,9 @@ void _blockProcess(uint32_t _socket, uint32_t* process)
 
 void _killProcess(uint32_t _socket)
 {
-	int32_t nbytes;
+	int32_t nbytes = 0;
 	PCB_t* processToKill = NULL;
-	int32_t processPidToKill;
+	int32_t processPidToKill = 0;
 
 	if(_socket == dmaSocket)	//If the DMA sent a process error, receive the pid and kill it
 	{
@@ -350,7 +365,18 @@ void _killProcess(uint32_t _socket)
 
 		log_info(schedulerLog, "El DMA solicito la terminacion del proceso con id %d debido a un error", processPidToKill);
 
-		killProcess(processPidToKill);
+
+		PCB_t* oldPCB = removeProcessFromQueueWithId(processPidToKill, executionQueue);
+
+		if(oldPCB == NULL)
+		{
+			log_error(schedulerLog, "El proceso %d deberia estar en la cola de ejecucion, pero no se encuentra en ella, por lo que no deberia poder ser bloqueado. Este modulo sera abortado para que evalue la situacion", processPidToKill);
+			exit(EXIT_FAILURE);
+		}
+
+		log_info(schedulerLog, "El proceso %d fue quitado de la cola de ejecucion (el sera bloqueado)", processPidToKill);
+
+		killProcessWithPCB(oldPCB);
 	}
 	else	//If the CPU sent a process error, receive the PCB, update it in the execution queue and kill the process
 	{
@@ -367,24 +393,30 @@ void _killProcess(uint32_t _socket)
 		}
 		else
 		{
-			log_info(schedulerLog, "La CPU solicito la terminacion del proceso con id %d debido a un error durante su ejecucion", processToKill);
+			log_info(schedulerLog, "La CPU solicito la terminacion del proceso con id %d debido a un error durante su ejecucion", processToKill->pid);
 
-			uint32_t operationOk = updatePCBInExecutionQueue(processToKill);
+			//uint32_t operationOk = updatePCBInExecutionQueue(processToKill); //It is useless to remove the PCB to latter send it to the finished queue (to kill that process)
 
-			if(!operationOk)
+			PCB_t* oldPCB = removeProcessFromQueueWithId(processToKill->pid, executionQueue);
+
+			if(oldPCB == NULL)
 			{
-				//TODO (optional) - Handle the error (the process was not in the execution queue)
+				log_error(schedulerLog, "El proceso %d deberia estar en la cola de ejecucion, pero no se encuentra en ella, por lo que no deberia poder ser bloqueado. Este modulo sera abortado para que evalue la situacion", processToKill->pid);
+				exit(EXIT_FAILURE);
 			}
 
-			killProcess(processToKill->pid); //Could send the PCB to that function, but it is also used by the
-											 //console (which only sends the process id)
+			log_info(schedulerLog, "El proceso %d fue quitado de la cola de ejecucion (el sera bloqueado)", processToKill->pid);
+
+			killProcessWithPCB(processToKill);
 		}
 	}
+
+	freeCPUBySocket(_socket);
 }
 
 void processQuantumEnd(uint32_t _socket, uint32_t* process)
 {
-	int32_t nbytes;
+	int32_t nbytes = 0;
 	PCB_t* updatedPCB = NULL;
 
 	if((nbytes = recvPCB(_socket, &updatedPCB)) <= 0)
@@ -402,7 +434,18 @@ void processQuantumEnd(uint32_t _socket, uint32_t* process)
 	{
 		log_info(schedulerLog, "El proceso con id %d se quedo sin quantum", updatedPCB->pid);
 
-		updatePCBInExecutionQueue(updatedPCB);
+		//updatePCBInExecutionQueue(updatedPCB); //This is useless... better to remove the old PCB from the executionQueue and add the new one to the readyQueue
+
+		PCB_t* oldProcess = NULL;
+		oldProcess = removeProcessFromQueueWithId(updatedPCB->pid, executionQueue);
+
+		if(oldProcess == NULL)	//the process was not in the executionQueue
+		{
+			log_error(schedulerLog, "El proceso %d deberia estar en la cola de ejecucion, pero no se encuentra en ella, por lo que no deberia poder ser bloqueado. Este modulo sera abortado para que evalue la situacion", updatedPCB->pid);
+			exit(EXIT_FAILURE);
+		}
+
+		log_info(schedulerLog, "El proceso %d fue quitado de la cola de ejecucion (por fin de quantum)", updatedPCB->pid);
 
 		moveProcessToReadyQueue(updatedPCB, false);
 
@@ -454,7 +497,7 @@ uint32_t updatePCBInExecutionQueue(PCB_t* updatedPCB)
 	{
 		//ERROR; the process should not be executing!
 		log_error(schedulerLog, "El PCB con id %d de la cola de ejecucion no pudo ser actualizado. Dicho proceso no deberia estar en la cola de ejecucion o, debido a un error, no llego a la misma. El modulo sera abortado para que pueda evaluar la situacion", updatedPCB->pid);
-		exit(EXIT_FAILURE);;
+		exit(EXIT_FAILURE);
 	}
 
 	list_add(executionQueue, updatedPCB);	//Do not care about PCB arrival order in that queue
@@ -470,10 +513,10 @@ uint32_t updatePCBInExecutionQueue(PCB_t* updatedPCB)
 
 void checkIfFileOpen(uint32_t _socket) //Receives pid, fileName length, fileName string
 {
-	int32_t nbytes;
+	int32_t nbytes = 0;
 	char* fileName = NULL;
-	bool result;
-	int32_t pid;
+	bool result = false;
+	int32_t pid = 0;
 
 	if((nbytes = receive_int(_socket, &pid)) <= 0)
 	{
@@ -529,7 +572,7 @@ void checkIfFileOpen(uint32_t _socket) //Receives pid, fileName length, fileName
 					//TODO (Optional) - Send Error Handling
 				}
 
-				log_info(schedulerLog, "El archivo \"%s\" fue abierto por el proceso que solicito la verificacion. Es posible continuar con la ejecucion");
+				log_info(schedulerLog, "El archivo \"%s\" fue abierto por el proceso que solicito la verificacion. Es posible continuar con la ejecucion", fileName);
 			}
 			else if(data->processFileIsAssignedTo == 0)	//File is not claimed by any process; the requesting process will claim the file
 			{
@@ -591,7 +634,7 @@ void checkIfFileOpen(uint32_t _socket) //Receives pid, fileName length, fileName
 
 bool saveFileDataToFileTable(char* filePath, uint32_t pid) //Receives pid, fileName length, fileName string
 {
-	bool result;
+	bool result = false;
 	fileTableData* data = NULL;
 
 
@@ -650,13 +693,14 @@ bool saveFileDataToFileTable(char* filePath, uint32_t pid) //Receives pid, fileN
 
 void closeFile(uint32_t _socket)
 {
-	int32_t nbytes;
-	int32_t pid, processToUnblock;
+	int32_t nbytes = 0;
+	int32_t pid = 0;
+	int32_t processToUnblock = 0;
 	fileTableData* data = NULL;
 	fileTableData* dataToRemove = NULL;
 	t_list* processWaitList = NULL;
 	char* fileName = NULL;
-	bool result;
+	bool result = false;
 
 
 	if((nbytes = receive_int(_socket, &pid)) <= 0)
@@ -755,8 +799,8 @@ void closeFile(uint32_t _socket)
 
 void unlockProcess(uint32_t _socket)
 {
-	int32_t processId;
-	int32_t nbytes;
+	int32_t processId = 0;
+	int32_t nbytes = 0;
 	char* filePath = NULL;
 	int32_t fileIsScript = 0;
 	bool processWasKilled = false;
@@ -811,9 +855,9 @@ void unlockProcess(uint32_t _socket)
 
 void signalResource(uint32_t _socket)
 {
-	int32_t nbytes;
+	int32_t nbytes = 0;
 	char* semaphoreName = NULL;
-	bool result;
+	bool result = 0;
 	semaphoreData* data = NULL;
 
 	if((nbytes = receive_string(_socket, &semaphoreName)) <= 0)
@@ -869,10 +913,10 @@ void signalResource(uint32_t _socket)
 
 void waitResource(uint32_t _socket)
 {
-	int32_t pid;
-	int32_t nbytes;
+	int32_t pid = 0;
+	int32_t nbytes = 0;
 	char* semaphoreName = NULL;
-	bool dictionaryHasKey;
+	bool dictionaryHasKey = 0;
 	semaphoreData* data = NULL;
 	t_list* processWaitList = NULL;
 
@@ -1018,7 +1062,7 @@ void freeCPUBySocket(uint32_t _socket)
 
 void handleCpuConnection(uint32_t _socket)
 {
-	int32_t nbytes;
+	int32_t nbytes = 0;
 
 	log_info(consoleLog, "Nueva conexion de CPU\n");
 
@@ -1086,7 +1130,7 @@ void handleCpuConnection(uint32_t _socket)
 
 void terminateProcess(uint32_t _socket)
 {
-	int32_t nbytes;
+	int32_t nbytes = 0;
 	PCB_t* updatedPCB = NULL;
 
 	if((nbytes = recvPCB(_socket, &updatedPCB)) <= 0)
@@ -1101,9 +1145,19 @@ void terminateProcess(uint32_t _socket)
 		closeSocketAndRemoveCPU(_socket);
 	}
 
-	updatePCBInExecutionQueue(updatedPCB);
+	//updatePCBInExecutionQueue(updatedPCB); //Useless to update the process in the executionQueue to latter remove that process from that queue
 
-	terminateExecutingProcess(updatedPCB->pid);
+	PCB_t* oldPCB = NULL;
+	oldPCB = removeProcessFromQueueWithId(updatedPCB->pid, executionQueue);
+
+	if(oldPCB == NULL)
+	{
+		log_error(schedulerLog, "El proceso %d deberia estar en la cola de ejecucion, pero no se encuentra en ella, por lo que no deberia poder ser bloqueado. Este modulo sera abortado para que evalue la situacion", updatedPCB->pid);
+		exit(EXIT_FAILURE);
+	}
+
+	log_info(schedulerLog, "El proceso %d fue quitado de la cola de ejecucion (el proceso se esta finalizando)", updatedPCB->pid);
+	terminateExecutingProcess(updatedPCB);
 
 	freeCPUBySocket(_socket);
 }

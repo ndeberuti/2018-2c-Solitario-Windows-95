@@ -45,8 +45,8 @@ void initializeVariables()
 
 void executeProcesses()
 {
-	int32_t nbytes;
-	uint32_t task;
+	int32_t nbytes = 0;
+	uint32_t task = 0;
 
 	while(!terminateModule)
 	{

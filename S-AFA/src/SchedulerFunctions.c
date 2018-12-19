@@ -280,21 +280,8 @@ PCB_t* createProcess(char* scriptPathInFS)
 	return process;
 }
 
-void terminateExecutingProcess(uint32_t processId)
+void terminateExecutingProcess(PCB_t* process)
 {
-	bool _process_has_given_id(PCB_t* pcb)
-	{
-		return pcb->pid == processId;
-	}
-
-	pthread_mutex_lock(&executionQueueMutex);
-
-	PCB_t* process = list_remove_by_condition(executionQueue, _process_has_given_id);
-
-	pthread_mutex_unlock(&executionQueueMutex);
-
-	log_info(schedulerLog, "El proceso %d fue quitado de la cola de ejecucion (el proceso se esta finalizando)", processId);
-
 	process->executionState = TERMINATED;
 
 	pthread_mutex_lock(&finishedQueueMutex);
@@ -317,10 +304,10 @@ void terminateExecutingProcess(uint32_t processId)
 		sem_post(&longTermScheduler); //Always let the LTS accept new processes before running the STS
 	*/
 
-	checkAndFreeProcessFiles(processId);
-	checkAndFreeProcessSemaphores(processId);
+	checkAndFreeProcessFiles(process->pid);
+	checkAndFreeProcessSemaphores(process->pid);
 
-	log_info(schedulerLog, "El proceso con id %d fue movido a la cola de procesos terminados, ya que se terminaron las instruccciones de su script", processId);
+	log_info(schedulerLog, "El proceso con id %d fue movido a la cola de procesos terminados, ya que se terminaron las instruccciones de su script", process->pid);
 
 	int32_t ltsSemaphore;
 	sem_getvalue(&longTermScheduler, &ltsSemaphore);
@@ -339,21 +326,12 @@ void unblockProcess(uint32_t processId, bool unblockedByDMA)
 	pthread_mutex_unlock(&configFileMutex);
 
 
-	bool _process_has_given_id(PCB_t* pcb)
-	{
-		return pcb->pid == processId;
-	}
-
-	pthread_mutex_lock(&blockedQueueMutex);
-
 	PCB_t* process = NULL;
-	process = list_remove_by_condition(blockedQueue, _process_has_given_id);
-
-	pthread_mutex_unlock(&blockedQueueMutex);
+	process = removeProcessFromQueueWithId(processId, blockedQueue);
 
 	if(process == NULL)
 	{
-		log_error(schedulerLog, "El proceso %d deberia estar en la cola de bloqueados, pero por alguna razon magica no se encuentra en dicha cola. El modulo se cerrara para que pueda evaluar el error", processId);
+		log_error(schedulerLog, "El proceso %d deberia estar en la cola de bloqueados, pero no se encuentra en ella, por lo que no deberia poder ser desbloqueado (y no deberiua haber llegado una llamada del DMA para desbloquearlo). Este modulo sera abortado para que evalue la situacion", processId);
 		exit(EXIT_FAILURE);
 	}
 
@@ -386,25 +364,13 @@ void unblockProcess(uint32_t processId, bool unblockedByDMA)
 		moveProcessToReadyQueue(process, false);
 }
 
-void blockProcess(uint32_t pid, bool isDmaCall)
-{
-	bool _process_has_given_id(PCB_t* pcb)
-	{
-		return (pcb->pid == pid);
-	}
-
+void blockProcess(PCB_t* process, bool isDmaCall)	//This is both used to block a process when a file is not open, when a semaphore has no instances, or when opening a file
+{												    //That is why I dont pass it a pcb ()
 	pthread_mutex_lock(&metricsGlobalvariablesMutex);
 
 	uint32_t _executedInstructions = executedInstructions;
 
 	pthread_mutex_unlock(&metricsGlobalvariablesMutex);
-
-
-	pthread_mutex_lock(&executionQueueMutex);
-
-	PCB_t* process = list_remove_by_condition(executionQueue, _process_has_given_id);
-
-	pthread_mutex_unlock(&executionQueueMutex);
 
 	process->executionState = BLOCKED;
 	process->cpuProcessIsAssignedTo = 0;
@@ -462,7 +428,7 @@ t_list* getFreeCPUs()
 
 void initializeOrExecuteProcess(PCB_t* process, cpu_t* selectedCPU)
 {
-	int32_t nbytes;
+	int32_t nbytes = 0;
 
 	pthread_mutex_lock(&configFileMutex);
 
@@ -544,38 +510,14 @@ void killProcess(uint32_t pid)
 
 	log_info(schedulerLog, "Se intentara terminar el proceso %d de forma prematura", pid);
 
-	bool process_has_given_id(PCB_t* pcb)
-	{
-		return pcb->pid == pid;
-	}
+	t_list* queues[] = {readyQueue, blockedQueue, executionQueue, finishedQueue, ioReadyQueue};	//An array with a pointer to each of the scheduling queues
 
 	for(uint32_t i = 0; ((i < 5) && (processToKill == NULL)); i++)
 	{
-		switch(i)
-		{
-			case 0:
-				queueToSearch = readyQueue;
-			break;
+		queueToSearch = queues[i];
 
-			case 1:
-				queueToSearch = blockedQueue;
-			break;
-
-			case 2:
-				queueToSearch = executionQueue;
-			break;
-
-			case 3:
-				queueToSearch = finishedQueue;
-			break;
-
-			case 4:
-				queueToSearch = ioReadyQueue;
-			break;
-		}
-
-			//If no processes match the given id, the following function returns NULL
-			processToKill = list_remove_by_condition(queueToSearch, process_has_given_id);
+		//If no processes match the given id, the following function returns NULL
+		processToKill = removeProcessFromQueueWithId(pid, queueToSearch);
 	}
 
 	if(processToKill == NULL)	//The process is not in any of the queues
@@ -630,7 +572,8 @@ void closeSocketAndRemoveCPU(uint32_t cpuSocket)
 
 	pthread_mutex_lock(&cpuListMutex);
 
-	cpu_t* cpuToRemove = list_remove_by_condition(connectedCPUs, _cpu_has_given_socket);
+	cpu_t* cpuToRemove = NULL;
+	cpuToRemove = list_remove_by_condition(connectedCPUs, _cpu_has_given_socket);
 
 	pthread_mutex_unlock(&cpuListMutex);
 
@@ -647,9 +590,9 @@ void checkAndFreeProcessFiles(uint32_t processId)	//Checks if there are any file
 	char* currentFile = NULL;
 	fileTableData* data = NULL;
 	fileTableData* dataToRemove = NULL;
-	uint32_t processToUnblock;
+	uint32_t processToUnblock = 0;
 	t_list* processWaitList = NULL;
-	uint32_t processesWaitingForFile;
+	uint32_t processesWaitingForFile = 0;
 
 	pthread_mutex_lock(&fileTableMutex);
 
@@ -719,7 +662,7 @@ void checkAndFreeProcessSemaphores(uint32_t processId)
 	uint32_t processToUnblock;
 	t_list* processWaitList = NULL;
 	t_list* usingProcessesList = NULL;
-	bool processHasTakenSemaphore;
+	bool processHasTakenSemaphore = false;
 	bool processHasTakenAnySemaphore = false;
 
 
@@ -793,7 +736,7 @@ int32_t send_PCB_with_delay(PCB_t* pcb, uint32_t _socket)
 	uint32_t schedulingDelay = config.schedulingDelay;
 	pthread_mutex_unlock(&configFileMutex);
 
-	int32_t nbytes;
+	int32_t nbytes = 0;
 
 	log_info(schedulerLog, "Se comenzara el envio de un PCB");
 
@@ -863,7 +806,7 @@ void checkAndInitializeProcesses(cpu_t* freeCPU)
 
 	PCB_t* processToInitialize = NULL;
 	t_list* uninitializedProcesses = NULL;
-	uint32_t uninitializedProcessesQty;
+	uint32_t uninitializedProcessesQty = 0;
 
 
 	bool _process_is_uninitialized(PCB_t* pcb)
@@ -926,7 +869,7 @@ void checkAndInitializeProcessesLoop()
 
 	PCB_t* processToInitialize = NULL;
 	t_list* uninitializedProcesses = NULL;
-	uint32_t uninitializedProcessesQty;
+	uint32_t uninitializedProcessesQty = 0;
 	t_list* freeCPUs = getFreeCPUs();	//If there are no freeCPUs, this list is empty
 	uint32_t freeCPUsQty = list_size(freeCPUs);
 	cpu_t* freeCPU = NULL;
@@ -998,4 +941,35 @@ void checkAndInitializeProcessesLoop()
 
 	if(freeCPUs != NULL)
 		list_destroy(freeCPUs);
+}
+
+PCB_t* removeProcessFromQueueWithId(uint32_t processId, t_list* queue)
+{
+	bool _process_has_given_id(PCB_t* pcb)
+	{
+		return pcb->pid == processId;
+	}
+
+	PCB_t* removedPCB = NULL;
+	removedPCB = (PCB_t*) list_remove_by_condition(queue, _process_has_given_id);
+
+	return removedPCB;
+}
+
+void killProcessWithPCB(PCB_t* process)
+{
+	pthread_mutex_lock(&metricsGlobalvariablesMutex);
+
+	killProcessInstructions++;
+
+	pthread_mutex_unlock(&metricsGlobalvariablesMutex);
+
+
+	process->executionState = TERMINATED;
+	list_add(finishedQueue, process);
+
+	checkAndFreeProcessFiles(process->pid);
+	checkAndFreeProcessSemaphores(process->pid);
+
+	log_info(schedulerLog, "El proceso %d fue terminado de forma exitosa, y los recursos que tenia tomados fueron liberados", process->pid);
 }

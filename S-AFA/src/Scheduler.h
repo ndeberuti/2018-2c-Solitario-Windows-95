@@ -181,9 +181,9 @@ uint32_t addProcessToReadyQueue(PCB_t*);
 void moveProcessToReadyQueue(PCB_t*, bool);
 void addProcessToBlockedQueue(PCB_t*);
 PCB_t* createProcess(char*);
-void terminateExecutingProcess(uint32_t);
+void terminateExecutingProcess(PCB_t*);
 void unblockProcess(uint32_t, bool);
-void blockProcess(uint32_t, bool);
+void blockProcess(PCB_t*, bool);
 uint32_t getFreeCPUsQty();
 t_list* getFreeCPUs();
 void initializeOrExecuteProcess(PCB_t*, cpu_t*);
@@ -202,6 +202,8 @@ void showConfigs();
 int32_t send_PCB_with_delay(PCB_t*, uint32_t);
 void checkAndInitializeProcesses(cpu_t*);
 void checkAndInitializeProcessesLoop();
+PCB_t* removeProcessFromQueueWithId(uint32_t, t_list*);
+void killProcessWithPCB(PCB_t*);
 
 //Algorithms
 bool roundRobinScheduler();

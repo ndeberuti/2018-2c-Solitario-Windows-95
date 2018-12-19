@@ -85,7 +85,8 @@ bool customScheduler()
 	cpu_t* selectedCPU = NULL;
 	t_list* schedulableProcesses = NULL;
 	t_list* processesToCountInstructions = NULL;
-	uint32_t processesToCountInstructionsQty, instructionsUntilIO;
+	uint32_t processesToCountInstructionsQty = 0;
+	uint32_t instructionsUntilIO = 0;
 	PCB_t* processToCountInstructions = NULL;
 
 
@@ -153,7 +154,7 @@ bool customScheduler()
 uint32_t countProcessInstructions(PCB_t* process, cpu_t* selectedCPU)
 {
 	int32_t instructionsUntilIO = 0;
-	int32_t nbytes;
+	int32_t nbytes = 0;
 	uint32_t _socket = selectedCPU->clientSocket;	//As this is a request from the scheduler to a CPU, and to avoid its data mixing with
 													//the one received by the scheduler's serverThread, this request is sent to the CPUs serverThread
 

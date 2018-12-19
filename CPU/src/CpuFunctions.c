@@ -146,9 +146,10 @@ void showConfigs()
 
 void connectToServers()
 {
-	uint32_t _socket;
-	int32_t nbytes;
-	int32_t schedulerAlgorithm, _memoryLineSize;
+	uint32_t _socket = 0;
+	int32_t nbytes = 0;
+	int32_t schedulerAlgorithm = 0;
+	int32_t _memoryLineSize = 0;
 
 
 	if ((_socket = connect_server(config.schedulerIp, config.schedulerPort, NEW_CPU_CONNECTION, cpuLog)) == 0)
@@ -230,15 +231,15 @@ void connectToServers()
 
 void executeProcess()
 {
-	uint32_t instructionsQty;
-	int32_t nbytes;
-	uint32_t instructionExecutionResult;
-	uint32_t scriptLines;
+	uint32_t instructionsQty = 0;
+	int32_t nbytes = 0;
+	uint32_t instructionExecutionResult = 0;
+	uint32_t scriptLines = 0;
 	PCB_t* processToExecute = NULL;
 	char* scriptContent = NULL; 	//The contents of a script file, which are in memory (all the lines of instructions of that script arranged in a string)
 	char* lineToParse = NULL;
-	t_list* parsedScript;	//This contains an element for each line/instruction the script has
-	t_list* parsedLine;		//This contains the instruction (first element of the list) and its arguments (each is an element of the list)
+	t_list* parsedScript = NULL;	//This contains an element for each line/instruction the script has
+	t_list* parsedLine = NULL;		//This contains the instruction (first element of the list) and its arguments (each is an element of the list)
 
 	log_info(cpuLog, "El planificador solicita la ejecucion de un proceso");
 
@@ -264,13 +265,16 @@ void executeProcess()
 	instructionsExecuted = 0;
 	currentProcessQuantum = (*processInExecutionPCB)->remainingQuantum;
 	currentProgramCounter = (*processInExecutionPCB)->programCounter;	//The program counter is the number of line of the last instruction that was executed (in the script, lines index starts at 1)
-																	//So, after receiving the PCB, to get the next instruction to execute, I
-																	//must increment the programCounter by 1.
-																	//If this is the first execution for that PCB, the currentProgramCounter == 0
+																	    //So, after receiving the PCB, to get the next instruction to execute, I
+																	    //must increment the programCounter by 1.
+																		//If this is the first execution for that PCB, the currentProgramCounter == 0
 	scriptContent = requestScriptFromMemory(&scriptLines);
+
+	log_info(cpuLog, "Me llego de memoria un scirpt con %d lineas: %s", scriptLines, scriptContent);
 
 	if(scriptContent == NULL)	//Error getting the file from the memory
 	{
+		log_error(cpuLog, "Error al obtener un archivo de memoria. El proceso sera abortado...");
 		handleProcessError();
 		return;
 	}
@@ -312,7 +316,7 @@ void executeProcess()
 		instructionExecutionResult = checkAndExecuteInstruction(parsedLine);
 
 
-		if((instructionExecutionResult == INSTRUCTION_EXECUTED) || (instructionExecutionResult == PROCESS_BLOCKED))
+		if((instructionExecutionResult == INSTRUCTION_EXECUTED))
 		{
 			if((nbytes = send_int(schedulerServerSocket, COMPLETED_INSTRUCTION)) < 0)
 			{
@@ -325,6 +329,24 @@ void executeProcess()
 				exit(EXIT_FAILURE);
 				//TODO (Optional) - Send Error Handling
 			}
+		}
+		else if(instructionExecutionResult == PROCESS_BLOCKED)
+		{
+			if((nbytes = send_int(schedulerServerSocket, COMPLETED_INSTRUCTION)) < 0)
+			{
+				log_error(cpuLog, "Error al indicar al planificador que se ejecuto una instruccion\n");
+				log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+				log_error(socketErrorLog, "Send error: %s", strerror(errno));
+				exit(EXIT_FAILURE);
+				//TODO (Optional) - Send Error Handling
+			}
+
+			free(*processInExecutionPCB);
+			list_destroy_and_destroy_elements(parsedScript, free);
+			free(scriptContent);
+
+			return;
 		}
 		else if((instructionExecutionResult == INSTRUCTION_NOT_EXECUTED) || (instructionExecutionResult == PROCESS_KILLED))
 		{
@@ -364,19 +386,19 @@ void executeProcess()
 		log_info(cpuLog, "El proceso %d finalizo su ejecucion (por fin de quantum) luego de ejecutar %d instrucciones", (*processInExecutionPCB)->pid, instructionsExecuted);
 	}
 
+	free(*processInExecutionPCB);  //After an execution, and after sending the PCB back to the scheduler, its structure must be cleaned
+	list_destroy_and_destroy_elements(parsedScript, free);  //Free the parsed script and all its elements (that are "char*")
+	free(scriptContent);  //Free the script received from the memory
+
 	processInExecutionPCB = NULL;
 	instructionsExecuted = 0;
 	currentProcessQuantum = 0;
 	currentProgramCounter = 0;
-
-	free(*processInExecutionPCB);  //After an execution, and after sending the PCB back to the scheduler, its structure must be cleaned
-	list_destroy_and_destroy_elements(parsedScript, free);  //Free the parsed script and all its elements (that are "char*")
-	free(scriptContent);  //Free the script received from the memory
 }
 
 void initializeProcess()
 {
-	int32_t nbytes;
+	int32_t nbytes = 0;
 	PCB_t* processToInitialize = NULL;
 
 	log_info(cpuLog, "El planificador solicita la incializacion de un proceso");
@@ -449,9 +471,13 @@ t_list* parseScript(char* script)
 //TODO - This is ok for segmentation but maybe not for pagination; this function may be needed to be changed to work well with pagination
 t_list* parseScript(char* script, uint32_t scriptLines)
 {
-	char* buffer;
-	uint32_t currentLineOffset, currentMemoryLineStart, lineLength, aux;
-	t_list* parsedScript = list_create();
+	char* buffer = NULL;
+	uint32_t currentLineOffset = 0;
+	uint32_t currentMemoryLineStart = 0;
+	uint32_t lineLength = 0;
+	uint32_t aux = 0;
+	t_list* parsedScript = NULL;
+	parsedScript = list_create();
 
 	for(uint32_t i = 0; i < scriptLines; i++)
 	{
@@ -479,8 +505,7 @@ t_list* parseScript(char* script, uint32_t scriptLines)
 
 		aux = currentMemoryLineStart + memoryLineSize;
 
-		/*This was a test, not sure if it is necessary
-		 *
+
 		if(script[aux] == '\n') //It reached the last line of the script; add an empty line to the list and get out of the loop
 		{
 			buffer = calloc(1, 1);
@@ -490,7 +515,6 @@ t_list* parseScript(char* script, uint32_t scriptLines)
 
 			break;
 		}
-		*/
 	}
 
 	//removeCommentsFromScript(&parsedScript);	//Comment lines are already being skipped when trying to execute them (in the 'executeProcess' function)
@@ -537,7 +561,6 @@ uint32_t checkAndExecuteInstruction(t_list* parsedLine)	//The 'parsedLine' list 
 		char* filePath = (char*) list_get(parsedLine, 1);
 
 		log_info(cpuLog, "Se comenzara la ejecucion de la instruccion \"abrir\"...\n");
-
 		executionResult = openFile(filePath);
 	}
 	else if(string_equals_ignore_case("concentrar", instruction))
@@ -549,7 +572,8 @@ uint32_t checkAndExecuteInstruction(t_list* parsedLine)	//The 'parsedLine' list 
 		}
 
 		log_info(cpuLog, "Se comenzara la ejecucion de la instruccion \"concentrar\"...\n");
-
+		executionDelay();
+		executionResult = INSTRUCTION_EXECUTED;
 		//Do nothing. This instruction should only count as another instruction execution, but it does nothing; it only makes the thread sleep for
 		//the time specified in the "ExecutionDelay" property of the config file (as any other instruction)
 	}
@@ -571,7 +595,6 @@ uint32_t checkAndExecuteInstruction(t_list* parsedLine)	//The 'parsedLine' list 
 		uint32_t lineNumberInt = (uint32_t) strtol(lineNumber, NULL, 10);
 
 		log_info(cpuLog, "Se comenzara la ejecucion de la instruccion \"asignar\"...\n");
-
 		executionResult = modifyFileLineInMemory(filePath, lineNumberInt, dataToAssign);
 	}
 	else if(string_equals_ignore_case("wait", instruction))
@@ -686,17 +709,8 @@ uint32_t checkAndExecuteInstruction(t_list* parsedLine)	//The 'parsedLine' list 
 		executionResult = handleProcessError();
 	}
 
-	if((executionResult == INSTRUCTION_EXECUTED) || (executionResult == PROCESS_BLOCKED))	//Everything went OK
-	{
-		//Sleep for some time (ExecutionDelay)
-		log_info(cpuLog, "Retardo de ejecucion...\n");
 
-		double milisecondsSleep = config.executionDelay / 1000;
-		sleep(milisecondsSleep);
-
-		log_info(cpuLog, "Se ha finalizado la ejecucion de la instruccion\n");
-	}
-	else if((executionResult == INSTRUCTION_NOT_EXECUTED) || (executionResult == PROCESS_KILLED))
+	if((executionResult == INSTRUCTION_NOT_EXECUTED) || (executionResult == PROCESS_KILLED))
 	{
 		log_info(cpuLog, "La ultima instruccion que se intento ejecutar para el proceso %d produjo un error, por lo que se ordeno la terminacion de dicho proceso...", (*processInExecutionPCB)->pid);
 	}
@@ -756,6 +770,7 @@ uint32_t modifyFileLineInMemory(char* filePathInFS, uint32_t lineNumber, char* d
 		case FILE_OPEN:
 			//Tell the DMA to modify a file and send the filePath, the number of the line that should be modified, and the data to insert in that line
 			//Wait for the memory to confirm the result of the operation before continuing execution
+			executionDelay();
 			return handleModifyFile(filePathInFS, lineNumber, dataToAssign);
 		break;
 	}
@@ -765,8 +780,8 @@ uint32_t modifyFileLineInMemory(char* filePathInFS, uint32_t lineNumber, char* d
 
 uint32_t waitSemaphore(char* semaphoreName)
 {
-	int32_t nbytes;
-	int32_t message;
+	int32_t nbytes = 0;
+	int32_t message = 0;
 
 	//Tell the scheduler to wait on that semaphore, then wait for the result
 	if((nbytes = send_int(schedulerServerSocket, WAIT_RESOURCE)) < 0)
@@ -822,12 +837,14 @@ uint32_t waitSemaphore(char* semaphoreName)
 	{
 		//If the scheduler could wait on the semaphore, continue execution (so, do nothing here)...
 		log_info(cpuLog, "Se realizo con exito la operacion WAIT sobre el semaforo \"%s\"\n", semaphoreName);
+		executionDelay();
 		return INSTRUCTION_EXECUTED;
 	}
 	else if(message == WAIT_ERROR)
 	{
 		//Send the scheduler a blockProcess request, so the process waits for the semaphore to become free
 		log_info(cpuLog, "Se intento realizar la operacion WAIT sobre el semaforo \"%s\", pero el mismo se encuentra ocupado ocupado (no presenta mas instancias disponibles)\nEl proceso sera bloqueado...\n", semaphoreName);
+		executionDelay();
 		return tellSchedulerToBlockProcess(false);
 	}
 
@@ -836,8 +853,8 @@ uint32_t waitSemaphore(char* semaphoreName)
 
 uint32_t signalSemaphore(char* semaphoreName)
 {
-	int32_t nbytes;
-	int32_t message;
+	int32_t nbytes = 0;
+	int32_t message = 0;
 
 	//Tell the scheduler to wait on that semaphore, then wait for the result
 	if((nbytes = send_int(schedulerServerSocket, SIGNAL_RESOURCE)) < 0)
@@ -893,6 +910,7 @@ uint32_t signalSemaphore(char* semaphoreName)
 	{
 		//If the scheduler could wait on the semaphore, continue execution (so, do nothing here)...
 		log_info(cpuLog, "Se realizo con exito la operacion SIGNAL sobre el semaforo \"%s\"\n", semaphoreName);
+		executionDelay();
 		return INSTRUCTION_EXECUTED;
 	}
 	else if(message == SIGNAL_ERROR)
@@ -961,7 +979,8 @@ uint32_t closeFile(char* filePathInFS)
 
 uint32_t createFile(char* filePathInFS, uint32_t numberOfLines)
 {
-	int32_t nbytes;
+	int32_t nbytes = 0;
+	uint32_t processId = (*processInExecutionPCB)->pid;
 
 	//Tell the DMA to create the file in the specified path and with the specified number of lines; also send the ID of the process that asks for the file creation
 	if((nbytes = send_int(dmaServerSocket, CREATE_FILE)) < 0)
@@ -975,7 +994,7 @@ uint32_t createFile(char* filePathInFS, uint32_t numberOfLines)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int(dmaServerSocket, (*processInExecutionPCB)->pid)) < 0)
+	if((nbytes = send_int(dmaServerSocket, processId)) < 0)
 	{
 		log_error(cpuLog, "Error al enviar al DMA el pid del proceso para el cual se debe crear un archivo\n");
 
@@ -1006,12 +1025,15 @@ uint32_t createFile(char* filePathInFS, uint32_t numberOfLines)
 		//TODO (Optional) - Send Error Handling
 	}
 
+	log_info(cpuLog, "Se solicito al DMA la creacion del archivo \"%s\" con %d lineas para el proceso %d", filePathInFS, numberOfLines, processId);
+	executionDelay();
 	return tellSchedulerToBlockProcess(true);
 }
 
 uint32_t deleteFile(char* filePathInFS)
 {
-	int32_t nbytes;
+	int32_t nbytes = 0;
+	uint32_t processId = (*processInExecutionPCB)->pid;
 
 	//Tell the DMA to delete the file in the specified path
 	if((nbytes = send_int(dmaServerSocket, DELETE_FILE)) < 0)
@@ -1025,7 +1047,7 @@ uint32_t deleteFile(char* filePathInFS)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int(dmaServerSocket, (*processInExecutionPCB)->pid)) < 0)
+	if((nbytes = send_int(dmaServerSocket, processId)) < 0)
 	{
 		log_error(cpuLog, "Error al enviar al DMA el pid del proceso para el cual se debe elimninar un archivo\n");
 
@@ -1048,13 +1070,15 @@ uint32_t deleteFile(char* filePathInFS)
 		//TODO (Optional) - Send Error Handling
 	}
 
+	log_info(cpuLog, "Se solicito al DMA la eliminacion del archivo \"%s\" para el proceso %d", filePathInFS, processId);
+	executionDelay();
 	return tellSchedulerToBlockProcess(true);
 }
 
 uint32_t askSchedulerIfFileOpen(char* filePathInFS)
 {
-	int32_t nbytes;
-	int32_t message;
+	int32_t nbytes = 0;
+	int32_t message = 0;
 
 	//Send the scheduler the taskCode, the current process' ID, and the path of the file to open (in order for the scheduler to locate it in the fileTable)
 	if((nbytes = send_int(schedulerServerSocket, CHECK_IF_FILE_OPEN)) < 0)
@@ -1116,6 +1140,8 @@ uint32_t handleFileNotOpen(char* filePathInFS, bool raiseError)
 
 	if(!raiseError)
 	{
+		executionDelay();
+
 		sendOpenFileRequestToDMA(filePathInFS, OPEN_FILE);
 		return tellSchedulerToBlockProcess(false);
 	}
@@ -1148,7 +1174,7 @@ uint32_t handleProcessError()
 	//Send a message to the scheduler telling it to kill the current process due to an error
 	//Also, tell the memory there was an error, so it removes all files opened by this process and discards the changes
 
-	int32_t nbytes;
+	int32_t nbytes = 0;
 
 	updateCurrentPCB();
 
@@ -1185,8 +1211,8 @@ uint32_t handleProcessError()
 
 void tellMemoryToFreeProcessData()
 {
-	int32_t nbytes;
-	int32_t message;
+	int32_t nbytes = 0;
+	int32_t message = 0;
 
 	if((nbytes = send_int(memoryServerSocket, CLOSE_PROCESS)) < 0)
 	{
@@ -1246,7 +1272,7 @@ void tellMemoryToFreeProcessData()
 
 uint32_t tellSchedulerToBlockProcess(bool isDmaCall)
 {
-	int32_t nbytes;
+	int32_t nbytes = 0;
 
 	updateCurrentPCB();
 
@@ -1292,8 +1318,8 @@ uint32_t tellSchedulerToBlockProcess(bool isDmaCall)
 
 uint32_t handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToAssign)
 {
-	int32_t nbytes;
-	int32_t message;
+	int32_t nbytes = 0;
+	int32_t message = 0;
 
 	//Tell the memory to modify a file and send the filePath, the number of the line that should be modified, and the data to insert in that line
 	if((nbytes = send_int(memoryServerSocket, ASIGNAR)) < 0)
@@ -1342,7 +1368,7 @@ uint32_t handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToA
 	}
 
 	//Wait for the memory to confirm the result of the operation before continuing execution
-	if((nbytes = receive_int(schedulerServerSocket, &message)) <= 0)
+	if((nbytes = receive_int(memoryServerSocket, &message)) <= 0)
 	{
 		if(nbytes == 0)
 			log_error(cpuLog, "EL planificador fue desconectado al intentar recibir la confirmacion de si un archivo se encuentra abierto\n");
@@ -1379,7 +1405,7 @@ uint32_t handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToA
 
 uint32_t handleFlushFile(char* filePathInFS)
 {
-	int32_t nbytes;
+	int32_t nbytes = 0;
 
 	//Tell the DMA to flush the file and send the filePath
 	if((nbytes = send_int(dmaServerSocket, FLUSH_FILE)) < 0)
@@ -1417,16 +1443,16 @@ uint32_t handleFlushFile(char* filePathInFS)
 	}
 
 	log_info(cpuLog, "Se solicito al DMA la descarga de la informacion en memoria del archivo del path \"%s\"\n", filePathInFS);
-
+	executionDelay();
 	return tellSchedulerToBlockProcess(true);
 }
 
 uint32_t handleCloseFile(char* filePathInFS)
 {
-	int32_t nbytes;
-	int32_t message;
+	int32_t nbytes = 0;
+	int32_t message = 0;
 
-	//Tell the scheduler to wait on that semaphore, then wait for the result
+	//Tell the scheduler to close a file
 	if((nbytes = send_int(schedulerServerSocket, CLOSE_FILE)) < 0)
 	{
 		log_error(cpuLog, "Error al solicitar al planificador que cierre un archivo\n");
@@ -1503,12 +1529,12 @@ uint32_t handleCloseFile(char* filePathInFS)
 	if(message == ARCHIVO_NO_ABIERTO)
 	{
 		log_info(cpuLog, "El archivo \"%s\" que se intento quitar de memoria no se encuentra en ella. El proceso sera terminado...", filePathInFS);
-
 		return handleProcessError();
 	}
 	else if(message == OK)
 	{
 		log_info(cpuLog, "Se ha cerrado exitosamente el archivo de la ruta \"%s\"", filePathInFS);
+		executionDelay();
 		return INSTRUCTION_EXECUTED;
 	}
 
@@ -1538,8 +1564,8 @@ void updateCurrentPCB()
 
 void updatePCBAndSendExecutionEndMessage(uint32_t messageCode)
 {
-	int32_t nbytes;
-	int32_t message;
+	int32_t nbytes = 0;
+	int32_t message = 0;
 
 	updateCurrentPCB();
 
@@ -1591,7 +1617,7 @@ uint32_t countInstructionsUntilEndOrIO(t_list* parsedScript)
 	uint32_t linesQty = list_size(parsedScript);
 	uint32_t instructionsCount = 0;
 	char* line = NULL;
-	t_list* parsedLine;
+	t_list* parsedLine = NULL;
 
 	//Counts how many instructions are left until the next IO operation or end of script
 
@@ -1626,14 +1652,14 @@ bool isIoInstruction(t_list* parsedLine)	//Receives a list that represents the p
 
 void countProcessInstructions()
 {
-	int32_t nbytes;
-	int32_t processId;
-	int32_t programCounter;
-	char* scriptPath;
-	t_list* parsedScript;
-	char* scriptContent;
+	int32_t nbytes = 0;
+	int32_t processId = 0;
+	int32_t programCounter = 0;
+	char* scriptPath = NULL;
+	t_list* parsedScript = NULL;
+	char* scriptContent = NULL;
 	uint32_t instructionsCounted = 0;
-	uint32_t scriptLines;
+	uint32_t scriptLines = 0;
 
 	//Receive the pid, programCounter and scriptPath of a process to count instructions
 	if((nbytes = receive_int(schedulerServerSocket, &processId)) <= 0)
@@ -1698,10 +1724,11 @@ void countProcessInstructions()
 
 char* requestScriptFromMemory(uint32_t* scriptLines)
 {
-	int32_t nbytes;
+	int32_t nbytes = 0;
 	char* scriptContent = NULL;
-	int32_t result;
-	int32_t _scriptLines;
+	int32_t result = 0;
+	int32_t _scriptLines = 0;
+	int32_t bufferSize = 0;
 
 	//Ask the memory for the script
 	if((nbytes = send_int(memoryServerSocket, LEER_ARCHIVO)) < 0)
@@ -1742,7 +1769,7 @@ char* requestScriptFromMemory(uint32_t* scriptLines)
 
 	if(result != OK)
 	{
-		log_error(cpuLog, "La memoria devolvio un error al intentar recibir un archivo de ella. El proceso sera abortado");
+		log_error(cpuLog, "La memoria devolvio un error (result = %d) al intentar recibir un archivo de ella. El proceso sera abortado", result);
 		return NULL;
 	}
 
@@ -1772,14 +1799,14 @@ char* requestScriptFromMemory(uint32_t* scriptLines)
 		exit(EXIT_FAILURE);
 	}
 
-	(*scriptLines) = scriptLines;
+	(*scriptLines) = (uint32_t) _scriptLines;
 
 	return scriptContent;
 }
 
 void sendOpenFileRequestToDMA(char* filePathInFS, uint32_t messageCode)
 {
-	int32_t nbytes;
+	int32_t nbytes = 0;
 
 	//Send the task to the DMA, the process ID and the path of the file to open
 	if((nbytes = send_int(dmaServerSocket, messageCode)) < 0)
@@ -1823,4 +1850,15 @@ void freePCB(PCB_t* pcb)
 {
 	free(pcb->scriptPathInFS);
 	free(pcb);
+}
+
+void executionDelay()
+{
+	//Sleep for some time (ExecutionDelay)
+	log_info(cpuLog, "Retardo de ejecucion...\n");
+
+	double milisecondsSleep = config.executionDelay / 1000;
+	sleep(milisecondsSleep);
+
+	log_info(cpuLog, "Se ha finalizado la ejecucion de la instruccion\n");
 }

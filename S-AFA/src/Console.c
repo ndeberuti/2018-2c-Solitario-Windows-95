@@ -186,9 +186,9 @@ void getProcessStatus(uint32_t processId)
 
 	char *queueName = NULL;
 	char *scriptName = NULL, *wasInitialized = NULL;
-	uint32_t pid, programCounter, cpuProcessIsAssignedTo, remainingQuantum, newQueueArrivalTime;
-	uint32_t newQueueLeaveTime, instructionsExecuted, completedDmaCalls, lastIOStartTime, responseTimes;
-	uint32_t instructionsExecutedOnLastExecution, instructionsUntilIoOrEnd;
+	uint32_t pid = 0, programCounter = 0, cpuProcessIsAssignedTo = 0, remainingQuantum = 0, newQueueArrivalTime = 0;
+	uint32_t newQueueLeaveTime = 0, instructionsExecuted = 0, completedDmaCalls = 0, lastIOStartTime = 0, responseTimes = 0;
+	uint32_t instructionsExecutedOnLastExecution = 0, instructionsUntilIoOrEnd = 0;
 
 	PCB_t* process = getProcessFromSchedulingQueues(processId, &queueName); //queueName == executionState
 
@@ -248,7 +248,7 @@ void getQueuesStatus()
 
 	char *queueName = NULL;
 	char *stringToReplace = NULL;
-	uint32_t pid;
+	uint32_t pid = 0;
 	char* stringToAppend = NULL;
 	t_list* queueToSearch = NULL;
 	t_list* mappedList = NULL;
@@ -378,8 +378,8 @@ void getQueuesStatus()
 
 void terminateProcessConsole(uint32_t processId)
 {
-	int32_t nbytes;
-	uint32_t _socket;
+	int32_t nbytes = 0;
+	uint32_t _socket = 0;
 	cpu_t* cpu = NULL;
 
 	bool cpu_is_executing_given_process(cpu_t* cpu)

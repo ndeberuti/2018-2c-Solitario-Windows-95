@@ -3,8 +3,8 @@
 
 void connectToServers()
 {
-	int32_t nbytes;
-	int32_t _lineSize;
+	int32_t nbytes = 0;
+	int32_t _lineSize = 0;
 
 	if ((schedulerServerSocket = connect_server(config.schedulerIp, config.schedulerPort, NEW_DMA_CONNECTION, dmaLog)) == 0)
 	{

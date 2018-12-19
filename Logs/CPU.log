@@ -1075,3 +1075,1296 @@
 [WARNING] 04:10:04:877 Proceso CPU/(19926:19926): Se intentaron quitar archivos de la memoria que no se encuentran en ella
 [INFO] 04:10:04:878 Proceso CPU/(19926:19926): El proceso 1 finalizo su ejecucion (por fin de script) luego de ejecutar 1 instrucciones
 [ERROR] 04:10:04:879 Proceso CPU/(19926:19926): El planificador se desconecto al intentar recibir una tarea del mismo
+[INFO] 03:27:51:698 Proceso CPU/(10036:10036): ---- Configuracion ----
+
+[INFO] 03:27:51:717 Proceso CPU/(10036:10036): IP_SAFA = 127.0.0.1
+[INFO] 03:27:51:718 Proceso CPU/(10036:10036): Puerto_SAFA = 8000
+[INFO] 03:27:51:718 Proceso CPU/(10036:10036): IP_DAM = 127.0.0.1
+[INFO] 03:27:51:718 Proceso CPU/(10036:10036): Puerto_DAM = 8001
+[INFO] 03:27:51:719 Proceso CPU/(10036:10036): IP_FM9 = 127.0.0.1
+[INFO] 03:27:51:719 Proceso CPU/(10036:10036): Puerto_FM9 = 8003
+[INFO] 03:27:51:719 Proceso CPU/(10036:10036): IP_CPU = 127.0.0.1
+[INFO] 03:27:51:720 Proceso CPU/(10036:10036): Puerto_CPU = 8004
+[INFO] 03:27:51:720 Proceso CPU/(10036:10036): Retardo de Ejecucion = 100
+[INFO] 03:27:51:720 Proceso CPU/(10036:10036): -----------------------
+
+[ERROR] 03:27:51:730 Proceso CPU/(10036:10036): Error al recibir el tipo de algoritmo del planificador
+
+[ERROR] 03:27:51:745 Proceso CPU/(10036:10036): Debido a un error en la comunicacion con el planificador, se abortara el modulo
+[INFO] 03:29:24:579 Proceso CPU/(10143:10143): ---- Configuracion ----
+
+[INFO] 03:29:24:597 Proceso CPU/(10143:10143): IP_SAFA = 127.0.0.1
+[INFO] 03:29:24:598 Proceso CPU/(10143:10143): Puerto_SAFA = 8000
+[INFO] 03:29:24:598 Proceso CPU/(10143:10143): IP_DAM = 127.0.0.1
+[INFO] 03:29:24:599 Proceso CPU/(10143:10143): Puerto_DAM = 8001
+[INFO] 03:29:24:599 Proceso CPU/(10143:10143): IP_FM9 = 127.0.0.1
+[INFO] 03:29:24:600 Proceso CPU/(10143:10143): Puerto_FM9 = 8003
+[INFO] 03:29:24:600 Proceso CPU/(10143:10143): IP_CPU = 127.0.0.1
+[INFO] 03:29:24:600 Proceso CPU/(10143:10143): Puerto_CPU = 8004
+[INFO] 03:29:24:601 Proceso CPU/(10143:10143): Retardo de Ejecucion = 100
+[INFO] 03:29:24:601 Proceso CPU/(10143:10143): -----------------------
+
+[INFO] 03:29:24:614 Proceso CPU/(10143:10143): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 03:29:24:618 Proceso CPU/(10143:10143): Conexion con El Diego exitosa
+[INFO] 03:29:24:620 Proceso CPU/(10143:10143): Conexion con FM9 exitosa
+[INFO] 03:29:24:621 Proceso CPU/(10143:10143): Inicio del proceso
+
+[ERROR] 03:29:24:622 Proceso CPU/(10143:10143): Error al intentar recibir una tarea del planificador
+[INFO] 03:33:25:156 Proceso CPU/(10329:10329): ---- Configuracion ----
+
+[INFO] 03:33:25:174 Proceso CPU/(10329:10329): IP_SAFA = 127.0.0.1
+[INFO] 03:33:25:175 Proceso CPU/(10329:10329): Puerto_SAFA = 8000
+[INFO] 03:33:25:175 Proceso CPU/(10329:10329): IP_DAM = 127.0.0.1
+[INFO] 03:33:25:176 Proceso CPU/(10329:10329): Puerto_DAM = 8001
+[INFO] 03:33:25:176 Proceso CPU/(10329:10329): IP_FM9 = 127.0.0.1
+[INFO] 03:33:25:176 Proceso CPU/(10329:10329): Puerto_FM9 = 8003
+[INFO] 03:33:25:177 Proceso CPU/(10329:10329): IP_CPU = 127.0.0.1
+[INFO] 03:33:25:177 Proceso CPU/(10329:10329): Puerto_CPU = 8004
+[INFO] 03:33:25:177 Proceso CPU/(10329:10329): Retardo de Ejecucion = 100
+[INFO] 03:33:25:178 Proceso CPU/(10329:10329): -----------------------
+
+[INFO] 03:33:25:188 Proceso CPU/(10329:10329): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 03:33:25:189 Proceso CPU/(10329:10329): Conexion con El Diego exitosa
+[INFO] 03:33:25:191 Proceso CPU/(10329:10329): Conexion con FM9 exitosa
+[INFO] 03:33:25:191 Proceso CPU/(10329:10329): Inicio del proceso
+
+[INFO] 03:33:37:931 Proceso CPU/(10329:10329): El planificador solicita la incializacion de un proceso
+[INFO] 03:33:37:940 Proceso CPU/(10329:10329): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 03:33:37:946 Proceso CPU/(10329:10329): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 03:33:40:82 Proceso CPU/(10329:10329): El planificador solicita la ejecucion de un proceso
+[INFO] 03:33:40:122 Proceso CPU/(10329:10329): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 03:35:16:478 Proceso CPU/(10477:10477): ---- Configuracion ----
+
+[INFO] 03:35:16:495 Proceso CPU/(10477:10477): IP_SAFA = 127.0.0.1
+[INFO] 03:35:16:496 Proceso CPU/(10477:10477): Puerto_SAFA = 8000
+[INFO] 03:35:16:496 Proceso CPU/(10477:10477): IP_DAM = 127.0.0.1
+[INFO] 03:35:16:497 Proceso CPU/(10477:10477): Puerto_DAM = 8001
+[INFO] 03:35:16:497 Proceso CPU/(10477:10477): IP_FM9 = 127.0.0.1
+[INFO] 03:35:16:497 Proceso CPU/(10477:10477): Puerto_FM9 = 8003
+[INFO] 03:35:16:498 Proceso CPU/(10477:10477): IP_CPU = 127.0.0.1
+[INFO] 03:35:16:498 Proceso CPU/(10477:10477): Puerto_CPU = 8004
+[INFO] 03:35:16:498 Proceso CPU/(10477:10477): Retardo de Ejecucion = 100
+[INFO] 03:35:16:499 Proceso CPU/(10477:10477): -----------------------
+
+[INFO] 03:35:16:512 Proceso CPU/(10477:10477): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 03:35:16:515 Proceso CPU/(10477:10477): Conexion con El Diego exitosa
+[INFO] 03:35:16:517 Proceso CPU/(10477:10477): Conexion con FM9 exitosa
+[INFO] 03:35:16:517 Proceso CPU/(10477:10477): Inicio del proceso
+
+[INFO] 03:35:27:274 Proceso CPU/(10477:10477): El planificador solicita la incializacion de un proceso
+[INFO] 03:35:27:283 Proceso CPU/(10477:10477): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 03:35:27:289 Proceso CPU/(10477:10477): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 03:35:29:416 Proceso CPU/(10477:10477): El planificador solicita la ejecucion de un proceso
+[INFO] 03:35:29:454 Proceso CPU/(10477:10477): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 03:38:27:314 Proceso CPU/(10639:10639): ---- Configuracion ----
+
+[INFO] 03:38:27:342 Proceso CPU/(10639:10639): IP_SAFA = 127.0.0.1
+[INFO] 03:38:27:343 Proceso CPU/(10639:10639): Puerto_SAFA = 8000
+[INFO] 03:38:27:343 Proceso CPU/(10639:10639): IP_DAM = 127.0.0.1
+[INFO] 03:38:27:344 Proceso CPU/(10639:10639): Puerto_DAM = 8001
+[INFO] 03:38:27:344 Proceso CPU/(10639:10639): IP_FM9 = 127.0.0.1
+[INFO] 03:38:27:345 Proceso CPU/(10639:10639): Puerto_FM9 = 8003
+[INFO] 03:38:27:346 Proceso CPU/(10639:10639): IP_CPU = 127.0.0.1
+[INFO] 03:38:27:346 Proceso CPU/(10639:10639): Puerto_CPU = 8004
+[INFO] 03:38:27:347 Proceso CPU/(10639:10639): Retardo de Ejecucion = 100
+[INFO] 03:38:27:347 Proceso CPU/(10639:10639): -----------------------
+
+[INFO] 03:38:27:367 Proceso CPU/(10639:10639): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 03:38:27:374 Proceso CPU/(10639:10639): Conexion con El Diego exitosa
+[INFO] 03:38:27:377 Proceso CPU/(10639:10639): Conexion con FM9 exitosa
+[INFO] 03:38:27:378 Proceso CPU/(10639:10639): Inicio del proceso
+
+[INFO] 03:38:36:980 Proceso CPU/(10639:10639): El planificador solicita la incializacion de un proceso
+[INFO] 03:38:36:990 Proceso CPU/(10639:10639): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 03:38:36:996 Proceso CPU/(10639:10639): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 03:38:39:124 Proceso CPU/(10639:10639): El planificador solicita la ejecucion de un proceso
+[INFO] 03:38:39:162 Proceso CPU/(10639:10639): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 03:41:06:301 Proceso CPU/(10786:10786): ---- Configuracion ----
+
+[INFO] 03:41:06:319 Proceso CPU/(10786:10786): IP_SAFA = 127.0.0.1
+[INFO] 03:41:06:319 Proceso CPU/(10786:10786): Puerto_SAFA = 8000
+[INFO] 03:41:06:320 Proceso CPU/(10786:10786): IP_DAM = 127.0.0.1
+[INFO] 03:41:06:320 Proceso CPU/(10786:10786): Puerto_DAM = 8001
+[INFO] 03:41:06:320 Proceso CPU/(10786:10786): IP_FM9 = 127.0.0.1
+[INFO] 03:41:06:321 Proceso CPU/(10786:10786): Puerto_FM9 = 8003
+[INFO] 03:41:06:321 Proceso CPU/(10786:10786): IP_CPU = 127.0.0.1
+[INFO] 03:41:06:321 Proceso CPU/(10786:10786): Puerto_CPU = 8004
+[INFO] 03:41:06:322 Proceso CPU/(10786:10786): Retardo de Ejecucion = 100
+[INFO] 03:41:06:322 Proceso CPU/(10786:10786): -----------------------
+
+[INFO] 03:41:06:336 Proceso CPU/(10786:10786): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 03:41:06:339 Proceso CPU/(10786:10786): Conexion con El Diego exitosa
+[INFO] 03:41:06:340 Proceso CPU/(10786:10786): Conexion con FM9 exitosa
+[INFO] 03:41:06:341 Proceso CPU/(10786:10786): Inicio del proceso
+
+[INFO] 03:41:14:946 Proceso CPU/(10786:10786): El planificador solicita la incializacion de un proceso
+[INFO] 03:41:14:955 Proceso CPU/(10786:10786): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 03:41:14:957 Proceso CPU/(10786:10786): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 03:41:17:88 Proceso CPU/(10786:10786): El planificador solicita la ejecucion de un proceso
+[INFO] 03:41:17:126 Proceso CPU/(10786:10786): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 03:54:57:652 Proceso CPU/(11213:11213): ---- Configuracion ----
+
+[INFO] 03:54:57:672 Proceso CPU/(11213:11213): IP_SAFA = 127.0.0.1
+[INFO] 03:54:57:673 Proceso CPU/(11213:11213): Puerto_SAFA = 8000
+[INFO] 03:54:57:673 Proceso CPU/(11213:11213): IP_DAM = 127.0.0.1
+[INFO] 03:54:57:674 Proceso CPU/(11213:11213): Puerto_DAM = 8001
+[INFO] 03:54:57:674 Proceso CPU/(11213:11213): IP_FM9 = 127.0.0.1
+[INFO] 03:54:57:674 Proceso CPU/(11213:11213): Puerto_FM9 = 8003
+[INFO] 03:54:57:675 Proceso CPU/(11213:11213): IP_CPU = 127.0.0.1
+[INFO] 03:54:57:675 Proceso CPU/(11213:11213): Puerto_CPU = 8004
+[INFO] 03:54:57:675 Proceso CPU/(11213:11213): Retardo de Ejecucion = 100
+[INFO] 03:54:57:676 Proceso CPU/(11213:11213): -----------------------
+
+[INFO] 03:54:57:688 Proceso CPU/(11213:11213): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 03:54:57:692 Proceso CPU/(11213:11213): Conexion con El Diego exitosa
+[INFO] 03:54:57:693 Proceso CPU/(11213:11213): Conexion con FM9 exitosa
+[INFO] 03:54:57:694 Proceso CPU/(11213:11213): Inicio del proceso
+
+[INFO] 03:55:08:181 Proceso CPU/(11213:11213): El planificador solicita la incializacion de un proceso
+[INFO] 03:55:08:191 Proceso CPU/(11213:11213): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 03:55:08:192 Proceso CPU/(11213:11213): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 03:55:10:330 Proceso CPU/(11213:11213): El planificador solicita la ejecucion de un proceso
+[INFO] 03:55:10:370 Proceso CPU/(11213:11213): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 20:27:19:818 Proceso CPU/(3891:3891): ---- Configuracion ----
+
+[INFO] 20:27:19:840 Proceso CPU/(3891:3891): IP_SAFA = 127.0.0.1
+[INFO] 20:27:19:841 Proceso CPU/(3891:3891): Puerto_SAFA = 8000
+[INFO] 20:27:19:842 Proceso CPU/(3891:3891): IP_DAM = 127.0.0.1
+[INFO] 20:27:19:842 Proceso CPU/(3891:3891): Puerto_DAM = 8001
+[INFO] 20:27:19:843 Proceso CPU/(3891:3891): IP_FM9 = 127.0.0.1
+[INFO] 20:27:19:843 Proceso CPU/(3891:3891): Puerto_FM9 = 8003
+[INFO] 20:27:19:843 Proceso CPU/(3891:3891): IP_CPU = 127.0.0.1
+[INFO] 20:27:19:844 Proceso CPU/(3891:3891): Puerto_CPU = 8004
+[INFO] 20:27:19:845 Proceso CPU/(3891:3891): Retardo de Ejecucion = 100
+[INFO] 20:27:19:845 Proceso CPU/(3891:3891): -----------------------
+
+[INFO] 20:27:19:862 Proceso CPU/(3891:3891): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 20:27:19:870 Proceso CPU/(3891:3891): Conexion con El Diego exitosa
+[INFO] 20:27:19:872 Proceso CPU/(3891:3891): Conexion con FM9 exitosa
+[INFO] 20:27:19:874 Proceso CPU/(3891:3891): Inicio del proceso
+
+[INFO] 20:27:27:932 Proceso CPU/(3891:3891): El planificador solicita la incializacion de un proceso
+[INFO] 20:27:27:941 Proceso CPU/(3891:3891): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 20:27:27:943 Proceso CPU/(3891:3891): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 20:27:30:73 Proceso CPU/(3891:3891): El planificador solicita la ejecucion de un proceso
+[INFO] 20:27:30:113 Proceso CPU/(3891:3891): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 20:28:44:870 Proceso CPU/(3993:3993): ---- Configuracion ----
+
+[INFO] 20:28:44:890 Proceso CPU/(3993:3993): IP_SAFA = 127.0.0.1
+[INFO] 20:28:44:890 Proceso CPU/(3993:3993): Puerto_SAFA = 8000
+[INFO] 20:28:44:891 Proceso CPU/(3993:3993): IP_DAM = 127.0.0.1
+[INFO] 20:28:44:892 Proceso CPU/(3993:3993): Puerto_DAM = 8001
+[INFO] 20:28:44:892 Proceso CPU/(3993:3993): IP_FM9 = 127.0.0.1
+[INFO] 20:28:44:893 Proceso CPU/(3993:3993): Puerto_FM9 = 8003
+[INFO] 20:28:44:893 Proceso CPU/(3993:3993): IP_CPU = 127.0.0.1
+[INFO] 20:28:44:894 Proceso CPU/(3993:3993): Puerto_CPU = 8004
+[INFO] 20:28:44:894 Proceso CPU/(3993:3993): Retardo de Ejecucion = 100
+[INFO] 20:28:44:895 Proceso CPU/(3993:3993): -----------------------
+
+[INFO] 20:28:44:914 Proceso CPU/(3993:3993): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 20:28:44:917 Proceso CPU/(3993:3993): Conexion con El Diego exitosa
+[INFO] 20:28:44:919 Proceso CPU/(3993:3993): Conexion con FM9 exitosa
+[INFO] 20:28:44:921 Proceso CPU/(3993:3993): Inicio del proceso
+
+[INFO] 20:28:55:400 Proceso CPU/(3993:3993): El planificador solicita la incializacion de un proceso
+[INFO] 20:28:55:409 Proceso CPU/(3993:3993): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 20:28:55:416 Proceso CPU/(3993:3993): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 20:28:57:546 Proceso CPU/(3993:3993): El planificador solicita la ejecucion de un proceso
+[INFO] 20:28:57:585 Proceso CPU/(3993:3993): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 20:30:48:16 Proceso CPU/(4127:4127): ---- Configuracion ----
+
+[INFO] 20:30:49:47 Proceso CPU/(4127:4127): IP_SAFA = 127.0.0.1
+[INFO] 20:30:49:48 Proceso CPU/(4127:4127): Puerto_SAFA = 8000
+[INFO] 20:30:49:48 Proceso CPU/(4127:4127): IP_DAM = 127.0.0.1
+[INFO] 20:30:49:48 Proceso CPU/(4127:4127): Puerto_DAM = 8001
+[INFO] 20:30:49:49 Proceso CPU/(4127:4127): IP_FM9 = 127.0.0.1
+[INFO] 20:30:49:49 Proceso CPU/(4127:4127): Puerto_FM9 = 8003
+[INFO] 20:30:49:49 Proceso CPU/(4127:4127): IP_CPU = 127.0.0.1
+[INFO] 20:30:49:50 Proceso CPU/(4127:4127): Puerto_CPU = 8004
+[INFO] 20:30:49:50 Proceso CPU/(4127:4127): Retardo de Ejecucion = 100
+[INFO] 20:30:49:50 Proceso CPU/(4127:4127): -----------------------
+
+[INFO] 20:30:49:64 Proceso CPU/(4127:4127): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 20:30:49:67 Proceso CPU/(4127:4127): Conexion con El Diego exitosa
+[INFO] 20:30:49:69 Proceso CPU/(4127:4127): Conexion con FM9 exitosa
+[INFO] 20:30:49:69 Proceso CPU/(4127:4127): Inicio del proceso
+
+[INFO] 20:30:56:565 Proceso CPU/(4127:4127): El planificador solicita la incializacion de un proceso
+[INFO] 20:30:56:574 Proceso CPU/(4127:4127): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 20:30:56:576 Proceso CPU/(4127:4127): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 20:30:58:708 Proceso CPU/(4127:4127): El planificador solicita la ejecucion de un proceso
+[INFO] 20:30:58:745 Proceso CPU/(4127:4127): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 20:37:37:119 Proceso CPU/(4359:4359): ---- Configuracion ----
+
+[INFO] 20:37:37:142 Proceso CPU/(4359:4359): IP_SAFA = 127.0.0.1
+[INFO] 20:37:37:143 Proceso CPU/(4359:4359): Puerto_SAFA = 8000
+[INFO] 20:37:37:143 Proceso CPU/(4359:4359): IP_DAM = 127.0.0.1
+[INFO] 20:37:37:143 Proceso CPU/(4359:4359): Puerto_DAM = 8001
+[INFO] 20:37:37:144 Proceso CPU/(4359:4359): IP_FM9 = 127.0.0.1
+[INFO] 20:37:37:144 Proceso CPU/(4359:4359): Puerto_FM9 = 8003
+[INFO] 20:37:37:145 Proceso CPU/(4359:4359): IP_CPU = 127.0.0.1
+[INFO] 20:37:37:145 Proceso CPU/(4359:4359): Puerto_CPU = 8004
+[INFO] 20:37:37:145 Proceso CPU/(4359:4359): Retardo de Ejecucion = 100
+[INFO] 20:37:37:146 Proceso CPU/(4359:4359): -----------------------
+
+[INFO] 20:37:37:166 Proceso CPU/(4359:4359): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 20:37:37:170 Proceso CPU/(4359:4359): Conexion con El Diego exitosa
+[INFO] 20:37:37:172 Proceso CPU/(4359:4359): Conexion con FM9 exitosa
+[INFO] 20:37:37:174 Proceso CPU/(4359:4359): Inicio del proceso
+
+[INFO] 20:37:45:527 Proceso CPU/(4359:4359): El planificador solicita la incializacion de un proceso
+[INFO] 20:37:45:536 Proceso CPU/(4359:4359): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 20:37:45:538 Proceso CPU/(4359:4359): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 20:37:47:669 Proceso CPU/(4359:4359): El planificador solicita la ejecucion de un proceso
+[INFO] 20:37:47:709 Proceso CPU/(4359:4359): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 20:40:47:548 Proceso CPU/(4557:4557): ---- Configuracion ----
+
+[INFO] 20:40:47:567 Proceso CPU/(4557:4557): IP_SAFA = 127.0.0.1
+[INFO] 20:40:47:567 Proceso CPU/(4557:4557): Puerto_SAFA = 8000
+[INFO] 20:40:47:568 Proceso CPU/(4557:4557): IP_DAM = 127.0.0.1
+[INFO] 20:40:47:568 Proceso CPU/(4557:4557): Puerto_DAM = 8001
+[INFO] 20:40:47:568 Proceso CPU/(4557:4557): IP_FM9 = 127.0.0.1
+[INFO] 20:40:47:569 Proceso CPU/(4557:4557): Puerto_FM9 = 8003
+[INFO] 20:40:47:569 Proceso CPU/(4557:4557): IP_CPU = 127.0.0.1
+[INFO] 20:40:47:570 Proceso CPU/(4557:4557): Puerto_CPU = 8004
+[INFO] 20:40:47:570 Proceso CPU/(4557:4557): Retardo de Ejecucion = 100
+[INFO] 20:40:47:570 Proceso CPU/(4557:4557): -----------------------
+
+[INFO] 20:40:47:589 Proceso CPU/(4557:4557): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 20:40:47:592 Proceso CPU/(4557:4557): Conexion con El Diego exitosa
+[INFO] 20:40:47:594 Proceso CPU/(4557:4557): Conexion con FM9 exitosa
+[INFO] 20:40:47:595 Proceso CPU/(4557:4557): Inicio del proceso
+
+[INFO] 20:40:56:88 Proceso CPU/(4557:4557): El planificador solicita la incializacion de un proceso
+[INFO] 20:40:56:97 Proceso CPU/(4557:4557): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 20:40:56:100 Proceso CPU/(4557:4557): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 20:40:58:230 Proceso CPU/(4557:4557): El planificador solicita la ejecucion de un proceso
+[INFO] 20:40:58:269 Proceso CPU/(4557:4557): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 20:40:58:318 Proceso CPU/(4557:4557): Quedan 6 lineas a ejecutar para el proceso 1
+[INFO] 20:40:58:318 Proceso CPU/(4557:4557): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 20:40:58:322 Proceso CPU/(4557:4557): Instruccion a ejecutar: abrir
+[INFO] 20:40:58:323 Proceso CPU/(4557:4557): Se comenzara la ejecucion de la instruccion "abrir"...
+
+[INFO] 20:40:58:329 Proceso CPU/(4557:4557): Se solicito al DMA la apertura del archivo del path "/scripts/complejo.escriptorio", para el proceso 1
+
+[INFO] 20:40:58:334 Proceso CPU/(4557:4557): El proceso 1 finalizo su ejecucion (por bloqueo), luego de ejecutar 1 instrucciones
+[INFO] 20:40:58:335 Proceso CPU/(4557:4557): Retardo de ejecucion...
+
+[INFO] 20:40:58:336 Proceso CPU/(4557:4557): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 20:40:58:338 Proceso CPU/(4557:4557): Instruccion a ejecutar: concentrar
+[INFO] 20:40:58:339 Proceso CPU/(4557:4557): Se comenzara la ejecucion de la instruccion "concentrar"...
+
+[ERROR] 20:40:58:339 Proceso CPU/(4557:4557): Se recibio un mensaje in correcto de algun modulo. Se debe revisar la comunicacion con los demas modulos. Este modulo sera abortado debido a ello; se deberian abortar los demas modulos...
+[INFO] 20:42:54:162 Proceso CPU/(4715:4715): ---- Configuracion ----
+
+[INFO] 20:42:54:178 Proceso CPU/(4715:4715): IP_SAFA = 127.0.0.1
+[INFO] 20:42:54:179 Proceso CPU/(4715:4715): Puerto_SAFA = 8000
+[INFO] 20:42:54:179 Proceso CPU/(4715:4715): IP_DAM = 127.0.0.1
+[INFO] 20:42:54:179 Proceso CPU/(4715:4715): Puerto_DAM = 8001
+[INFO] 20:42:54:180 Proceso CPU/(4715:4715): IP_FM9 = 127.0.0.1
+[INFO] 20:42:54:180 Proceso CPU/(4715:4715): Puerto_FM9 = 8003
+[INFO] 20:42:54:180 Proceso CPU/(4715:4715): IP_CPU = 127.0.0.1
+[INFO] 20:42:54:181 Proceso CPU/(4715:4715): Puerto_CPU = 8004
+[INFO] 20:42:54:181 Proceso CPU/(4715:4715): Retardo de Ejecucion = 100
+[INFO] 20:42:54:181 Proceso CPU/(4715:4715): -----------------------
+
+[INFO] 20:42:54:194 Proceso CPU/(4715:4715): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 20:42:54:197 Proceso CPU/(4715:4715): Conexion con El Diego exitosa
+[INFO] 20:42:54:200 Proceso CPU/(4715:4715): Conexion con FM9 exitosa
+[INFO] 20:42:54:200 Proceso CPU/(4715:4715): Inicio del proceso
+
+[INFO] 20:43:01:714 Proceso CPU/(4715:4715): El planificador solicita la incializacion de un proceso
+[INFO] 20:43:01:724 Proceso CPU/(4715:4715): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 20:43:01:726 Proceso CPU/(4715:4715): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 20:43:03:859 Proceso CPU/(4715:4715): El planificador solicita la ejecucion de un proceso
+[INFO] 20:43:03:897 Proceso CPU/(4715:4715): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 20:43:03:946 Proceso CPU/(4715:4715): Quedan 6 lineas a ejecutar para el proceso 1
+[INFO] 20:43:03:946 Proceso CPU/(4715:4715): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 20:43:03:949 Proceso CPU/(4715:4715): Instruccion a ejecutar: abrir
+[INFO] 20:43:03:953 Proceso CPU/(4715:4715): Se comenzara la ejecucion de la instruccion "abrir"...
+
+[INFO] 20:43:03:959 Proceso CPU/(4715:4715): Se solicito al DMA la apertura del archivo del path "/scripts/complejo.escriptorio", para el proceso 1
+
+[INFO] 20:43:03:964 Proceso CPU/(4715:4715): El proceso 1 finalizo su ejecucion (por bloqueo), luego de ejecutar 1 instrucciones
+[INFO] 20:43:03:965 Proceso CPU/(4715:4715): Retardo de ejecucion...
+
+[INFO] 20:43:03:971 Proceso CPU/(4715:4715): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 20:43:03:973 Proceso CPU/(4715:4715): Instruccion a ejecutar: concentrar
+[INFO] 20:43:03:973 Proceso CPU/(4715:4715): Se comenzara la ejecucion de la instruccion "concentrar"...
+
+[ERROR] 20:43:03:974 Proceso CPU/(4715:4715): Se recibio un mensaje in correcto de algun modulo. Se debe revisar la comunicacion con los demas modulos. Este modulo sera abortado debido a ello; se deberian abortar los demas modulos...
+[INFO] 20:51:29:507 Proceso CPU/(4958:4958): ---- Configuracion ----
+
+[INFO] 20:51:29:523 Proceso CPU/(4958:4958): IP_SAFA = 127.0.0.1
+[INFO] 20:51:29:524 Proceso CPU/(4958:4958): Puerto_SAFA = 8000
+[INFO] 20:51:29:525 Proceso CPU/(4958:4958): IP_DAM = 127.0.0.1
+[INFO] 20:51:29:525 Proceso CPU/(4958:4958): Puerto_DAM = 8001
+[INFO] 20:51:29:525 Proceso CPU/(4958:4958): IP_FM9 = 127.0.0.1
+[INFO] 20:51:29:526 Proceso CPU/(4958:4958): Puerto_FM9 = 8003
+[INFO] 20:51:29:526 Proceso CPU/(4958:4958): IP_CPU = 127.0.0.1
+[INFO] 20:51:29:526 Proceso CPU/(4958:4958): Puerto_CPU = 8004
+[INFO] 20:51:29:527 Proceso CPU/(4958:4958): Retardo de Ejecucion = 100
+[INFO] 20:51:29:527 Proceso CPU/(4958:4958): -----------------------
+
+[INFO] 20:51:29:542 Proceso CPU/(4958:4958): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 20:51:29:544 Proceso CPU/(4958:4958): Conexion con El Diego exitosa
+[INFO] 20:51:29:547 Proceso CPU/(4958:4958): Conexion con FM9 exitosa
+[INFO] 20:51:29:547 Proceso CPU/(4958:4958): Inicio del proceso
+
+[INFO] 20:51:35:841 Proceso CPU/(4958:4958): El planificador solicita la incializacion de un proceso
+[INFO] 20:51:35:850 Proceso CPU/(4958:4958): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 20:51:35:852 Proceso CPU/(4958:4958): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 20:51:37:982 Proceso CPU/(4958:4958): El planificador solicita la ejecucion de un proceso
+[INFO] 20:51:38:21 Proceso CPU/(4958:4958): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 20:51:38:72 Proceso CPU/(4958:4958): Quedan 6 lineas a ejecutar para el proceso 1
+[INFO] 20:51:38:72 Proceso CPU/(4958:4958): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 20:51:38:76 Proceso CPU/(4958:4958): Instruccion a ejecutar: abrir
+[INFO] 20:51:38:78 Proceso CPU/(4958:4958): Se comenzara la ejecucion de la instruccion "abrir"...
+
+[INFO] 20:51:38:84 Proceso CPU/(4958:4958): Se solicito al DMA la apertura del archivo del path "/scripts/complejo.escriptorio", para el proceso 1
+
+[INFO] 20:51:38:90 Proceso CPU/(4958:4958): El proceso 1 finalizo su ejecucion (por bloqueo), luego de ejecutar 1 instrucciones
+[INFO] 20:51:38:91 Proceso CPU/(4958:4958): Retardo de ejecucion...
+
+[INFO] 20:51:38:93 Proceso CPU/(4958:4958): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 20:51:38:100 Proceso CPU/(4958:4958): Instruccion a ejecutar: concentrar
+[INFO] 20:51:38:101 Proceso CPU/(4958:4958): Se comenzara la ejecucion de la instruccion "concentrar"...
+
+[ERROR] 20:51:38:102 Proceso CPU/(4958:4958): Se recibio un mensaje in correcto de algun modulo. Se debe revisar la comunicacion con los demas modulos. Este modulo sera abortado debido a ello; se deberian abortar los demas modulos...
+[INFO] 20:52:37:526 Proceso CPU/(5050:5050): ---- Configuracion ----
+
+[INFO] 20:52:37:542 Proceso CPU/(5050:5050): IP_SAFA = 127.0.0.1
+[INFO] 20:52:37:543 Proceso CPU/(5050:5050): Puerto_SAFA = 8000
+[INFO] 20:52:37:543 Proceso CPU/(5050:5050): IP_DAM = 127.0.0.1
+[INFO] 20:52:37:543 Proceso CPU/(5050:5050): Puerto_DAM = 8001
+[INFO] 20:52:37:544 Proceso CPU/(5050:5050): IP_FM9 = 127.0.0.1
+[INFO] 20:52:37:544 Proceso CPU/(5050:5050): Puerto_FM9 = 8003
+[INFO] 20:52:37:544 Proceso CPU/(5050:5050): IP_CPU = 127.0.0.1
+[INFO] 20:52:37:545 Proceso CPU/(5050:5050): Puerto_CPU = 8004
+[INFO] 20:52:37:545 Proceso CPU/(5050:5050): Retardo de Ejecucion = 100
+[INFO] 20:52:37:545 Proceso CPU/(5050:5050): -----------------------
+
+[INFO] 20:52:37:558 Proceso CPU/(5050:5050): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 20:52:37:562 Proceso CPU/(5050:5050): Conexion con El Diego exitosa
+[INFO] 20:52:37:564 Proceso CPU/(5050:5050): Conexion con FM9 exitosa
+[INFO] 20:52:37:565 Proceso CPU/(5050:5050): Inicio del proceso
+
+[INFO] 20:53:01:678 Proceso CPU/(5081:5081): ---- Configuracion ----
+
+[INFO] 20:53:01:701 Proceso CPU/(5081:5081): IP_SAFA = 127.0.0.1
+[INFO] 20:53:01:702 Proceso CPU/(5081:5081): Puerto_SAFA = 8000
+[INFO] 20:53:01:703 Proceso CPU/(5081:5081): IP_DAM = 127.0.0.1
+[INFO] 20:53:01:707 Proceso CPU/(5081:5081): Puerto_DAM = 8001
+[INFO] 20:53:01:707 Proceso CPU/(5081:5081): IP_FM9 = 127.0.0.1
+[INFO] 20:53:01:708 Proceso CPU/(5081:5081): Puerto_FM9 = 8003
+[INFO] 20:53:01:708 Proceso CPU/(5081:5081): IP_CPU = 127.0.0.1
+[INFO] 20:53:01:709 Proceso CPU/(5081:5081): Puerto_CPU = 8004
+[INFO] 20:53:01:710 Proceso CPU/(5081:5081): Retardo de Ejecucion = 100
+[INFO] 20:53:01:711 Proceso CPU/(5081:5081): -----------------------
+
+[INFO] 20:53:01:728 Proceso CPU/(5081:5081): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 20:53:01:730 Proceso CPU/(5081:5081): Conexion con El Diego exitosa
+[INFO] 20:53:01:732 Proceso CPU/(5081:5081): Conexion con FM9 exitosa
+[INFO] 20:53:01:732 Proceso CPU/(5081:5081): Inicio del proceso
+
+[INFO] 20:53:03:30 Proceso CPU/(5081:5081): El planificador solicita la incializacion de un proceso
+[INFO] 20:53:03:39 Proceso CPU/(5081:5081): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 20:53:03:42 Proceso CPU/(5081:5081): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 20:53:05:179 Proceso CPU/(5081:5081): El planificador solicita la ejecucion de un proceso
+[INFO] 20:53:05:217 Proceso CPU/(5081:5081): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 20:53:05:266 Proceso CPU/(5081:5081): Quedan 6 lineas a ejecutar para el proceso 1
+[INFO] 20:53:05:266 Proceso CPU/(5081:5081): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 20:53:05:269 Proceso CPU/(5081:5081): Instruccion a ejecutar: abrir
+[INFO] 20:53:05:275 Proceso CPU/(5081:5081): Se comenzara la ejecucion de la instruccion "abrir"...
+
+[INFO] 20:53:05:281 Proceso CPU/(5081:5081): Se solicito al DMA la apertura del archivo del path "/scripts/complejo.escriptorio", para el proceso 1
+
+[INFO] 20:53:05:291 Proceso CPU/(5081:5081): El proceso 1 finalizo su ejecucion (por bloqueo), luego de ejecutar 1 instrucciones
+[INFO] 20:53:05:292 Proceso CPU/(5081:5081): Retardo de ejecucion...
+
+[INFO] 20:53:05:293 Proceso CPU/(5081:5081): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 20:53:05:295 Proceso CPU/(5081:5081): Instruccion a ejecutar: concentrar
+[INFO] 20:53:05:296 Proceso CPU/(5081:5081): Se comenzara la ejecucion de la instruccion "concentrar"...
+
+[ERROR] 20:53:05:296 Proceso CPU/(5081:5081): Se recibio un mensaje in correcto de algun modulo. Se debe revisar la comunicacion con los demas modulos. Este modulo sera abortado debido a ello; se deberian abortar los demas modulos...
+[INFO] 22:07:06:393 Proceso CPU/(6757:6757): ---- Configuracion ----
+
+[INFO] 22:07:06:410 Proceso CPU/(6757:6757): IP_SAFA = 127.0.0.1
+[INFO] 22:07:06:410 Proceso CPU/(6757:6757): Puerto_SAFA = 8000
+[INFO] 22:07:06:411 Proceso CPU/(6757:6757): IP_DAM = 127.0.0.1
+[INFO] 22:07:06:411 Proceso CPU/(6757:6757): Puerto_DAM = 8001
+[INFO] 22:07:06:411 Proceso CPU/(6757:6757): IP_FM9 = 127.0.0.1
+[INFO] 22:07:06:412 Proceso CPU/(6757:6757): Puerto_FM9 = 8003
+[INFO] 22:07:06:412 Proceso CPU/(6757:6757): IP_CPU = 127.0.0.1
+[INFO] 22:07:06:412 Proceso CPU/(6757:6757): Puerto_CPU = 8004
+[INFO] 22:07:06:413 Proceso CPU/(6757:6757): Retardo de Ejecucion = 100
+[INFO] 22:07:06:413 Proceso CPU/(6757:6757): -----------------------
+
+[INFO] 22:07:06:426 Proceso CPU/(6757:6757): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 22:07:06:430 Proceso CPU/(6757:6757): Conexion con El Diego exitosa
+[INFO] 22:07:06:432 Proceso CPU/(6757:6757): Conexion con FM9 exitosa
+[INFO] 22:07:06:432 Proceso CPU/(6757:6757): Inicio del proceso
+
+[INFO] 22:07:15:448 Proceso CPU/(6757:6757): El planificador solicita la incializacion de un proceso
+[INFO] 22:07:15:458 Proceso CPU/(6757:6757): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 22:07:15:465 Proceso CPU/(6757:6757): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 22:07:17:586 Proceso CPU/(6757:6757): El planificador solicita la ejecucion de un proceso
+[INFO] 22:07:17:625 Proceso CPU/(6757:6757): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 22:07:17:676 Proceso CPU/(6757:6757): Quedan 6 lineas a ejecutar para el proceso 1
+[INFO] 22:07:17:676 Proceso CPU/(6757:6757): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 22:07:17:680 Proceso CPU/(6757:6757): Instruccion a ejecutar: abrir
+[INFO] 22:07:17:682 Proceso CPU/(6757:6757): Se comenzara la ejecucion de la instruccion "abrir"...
+
+[INFO] 22:07:17:687 Proceso CPU/(6757:6757): Retardo de ejecucion...
+
+[INFO] 22:07:17:688 Proceso CPU/(6757:6757): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 22:07:17:689 Proceso CPU/(6757:6757): Se solicito al DMA la apertura del archivo del path "/scripts/complejo.escriptorio", para el proceso 1
+
+[INFO] 22:07:17:694 Proceso CPU/(6757:6757): El proceso 1 finalizo su ejecucion (por bloqueo), luego de ejecutar 1 instrucciones
+[INFO] 22:07:19:778 Proceso CPU/(6757:6757): El planificador solicita la ejecucion de un proceso
+[INFO] 22:07:19:817 Proceso CPU/(6757:6757): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 22:07:19:857 Proceso CPU/(6757:6757): Quedan 5 lineas a ejecutar para el proceso 1
+[INFO] 22:07:19:858 Proceso CPU/(6757:6757): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 22:07:19:858 Proceso CPU/(6757:6757): Instruccion a ejecutar: concentrar
+[INFO] 22:07:19:859 Proceso CPU/(6757:6757): Se comenzara la ejecucion de la instruccion "concentrar"...
+
+[INFO] 22:07:19:859 Proceso CPU/(6757:6757): Retardo de ejecucion...
+
+[INFO] 22:07:19:860 Proceso CPU/(6757:6757): Se ha finalizado la ejecucion de la instruccion
+
+[ERROR] 22:07:19:860 Proceso CPU/(6757:6757): Se recibio un mensaje in correcto de algun modulo. Se debe revisar la comunicacion con los demas modulos. Este modulo sera abortado debido a ello; se deberian abortar los demas modulos...
+[INFO] 22:13:50:707 Proceso CPU/(6931:6931): ---- Configuracion ----
+
+[INFO] 22:13:50:726 Proceso CPU/(6931:6931): IP_SAFA = 127.0.0.1
+[INFO] 22:13:50:726 Proceso CPU/(6931:6931): Puerto_SAFA = 8000
+[INFO] 22:13:50:727 Proceso CPU/(6931:6931): IP_DAM = 127.0.0.1
+[INFO] 22:13:50:727 Proceso CPU/(6931:6931): Puerto_DAM = 8001
+[INFO] 22:13:50:727 Proceso CPU/(6931:6931): IP_FM9 = 127.0.0.1
+[INFO] 22:13:50:728 Proceso CPU/(6931:6931): Puerto_FM9 = 8003
+[INFO] 22:13:50:728 Proceso CPU/(6931:6931): IP_CPU = 127.0.0.1
+[INFO] 22:13:50:728 Proceso CPU/(6931:6931): Puerto_CPU = 8004
+[INFO] 22:13:50:729 Proceso CPU/(6931:6931): Retardo de Ejecucion = 100
+[INFO] 22:13:50:729 Proceso CPU/(6931:6931): -----------------------
+
+[INFO] 22:13:50:744 Proceso CPU/(6931:6931): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 22:13:50:747 Proceso CPU/(6931:6931): Conexion con El Diego exitosa
+[INFO] 22:13:50:748 Proceso CPU/(6931:6931): Conexion con FM9 exitosa
+[INFO] 22:13:50:749 Proceso CPU/(6931:6931): Inicio del proceso
+
+[ERROR] 22:13:54:491 Proceso CPU/(6931:6931): El planificador se desconecto al intentar recibir una tarea del mismo
+[INFO] 22:14:14:79 Proceso CPU/(7005:7005): ---- Configuracion ----
+
+[INFO] 22:14:14:95 Proceso CPU/(7005:7005): IP_SAFA = 127.0.0.1
+[INFO] 22:14:14:95 Proceso CPU/(7005:7005): Puerto_SAFA = 8000
+[INFO] 22:14:14:96 Proceso CPU/(7005:7005): IP_DAM = 127.0.0.1
+[INFO] 22:14:14:96 Proceso CPU/(7005:7005): Puerto_DAM = 8001
+[INFO] 22:14:14:96 Proceso CPU/(7005:7005): IP_FM9 = 127.0.0.1
+[INFO] 22:14:14:97 Proceso CPU/(7005:7005): Puerto_FM9 = 8003
+[INFO] 22:14:14:97 Proceso CPU/(7005:7005): IP_CPU = 127.0.0.1
+[INFO] 22:14:14:97 Proceso CPU/(7005:7005): Puerto_CPU = 8004
+[INFO] 22:14:14:98 Proceso CPU/(7005:7005): Retardo de Ejecucion = 100
+[INFO] 22:14:14:98 Proceso CPU/(7005:7005): -----------------------
+
+[INFO] 22:14:14:110 Proceso CPU/(7005:7005): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 22:14:14:114 Proceso CPU/(7005:7005): Conexion con El Diego exitosa
+[INFO] 22:14:14:116 Proceso CPU/(7005:7005): Conexion con FM9 exitosa
+[INFO] 22:14:14:117 Proceso CPU/(7005:7005): Inicio del proceso
+
+[INFO] 22:14:22:67 Proceso CPU/(7005:7005): El planificador solicita la incializacion de un proceso
+[INFO] 22:14:22:77 Proceso CPU/(7005:7005): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 22:14:22:79 Proceso CPU/(7005:7005): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 22:14:24:206 Proceso CPU/(7005:7005): El planificador solicita la ejecucion de un proceso
+[INFO] 22:14:24:245 Proceso CPU/(7005:7005): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 22:14:24:295 Proceso CPU/(7005:7005): Quedan 6 lineas a ejecutar para el proceso 1
+[INFO] 22:14:24:296 Proceso CPU/(7005:7005): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 22:14:24:299 Proceso CPU/(7005:7005): Instruccion a ejecutar: abrir
+[INFO] 22:14:24:300 Proceso CPU/(7005:7005): Se comenzara la ejecucion de la instruccion "abrir"...
+
+[INFO] 22:14:24:305 Proceso CPU/(7005:7005): Retardo de ejecucion...
+
+[INFO] 22:14:24:307 Proceso CPU/(7005:7005): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 22:14:24:308 Proceso CPU/(7005:7005): Se solicito al DMA la apertura del archivo del path "/scripts/complejo.escriptorio", para el proceso 1
+
+[INFO] 22:14:24:315 Proceso CPU/(7005:7005): El proceso 1 finalizo su ejecucion (por bloqueo), luego de ejecutar 1 instrucciones
+[INFO] 22:14:26:398 Proceso CPU/(7005:7005): El planificador solicita la ejecucion de un proceso
+[INFO] 22:14:26:437 Proceso CPU/(7005:7005): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 22:14:26:477 Proceso CPU/(7005:7005): Quedan 5 lineas a ejecutar para el proceso 1
+[INFO] 22:14:26:478 Proceso CPU/(7005:7005): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 22:14:26:478 Proceso CPU/(7005:7005): Instruccion a ejecutar: concentrar
+[INFO] 22:14:26:479 Proceso CPU/(7005:7005): Se comenzara la ejecucion de la instruccion "concentrar"...
+
+[INFO] 22:14:26:479 Proceso CPU/(7005:7005): Retardo de ejecucion...
+
+[INFO] 22:14:26:480 Proceso CPU/(7005:7005): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 22:14:26:481 Proceso CPU/(7005:7005): Instruccion a ejecutar: asignar
+[INFO] 22:14:26:482 Proceso CPU/(7005:7005): Se comenzara la ejecucion de la instruccion "asignar"...
+
+[INFO] 22:14:26:484 Proceso CPU/(7005:7005): Retardo de ejecucion...
+
+[INFO] 22:14:26:485 Proceso CPU/(7005:7005): Se ha finalizado la ejecucion de la instruccion
+
+[ERROR] 22:14:26:801 Proceso CPU/(7005:7005): EL planificador fue desconectado al intentar recibir la confirmacion de si un archivo se encuentra abierto
+
+[INFO] 22:14:26:802 Proceso CPU/(7005:7005): Debido a una desconexion del planificador, este proceso se cerrara
+
+[INFO] 23:08:17:126 Proceso CPU/(7964:7964): ---- Configuracion ----
+
+[INFO] 23:08:17:144 Proceso CPU/(7964:7964): IP_SAFA = 127.0.0.1
+[INFO] 23:08:17:144 Proceso CPU/(7964:7964): Puerto_SAFA = 8000
+[INFO] 23:08:17:145 Proceso CPU/(7964:7964): IP_DAM = 127.0.0.1
+[INFO] 23:08:17:145 Proceso CPU/(7964:7964): Puerto_DAM = 8001
+[INFO] 23:08:17:145 Proceso CPU/(7964:7964): IP_FM9 = 127.0.0.1
+[INFO] 23:08:17:146 Proceso CPU/(7964:7964): Puerto_FM9 = 8003
+[INFO] 23:08:17:146 Proceso CPU/(7964:7964): IP_CPU = 127.0.0.1
+[INFO] 23:08:17:146 Proceso CPU/(7964:7964): Puerto_CPU = 8004
+[INFO] 23:08:17:147 Proceso CPU/(7964:7964): Retardo de Ejecucion = 100
+[INFO] 23:08:17:147 Proceso CPU/(7964:7964): -----------------------
+
+[INFO] 23:08:17:159 Proceso CPU/(7964:7964): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 23:08:17:164 Proceso CPU/(7964:7964): Conexion con El Diego exitosa
+[INFO] 23:08:17:166 Proceso CPU/(7964:7964): Conexion con FM9 exitosa
+[INFO] 23:08:17:167 Proceso CPU/(7964:7964): Inicio del proceso
+
+[INFO] 23:09:15:78 Proceso CPU/(7964:7964): El planificador solicita la incializacion de un proceso
+[INFO] 23:09:15:88 Proceso CPU/(7964:7964): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 23:09:15:91 Proceso CPU/(7964:7964): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 23:09:17:218 Proceso CPU/(7964:7964): El planificador solicita la ejecucion de un proceso
+[INFO] 23:09:17:257 Proceso CPU/(7964:7964): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 23:09:17:308 Proceso CPU/(7964:7964): Quedan 6 lineas a ejecutar para el proceso 1
+[INFO] 23:09:17:308 Proceso CPU/(7964:7964): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 23:09:17:312 Proceso CPU/(7964:7964): Instruccion a ejecutar: abrir
+[INFO] 23:09:17:313 Proceso CPU/(7964:7964): Se comenzara la ejecucion de la instruccion "abrir"...
+
+[INFO] 23:09:17:318 Proceso CPU/(7964:7964): Retardo de ejecucion...
+
+[INFO] 23:09:17:320 Proceso CPU/(7964:7964): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 23:09:17:321 Proceso CPU/(7964:7964): Se solicito al DMA la apertura del archivo del path "/scripts/complejo.escriptorio", para el proceso 1
+
+[INFO] 23:09:17:326 Proceso CPU/(7964:7964): El proceso 1 finalizo su ejecucion (por bloqueo), luego de ejecutar 1 instrucciones
+[INFO] 23:09:19:410 Proceso CPU/(7964:7964): El planificador solicita la ejecucion de un proceso
+[INFO] 23:09:19:449 Proceso CPU/(7964:7964): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 23:09:19:489 Proceso CPU/(7964:7964): Quedan 5 lineas a ejecutar para el proceso 1
+[INFO] 23:09:19:490 Proceso CPU/(7964:7964): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 23:09:19:490 Proceso CPU/(7964:7964): Instruccion a ejecutar: concentrar
+[INFO] 23:09:19:491 Proceso CPU/(7964:7964): Se comenzara la ejecucion de la instruccion "concentrar"...
+
+[INFO] 23:09:19:491 Proceso CPU/(7964:7964): Retardo de ejecucion...
+
+[INFO] 23:09:19:491 Proceso CPU/(7964:7964): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 23:09:19:492 Proceso CPU/(7964:7964): Instruccion a ejecutar: asignar
+[INFO] 23:09:19:493 Proceso CPU/(7964:7964): Se comenzara la ejecucion de la instruccion "asignar"...
+
+[INFO] 23:09:19:496 Proceso CPU/(7964:7964): Retardo de ejecucion...
+
+[INFO] 23:09:19:497 Proceso CPU/(7964:7964): Se ha finalizado la ejecucion de la instruccion
+
+[ERROR] 23:22:56:700 Proceso CPU/(7964:7964): EL planificador fue desconectado al intentar recibir la confirmacion de si un archivo se encuentra abierto
+
+[INFO] 23:22:56:701 Proceso CPU/(7964:7964): Debido a una desconexion del planificador, este proceso se cerrara
+
+[INFO] 23:23:09:810 Proceso CPU/(8288:8288): ---- Configuracion ----
+
+[INFO] 23:23:09:832 Proceso CPU/(8288:8288): IP_SAFA = 127.0.0.1
+[INFO] 23:23:09:833 Proceso CPU/(8288:8288): Puerto_SAFA = 8000
+[INFO] 23:23:09:833 Proceso CPU/(8288:8288): IP_DAM = 127.0.0.1
+[INFO] 23:23:09:834 Proceso CPU/(8288:8288): Puerto_DAM = 8001
+[INFO] 23:23:09:834 Proceso CPU/(8288:8288): IP_FM9 = 127.0.0.1
+[INFO] 23:23:09:835 Proceso CPU/(8288:8288): Puerto_FM9 = 8003
+[INFO] 23:23:09:836 Proceso CPU/(8288:8288): IP_CPU = 127.0.0.1
+[INFO] 23:23:09:836 Proceso CPU/(8288:8288): Puerto_CPU = 8004
+[INFO] 23:23:09:837 Proceso CPU/(8288:8288): Retardo de Ejecucion = 100
+[INFO] 23:23:09:837 Proceso CPU/(8288:8288): -----------------------
+
+[INFO] 23:23:09:851 Proceso CPU/(8288:8288): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 23:23:09:860 Proceso CPU/(8288:8288): Conexion con El Diego exitosa
+[INFO] 23:23:09:861 Proceso CPU/(8288:8288): Conexion con FM9 exitosa
+[INFO] 23:23:09:862 Proceso CPU/(8288:8288): Inicio del proceso
+
+[INFO] 23:23:19:461 Proceso CPU/(8288:8288): El planificador solicita la incializacion de un proceso
+[INFO] 23:23:19:470 Proceso CPU/(8288:8288): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 23:23:19:472 Proceso CPU/(8288:8288): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 23:23:21:598 Proceso CPU/(8288:8288): El planificador solicita la ejecucion de un proceso
+[INFO] 23:23:21:637 Proceso CPU/(8288:8288): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 23:23:21:687 Proceso CPU/(8288:8288): Quedan 6 lineas a ejecutar para el proceso 1
+[INFO] 23:23:21:688 Proceso CPU/(8288:8288): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 23:23:21:691 Proceso CPU/(8288:8288): Instruccion a ejecutar: abrir
+[INFO] 23:23:21:693 Proceso CPU/(8288:8288): Se comenzara la ejecucion de la instruccion "abrir"...
+
+[INFO] 23:23:21:698 Proceso CPU/(8288:8288): Retardo de ejecucion...
+
+[INFO] 23:23:21:700 Proceso CPU/(8288:8288): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 23:23:21:702 Proceso CPU/(8288:8288): Se solicito al DMA la apertura del archivo del path "/scripts/complejo.escriptorio", para el proceso 1
+
+[INFO] 23:23:21:707 Proceso CPU/(8288:8288): El proceso 1 finalizo su ejecucion (por bloqueo), luego de ejecutar 1 instrucciones
+[INFO] 23:23:23:790 Proceso CPU/(8288:8288): El planificador solicita la ejecucion de un proceso
+[INFO] 23:23:23:829 Proceso CPU/(8288:8288): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 23:23:23:869 Proceso CPU/(8288:8288): Quedan 5 lineas a ejecutar para el proceso 1
+[INFO] 23:23:23:870 Proceso CPU/(8288:8288): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 23:23:23:870 Proceso CPU/(8288:8288): Instruccion a ejecutar: concentrar
+[INFO] 23:23:23:871 Proceso CPU/(8288:8288): Se comenzara la ejecucion de la instruccion "concentrar"...
+
+[INFO] 23:23:23:871 Proceso CPU/(8288:8288): Retardo de ejecucion...
+
+[INFO] 23:23:23:871 Proceso CPU/(8288:8288): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 23:23:23:872 Proceso CPU/(8288:8288): Instruccion a ejecutar: asignar
+[INFO] 23:23:23:873 Proceso CPU/(8288:8288): Se comenzara la ejecucion de la instruccion "asignar"...
+
+[INFO] 23:23:23:876 Proceso CPU/(8288:8288): Retardo de ejecucion...
+
+[INFO] 23:23:23:877 Proceso CPU/(8288:8288): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 23:23:23:921 Proceso CPU/(8288:8288): Se ha modificado extosamente la linea 1 del archivo en la ruta "/scripts/complejo.escriptorio"
+[INFO] 23:23:23:922 Proceso CPU/(8288:8288): El proceso 1 finalizo su ejecucion (por fin de quantum) luego de ejecutar 2 instrucciones
+[INFO] 23:32:45:642 Proceso CPU/(8658:8658): ---- Configuracion ----
+
+[INFO] 23:32:45:663 Proceso CPU/(8658:8658): IP_SAFA = 127.0.0.1
+[INFO] 23:32:45:664 Proceso CPU/(8658:8658): Puerto_SAFA = 8000
+[INFO] 23:32:45:665 Proceso CPU/(8658:8658): IP_DAM = 127.0.0.1
+[INFO] 23:32:45:665 Proceso CPU/(8658:8658): Puerto_DAM = 8001
+[INFO] 23:32:45:665 Proceso CPU/(8658:8658): IP_FM9 = 127.0.0.1
+[INFO] 23:32:45:666 Proceso CPU/(8658:8658): Puerto_FM9 = 8003
+[INFO] 23:32:45:666 Proceso CPU/(8658:8658): IP_CPU = 127.0.0.1
+[INFO] 23:32:45:667 Proceso CPU/(8658:8658): Puerto_CPU = 8004
+[INFO] 23:32:45:667 Proceso CPU/(8658:8658): Retardo de Ejecucion = 100
+[INFO] 23:32:45:667 Proceso CPU/(8658:8658): -----------------------
+
+[INFO] 23:32:45:683 Proceso CPU/(8658:8658): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 23:32:45:687 Proceso CPU/(8658:8658): Conexion con El Diego exitosa
+[INFO] 23:32:45:689 Proceso CPU/(8658:8658): Conexion con FM9 exitosa
+[INFO] 23:32:45:690 Proceso CPU/(8658:8658): Inicio del proceso
+
+[INFO] 23:32:55:438 Proceso CPU/(8658:8658): El planificador solicita la incializacion de un proceso
+[INFO] 23:32:55:447 Proceso CPU/(8658:8658): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 23:32:55:449 Proceso CPU/(8658:8658): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 23:32:57:586 Proceso CPU/(8658:8658): El planificador solicita la ejecucion de un proceso
+[INFO] 23:32:57:625 Proceso CPU/(8658:8658): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 23:32:57:674 Proceso CPU/(8658:8658): Quedan 6 lineas a ejecutar para el proceso 1
+[INFO] 23:32:57:674 Proceso CPU/(8658:8658): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 23:32:57:681 Proceso CPU/(8658:8658): Instruccion a ejecutar: abrir
+[INFO] 23:32:57:683 Proceso CPU/(8658:8658): Se comenzara la ejecucion de la instruccion "abrir"...
+
+[INFO] 23:32:57:688 Proceso CPU/(8658:8658): Retardo de ejecucion...
+
+[INFO] 23:32:57:690 Proceso CPU/(8658:8658): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 23:32:57:691 Proceso CPU/(8658:8658): Se solicito al DMA la apertura del archivo del path "/scripts/complejo.escriptorio", para el proceso 1
+
+[INFO] 23:32:57:702 Proceso CPU/(8658:8658): El proceso 1 finalizo su ejecucion (por bloqueo), luego de ejecutar 1 instrucciones
+[INFO] 23:32:59:782 Proceso CPU/(8658:8658): El planificador solicita la ejecucion de un proceso
+[INFO] 23:32:59:821 Proceso CPU/(8658:8658): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 23:32:59:861 Proceso CPU/(8658:8658): Quedan 5 lineas a ejecutar para el proceso 1
+[INFO] 23:32:59:862 Proceso CPU/(8658:8658): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 23:32:59:862 Proceso CPU/(8658:8658): Instruccion a ejecutar: concentrar
+[INFO] 23:32:59:863 Proceso CPU/(8658:8658): Se comenzara la ejecucion de la instruccion "concentrar"...
+
+[INFO] 23:32:59:863 Proceso CPU/(8658:8658): Retardo de ejecucion...
+
+[INFO] 23:32:59:864 Proceso CPU/(8658:8658): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 23:32:59:865 Proceso CPU/(8658:8658): Instruccion a ejecutar: asignar
+[INFO] 23:32:59:866 Proceso CPU/(8658:8658): Se comenzara la ejecucion de la instruccion "asignar"...
+
+[INFO] 23:32:59:868 Proceso CPU/(8658:8658): Retardo de ejecucion...
+
+[INFO] 23:32:59:869 Proceso CPU/(8658:8658): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 23:32:59:913 Proceso CPU/(8658:8658): Se ha modificado extosamente la linea 1 del archivo en la ruta "/scripts/complejo.escriptorio"
+[INFO] 23:32:59:914 Proceso CPU/(8658:8658): El proceso 1 finalizo su ejecucion (por fin de quantum) luego de ejecutar 2 instrucciones
+[INFO] 23:32:59:959 Proceso CPU/(8658:8658): El planificador solicita la ejecucion de un proceso
+[INFO] 23:32:59:961 Proceso CPU/(8658:8658): Se recibio del planificador el PCB correspondiente al proceso 1
+[ERROR] 23:32:59:961 Proceso CPU/(8658:8658): La memoria devolvio un error al intentar recibir un archivo de ella. El proceso sera abortado
+[ERROR] 23:32:59:962 Proceso CPU/(8658:8658): Llego un script vacio de memoria. Error en la comunicacion. Este modulo sera abortado...
+[INFO] 23:32:59:964 Proceso CPU/(8658:8658): El proceso 1 finalizo su ejecucion (debido a un error) luego de ejecutar 0 instrucciones
+[ERROR] 23:33:38:556 Proceso CPU/(8658:8658): El planificador se desconecto al intentar recibir una tarea del mismo
+[INFO] 23:33:47:362 Proceso CPU/(8707:8707): ---- Configuracion ----
+
+[INFO] 23:33:47:382 Proceso CPU/(8707:8707): IP_SAFA = 127.0.0.1
+[INFO] 23:33:47:383 Proceso CPU/(8707:8707): Puerto_SAFA = 8000
+[INFO] 23:33:47:383 Proceso CPU/(8707:8707): IP_DAM = 127.0.0.1
+[INFO] 23:33:47:384 Proceso CPU/(8707:8707): Puerto_DAM = 8001
+[INFO] 23:33:47:384 Proceso CPU/(8707:8707): IP_FM9 = 127.0.0.1
+[INFO] 23:33:47:385 Proceso CPU/(8707:8707): Puerto_FM9 = 8003
+[INFO] 23:33:47:385 Proceso CPU/(8707:8707): IP_CPU = 127.0.0.1
+[INFO] 23:33:47:385 Proceso CPU/(8707:8707): Puerto_CPU = 8004
+[INFO] 23:33:47:386 Proceso CPU/(8707:8707): Retardo de Ejecucion = 100
+[INFO] 23:33:47:386 Proceso CPU/(8707:8707): -----------------------
+
+[INFO] 23:33:47:401 Proceso CPU/(8707:8707): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 23:33:47:405 Proceso CPU/(8707:8707): Conexion con El Diego exitosa
+[INFO] 23:33:47:412 Proceso CPU/(8707:8707): Conexion con FM9 exitosa
+[INFO] 23:33:47:413 Proceso CPU/(8707:8707): Inicio del proceso
+
+[INFO] 23:33:54:396 Proceso CPU/(8707:8707): El planificador solicita la incializacion de un proceso
+[INFO] 23:33:54:405 Proceso CPU/(8707:8707): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 23:33:54:408 Proceso CPU/(8707:8707): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 23:33:56:535 Proceso CPU/(8707:8707): El planificador solicita la ejecucion de un proceso
+[INFO] 23:33:56:573 Proceso CPU/(8707:8707): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 23:33:56:625 Proceso CPU/(8707:8707): Quedan 6 lineas a ejecutar para el proceso 1
+[INFO] 23:33:56:625 Proceso CPU/(8707:8707): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 23:33:56:628 Proceso CPU/(8707:8707): Instruccion a ejecutar: abrir
+[INFO] 23:33:56:630 Proceso CPU/(8707:8707): Se comenzara la ejecucion de la instruccion "abrir"...
+
+[INFO] 23:33:56:635 Proceso CPU/(8707:8707): Retardo de ejecucion...
+
+[INFO] 23:33:56:637 Proceso CPU/(8707:8707): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 23:33:56:638 Proceso CPU/(8707:8707): Se solicito al DMA la apertura del archivo del path "/scripts/complejo.escriptorio", para el proceso 1
+
+[INFO] 23:33:56:643 Proceso CPU/(8707:8707): El proceso 1 finalizo su ejecucion (por bloqueo), luego de ejecutar 1 instrucciones
+[INFO] 23:33:58:726 Proceso CPU/(8707:8707): El planificador solicita la ejecucion de un proceso
+[INFO] 23:33:58:765 Proceso CPU/(8707:8707): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 23:33:58:805 Proceso CPU/(8707:8707): Quedan 5 lineas a ejecutar para el proceso 1
+[INFO] 23:33:58:806 Proceso CPU/(8707:8707): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 23:33:58:806 Proceso CPU/(8707:8707): Instruccion a ejecutar: concentrar
+[INFO] 23:33:58:807 Proceso CPU/(8707:8707): Se comenzara la ejecucion de la instruccion "concentrar"...
+
+[INFO] 23:33:58:807 Proceso CPU/(8707:8707): Retardo de ejecucion...
+
+[INFO] 23:33:58:808 Proceso CPU/(8707:8707): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 23:33:58:808 Proceso CPU/(8707:8707): Instruccion a ejecutar: asignar
+[INFO] 23:33:58:810 Proceso CPU/(8707:8707): Se comenzara la ejecucion de la instruccion "asignar"...
+
+[INFO] 23:33:58:812 Proceso CPU/(8707:8707): Retardo de ejecucion...
+
+[INFO] 23:33:58:813 Proceso CPU/(8707:8707): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 23:33:58:857 Proceso CPU/(8707:8707): Se ha modificado extosamente la linea 1 del archivo en la ruta "/scripts/complejo.escriptorio"
+[INFO] 23:33:58:858 Proceso CPU/(8707:8707): El proceso 1 finalizo su ejecucion (por fin de quantum) luego de ejecutar 2 instrucciones
+[INFO] 23:33:58:902 Proceso CPU/(8707:8707): El planificador solicita la ejecucion de un proceso
+[INFO] 23:33:58:904 Proceso CPU/(8707:8707): Se recibio del planificador el PCB correspondiente al proceso 1
+[ERROR] 23:33:58:904 Proceso CPU/(8707:8707): La memoria devolvio un error al intentar recibir un archivo de ella. El proceso sera abortado
+[ERROR] 23:33:58:906 Proceso CPU/(8707:8707): Llego un script vacio de memoria. Error en la comunicacion. Este modulo sera abortado...
+[INFO] 23:33:58:907 Proceso CPU/(8707:8707): El proceso 1 finalizo su ejecucion (debido a un error) luego de ejecutar 0 instrucciones
+[ERROR] 00:16:25:740 Proceso CPU/(8707:8707): El planificador se desconecto al intentar recibir una tarea del mismo
+[INFO] 00:17:47:41 Proceso CPU/(9675:9675): ---- Configuracion ----
+
+[INFO] 00:17:47:58 Proceso CPU/(9675:9675): IP_SAFA = 127.0.0.1
+[INFO] 00:17:47:59 Proceso CPU/(9675:9675): Puerto_SAFA = 8000
+[INFO] 00:17:47:59 Proceso CPU/(9675:9675): IP_DAM = 127.0.0.1
+[INFO] 00:17:47:59 Proceso CPU/(9675:9675): Puerto_DAM = 8001
+[INFO] 00:17:47:60 Proceso CPU/(9675:9675): IP_FM9 = 127.0.0.1
+[INFO] 00:17:47:60 Proceso CPU/(9675:9675): Puerto_FM9 = 8003
+[INFO] 00:17:47:60 Proceso CPU/(9675:9675): IP_CPU = 127.0.0.1
+[INFO] 00:17:47:61 Proceso CPU/(9675:9675): Puerto_CPU = 8004
+[INFO] 00:17:47:61 Proceso CPU/(9675:9675): Retardo de Ejecucion = 100
+[INFO] 00:17:47:61 Proceso CPU/(9675:9675): -----------------------
+
+[INFO] 00:17:47:73 Proceso CPU/(9675:9675): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 00:17:47:78 Proceso CPU/(9675:9675): Conexion con El Diego exitosa
+[INFO] 00:17:47:80 Proceso CPU/(9675:9675): Conexion con FM9 exitosa
+[INFO] 00:17:47:80 Proceso CPU/(9675:9675): Inicio del proceso
+
+[INFO] 00:17:57:42 Proceso CPU/(9675:9675): El planificador solicita la incializacion de un proceso
+[INFO] 00:17:57:51 Proceso CPU/(9675:9675): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 00:17:57:53 Proceso CPU/(9675:9675): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 00:17:59:181 Proceso CPU/(9675:9675): El planificador solicita la ejecucion de un proceso
+[INFO] 00:17:59:221 Proceso CPU/(9675:9675): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 00:17:59:270 Proceso CPU/(9675:9675): Quedan 6 lineas a ejecutar para el proceso 1
+[INFO] 00:17:59:270 Proceso CPU/(9675:9675): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 00:17:59:274 Proceso CPU/(9675:9675): Instruccion a ejecutar: abrir
+[INFO] 00:17:59:275 Proceso CPU/(9675:9675): Se comenzara la ejecucion de la instruccion "abrir"...
+
+[INFO] 00:17:59:280 Proceso CPU/(9675:9675): Retardo de ejecucion...
+
+[INFO] 00:17:59:282 Proceso CPU/(9675:9675): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 00:17:59:283 Proceso CPU/(9675:9675): Se solicito al DMA la apertura del archivo del path "/scripts/complejo.escriptorio", para el proceso 1
+
+[INFO] 00:17:59:288 Proceso CPU/(9675:9675): El proceso 1 finalizo su ejecucion (por bloqueo), luego de ejecutar 1 instrucciones
+[INFO] 00:18:01:374 Proceso CPU/(9675:9675): El planificador solicita la ejecucion de un proceso
+[INFO] 00:18:01:413 Proceso CPU/(9675:9675): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 00:18:01:453 Proceso CPU/(9675:9675): Quedan 5 lineas a ejecutar para el proceso 1
+[INFO] 00:18:01:454 Proceso CPU/(9675:9675): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 00:18:01:454 Proceso CPU/(9675:9675): Instruccion a ejecutar: concentrar
+[INFO] 00:18:01:455 Proceso CPU/(9675:9675): Se comenzara la ejecucion de la instruccion "concentrar"...
+
+[INFO] 00:18:01:455 Proceso CPU/(9675:9675): Retardo de ejecucion...
+
+[INFO] 00:18:01:455 Proceso CPU/(9675:9675): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 00:18:01:456 Proceso CPU/(9675:9675): Instruccion a ejecutar: asignar
+[INFO] 00:18:01:457 Proceso CPU/(9675:9675): Se comenzara la ejecucion de la instruccion "asignar"...
+
+[INFO] 00:18:01:461 Proceso CPU/(9675:9675): Retardo de ejecucion...
+
+[INFO] 00:18:01:461 Proceso CPU/(9675:9675): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 00:18:01:505 Proceso CPU/(9675:9675): Se ha modificado extosamente la linea 1 del archivo en la ruta "/scripts/complejo.escriptorio"
+[INFO] 00:18:01:507 Proceso CPU/(9675:9675): El proceso 1 finalizo su ejecucion (por fin de quantum) luego de ejecutar 2 instrucciones
+[INFO] 00:18:01:551 Proceso CPU/(9675:9675): El planificador solicita la ejecucion de un proceso
+[INFO] 00:18:01:552 Proceso CPU/(9675:9675): Se recibio del planificador el PCB correspondiente al proceso 1
+[ERROR] 00:18:01:553 Proceso CPU/(9675:9675): La memoria devolvio un error al intentar recibir un archivo de ella. El proceso sera abortado
+[ERROR] 00:18:01:554 Proceso CPU/(9675:9675): Llego un script vacio de memoria. Error en la comunicacion. Este modulo sera abortado...
+[INFO] 00:18:01:556 Proceso CPU/(9675:9675): El proceso 1 finalizo su ejecucion (debido a un error) luego de ejecutar 0 instrucciones
+[ERROR] 00:53:23:714 Proceso CPU/(9675:9675): El planificador se desconecto al intentar recibir una tarea del mismo
+[INFO] 02:14:52:402 Proceso CPU/(12943:12943): ---- Configuracion ----
+
+[INFO] 02:14:52:425 Proceso CPU/(12943:12943): IP_SAFA = 127.0.0.1
+[INFO] 02:14:52:426 Proceso CPU/(12943:12943): Puerto_SAFA = 8000
+[INFO] 02:14:52:426 Proceso CPU/(12943:12943): IP_DAM = 127.0.0.1
+[INFO] 02:14:52:426 Proceso CPU/(12943:12943): Puerto_DAM = 8001
+[INFO] 02:14:52:427 Proceso CPU/(12943:12943): IP_FM9 = 127.0.0.1
+[INFO] 02:14:52:427 Proceso CPU/(12943:12943): Puerto_FM9 = 8003
+[INFO] 02:14:52:428 Proceso CPU/(12943:12943): IP_CPU = 127.0.0.1
+[INFO] 02:14:52:428 Proceso CPU/(12943:12943): Puerto_CPU = 8004
+[INFO] 02:14:52:429 Proceso CPU/(12943:12943): Retardo de Ejecucion = 100
+[INFO] 02:14:52:429 Proceso CPU/(12943:12943): -----------------------
+
+[INFO] 02:14:52:445 Proceso CPU/(12943:12943): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 02:14:52:448 Proceso CPU/(12943:12943): Conexion con El Diego exitosa
+[INFO] 02:14:52:450 Proceso CPU/(12943:12943): Conexion con FM9 exitosa
+[INFO] 02:14:52:455 Proceso CPU/(12943:12943): Inicio del proceso
+
+[INFO] 02:15:02:235 Proceso CPU/(12943:12943): El planificador solicita la incializacion de un proceso
+[INFO] 02:15:02:245 Proceso CPU/(12943:12943): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 02:15:02:247 Proceso CPU/(12943:12943): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 02:15:04:384 Proceso CPU/(12943:12943): El planificador solicita la ejecucion de un proceso
+[INFO] 02:15:04:421 Proceso CPU/(12943:12943): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 02:15:04:472 Proceso CPU/(12943:12943): Quedan 6 lineas a ejecutar para el proceso 1
+[INFO] 02:15:04:472 Proceso CPU/(12943:12943): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 02:15:04:477 Proceso CPU/(12943:12943): Instruccion a ejecutar: abrir
+[INFO] 02:15:04:479 Proceso CPU/(12943:12943): Se comenzara la ejecucion de la instruccion "abrir"...
+
+[INFO] 02:15:04:491 Proceso CPU/(12943:12943): Retardo de ejecucion...
+
+[INFO] 02:15:04:493 Proceso CPU/(12943:12943): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 02:15:04:494 Proceso CPU/(12943:12943): Se solicito al DMA la apertura del archivo del path "/scripts/complejo.escriptorio", para el proceso 1
+
+[INFO] 02:15:04:500 Proceso CPU/(12943:12943): El proceso 1 finalizo su ejecucion (por bloqueo), luego de ejecutar 1 instrucciones
+[INFO] 02:15:06:586 Proceso CPU/(12943:12943): El planificador solicita la ejecucion de un proceso
+[INFO] 02:15:06:625 Proceso CPU/(12943:12943): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 02:15:06:665 Proceso CPU/(12943:12943): Quedan 5 lineas a ejecutar para el proceso 1
+[INFO] 02:15:06:666 Proceso CPU/(12943:12943): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 02:15:06:666 Proceso CPU/(12943:12943): Instruccion a ejecutar: concentrar
+[INFO] 02:15:06:667 Proceso CPU/(12943:12943): Se comenzara la ejecucion de la instruccion "concentrar"...
+
+[INFO] 02:15:06:667 Proceso CPU/(12943:12943): Retardo de ejecucion...
+
+[INFO] 02:15:06:668 Proceso CPU/(12943:12943): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 02:15:06:669 Proceso CPU/(12943:12943): Instruccion a ejecutar: asignar
+[INFO] 02:15:06:670 Proceso CPU/(12943:12943): Se comenzara la ejecucion de la instruccion "asignar"...
+
+[INFO] 02:15:06:673 Proceso CPU/(12943:12943): Retardo de ejecucion...
+
+[INFO] 02:15:06:673 Proceso CPU/(12943:12943): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 02:15:06:717 Proceso CPU/(12943:12943): Se ha modificado extosamente la linea 1 del archivo en la ruta "/scripts/complejo.escriptorio"
+[INFO] 02:15:06:719 Proceso CPU/(12943:12943): El proceso 1 finalizo su ejecucion (por fin de quantum) luego de ejecutar 2 instrucciones
+[INFO] 02:15:06:762 Proceso CPU/(12943:12943): El planificador solicita la ejecucion de un proceso
+[INFO] 02:15:06:763 Proceso CPU/(12943:12943): Se recibio del planificador el PCB correspondiente al proceso 1
+[ERROR] 02:15:06:764 Proceso CPU/(12943:12943): La memoria devolvio un error (result = 78528472) al intentar recibir un archivo de ella. El proceso sera abortado
+[ERROR] 02:15:06:765 Proceso CPU/(12943:12943): Llego un script vacio de memoria. Error en la comunicacion. Este modulo sera abortado...
+[INFO] 02:15:06:767 Proceso CPU/(12943:12943): El proceso 1 finalizo su ejecucion (debido a un error) luego de ejecutar 0 instrucciones
+[ERROR] 02:34:22:517 Proceso CPU/(12943:12943): El planificador se desconecto al intentar recibir una tarea del mismo
+[INFO] 02:34:30:41 Proceso CPU/(14250:14250): ---- Configuracion ----
+
+[INFO] 02:34:30:61 Proceso CPU/(14250:14250): IP_SAFA = 127.0.0.1
+[INFO] 02:34:30:62 Proceso CPU/(14250:14250): Puerto_SAFA = 8000
+[INFO] 02:34:30:62 Proceso CPU/(14250:14250): IP_DAM = 127.0.0.1
+[INFO] 02:34:30:62 Proceso CPU/(14250:14250): Puerto_DAM = 8001
+[INFO] 02:34:30:63 Proceso CPU/(14250:14250): IP_FM9 = 127.0.0.1
+[INFO] 02:34:30:63 Proceso CPU/(14250:14250): Puerto_FM9 = 8003
+[INFO] 02:34:30:64 Proceso CPU/(14250:14250): IP_CPU = 127.0.0.1
+[INFO] 02:34:30:64 Proceso CPU/(14250:14250): Puerto_CPU = 8004
+[INFO] 02:34:30:64 Proceso CPU/(14250:14250): Retardo de Ejecucion = 100
+[INFO] 02:34:30:65 Proceso CPU/(14250:14250): -----------------------
+
+[INFO] 02:34:30:80 Proceso CPU/(14250:14250): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 02:34:30:84 Proceso CPU/(14250:14250): Conexion con El Diego exitosa
+[INFO] 02:34:30:92 Proceso CPU/(14250:14250): Conexion con FM9 exitosa
+[INFO] 02:34:30:93 Proceso CPU/(14250:14250): Inicio del proceso
+
+[INFO] 02:34:37:145 Proceso CPU/(14250:14250): El planificador solicita la incializacion de un proceso
+[INFO] 02:34:37:155 Proceso CPU/(14250:14250): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 02:34:37:162 Proceso CPU/(14250:14250): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 02:34:39:290 Proceso CPU/(14250:14250): El planificador solicita la ejecucion de un proceso
+[INFO] 02:34:39:329 Proceso CPU/(14250:14250): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 02:34:39:380 Proceso CPU/(14250:14250): Quedan 6 lineas a ejecutar para el proceso 1
+[INFO] 02:34:39:380 Proceso CPU/(14250:14250): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 02:34:39:383 Proceso CPU/(14250:14250): Instruccion a ejecutar: abrir
+[INFO] 02:34:39:385 Proceso CPU/(14250:14250): Se comenzara la ejecucion de la instruccion "abrir"...
+
+[INFO] 02:34:39:390 Proceso CPU/(14250:14250): Retardo de ejecucion...
+
+[INFO] 02:34:39:392 Proceso CPU/(14250:14250): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 02:34:39:393 Proceso CPU/(14250:14250): Se solicito al DMA la apertura del archivo del path "/scripts/complejo.escriptorio", para el proceso 1
+
+[INFO] 02:34:39:398 Proceso CPU/(14250:14250): El proceso 1 finalizo su ejecucion (por bloqueo), luego de ejecutar 1 instrucciones
+[INFO] 02:34:41:483 Proceso CPU/(14250:14250): El planificador solicita la ejecucion de un proceso
+[INFO] 02:34:41:521 Proceso CPU/(14250:14250): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 02:34:41:561 Proceso CPU/(14250:14250): Quedan 5 lineas a ejecutar para el proceso 1
+[INFO] 02:34:41:562 Proceso CPU/(14250:14250): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 02:34:41:562 Proceso CPU/(14250:14250): Instruccion a ejecutar: concentrar
+[INFO] 02:34:41:563 Proceso CPU/(14250:14250): Se comenzara la ejecucion de la instruccion "concentrar"...
+
+[INFO] 02:34:41:563 Proceso CPU/(14250:14250): Retardo de ejecucion...
+
+[INFO] 02:34:41:564 Proceso CPU/(14250:14250): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 02:34:41:565 Proceso CPU/(14250:14250): Instruccion a ejecutar: asignar
+[INFO] 02:34:41:566 Proceso CPU/(14250:14250): Se comenzara la ejecucion de la instruccion "asignar"...
+
+[INFO] 02:34:41:569 Proceso CPU/(14250:14250): Retardo de ejecucion...
+
+[INFO] 02:34:41:569 Proceso CPU/(14250:14250): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 02:34:41:613 Proceso CPU/(14250:14250): Se ha modificado extosamente la linea 1 del archivo en la ruta "/scripts/complejo.escriptorio"
+[INFO] 02:34:41:614 Proceso CPU/(14250:14250): El proceso 1 finalizo su ejecucion (por fin de quantum) luego de ejecutar 2 instrucciones
+[INFO] 02:34:41:659 Proceso CPU/(14250:14250): El planificador solicita la ejecucion de un proceso
+[INFO] 02:34:41:660 Proceso CPU/(14250:14250): Se recibio del planificador el PCB correspondiente al proceso 1
+[ERROR] 02:34:41:661 Proceso CPU/(14250:14250): La memoria devolvio un error (result = 78528472) al intentar recibir un archivo de ella. El proceso sera abortado
+[ERROR] 02:34:41:662 Proceso CPU/(14250:14250): Llego un script vacio de memoria. Error en la comunicacion. Este modulo sera abortado...
+[INFO] 02:34:41:663 Proceso CPU/(14250:14250): El proceso 1 finalizo su ejecucion (debido a un error) luego de ejecutar 0 instrucciones
+[ERROR] 02:45:34:24 Proceso CPU/(14250:14250): El planificador se desconecto al intentar recibir una tarea del mismo
+[INFO] 02:45:42:646 Proceso CPU/(14720:14720): ---- Configuracion ----
+
+[INFO] 02:45:42:663 Proceso CPU/(14720:14720): IP_SAFA = 127.0.0.1
+[INFO] 02:45:42:663 Proceso CPU/(14720:14720): Puerto_SAFA = 8000
+[INFO] 02:45:42:664 Proceso CPU/(14720:14720): IP_DAM = 127.0.0.1
+[INFO] 02:45:42:664 Proceso CPU/(14720:14720): Puerto_DAM = 8001
+[INFO] 02:45:42:665 Proceso CPU/(14720:14720): IP_FM9 = 127.0.0.1
+[INFO] 02:45:42:665 Proceso CPU/(14720:14720): Puerto_FM9 = 8003
+[INFO] 02:45:42:665 Proceso CPU/(14720:14720): IP_CPU = 127.0.0.1
+[INFO] 02:45:42:666 Proceso CPU/(14720:14720): Puerto_CPU = 8004
+[INFO] 02:45:42:666 Proceso CPU/(14720:14720): Retardo de Ejecucion = 100
+[INFO] 02:45:42:666 Proceso CPU/(14720:14720): -----------------------
+
+[INFO] 02:45:42:678 Proceso CPU/(14720:14720): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 02:45:42:683 Proceso CPU/(14720:14720): Conexion con El Diego exitosa
+[INFO] 02:45:42:685 Proceso CPU/(14720:14720): Conexion con FM9 exitosa
+[INFO] 02:45:42:686 Proceso CPU/(14720:14720): Inicio del proceso
+
+[INFO] 02:45:50:242 Proceso CPU/(14720:14720): El planificador solicita la incializacion de un proceso
+[INFO] 02:45:50:251 Proceso CPU/(14720:14720): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 02:45:50:253 Proceso CPU/(14720:14720): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 02:45:52:387 Proceso CPU/(14720:14720): El planificador solicita la ejecucion de un proceso
+[INFO] 02:45:52:425 Proceso CPU/(14720:14720): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 02:45:52:475 Proceso CPU/(14720:14720): Quedan 6 lineas a ejecutar para el proceso 1
+[INFO] 02:45:52:476 Proceso CPU/(14720:14720): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 02:45:52:479 Proceso CPU/(14720:14720): Instruccion a ejecutar: abrir
+[INFO] 02:45:52:481 Proceso CPU/(14720:14720): Se comenzara la ejecucion de la instruccion "abrir"...
+
+[INFO] 02:45:52:486 Proceso CPU/(14720:14720): Retardo de ejecucion...
+
+[INFO] 02:45:52:487 Proceso CPU/(14720:14720): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 02:45:52:489 Proceso CPU/(14720:14720): Se solicito al DMA la apertura del archivo del path "/scripts/complejo.escriptorio", para el proceso 1
+
+[INFO] 02:45:52:493 Proceso CPU/(14720:14720): El proceso 1 finalizo su ejecucion (por bloqueo), luego de ejecutar 1 instrucciones
+[INFO] 02:45:54:578 Proceso CPU/(14720:14720): El planificador solicita la ejecucion de un proceso
+[INFO] 02:45:54:617 Proceso CPU/(14720:14720): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 02:45:54:657 Proceso CPU/(14720:14720): Quedan 5 lineas a ejecutar para el proceso 1
+[INFO] 02:45:54:658 Proceso CPU/(14720:14720): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 02:45:54:658 Proceso CPU/(14720:14720): Instruccion a ejecutar: concentrar
+[INFO] 02:45:54:659 Proceso CPU/(14720:14720): Se comenzara la ejecucion de la instruccion "concentrar"...
+
+[INFO] 02:45:54:659 Proceso CPU/(14720:14720): Retardo de ejecucion...
+
+[INFO] 02:45:54:660 Proceso CPU/(14720:14720): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 02:45:54:660 Proceso CPU/(14720:14720): Instruccion a ejecutar: asignar
+[INFO] 02:45:54:661 Proceso CPU/(14720:14720): Se comenzara la ejecucion de la instruccion "asignar"...
+
+[INFO] 02:45:54:665 Proceso CPU/(14720:14720): Retardo de ejecucion...
+
+[INFO] 02:45:54:666 Proceso CPU/(14720:14720): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 02:45:54:709 Proceso CPU/(14720:14720): Se ha modificado extosamente la linea 1 del archivo en la ruta "/scripts/complejo.escriptorio"
+[INFO] 02:45:54:710 Proceso CPU/(14720:14720): El proceso 1 finalizo su ejecucion (por fin de quantum) luego de ejecutar 2 instrucciones
+[INFO] 02:45:54:754 Proceso CPU/(14720:14720): El planificador solicita la ejecucion de un proceso
+[INFO] 02:45:54:756 Proceso CPU/(14720:14720): Se recibio del planificador el PCB correspondiente al proceso 1
+[ERROR] 02:45:54:756 Proceso CPU/(14720:14720): La memoria devolvio un error (result = 78528472) al intentar recibir un archivo de ella. El proceso sera abortado
+[ERROR] 02:45:54:758 Proceso CPU/(14720:14720): Llego un script vacio de memoria. Error en la comunicacion. Este modulo sera abortado...
+[INFO] 02:53:59:126 Proceso CPU/(15252:15252): ---- Configuracion ----
+
+[INFO] 02:53:59:143 Proceso CPU/(15252:15252): IP_SAFA = 127.0.0.1
+[INFO] 02:53:59:144 Proceso CPU/(15252:15252): Puerto_SAFA = 8000
+[INFO] 02:53:59:145 Proceso CPU/(15252:15252): IP_DAM = 127.0.0.1
+[INFO] 02:53:59:145 Proceso CPU/(15252:15252): Puerto_DAM = 8001
+[INFO] 02:53:59:145 Proceso CPU/(15252:15252): IP_FM9 = 127.0.0.1
+[INFO] 02:53:59:146 Proceso CPU/(15252:15252): Puerto_FM9 = 8003
+[INFO] 02:53:59:146 Proceso CPU/(15252:15252): IP_CPU = 127.0.0.1
+[INFO] 02:53:59:146 Proceso CPU/(15252:15252): Puerto_CPU = 8004
+[INFO] 02:53:59:147 Proceso CPU/(15252:15252): Retardo de Ejecucion = 100
+[INFO] 02:53:59:147 Proceso CPU/(15252:15252): -----------------------
+
+[INFO] 02:53:59:161 Proceso CPU/(15252:15252): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 02:53:59:164 Proceso CPU/(15252:15252): Conexion con El Diego exitosa
+[INFO] 02:53:59:166 Proceso CPU/(15252:15252): Conexion con FM9 exitosa
+[INFO] 02:53:59:167 Proceso CPU/(15252:15252): Inicio del proceso
+
+[INFO] 02:54:09:322 Proceso CPU/(15252:15252): El planificador solicita la incializacion de un proceso
+[INFO] 02:54:09:333 Proceso CPU/(15252:15252): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 02:54:09:336 Proceso CPU/(15252:15252): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 02:54:11:467 Proceso CPU/(15252:15252): El planificador solicita la ejecucion de un proceso
+[INFO] 02:54:11:505 Proceso CPU/(15252:15252): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 02:54:11:554 Proceso CPU/(15252:15252): Quedan 6 lineas a ejecutar para el proceso 1
+[INFO] 02:54:11:554 Proceso CPU/(15252:15252): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 02:54:11:558 Proceso CPU/(15252:15252): Instruccion a ejecutar: abrir
+[INFO] 02:54:11:559 Proceso CPU/(15252:15252): Se comenzara la ejecucion de la instruccion "abrir"...
+
+[INFO] 02:54:11:564 Proceso CPU/(15252:15252): Retardo de ejecucion...
+
+[INFO] 02:54:11:566 Proceso CPU/(15252:15252): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 02:54:11:567 Proceso CPU/(15252:15252): Se solicito al DMA la apertura del archivo del path "/scripts/complejo.escriptorio", para el proceso 1
+
+[INFO] 02:54:11:572 Proceso CPU/(15252:15252): El proceso 1 finalizo su ejecucion (por bloqueo), luego de ejecutar 1 instrucciones
+[INFO] 02:54:13:659 Proceso CPU/(15252:15252): El planificador solicita la ejecucion de un proceso
+[INFO] 02:54:13:697 Proceso CPU/(15252:15252): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 02:54:13:737 Proceso CPU/(15252:15252): Quedan 5 lineas a ejecutar para el proceso 1
+[INFO] 02:54:13:738 Proceso CPU/(15252:15252): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 02:54:13:738 Proceso CPU/(15252:15252): Instruccion a ejecutar: concentrar
+[INFO] 02:54:13:739 Proceso CPU/(15252:15252): Se comenzara la ejecucion de la instruccion "concentrar"...
+
+[INFO] 02:54:13:739 Proceso CPU/(15252:15252): Retardo de ejecucion...
+
+[INFO] 02:54:13:740 Proceso CPU/(15252:15252): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 02:54:13:741 Proceso CPU/(15252:15252): Instruccion a ejecutar: asignar
+[INFO] 02:54:13:742 Proceso CPU/(15252:15252): Se comenzara la ejecucion de la instruccion "asignar"...
+
+[INFO] 02:54:13:745 Proceso CPU/(15252:15252): Retardo de ejecucion...
+
+[INFO] 02:54:13:746 Proceso CPU/(15252:15252): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 02:54:13:790 Proceso CPU/(15252:15252): Se ha modificado extosamente la linea 1 del archivo en la ruta "/scripts/complejo.escriptorio"
+[INFO] 02:54:13:791 Proceso CPU/(15252:15252): El proceso 1 finalizo su ejecucion (por fin de quantum) luego de ejecutar 2 instrucciones
+[INFO] 02:54:13:835 Proceso CPU/(15252:15252): El planificador solicita la ejecucion de un proceso
+[INFO] 02:54:13:836 Proceso CPU/(15252:15252): Se recibio del planificador el PCB correspondiente al proceso 1
+[ERROR] 02:54:13:837 Proceso CPU/(15252:15252): La memoria devolvio un error (result = 78528472) al intentar recibir un archivo de ella. El proceso sera abortado
+[ERROR] 02:54:13:838 Proceso CPU/(15252:15252): Error al obtener un archivo de memoria. El proceso sera abortado...
+[INFO] 02:54:13:840 Proceso CPU/(15252:15252): El proceso 1 finalizo su ejecucion (debido a un error) luego de ejecutar 0 instrucciones
+[ERROR] 03:05:42:888 Proceso CPU/(15252:15252): El planificador se desconecto al intentar recibir una tarea del mismo
+[INFO] 03:05:51:966 Proceso CPU/(15807:15807): ---- Configuracion ----
+
+[INFO] 03:05:51:986 Proceso CPU/(15807:15807): IP_SAFA = 127.0.0.1
+[INFO] 03:05:51:987 Proceso CPU/(15807:15807): Puerto_SAFA = 8000
+[INFO] 03:05:51:987 Proceso CPU/(15807:15807): IP_DAM = 127.0.0.1
+[INFO] 03:05:51:988 Proceso CPU/(15807:15807): Puerto_DAM = 8001
+[INFO] 03:05:51:988 Proceso CPU/(15807:15807): IP_FM9 = 127.0.0.1
+[INFO] 03:05:51:988 Proceso CPU/(15807:15807): Puerto_FM9 = 8003
+[INFO] 03:05:51:989 Proceso CPU/(15807:15807): IP_CPU = 127.0.0.1
+[INFO] 03:05:51:989 Proceso CPU/(15807:15807): Puerto_CPU = 8004
+[INFO] 03:05:51:990 Proceso CPU/(15807:15807): Retardo de Ejecucion = 100
+[INFO] 03:05:51:990 Proceso CPU/(15807:15807): -----------------------
+
+[INFO] 03:05:52:6 Proceso CPU/(15807:15807): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 03:05:52:11 Proceso CPU/(15807:15807): Conexion con El Diego exitosa
+[INFO] 03:05:52:13 Proceso CPU/(15807:15807): Conexion con FM9 exitosa
+[INFO] 03:05:52:14 Proceso CPU/(15807:15807): Inicio del proceso
+
+[INFO] 03:06:01:729 Proceso CPU/(15807:15807): El planificador solicita la incializacion de un proceso
+[INFO] 03:06:01:739 Proceso CPU/(15807:15807): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 03:06:01:740 Proceso CPU/(15807:15807): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 03:06:03:874 Proceso CPU/(15807:15807): El planificador solicita la ejecucion de un proceso
+[INFO] 03:06:03:913 Proceso CPU/(15807:15807): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 03:06:03:957 Proceso CPU/(15807:15807): Me llego de memoria un scirpt con 6 lineas: abrir /scripts/complejo.escriptorio
+[INFO] 03:06:03:964 Proceso CPU/(15807:15807): Quedan 6 lineas a ejecutar para el proceso 1
+[INFO] 03:06:03:965 Proceso CPU/(15807:15807): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 03:06:03:968 Proceso CPU/(15807:15807): Instruccion a ejecutar: abrir
+[INFO] 03:06:03:970 Proceso CPU/(15807:15807): Se comenzara la ejecucion de la instruccion "abrir"...
+
+[INFO] 03:06:03:975 Proceso CPU/(15807:15807): Retardo de ejecucion...
+
+[INFO] 03:06:03:976 Proceso CPU/(15807:15807): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 03:06:03:978 Proceso CPU/(15807:15807): Se solicito al DMA la apertura del archivo del path "/scripts/complejo.escriptorio", para el proceso 1
+
+[INFO] 03:06:03:982 Proceso CPU/(15807:15807): El proceso 1 finalizo su ejecucion (por bloqueo), luego de ejecutar 1 instrucciones
+[INFO] 03:06:06:70 Proceso CPU/(15807:15807): El planificador solicita la ejecucion de un proceso
+[INFO] 03:06:06:109 Proceso CPU/(15807:15807): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 03:06:06:149 Proceso CPU/(15807:15807): Me llego de memoria un scirpt con 6 lineas: abrir /scripts/complejo.escriptorio
+[INFO] 03:06:06:150 Proceso CPU/(15807:15807): Quedan 5 lineas a ejecutar para el proceso 1
+[INFO] 03:06:06:150 Proceso CPU/(15807:15807): El proceso 1 que va a ejecutar tiene un quantum de 2
+[INFO] 03:06:06:150 Proceso CPU/(15807:15807): Instruccion a ejecutar: concentrar
+[INFO] 03:06:06:151 Proceso CPU/(15807:15807): Se comenzara la ejecucion de la instruccion "concentrar"...
+
+[INFO] 03:06:06:151 Proceso CPU/(15807:15807): Retardo de ejecucion...
+
+[INFO] 03:06:06:152 Proceso CPU/(15807:15807): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 03:06:06:153 Proceso CPU/(15807:15807): Instruccion a ejecutar: asignar
+[INFO] 03:06:06:154 Proceso CPU/(15807:15807): Se comenzara la ejecucion de la instruccion "asignar"...
+
+[INFO] 03:06:06:156 Proceso CPU/(15807:15807): Retardo de ejecucion...
+
+[INFO] 03:06:06:157 Proceso CPU/(15807:15807): Se ha finalizado la ejecucion de la instruccion
+
+[INFO] 03:06:06:201 Proceso CPU/(15807:15807): Se ha modificado extosamente la linea 1 del archivo en la ruta "/scripts/complejo.escriptorio"
+[INFO] 03:06:06:202 Proceso CPU/(15807:15807): El proceso 1 finalizo su ejecucion (por fin de quantum) luego de ejecutar 2 instrucciones
+[INFO] 03:06:06:246 Proceso CPU/(15807:15807): El planificador solicita la ejecucion de un proceso
+[INFO] 03:06:06:248 Proceso CPU/(15807:15807): Se recibio del planificador el PCB correspondiente al proceso 1
+[ERROR] 03:06:06:248 Proceso CPU/(15807:15807): La memoria devolvio un error (result = 78529824) al intentar recibir un archivo de ella. El proceso sera abortado
+[INFO] 03:06:06:249 Proceso CPU/(15807:15807): Me llego de memoria un scirpt con 0 lineas: (null)
+[ERROR] 03:06:06:250 Proceso CPU/(15807:15807): Error al obtener un archivo de memoria. El proceso sera abortado...
+[INFO] 03:06:06:253 Proceso CPU/(15807:15807): El proceso 1 finalizo su ejecucion (debido a un error) luego de ejecutar 0 instrucciones
+[ERROR] 03:06:13:503 Proceso CPU/(15807:15807): El planificador se desconecto al intentar recibir una tarea del mismo
+[INFO] 03:08:40:760 Proceso CPU/(15992:15992): ---- Configuracion ----
+
+[INFO] 03:08:40:777 Proceso CPU/(15992:15992): IP_SAFA = 127.0.0.1
+[INFO] 03:08:40:778 Proceso CPU/(15992:15992): Puerto_SAFA = 8000
+[INFO] 03:08:40:778 Proceso CPU/(15992:15992): IP_DAM = 127.0.0.1
+[INFO] 03:08:40:779 Proceso CPU/(15992:15992): Puerto_DAM = 8001
+[INFO] 03:08:40:779 Proceso CPU/(15992:15992): IP_FM9 = 127.0.0.1
+[INFO] 03:08:40:779 Proceso CPU/(15992:15992): Puerto_FM9 = 8003
+[INFO] 03:08:40:780 Proceso CPU/(15992:15992): IP_CPU = 127.0.0.1
+[INFO] 03:08:40:780 Proceso CPU/(15992:15992): Puerto_CPU = 8004
+[INFO] 03:08:40:780 Proceso CPU/(15992:15992): Retardo de Ejecucion = 100
+[INFO] 03:08:40:781 Proceso CPU/(15992:15992): -----------------------
+
+[INFO] 03:08:40:794 Proceso CPU/(15992:15992): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 03:08:40:797 Proceso CPU/(15992:15992): Conexion con El Diego exitosa
+[INFO] 03:08:40:799 Proceso CPU/(15992:15992): Conexion con FM9 exitosa
+[INFO] 03:08:40:799 Proceso CPU/(15992:15992): Inicio del proceso
+
+[INFO] 03:08:48:900 Proceso CPU/(15992:15992): El planificador solicita la incializacion de un proceso
+[INFO] 03:08:48:910 Proceso CPU/(15992:15992): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 03:08:48:912 Proceso CPU/(15992:15992): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 03:08:51:42 Proceso CPU/(15992:15992): El planificador solicita la ejecucion de un proceso
+[INFO] 03:08:51:81 Proceso CPU/(15992:15992): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 03:11:07:650 Proceso CPU/(16213:16213): ---- Configuracion ----
+
+[INFO] 03:11:07:674 Proceso CPU/(16213:16213): IP_SAFA = 127.0.0.1
+[INFO] 03:11:07:675 Proceso CPU/(16213:16213): Puerto_SAFA = 8000
+[INFO] 03:11:07:676 Proceso CPU/(16213:16213): IP_DAM = 127.0.0.1
+[INFO] 03:11:07:676 Proceso CPU/(16213:16213): Puerto_DAM = 8001
+[INFO] 03:11:07:676 Proceso CPU/(16213:16213): IP_FM9 = 127.0.0.1
+[INFO] 03:11:07:677 Proceso CPU/(16213:16213): Puerto_FM9 = 8003
+[INFO] 03:11:07:677 Proceso CPU/(16213:16213): IP_CPU = 127.0.0.1
+[INFO] 03:11:07:678 Proceso CPU/(16213:16213): Puerto_CPU = 8004
+[INFO] 03:11:07:678 Proceso CPU/(16213:16213): Retardo de Ejecucion = 100
+[INFO] 03:11:07:679 Proceso CPU/(16213:16213): -----------------------
+
+[INFO] 03:11:07:695 Proceso CPU/(16213:16213): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 03:11:07:699 Proceso CPU/(16213:16213): Conexion con El Diego exitosa
+[INFO] 03:11:07:708 Proceso CPU/(16213:16213): Conexion con FM9 exitosa
+[INFO] 03:11:07:709 Proceso CPU/(16213:16213): Inicio del proceso
+
+[INFO] 03:11:14:698 Proceso CPU/(16213:16213): El planificador solicita la incializacion de un proceso
+[INFO] 03:11:14:707 Proceso CPU/(16213:16213): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 03:11:14:709 Proceso CPU/(16213:16213): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 03:11:16:838 Proceso CPU/(16213:16213): El planificador solicita la ejecucion de un proceso
+[INFO] 03:11:16:877 Proceso CPU/(16213:16213): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 03:20:31:426 Proceso CPU/(16733:16733): ---- Configuracion ----
+
+[INFO] 03:20:31:444 Proceso CPU/(16733:16733): IP_SAFA = 127.0.0.1
+[INFO] 03:20:31:445 Proceso CPU/(16733:16733): Puerto_SAFA = 8000
+[INFO] 03:20:31:445 Proceso CPU/(16733:16733): IP_DAM = 127.0.0.1
+[INFO] 03:20:31:445 Proceso CPU/(16733:16733): Puerto_DAM = 8001
+[INFO] 03:20:31:446 Proceso CPU/(16733:16733): IP_FM9 = 127.0.0.1
+[INFO] 03:20:31:446 Proceso CPU/(16733:16733): Puerto_FM9 = 8003
+[INFO] 03:20:31:446 Proceso CPU/(16733:16733): IP_CPU = 127.0.0.1
+[INFO] 03:20:31:447 Proceso CPU/(16733:16733): Puerto_CPU = 8004
+[INFO] 03:20:31:447 Proceso CPU/(16733:16733): Retardo de Ejecucion = 100
+[INFO] 03:20:31:447 Proceso CPU/(16733:16733): -----------------------
+
+[INFO] 03:20:31:460 Proceso CPU/(16733:16733): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 03:20:31:464 Proceso CPU/(16733:16733): Conexion con El Diego exitosa
+[INFO] 03:20:31:466 Proceso CPU/(16733:16733): Conexion con FM9 exitosa
+[INFO] 03:20:31:467 Proceso CPU/(16733:16733): Inicio del proceso
+
+[INFO] 03:20:38:73 Proceso CPU/(16733:16733): El planificador solicita la incializacion de un proceso
+[INFO] 03:20:38:82 Proceso CPU/(16733:16733): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 03:20:38:84 Proceso CPU/(16733:16733): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 03:20:40:217 Proceso CPU/(16733:16733): El planificador solicita la ejecucion de un proceso
+[INFO] 03:20:40:257 Proceso CPU/(16733:16733): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 03:21:18:912 Proceso CPU/(16816:16816): ---- Configuracion ----
+
+[INFO] 03:21:18:928 Proceso CPU/(16816:16816): IP_SAFA = 127.0.0.1
+[INFO] 03:21:18:929 Proceso CPU/(16816:16816): Puerto_SAFA = 8000
+[INFO] 03:21:18:929 Proceso CPU/(16816:16816): IP_DAM = 127.0.0.1
+[INFO] 03:21:18:930 Proceso CPU/(16816:16816): Puerto_DAM = 8001
+[INFO] 03:21:18:930 Proceso CPU/(16816:16816): IP_FM9 = 127.0.0.1
+[INFO] 03:21:18:930 Proceso CPU/(16816:16816): Puerto_FM9 = 8003
+[INFO] 03:21:18:931 Proceso CPU/(16816:16816): IP_CPU = 127.0.0.1
+[INFO] 03:21:18:931 Proceso CPU/(16816:16816): Puerto_CPU = 8004
+[INFO] 03:21:18:931 Proceso CPU/(16816:16816): Retardo de Ejecucion = 100
+[INFO] 03:21:18:932 Proceso CPU/(16816:16816): -----------------------
+
+[INFO] 03:21:18:945 Proceso CPU/(16816:16816): El handshake y la conexion con el planificador se han realizado correctamente!
+
+[INFO] 03:21:18:948 Proceso CPU/(16816:16816): Conexion con El Diego exitosa
+[INFO] 03:21:18:950 Proceso CPU/(16816:16816): Conexion con FM9 exitosa
+[INFO] 03:21:18:950 Proceso CPU/(16816:16816): Inicio del proceso
+
+[INFO] 03:21:25:519 Proceso CPU/(16816:16816): El planificador solicita la incializacion de un proceso
+[INFO] 03:21:25:528 Proceso CPU/(16816:16816): Se recibio del planificador el PCB correspondiente al proceso 1
+[INFO] 03:21:25:530 Proceso CPU/(16816:16816): Se solicito al DMA la apertura del archivo del path "/scripts/simple.escriptorio", para el proceso 1
+
+[INFO] 03:21:27:658 Proceso CPU/(16816:16816): El planificador solicita la ejecucion de un proceso
+[INFO] 03:21:27:697 Proceso CPU/(16816:16816): Se recibio del planificador el PCB correspondiente al proceso 1

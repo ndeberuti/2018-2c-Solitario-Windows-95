@@ -62,7 +62,7 @@ void shortTermSchedulerThread()
 void longTermSchedulerThread()
 {
 	PCB_t* processToInitialize = NULL;
-	uint32_t processAccepted;
+	uint32_t processAccepted = 0;
 	t_list* schedulableProcesses = NULL;
 
 	while(!killThreads)
@@ -139,7 +139,7 @@ void longTermSchedulerThread()
 
 void _checkExecProc_and_algorithm()
 {
-	int32_t semaphoreValue;
+	int32_t semaphoreValue = 0;
 
 	log_info(schedulerLog, "LTS: Se intentara activar el STS");
 

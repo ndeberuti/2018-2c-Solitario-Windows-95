@@ -5,11 +5,11 @@ void server()
 {
 	fd_set read_fds; //Temporal FD set used in the select function
 	struct sockaddr_in remoteaddr; //Client address
-	uint32_t fdmax; //Number of the maximum FD
-	uint32_t newfd; //New connection socket
-	int32_t command; //Client command
-	uint32_t nbytes;
-	uint32_t addrlen;
+	uint32_t fdmax = 0; //Number of the maximum FD
+	uint32_t newfd = 0; //New connection socket
+	int32_t command = 0; //Client command
+	uint32_t nbytes = 0;
+	uint32_t addrlen = 0;
 	FD_ZERO(&master); //Set to zero all sockets in the master and read FD sets
 	FD_ZERO(&read_fds);
 
@@ -126,11 +126,11 @@ void commandHandler(uint32_t command, uint32_t _socket)
 
 void openFile(uint32_t _socket, bool fileIsScript)
 {
-	int32_t nbytes;
-	int32_t currentProcess;
+	int32_t nbytes = 0;
+	int32_t currentProcess = 0;
 	char* currentFilePath = NULL;		//Path of the file to open
-	bool fileIsInFS;
-	bool couldSendDataToMemory;
+	bool fileIsInFS = false;
+	bool couldSendDataToMemory = false;
 
 	if((nbytes = receive_int(_socket, &currentProcess)) <= 0)
 	{
@@ -160,8 +160,8 @@ void openFile(uint32_t _socket, bool fileIsScript)
 
 	if(fileIsInFS)
 	{
-		t_list* parsedFile;
-		uint32_t fileLines;
+		t_list* parsedFile = NULL;
+		uint32_t fileLines = 0;
 		uint32_t bufferSize = 0;
 		char* fileContents = getFileFromFS(currentFilePath);
 		char* fileBuffer = NULL; //Contains a buffer with all the lines of a file, each line contained in a sub-buffer that has the size of a memory line;
@@ -222,10 +222,10 @@ void openFile(uint32_t _socket, bool fileIsScript)
 
 void flushFile(uint32_t _socket)
 {
-	int32_t nbytes;
-	int32_t currentProcess;
+	int32_t nbytes = 0;
+	int32_t currentProcess = 0;
 	char* currentFilePath = NULL;		//Path of the file to open
-	bool fileIsInFS;
+	bool fileIsInFS = false;
 
 	if((nbytes = receive_int(_socket, &currentProcess)) <= 0)
 	{
@@ -255,8 +255,8 @@ void flushFile(uint32_t _socket)
 
 	if(fileIsInFS)
 	{
-		t_list* parsedFile;
-		uint32_t scriptLines;
+		t_list* parsedFile = NULL;
+		uint32_t scriptLines = 0;
 		char* fileContents = getFileFromMemory(currentFilePath, &scriptLines);
 		char* fileBuffer = NULL; //Contains a buffer with all the lines of a file, each line contained in a sub-buffer that has the size of a memory line;
 								 //each line is separated by a '\n' character
@@ -322,11 +322,12 @@ void createFile(uint32_t _socket)
 {
 	//Because I do not know the size the lines of the file will have, I suppose the file's max size will be -> lines * memoryLineSize
 
-	int32_t nbytes, operationResult;
-	int32_t currentProcess;
+	int32_t nbytes = 0;
+	int32_t operationResult = 0;
+	int32_t currentProcess = 0;
 	char* currentFilePath = NULL;		//Path of the file to open
-	int32_t linesInFileToCreate;
-	uint32_t fileSize;
+	int32_t linesInFileToCreate = 0;
+	uint32_t fileSize = 0;
 
 	//Receive from the CPU the pid of the requesting process, the path where the file will be created, and the number of lines the file should have
 	if((nbytes = receive_int(_socket, &currentProcess)) <= 0)
@@ -432,8 +433,9 @@ void createFile(uint32_t _socket)
 
 void deleteFile(uint32_t _socket)
 {
-	int32_t nbytes, operationResult;
-	int32_t currentProcess;
+	int32_t nbytes = 0;
+	int32_t operationResult = 0;
+	int32_t currentProcess = 0;
 	char* currentFilePath = NULL;		//Path of the file to open
 
 	//Receive from the CPU the pid of the requesting process, the path where the file will be created, and the number of lines the file should have

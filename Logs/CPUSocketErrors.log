@@ -2,3 +2,6 @@
 [ERROR] 19:56:33:718 CPU/(16807:16807): Send error: Socket operation on non-socket
 [ERROR] 20:31:50:239 CPU/(17620:17620): Send error: Socket operation on non-socket
 [ERROR] 07:10:38:723 CPU/(1591:1591): Send error: Socket operation on non-socket
+[ERROR] 03:27:51:741 CPU/(10036:10036): Receive error: Bad file descriptor
+[ERROR] 22:14:26:808 CPU/(7005:7005): Receive error: File exists
+[ERROR] 23:22:56:711 CPU/(7964:7964): Receive error: File exists

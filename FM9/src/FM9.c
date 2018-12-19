@@ -828,7 +828,7 @@ void abrir_archivo_segmentacion_simple(int socket_cpu,int id){
 	if(segmento_linea != NULL){
 	resultado = OK;
 
-	char* buffer_envio = malloc(segmento_linea->limite * config.MAX_LINEA+ sizeof(int)*3);
+	char* buffer_envio = calloc(1, (segmento_linea->limite * config.MAX_LINEA) + (sizeof(int)*3) + 1);
 
 	tamanio = segmento_linea->limite * config.MAX_LINEA;
 
@@ -841,7 +841,7 @@ void abrir_archivo_segmentacion_simple(int socket_cpu,int id){
 	memcpy(buffer_envio+ sizeof(int)*2,puntero_memoria_segmentada + segmento_linea->base * config.MAX_LINEA , segmento_linea->limite * config.MAX_LINEA);
 	memcpy(buffer_envio + sizeof(int)*2 + tamanio , &(segmento_linea->limite), sizeof(int));
 
-	printf("MAGIA: %s\n", buffer_envio + sizeof(int)*2);
+	log_info(log_fm9, "Datos archivo enviado -> buffer_envio: %s; tamanio: %d; resultado: %d\n", buffer_envio, tamanio, resultado);
 
 
 
@@ -882,7 +882,7 @@ void modificar_linea_segmentacion_simple(int socket_cpu,int id,int numero_linea,
 		if(segmento_linea != NULL && numero_linea <= segmento_linea->limite){
 			log_info(log_fm9, "Modificando linea");
 
-		memcpy(puntero_memoria_segmentada + segmento_linea->base * config.MAX_LINEA + ((numero_linea -1) * config.MAX_LINEA), linea_nueva ,config.MAX_LINEA );
+		memcpy(puntero_memoria_segmentada + (segmento_linea->base * config.MAX_LINEA) + ((numero_linea - 1) * config.MAX_LINEA), linea_nueva ,config.MAX_LINEA );
 		resultado = OK ;
 		}else{
 			if(numero_linea > segmento_linea->limite){
