@@ -882,7 +882,7 @@ void modificar_linea_segmentacion_simple(int socket_cpu,int id,int numero_linea,
 		if(segmento_linea != NULL && numero_linea <= segmento_linea->limite){
 			log_info(log_fm9, "Modificando linea");
 
-		memcpy(puntero_memoria_segmentada + segmento_linea->base + (numero_linea * config.MAX_LINEA), linea_nueva ,config.MAX_LINEA );
+		memcpy(puntero_memoria_segmentada + segmento_linea->base * config.MAX_LINEA + (numero_linea * config.MAX_LINEA), linea_nueva ,config.MAX_LINEA );
 		resultado = OK ;
 		}else{
 			if(numero_linea > segmento_linea->limite){
