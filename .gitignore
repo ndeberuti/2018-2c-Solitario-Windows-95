@@ -56,7 +56,7 @@ dkms.conf
 /RemoteSystemsTempFiles/
 Logs/
 FIFA_FS/Bloques/*.bin
-FIFA_FS/Metadata/*.bin
+FIFA_FS/Metadata/Bitmap.bin
 Bibliotecas/.settings/language.settings.xml
 CPU/.settings/language.settings.xml
 ElDiego/.settings/language.settings.xml
