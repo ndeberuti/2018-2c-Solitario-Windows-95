@@ -1182,6 +1182,13 @@ int forzar_bitarray;
 
 tamanio_bitarray_sp = config.TAMANIO / config.TAM_PAGINA;
 
+if(config.TAMANIO % config.TAM_PAGINA > 0){
+
+
+	tamanio_bitarray_sp ++;
+
+}
+
 
 if(tamanio_bitarray_sp % 8 > 0){
 
@@ -1190,18 +1197,8 @@ if(tamanio_bitarray_sp % 8 > 0){
 
 
 
-	}else{
+}
 
-		if(config.TAMANIO / config.TAM_PAGINA == 0){
-
-				forzar_bitarray = 1;
-				tamanio_bitarray_sp = 1;
-			}else {
-
-				forzar_bitarray = config.TAMANIO / config.TAM_PAGINA / 8;
-			}
-
-	}
 
 		tabla_de_segmentos_sp = list_create();
 
@@ -1370,7 +1367,7 @@ void asignar_segmento_paginado_vacio(int cantidad_paginas,segmento_paginado_t* s
 
 
 void abrir_archivo_segmentacion_paginada(int socket_cpu, int id){
-	segmento_paginado_t * segmento_buscado = malloc(sizeof(segmento_paginado_t));
+	segmento_paginado_t * segmento_buscado;
 	int resultado, frame, tamanio, paginas, cantidad_lineas;
 	int contador = 0;
 	int offset = 0;
@@ -1413,7 +1410,7 @@ void abrir_archivo_segmentacion_paginada(int socket_cpu, int id){
 
 
 
-
+			printf("FRAME DE PAGINA: %d", frame);
 
 
 			memcpy(buffer_envio + sizeof(int)*2 + offset, puntero_memoria_sp + (frame * config.TAM_PAGINA), config.TAM_PAGINA);
@@ -1440,20 +1437,18 @@ void modificar_linea_segmentacion_paginada(int socket_cpu,int id,int numero_line
 	segmento_paginado_t * segmento_buscado;
 		int resultado, frame, resto;
 
-		int numero_pagina = (config.MAX_LINEA * numero_linea / config.TAM_PAGINA ) - 1;
+		int numero_pagina = (config.MAX_LINEA * numero_linea / config.TAM_PAGINA );
 
-		resto =  (config.MAX_LINEA * numero_linea) % config.TAM_PAGINA ;
+		if((config.MAX_LINEA * numero_linea) % config.TAM_PAGINA > 0 ){
 
-			if(resto > 0){
+			numero_pagina++;
 
-				numero_pagina++;
+		}
 
-			}
+		numero_pagina--;
 
 
-
-		int corrimiento = (numero_pagina * config.TAM_PAGINA / config.MAX_LINEA) - numero_linea -1;
-
+		int corrimiento = numero_linea - (numero_pagina*config.TAM_PAGINA / config.MAX_LINEA) -1;
 
 		bool es_id(segmento_paginado_t* entrada){
 
