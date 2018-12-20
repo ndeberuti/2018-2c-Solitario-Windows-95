@@ -54,6 +54,8 @@ dkms.conf
 # Eclipse
 /.metadata/
 /RemoteSystemsTempFiles/
+Logs/
+FIFA_FS/
 Bibliotecas/.settings/language.settings.xml
 CPU/.settings/language.settings.xml
 ElDiego/.settings/language.settings.xml

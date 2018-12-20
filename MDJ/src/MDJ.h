@@ -36,22 +36,27 @@ char *PATH_CONFIG = "/home/utnso/solitario/tp-2018-2c-Solitario-Windows-95/Confi
 
 // estructuras
 typedef struct {
-	uint32_t PUERTO;
+	int32_t PUERTO;
 	char *PUNTO_MONTAJE;
-	uint32_t RETARDO;
+	int32_t RETARDO;
 } config_t;
 
 typedef struct {
-	uint32_t TAMANIO_BLOQUES;
-	uint32_t CANTIDAD_BLOQUES;
+	int32_t TAMANIO_BLOQUES;
+	int32_t CANTIDAD_BLOQUES;
 	char *MAGIC_NUMBER;
 } config_fs;
 
 typedef struct {
 	char *comando;
 	char *param[MAX_PARAMS];
-	uint32_t cant_params;
+	int32_t cant_params;
 } console_t;
+
+typedef struct {
+	char *tamanio;
+	char *bloques;
+} f_config;
 
 // variables
 t_log *log_consola;
@@ -72,19 +77,21 @@ pthread_t thread_consola;
 config_t *load_config();
 void crear_estructura_directorios();
 void server();
-void command_handler(uint32_t socket, uint32_t command);
-void validar_archivo(uint32_t socket);
-void crear_archivo(uint32_t socket);
-void obtener_datos(uint32_t socket);
-void guardar_datos(uint32_t socket);
-void borrar_archivo(uint32_t socket);
-char *int_to_bin(uint32_t i);
-uint32_t calcular_cant_bloques(uint32_t bytes);
-void *proximo_bloque_libre(uint32_t bloque_inicial);
-void set_bitarray(uint32_t posicion);
-void clean_bitarray(uint32_t posicion);
+void command_handler(int32_t socket, int32_t command);
+void validar_archivo(int32_t socket);
+void crear_archivo(int32_t socket);
+void obtener_datos(int32_t socket);
+void guardar_datos(int32_t socket);
+void borrar_archivo(int32_t socket);
+char *int_to_bin(int32_t i);
+int32_t calcular_cant_bloques(int32_t bytes);
+void *proximo_bloque_libre(int32_t bloque_inicial);
+void set_bitarray(int32_t posicion);
+void clean_bitarray(int32_t posicion);
 void crear_path_completo(char *path_completo);
-char *obtener_todo(char *path, uint32_t offset);
+char *obtener_todo(char *path, int32_t offset);
+f_config *file_create(char *path);
+void file_destroy(f_config *config);
 void borrar_todo(char *path);
 char *formatear_path(char *path);
 char *convertir_punto_punto(char *path_completo);

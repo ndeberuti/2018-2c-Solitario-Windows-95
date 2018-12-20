@@ -58,7 +58,7 @@ void crear_estructura_directorios() {
 	log_info(log_consola, "Punto de montaje OK en: %s", config->PUNTO_MONTAJE);
 
 	char *path;
-	uint32_t largo_mnt = strlen(config->PUNTO_MONTAJE);
+	int32_t largo_mnt = strlen(config->PUNTO_MONTAJE);
 	if ((path = malloc(sizeof(char) * (largo_mnt + 10))) == NULL) {
 		log_error(log_mdj, "Error al intentar crear la estructura de directorios");
 		exit(EXIT_FAILURE);
@@ -134,7 +134,7 @@ void crear_estructura_directorios() {
 			rewind(fptr);
 			char *binario;
 			strcpy(bitmap, "");
-			uint32_t entero = fgetc(fptr);
+			int32_t entero = fgetc(fptr);
 			while (!feof(fptr)) {
 				binario = int_to_bin(entero);
 				strcat(bitmap, binario);
@@ -181,7 +181,7 @@ void crear_estructura_directorios() {
 
 	char *nro_bloque;
 	char *nombre_bloque;
-	for (uint32_t i = 0; i < bitarray->size; i++)
+	for (int32_t i = 0; i < bitarray->size; i++)
 		if (!bitarray_test_bit(bitarray, i * CHAR_BIT)) {
 			nro_bloque = string_itoa(i);
 			nombre_bloque = malloc(sizeof(char) * (strlen(carpeta_bloques) + strlen(nro_bloque) + 5));
@@ -198,16 +198,16 @@ void server() {
 	fd_set master; // conjunto maestro de descriptores de fichero
 	fd_set read_fds; // conjunto temporal de descriptores de fichero para select()
 	struct sockaddr_in remoteaddr; // dirección del cliente
-	uint32_t fdmax; // número máximo de descriptores de fichero
-	uint32_t newfd; // descriptor de socket de nueva conexión aceptada
+	int32_t fdmax; // número máximo de descriptores de fichero
+	int32_t newfd; // descriptor de socket de nueva conexión aceptada
 	int32_t command; // comando del cliente
-	uint32_t nbytes;
-	uint32_t addrlen;
+	int32_t nbytes;
+	int32_t addrlen;
 	FD_ZERO(&master); // borra los conjuntos maestro y temporal
 	FD_ZERO(&read_fds);
 
 	// obtener socket a la escucha
-	uint32_t servidor = build_server(config->PUERTO, log_consola);
+	int32_t servidor = build_server(config->PUERTO, log_consola);
 
 	// añadir listener al conjunto maestro
 	FD_SET(servidor, &master);
@@ -222,7 +222,7 @@ void server() {
 			exit(EXIT_FAILURE);
 		}
 		// explorar conexiones existentes en busca de datos que leer
-		for (uint32_t i = 0; i <= fdmax; i++)
+		for (int32_t i = 0; i <= fdmax; i++)
 			if (FD_ISSET(i, &read_fds)) { // ¡¡tenemos datos!!
 				if (i == servidor) {
 					// gestionar nuevas conexiones
@@ -256,7 +256,7 @@ void server() {
 	} // while (true)
 }
 
-void command_handler(uint32_t socket, uint32_t command) {
+void command_handler(int32_t socket, int32_t command) {
 	switch (command) {
 	case NEW_DMA_CONNECTION:
 		log_info(log_consola, "Nueva conexion desde El Diego");
@@ -286,9 +286,9 @@ void command_handler(uint32_t socket, uint32_t command) {
 	}
 }
 
-void validar_archivo(uint32_t socket) {
+void validar_archivo(int32_t socket) {
 	char *path;
-	uint32_t rta;
+	int32_t rta;
 
 	if (receive_string(socket, &path) <= 0) {
 		log_error(log_consola, "recv path (validar_archivo)");
@@ -318,9 +318,9 @@ void validar_archivo(uint32_t socket) {
 		log_error(log_consola, "send (validar_archivo)");
 }
 
-void crear_archivo(uint32_t socket) {
+void crear_archivo(int32_t socket) {
 	char *path;
-	uint32_t rta;
+	int32_t rta;
 	int32_t bytes;
 
 	if (receive_string(socket, &path) <= 0) {
@@ -335,14 +335,14 @@ void crear_archivo(uint32_t socket) {
 		else {
 			log_info(log_consola, "Crear archivo %s de %d bytes", path, bytes);
 
-			uint32_t cant_bloques = calcular_cant_bloques(bytes);
+			int32_t cant_bloques = calcular_cant_bloques(bytes);
 
 			log_info(log_consola, "El archivo ocupa %d bloques", cant_bloques);
 
-			uint32_t *prox_bloque;
-			uint32_t pos_actual = 0;
-			uint32_t bloque_inicial = 0;
-			uint32_t bloques[cant_bloques];
+			int32_t *prox_bloque;
+			int32_t pos_actual = 0;
+			int32_t bloque_inicial = 0;
+			int32_t bloques[cant_bloques];
 
 			while (pos_actual < cant_bloques && (prox_bloque = proximo_bloque_libre(bloque_inicial)) != NULL) {
 				bloques[pos_actual] = *prox_bloque;
@@ -355,15 +355,15 @@ void crear_archivo(uint32_t socket) {
 				rta = BLOQUES_INSUFICIENTES;
 			}
 			else {
-				uint32_t bytes_del_bloque;
-				uint32_t bytes_restantes = bytes;
+				int32_t bytes_del_bloque;
+				int32_t bytes_restantes = bytes;
 				char *relleno;
 				char *nro_bloque;
-				uint32_t largo_lista_bloques = 1;
+				int32_t largo_lista_bloques = 1;
 				char *nombre_bloque;
 				FILE *fptr;
 
-				for (uint32_t i = 0; i < cant_bloques; i++) {
+				for (int32_t i = 0; i < cant_bloques; i++) {
 					//CREAR EL BLOQUE
 					bytes_del_bloque = bytes_restantes > fs_config->TAMANIO_BLOQUES ? fs_config->TAMANIO_BLOQUES : bytes_restantes;
 					relleno = malloc(sizeof(char) * (bytes_del_bloque + 1));
@@ -396,7 +396,7 @@ void crear_archivo(uint32_t socket) {
 				char *lista_bloques = malloc(sizeof(char) * (largo_lista_bloques + 1));
 
 				strcpy(lista_bloques, "[");
-				for (uint32_t i = 0; i < cant_bloques; i++) {
+				for (int32_t i = 0; i < cant_bloques; i++) {
 					strcat(lista_bloques, string_itoa(bloques[i]));
 					if (i < cant_bloques - 1)
 						strcat(lista_bloques, ",");
@@ -433,7 +433,7 @@ void crear_archivo(uint32_t socket) {
 		log_error(log_consola, "send (crear_archivo)");
 }
 
-void obtener_datos(uint32_t socket) {
+void obtener_datos(int32_t socket) {
 	char *path;
 	int32_t rta;
 	int32_t size;
@@ -496,7 +496,7 @@ void obtener_datos(uint32_t socket) {
 	}
 }
 
-void guardar_datos(uint32_t socket) {
+void guardar_datos(int32_t socket) {
 	char *path;
 	char *buffer;
 	int32_t rta;
@@ -548,14 +548,14 @@ void guardar_datos(uint32_t socket) {
 						log_info(log_consola, "Se elimino el archivo original");
 
 						// CREAR TODOO
-						uint32_t cant_bloques = calcular_cant_bloques(strlen(new_datos));
+						int32_t cant_bloques = calcular_cant_bloques(strlen(new_datos));
 
 						log_info(log_consola, "El archivo modificado ocupa %d bloques", cant_bloques);
 
-						uint32_t *prox_bloque;
-						uint32_t pos_actual = 0;
-						uint32_t bloque_inicial = 0;
-						uint32_t bloques[cant_bloques];
+						int32_t *prox_bloque;
+						int32_t pos_actual = 0;
+						int32_t bloque_inicial = 0;
+						int32_t bloques[cant_bloques];
 
 						while (pos_actual < cant_bloques && (prox_bloque = proximo_bloque_libre(bloque_inicial)) != NULL) {
 							bloques[pos_actual] = *prox_bloque;
@@ -584,15 +584,15 @@ void guardar_datos(uint32_t socket) {
 						else
 							rta = OPERACION_OK;
 
-						uint32_t bytes_del_bloque;
-						uint32_t bytes_restantes = strlen(new_datos);
+						int32_t bytes_del_bloque;
+						int32_t bytes_restantes = strlen(new_datos);
 						char *relleno;
 						char *nro_bloque;
-						uint32_t largo_lista_bloques = 1;
+						int32_t largo_lista_bloques = 1;
 						char *nombre_bloque;
 						FILE *fptr;
 
-						for (uint32_t i = 0; i < cant_bloques; i++) {
+						for (int32_t i = 0; i < cant_bloques; i++) {
 							//CREAR EL BLOQUE
 							bytes_del_bloque = bytes_restantes > fs_config->TAMANIO_BLOQUES ? fs_config->TAMANIO_BLOQUES : bytes_restantes;
 							bytes_restantes -= bytes_del_bloque;
@@ -623,7 +623,7 @@ void guardar_datos(uint32_t socket) {
 						char *lista_bloques = malloc(sizeof(char) * (largo_lista_bloques + 1));
 
 						strcpy(lista_bloques, "[");
-						for (uint32_t i = 0; i < cant_bloques; i++) {
+						for (int32_t i = 0; i < cant_bloques; i++) {
 							strcat(lista_bloques, string_itoa(bloques[i]));
 							if (i < cant_bloques - 1)
 								strcat(lista_bloques, ",");
@@ -664,9 +664,9 @@ void guardar_datos(uint32_t socket) {
 		log_error(log_consola, "send (guardar_datos)");
 }
 
-void borrar_archivo(uint32_t socket) {
+void borrar_archivo(int32_t socket) {
 	char *path;
-	uint32_t rta;
+	int32_t rta;
 
 	if (receive_string(socket, &path) <= 0) {
 		log_error(log_consola, "recv path (borrar_archivo)");
@@ -691,9 +691,9 @@ void borrar_archivo(uint32_t socket) {
 		log_error(log_consola, "send (borrar_archivo)");
 }
 
-char *int_to_bin(uint32_t i) {
+char *int_to_bin(int32_t i) {
 	char *bits = malloc(sizeof(char) * 9);
-	uint32_t bits_index = 7;
+	int32_t bits_index = 7;
 	memset(bits, '\0', 9);
 	memset(bits, '0', 8);
 
@@ -705,8 +705,8 @@ char *int_to_bin(uint32_t i) {
 	return bits;
 }
 
-uint32_t calcular_cant_bloques(uint32_t bytes) {
-	uint32_t cant_bloques = bytes / fs_config->TAMANIO_BLOQUES;
+int32_t calcular_cant_bloques(int32_t bytes) {
+	int32_t cant_bloques = bytes / fs_config->TAMANIO_BLOQUES;
 
 	if (bytes % fs_config->TAMANIO_BLOQUES > 0)
 		cant_bloques++;
@@ -714,8 +714,8 @@ uint32_t calcular_cant_bloques(uint32_t bytes) {
 	return cant_bloques;
 }
 
-void *proximo_bloque_libre(uint32_t bloque_inicial) {
-	uint32_t i = bloque_inicial;
+void *proximo_bloque_libre(int32_t bloque_inicial) {
+	int32_t i = bloque_inicial;
 
 	while (i < bitarray->size && bitarray_test_bit(bitarray, i * CHAR_BIT))
 		i++;
@@ -723,7 +723,7 @@ void *proximo_bloque_libre(uint32_t bloque_inicial) {
 	return i >= bitarray->size ? NULL : &i;
 }
 
-void set_bitarray(uint32_t posicion) {
+void set_bitarray(int32_t posicion) {
 	bitarray_set_bit(bitarray, posicion * CHAR_BIT);
 
 	FILE *fptr = fopen(path_bitmap, "w");
@@ -731,7 +731,7 @@ void set_bitarray(uint32_t posicion) {
 	fclose(fptr);
 }
 
-void clean_bitarray(uint32_t posicion) {
+void clean_bitarray(int32_t posicion) {
 	bitarray_clean_bit(bitarray, posicion * CHAR_BIT);
 
 	FILE *fptr = fopen(path_bitmap, "w");
@@ -768,13 +768,13 @@ void crear_path_completo(char *path_completo) {
 	free(path);
 }
 
-char *obtener_todo(char *path, uint32_t offset) {
-	t_config *aux_config = config_create(path);
+char *obtener_todo(char *path, int32_t offset) {
+	f_config *aux_config = file_create(path);
 
-	uint32_t tamanio = config_get_int_value(aux_config, "TAMANIO");
-	char **bloques = config_get_array_value(aux_config, "BLOQUES");
-	uint32_t cant_bloques = calcular_cant_bloques(tamanio);
-	//config_destroy(aux_config);
+	int32_t tamanio = atoi(aux_config->tamanio);
+	char **bloques = string_get_string_as_array(aux_config->bloques);
+	int32_t cant_bloques = calcular_cant_bloques(tamanio);
+	file_destroy(aux_config);
 	char *rta = NULL;
 
 	if (offset < tamanio) {
@@ -784,7 +784,7 @@ char *obtener_todo(char *path, uint32_t offset) {
 		char *contenido;
 		rta = malloc(sizeof(char) * (tamanio + 1));
 
-		for (uint32_t i = 0; i < cant_bloques; i++) {
+		for (int32_t i = 0; i < cant_bloques; i++) {
 			nombre_bloque = malloc(sizeof(char) * (strlen(carpeta_bloques) + strlen(bloques[i]) + 5));
 			strcpy(nombre_bloque, carpeta_bloques);
 			strcat(nombre_bloque, bloques[i]);
@@ -812,23 +812,77 @@ char *obtener_todo(char *path, uint32_t offset) {
 		}
 	}
 
-	for (uint32_t i = 0; i < cant_bloques; i++)
+	for (int32_t i = 0; i < cant_bloques; i++)
 		free(bloques[i]);
 	free(bloques);
 
 	return rta;
 }
 
-void borrar_todo(char *path) {
-	t_config *aux_config = config_create(path);
+f_config *file_create(char *path) {
+	FILE* file = fopen(path, "r");
 
-	uint32_t tamanio = config_get_int_value(aux_config, "TAMANIO");
-	char **bloques = config_get_array_value(aux_config, "BLOQUES");
-	uint32_t cant_bloques = calcular_cant_bloques(tamanio);
-	//config_destroy(aux_config);
+	if (file == NULL) {
+		return NULL;
+	}
+
+	struct stat stat_file;
+	stat(path, &stat_file);
+
+	f_config *config = malloc(sizeof(f_config));
+
+	char* buffer = calloc(1, stat_file.st_size + 1);
+	fread(buffer, stat_file.st_size, 1, file);
+
+	if (strstr(buffer, "\r\n")) {
+		printf("\n\nconfig_create - WARNING: the file %s contains a \\r\\n sequence "
+		 "- the Windows new line sequence. The \\r characters will remain as part "
+		 "of the value, as Unix newlines consist of a single \\n. You can install "
+		 "and use `dos2unix` program to convert your files to Unix style.\n\n", path);
+	}
+
+	char** lines = string_split(buffer, "\n");
+
+	void add_configuration(char *line) {
+		if (!string_starts_with(line, "#")) {
+			char** keyAndValue = string_n_split(line, 2, "=");
+
+			if (str_eq(keyAndValue[0], "TAMANIO"))
+				config->tamanio = strdup(keyAndValue[1]);
+			else if (str_eq(keyAndValue[0], "BLOQUES"))
+				config->bloques = strdup(keyAndValue[1]);
+
+			free(keyAndValue[0]);
+			free(keyAndValue[1]);
+			free(keyAndValue);
+		}
+	}
+	string_iterate_lines(lines, add_configuration);
+	string_iterate_lines(lines, (void*) free);
+
+	free(lines);
+	free(buffer);
+	fclose(file);
+
+	return config;
+}
+
+void file_destroy(f_config *config) {
+	free(config->tamanio);
+	free(config->bloques);
+	free(config);
+}
+
+void borrar_todo(char *path) {
+	f_config *aux_config = file_create(path);
+
+	int32_t tamanio = atoi(aux_config->tamanio);
+	char **bloques = string_get_string_as_array(aux_config->bloques);
+	int32_t cant_bloques = calcular_cant_bloques(tamanio);
+	file_destroy(aux_config);
 	char *nombre_bloque;
 
-	for (uint32_t i = 0; i < cant_bloques; i++) {
+	for (int32_t i = 0; i < cant_bloques; i++) {
 		nombre_bloque = malloc(sizeof(char) * (strlen(carpeta_bloques) + strlen(bloques[i]) + 5));
 		strcpy(nombre_bloque, carpeta_bloques);
 		strcat(nombre_bloque, bloques[i]);
@@ -900,7 +954,7 @@ char *convertir_punto_punto(char *path_completo) {
 	if (str_eq(path_completo, config->PUNTO_MONTAJE))
 		path = string_substring_until(path_completo, strlen(path_completo) - 1);
 	else {
-		uint32_t i = strlen(path_completo) - 2;
+		int32_t i = strlen(path_completo) - 2;
 		bool salir = false;
 		char *aux;
 
@@ -1017,7 +1071,7 @@ void consola() {
 								MD5_Init(&context);
 								MD5_Update(&context, content, strlen(content) + 1);
 								MD5_Final(digest, &context);
-								for(uint32_t i = 0; i < MD5_DIGEST_LENGTH; i++)
+								for(int32_t i = 0; i < MD5_DIGEST_LENGTH; i++)
 									printf("%02x", digest[i]);
 								printf("\n");
 								free(content);
@@ -1058,7 +1112,7 @@ void consola() {
 					print_c(log_consola, "%s: Comando incorrecto", consola->comando);
 
 				free(consola->comando);
-				for (uint32_t i = 0; i < consola->cant_params; i++)
+				for (int32_t i = 0; i < consola->cant_params; i++)
 					free(consola->param[i]);
 				free(consola);
 				free(pathFormateado);
