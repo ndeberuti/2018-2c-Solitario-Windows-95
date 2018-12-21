@@ -736,6 +736,7 @@ if(buffer_recepcion == NULL){
 
 
 
+
 								reservar_bitarray(bitarray_memoria, entrada_tabla->base, entrada_tabla->limite);
 
 
@@ -876,25 +877,35 @@ void modificar_linea_segmentacion_simple(int socket_cpu,int id,int numero_linea,
 
 			}
 
-		printf("\n\id de segmento a buscar: %d: \n", id);
+		printf("id de segmento a buscar %d: \n", id);
 
-		segmento_linea = list_find(tabla_de_segmentos, es_id);
+		segmento_linea = list_find(tabla_de_segmentos,(void*) es_id);
 
-		if(segmento_linea != NULL && numero_linea <= segmento_linea->limite){
-			log_info(log_fm9, "Modificando linea");
 
-		memcpy(puntero_memoria_segmentada + (segmento_linea->base * config.MAX_LINEA) + ((numero_linea - 1) * config.MAX_LINEA), linea_nueva ,config.MAX_LINEA );
-		resultado = OK ;
-		}else{
-			if(numero_linea > segmento_linea->limite){
-				log_error(log_fm9, "Segmentation Fault");
-				resultado = SEGMENTATION_FAULT;
-			}
+
+		if(segmento_linea == NULL){
 
 			log_error(log_fm9, "El segmento %d no se encuentra en memoria", id);
-			resultado = ARCHIVO_NO_ABIERTO ;
+		resultado = ARCHIVO_NO_ABIERTO ;
 
-			}
+
+		}
+
+
+		else if(numero_linea > segmento_linea->limite){
+
+			log_error(log_fm9, "Segmentation fault");
+			resultado = SEGMENTATION_FAULT;
+		}else{
+
+			log_info(log_fm9, "Modificando linea");
+			memcpy(puntero_memoria_segmentada + (segmento_linea->base *config.MAX_LINEA) + ((numero_linea -1 ) * config.MAX_LINEA),linea_nueva,config.MAX_LINEA);
+
+			resultado = OK ;
+		}
+
+
+
 
 
 
@@ -1787,25 +1798,25 @@ int close_process_segmentacion_paginada(int socket_cpu,int pid){
 //-------------------------------------------------------------------------------------------------------------------
 //BITARRAY
 
-void reservar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limite){
+void reservar_bitarray(t_bitarray* bitarray_memoria,int base,int limite){
 
 
 
-	for(int i= base; i < base + limite; i++){
+	for(int i= base; i < (base + limite); i++){
 
-	bitarray_set_bit(bitarray_memoria_segmentada, i);
-
+	bitarray_set_bit(bitarray_memoria, i);
+	printf("BIT SETEADO: %d \n", i);
 	}
 
 
 }
 
-void liberar_bitarray(t_bitarray* bitarray_memoria_segmentada,int base,int limite){
+void liberar_bitarray(t_bitarray* bitarray_memoria,int base,int limite){
 
-	for(int i= base; i < base +limite; i++){
+	for(int i= base; i < (base +limite); i++){
 
-		bitarray_clean_bit(bitarray_memoria_segmentada, i);
-
+		bitarray_clean_bit(bitarray_memoria, i);
+		printf("BITARRAY LIBERADO : %d", i);
 
 	}
 
