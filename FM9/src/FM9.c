@@ -819,14 +819,15 @@ void abrir_archivo_segmentacion_simple(int socket_cpu,int id){
 
 	segmento_linea = list_find(tabla_de_segmentos, (void*) es_id);
 
-	printf("base: %d \n", segmento_linea->base);
-	printf("id: %d \n", segmento_linea->id);
-	printf("limite: %d \n", segmento_linea->limite);
-	printf("pid: %d \n", segmento_linea->pid);
+
 
 
 	if(segmento_linea != NULL){
-	resultado = OK;
+		printf("base: %d \n", segmento_linea->base);
+			printf("id: %d \n", segmento_linea->id);
+			printf("limite: %d \n", segmento_linea->limite);
+			printf("pid: %d \n", segmento_linea->pid);
+		resultado = OK;
 
 	void* buffer_envio = calloc(1, (segmento_linea->limite * config.MAX_LINEA) + (sizeof(int)*3));
 
