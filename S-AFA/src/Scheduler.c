@@ -3,7 +3,8 @@
 
 void shortTermSchedulerThread()
 {
-	t_list* schedulableProcesses = NULL;
+	t_list* schedulableProcessesFromReadyQueue = NULL;
+	uint32_t scheduleableProcessesQty = 0;
 
 	while(!killThreads)
 	{
@@ -33,9 +34,12 @@ void shortTermSchedulerThread()
 			return;
 		}
 
-		schedulableProcesses = getSchedulableProcesses();
+		schedulableProcessesFromReadyQueue = getSchedulableProcesses();
 
-		if(list_size(schedulableProcesses) == 0)
+		scheduleableProcessesQty = list_size(schedulableProcessesFromReadyQueue);
+		scheduleableProcessesQty += list_size(ioReadyQueue);
+
+		if(scheduleableProcessesQty == 0)
 		{
 			log_info(schedulerLog, "STS: No es posible planificar ya que no hay procesos listos. Se debe crear un nuevo proceso, o desbloquear uno ya existente, para poder planificar");
 		}

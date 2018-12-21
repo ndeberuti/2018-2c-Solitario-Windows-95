@@ -202,11 +202,12 @@ uint32_t addProcessToReadyQueue(PCB_t *process)
 
 void moveProcessToReadyQueue(PCB_t* process, bool addToIoReadyQueue) //To add to the real ReadyQueue, or the idReadyQueue
 {
-	process->executionState = READY;
 	process->cpuProcessIsAssignedTo = 0;
 
 	if(!addToIoReadyQueue)
 	{
+		process->executionState = READY;
+
 		pthread_mutex_lock(&readyQueueMutex);
 
 		list_add(readyQueue, process);
@@ -217,6 +218,8 @@ void moveProcessToReadyQueue(PCB_t* process, bool addToIoReadyQueue) //To add to
 	}
 	else
 	{
+		process->executionState = READY_IO;
+
 		pthread_mutex_lock(&ioReadyQueueMutex);
 
 		list_add(ioReadyQueue, process);
@@ -444,8 +447,11 @@ void initializeOrExecuteProcess(PCB_t* process, cpu_t* selectedCPU)
 
 	process->cpuProcessIsAssignedTo = selectedCPU->cpuId;
 
-	if(process->executionState == READY)	//Modify the quantum only if it comes from the readyQueue, not from the ioReadyQueue;
-	{										//if the process was not initialized, this property will not be used by the cpu, but there is no need to change this for that case
+
+	//Modify the quantum only if it comes from the readyQueue (not from the ioReadyQueue), or if the process has no quantum left;
+	//If the process was not initialized, this property will not be used by the cpu, but there is no need to change this for that case
+	if((process->executionState == READY) || (process->remainingQuantum == 0))
+	{
 		process->remainingQuantum =  quantum;
 	}
 

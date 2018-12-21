@@ -144,9 +144,12 @@ bool customScheduler()
 
 	list_sort(schedulableProcesses, processHasLessInstructionsUntilIO);
 	scheduledProcess = list_get(schedulableProcesses, 0);	//The process with less instructions until the end or an IO instruction is scheduled
+
+	removeProcessFromQueueWithId(scheduledProcess->pid, readyQueue);
 	initializeOrExecuteProcess(scheduledProcess, selectedCPU);
 
 	list_destroy(processesToCountInstructions);
+	list_destroy(schedulableProcesses);
 
 	return true;
 }
