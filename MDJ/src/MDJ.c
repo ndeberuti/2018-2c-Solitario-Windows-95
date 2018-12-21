@@ -407,15 +407,8 @@ void crear_archivo(int32_t socket) {
 				strcpy(path_archivo, carpeta_archivos);
 				strcat(path_archivo, path);
 
-				crear_path_completo(path_archivo);
+				save_file(path_archivo, bytes, lista_bloques);
 
-				t_config *aux_config = malloc(sizeof(t_config));
-				aux_config->path = strdup(path_archivo);
-				aux_config->properties = dictionary_create();
-				config_set_value(aux_config, "TAMANIO", string_itoa(bytes));
-				config_set_value(aux_config, "BLOQUES", lista_bloques);
-				config_save(aux_config);
-				//config_destroy(aux_config);
 				free(path_archivo);
 				free(lista_bloques);
 
@@ -630,13 +623,8 @@ void guardar_datos(int32_t socket) {
 						}
 						strcat(lista_bloques, "]");
 
-						t_config *aux_config = malloc(sizeof(t_config));
-						aux_config->path = strdup(path_archivo);
-						aux_config->properties = dictionary_create();
-						config_set_value(aux_config, "TAMANIO", string_itoa(strlen(new_datos)));
-						config_set_value(aux_config, "BLOQUES", lista_bloques);
-						config_save(aux_config);
-						//config_destroy(aux_config);
+						save_file(path_archivo, strlen(new_datos), lista_bloques);
+
 						free(lista_bloques);
 						free(new_datos);
 						free(datos);
@@ -739,6 +727,19 @@ void clean_bitarray(int32_t posicion) {
 	fclose(fptr);
 }
 
+void save_file(char *path, int32_t tamanio, char *bloques) {
+	crear_path_completo(path);
+
+	FILE* file = fopen(path, "wb+");
+	char* lines = string_new();
+	string_append_with_format(&lines, "TAMANIO=%s\n", string_itoa(tamanio));
+	string_append_with_format(&lines, "BLOQUES=%s\n", bloques);
+
+	fwrite(lines, strlen(lines), 1, file);
+	fclose(file);
+	free(lines);
+}
+
 void crear_path_completo(char *path_completo) {
 	char *path = malloc(sizeof(char) * strlen(path_completo));
 	char *aux_path = strdup(path_completo);
@@ -770,7 +771,6 @@ void crear_path_completo(char *path_completo) {
 
 char *obtener_todo(char *path, int32_t offset) {
 	f_config *aux_config = file_create(path);
-
 	int32_t tamanio = atoi(aux_config->tamanio);
 	char **bloques = string_get_string_as_array(aux_config->bloques);
 	int32_t cant_bloques = calcular_cant_bloques(tamanio);
@@ -875,7 +875,6 @@ void file_destroy(f_config *config) {
 
 void borrar_todo(char *path) {
 	f_config *aux_config = file_create(path);
-
 	int32_t tamanio = atoi(aux_config->tamanio);
 	char **bloques = string_get_string_as_array(aux_config->bloques);
 	int32_t cant_bloques = calcular_cant_bloques(tamanio);

@@ -88,6 +88,7 @@ int32_t calcular_cant_bloques(int32_t bytes);
 void *proximo_bloque_libre(int32_t bloque_inicial);
 void set_bitarray(int32_t posicion);
 void clean_bitarray(int32_t posicion);
+void save_file(char *path, int32_t tamanio, char *bloques);
 void crear_path_completo(char *path_completo);
 char *obtener_todo(char *path, int32_t offset);
 f_config *file_create(char *path);
