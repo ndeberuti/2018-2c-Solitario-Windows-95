@@ -9,7 +9,7 @@ void shortTermSchedulerThread()
 	while(!killThreads)
 	{
 		sem_wait(&shortTermScheduler);	//Wait until this scheduler is needed
-		pthread_mutex_lock(&schedulerNotRunning);	//Extra security measure to avoid 2 the schedulers running at the same time and thus, producing unexpected behavior
+		sem_wait(&schedulerNotRunning);	//Extra security measure to avoid 2 the schedulers running at the same time and thus, producing unexpected behavior
 
 		//TODO: Review that last semaphore wait?
 
@@ -47,7 +47,7 @@ void shortTermSchedulerThread()
 
 		STSAlreadyExecuting = false;
 
-		pthread_mutex_unlock(&schedulerNotRunning);
+		sem_post(&schedulerNotRunning);
 		log_info(schedulerLog, "STS: Ejecucion finalizada");
 	}
 }
@@ -61,7 +61,7 @@ void longTermSchedulerThread()
 	while(!killThreads)
 	{
 		sem_wait(&longTermScheduler);	//Wait until this scheduler is needed
-		pthread_mutex_lock(&schedulerNotRunning);	//Extra security measure to avoid 2 the schedulers running at the same time and thus, producing unexpected behavior
+		sem_wait(&schedulerNotRunning);	//Extra security measure to avoid 2 the schedulers running at the same time and thus, producing unexpected behavior
 
 		LTSAlreadyExecuting = true;
 
@@ -121,7 +121,7 @@ void longTermSchedulerThread()
 		LTSAlreadyExecuting = false;
 		log_info(schedulerLog, "LTS: Ejecucion finalizada");
 
-		pthread_mutex_unlock(&schedulerNotRunning);
+		sem_post(&schedulerNotRunning);
 	}
 }
 
@@ -163,6 +163,7 @@ void initializeVariables()
 	STSAlreadyExecuting = false;
 	LTSAlreadyExecuting = false;
 	terminateModule = false;
+	schedulingPaused = false;
 
 	//Inotify
 	configFileInotifyFD = inotify_init();
@@ -185,6 +186,7 @@ void initializeVariables()
 
 	sem_init(&shortTermScheduler, 0, 0);
 	sem_init(&longTermScheduler, 0, 0);
+	sem_init(&schedulerNotRunning, 0, 1);
 
 	consoleLog = init_log("../../Logs/S-AFA_Consola.log", "Consola S-AFA", true, LOG_LEVEL_INFO);
 	schedulerLog = init_log("../../Logs/S-AFA_Planif.log", "Proceso S-AFA", true, LOG_LEVEL_INFO);

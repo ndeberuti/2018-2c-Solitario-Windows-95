@@ -282,7 +282,6 @@ void flushFile(uint32_t _socket)
 		if(operationResult == OPERACION_FAIL)
 		{
 			sendProcessErrorMessageToScheduler(currentProcess);
-			log_error(dmaLog, "Se intentaron guardar los datos del archivo del path \"%s\", pero ocurrio un error al realizar la operacion", currentFilePath);
 
 			free(currentFilePath);
 			list_destroy_and_destroy_elements(parsedFile, free);
@@ -293,7 +292,6 @@ void flushFile(uint32_t _socket)
 		else if(operationResult == BLOQUES_INSUFICIENTES)
 		{
 			sendProcessErrorMessageToScheduler(currentProcess);
-			log_error(dmaLog, "Se intentaron guardar los datos del archivo del path \"%s\", pero el FS no posee bloques suficientes para guardar los cambios del archivo", currentFilePath);
 
 			free(currentFilePath);
 			list_destroy_and_destroy_elements(parsedFile, free);

@@ -93,11 +93,25 @@ void console()
 				}
 				else if(str_eq(console->command, "continuar"))
 				{
-					//TODO - Usar lo hecho en el tp anterior
+					if(schedulingPaused)
+					{
+						sem_post(&schedulerNotRunning);
+						schedulingPaused = false;
+						log_info(schedulerLog, "Planificacion reanudada");
+					}
+					else
+						log_info(schedulerLog, "La planificacion ya habia sido reanudada");
 				}
 				else if(str_eq(console->command, "pausar"))
 				{
-					//TODO - Usar lo hecho en el tp anterior
+					if(!schedulingPaused)
+					{
+						sem_wait(&schedulerNotRunning);
+						schedulingPaused = true;
+						log_info(schedulerLog, "Planificacion pausada");
+					}
+					else
+						log_info(schedulerLog, "La planificacion ya habia sido pausada");
 				}
 				else
 					print_c(consoleLog, "%s: Comando incorrecto", console->command);

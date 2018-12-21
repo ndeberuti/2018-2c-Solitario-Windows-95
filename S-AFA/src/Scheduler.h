@@ -132,6 +132,7 @@ t_list* semaphoreListKeys;	//what we tried to implement (adding a t_list* to the
 							//add or remove keys from that list), to avoid problems we chose to create the key lists outside the dictionary
 t_dictionary* fileTable;
 t_dictionary* semaphoreList;
+bool schedulingPaused;
 bool killThreads;
 bool STSAlreadyExecuting;
 bool LTSAlreadyExecuting;
@@ -139,7 +140,7 @@ bool terminateModule;
 bool stsWantsToExecute; 		//The LTS tried to wake the STS, but there were no free CPUs; when a CPU is free, it must wake the STS
 sem_t shortTermScheduler;
 sem_t longTermScheduler;
-pthread_mutex_t schedulerNotRunning;
+sem_t schedulerNotRunning;
 pthread_mutex_t configFileMutex;
 pthread_mutex_t readyQueueMutex;
 pthread_mutex_t newQueueMutex;

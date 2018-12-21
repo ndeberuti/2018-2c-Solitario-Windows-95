@@ -969,8 +969,8 @@ void dump_segmentacion_simple(int pid){
 
 			int aciertos;
 			int contador = 0;
-			t_list* lista_filtrada;
-			segmento_tabla_t* segmento;
+			t_list* lista_filtrada = NULL;
+			segmento_tabla_t* segmento = NULL;
 
 			if(list_size(tabla_de_segmentos) > 0){
 					bool es_pid(segmento_tabla_t* entrada_segmento){
@@ -1018,6 +1018,8 @@ void dump_segmentacion_simple(int pid){
 						free(buffer_muestra);
 						}
 
+						list_destroy(lista_filtrada);
+
 				}else{
 
 
@@ -1029,8 +1031,6 @@ void dump_segmentacion_simple(int pid){
 
 				log_error(log_fm9, "La tabla de segmentos y la memoria estan vacias");
 			}
-
-list_destroy(lista_filtrada);
 }
 
 

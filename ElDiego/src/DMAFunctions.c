@@ -375,7 +375,6 @@ t_list* parseScriptFromMemory(char* script, uint32_t scriptLines)
 		while(script[currentLineOffset] != '\n')
 			currentLineOffset++;
 
-
 		lineLength = currentLineOffset - currentMemoryLineStart;  //I need to subtract them because the offset starts with the number of the
 																  //currentLine (see above, at the beginning of the 'for' loop!)
 
@@ -558,7 +557,7 @@ char* convertParsedFileToFileSystemBuffer(t_list* parsedFile)
 		bufferOffset += lineSize;	//Move from the beginning of the last line copied to the buffer, to the end of that line, if the line were a memory line (may leave a trail of empty chars)
 
 		memcpy(filesystemBuffer + bufferOffset, "\n", 1);	//Adds a '\n' char after each line
-		bufferOffset++;
+		bufferOffset++;	//Move to the space where the next line would begin
 	}
 
 	fileSize = string_length(filesystemBuffer);
@@ -572,7 +571,7 @@ char* getFileFromMemory(char* filePath, uint32_t* scriptLines)
 	char* fileContents = NULL;
 	int32_t nbytes = 0;
 	int32_t operationResult = 0;
-	uint32_t _scriptLines = 0;
+	int32_t _scriptLines = 0;
 
 	//Send task and filePath to the memory
 	if((nbytes = send_int(memoryServerSocket, FLUSH)) < 0)
@@ -612,7 +611,7 @@ char* getFileFromMemory(char* filePath, uint32_t* scriptLines)
 	else if (operationResult == OK)	//Data obtained from a file successfully
 	{
 		//Receive file data from the memory
-		if((nbytes = receive_string(fileSystemServerSocket, &fileContents)) <= 0)
+		if((nbytes = receive_string(memoryServerSocket, &fileContents)) <= 0)
 		{
 			if(nbytes == 0)
 				log_error(dmaLog, "DMAFunctions (getFileFromMemory) - La memoria fue desconectada al intentar recibir el contenido de un archivo");
@@ -634,6 +633,8 @@ char* getFileFromMemory(char* filePath, uint32_t* scriptLines)
 			exit(EXIT_FAILURE);
 			//TODO (Optional) - Recv Error Handling
 		}
+
+		(*scriptLines) = (uint32_t) _scriptLines;
 
 		return fileContents;
 	}
@@ -705,9 +706,21 @@ int32_t sendFileToFileSystem(char* filePath, char* dataToReplace)
 		//TODO (Optional) - Recv Error Handling
 	}
 
-	if ((operationResult != OPERACION_OK) || (operationResult != OPERACION_FAIL) || (operationResult != BLOQUES_INSUFICIENTES))
+	if(operationResult == OPERACION_OK)
 	{
-		log_error(dmaLog, "DMAFunctions (sendFileToFileSystem) - Se recibio una respuesta incorrecta al esperar el resultado del guardado de un archivo en el FS. Este proceso sera abortado");
+		log_info(dmaLog, "Se envio correctamente el contenido del archivo \"%s\" al FS", filePath);
+	}
+	else if(operationResult == OPERACION_FAIL)
+	{
+		log_info(dmaLog, "Ocurrio un error al guardar el contenido del archivo \"%s\" en el FS. Se le informara al planificador que debe terminar el proceso solicitante");
+	}
+	else if(operationResult == BLOQUES_INSUFICIENTES)
+	{
+		log_info(dmaLog, "El FS no tiene bloques suficientes para almacenar los cambios en el archivo \"%s\". Se le informara al planificador que debe terminar el proceso solicitante");
+	}
+	else
+	{
+		log_error(dmaLog, "DMAFunctions (sendFileToFileSystem) - Se recibio una respuesta incorrecta (resultado = %d) al esperar el resultado del guardado de un archivo en el FS. Este proceso sera abortado", operationResult);
 		exit(EXIT_FAILURE);
 	}
 
