@@ -50,6 +50,8 @@ void executeProcesses()
 
 	while(!terminateModule)
 	{
+		printf("\n");
+		log_info(cpuLog, "Esperando peticiones del planificador...");
 		//No need to ask this module (from the scheduler) to kill a process, because that message will be gotten when a process finished its execution
 		//(so there will be no process to kill in that CPU)
 

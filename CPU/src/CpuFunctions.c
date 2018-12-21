@@ -270,7 +270,7 @@ void executeProcess()
 																		//If this is the first execution for that PCB, the currentProgramCounter == 0
 	scriptContent = requestScriptFromMemory(&scriptLines);
 
-	log_info(cpuLog, "Me llego de memoria un scirpt con %d lineas: %s", scriptLines, scriptContent);
+	log_info(cpuLog, "Me llego de memoria un scirpt con %d lineas", scriptLines);
 
 	if(scriptContent == NULL)	//Error getting the file from the memory
 	{
@@ -303,6 +303,8 @@ void executeProcess()
 
 		lineToParse = (char*) list_get(parsedScript, (currentProgramCounter - 1));	//The index in a script (for the instructions) starts at 1, but
 																					//the index of a list starts at 0
+
+		printf("\nlinea a parsear: %s\n\n", lineToParse);
 
 		if(lineToParse[0] == '#')	//Comment lines start with '#' and must no be executed
 		{
@@ -366,7 +368,7 @@ void executeProcess()
 			instructionsExecuted--;
 		}
 
-		list_destroy_and_destroy_elements(parsedLine, free);	//Each element of the list is a "char*"; this deletes the list and its elements
+		//list_destroy_and_destroy_elements(parsedLine, free);	//Each element of the list is a "char*"; this deletes the list and its elements
 	}
 
 	if(currentProgramCounter >= instructionsQty)	//Reached the end of the script; there are no more instructions to execute
@@ -475,7 +477,7 @@ t_list* parseScript(char* script, uint32_t scriptLines)
 	uint32_t currentLineOffset = 0;
 	uint32_t currentMemoryLineStart = 0;
 	uint32_t lineLength = 0;
-	uint32_t aux = 0;
+	uint32_t charsToCopy = 0;
 	t_list* parsedScript = NULL;
 	parsedScript = list_create();
 
@@ -485,39 +487,30 @@ t_list* parseScript(char* script, uint32_t scriptLines)
 		currentLineOffset = currentMemoryLineStart;	 //That memoryLine contains an instruction line ending in '\n' (so I need to read until I find that char)
 
 
-		//This is to see how many chars after
+		//This is to see how many chars until a '\n'
 		while(script[currentLineOffset] != '\n')
 			currentLineOffset++;
-
 
 		lineLength = currentLineOffset - currentMemoryLineStart;  //I need to subtract them because the offset starts with the number of the
 																  //currentLine (see above, at the beginning of the 'for' loop!)
 
-		buffer = calloc(1, lineLength);	//This string has the size of the line calculated above
-										//(the offset is how many chars after the start of the line there are until a '\n' char)
+		if(lineLength > 0)	//The line contains more chars besides the '\n'
+		{
+			charsToCopy = lineLength;
 
-		//'curentLineOffset - 2' is the char before the '\n' (indexes start at 0, so 'currentLineOffset - 1' is the last character of the buffer)
-		//At 'currentLineOffset - 1' there should be a '\0' character (it is a string!) to replace the '\n' char that marked the end of the line
-		//(that '\n' is not needed here)
-		memcpy(buffer, (script + currentMemoryLineStart), (lineLength - 2));
+			buffer = calloc(1, lineLength + 1);	//This string has the size of the line calculated above (length including the '\n' char)
 
-		list_add(parsedScript, buffer);
-
-		aux = currentMemoryLineStart + memoryLineSize;
-
-
-		if(script[aux] == '\n') //It reached the last line of the script; add an empty line to the list and get out of the loop
+			//'lineLength - 1' is the length of the file without the '\n' char.
+			//I need to exclude the '\n' char from the string (in its place there will be a '\0' char)
+			memcpy(buffer, (script + currentMemoryLineStart), charsToCopy);
+		}
+		else //The line only has a '\n' char
 		{
 			buffer = calloc(1, 1);
-			memcpy(buffer, "\0", 1);
-
-			list_add(parsedScript, buffer);
-
-			break;
 		}
-	}
 
-	//removeCommentsFromScript(&parsedScript);	//Comment lines are already being skipped when trying to execute them (in the 'executeProcess' function)
+		list_add(parsedScript, buffer);
+	}
 
 	return parsedScript;
 }
@@ -708,7 +701,6 @@ uint32_t checkAndExecuteInstruction(t_list* parsedLine)	//The 'parsedLine' list 
 		log_error(cpuLog, "Se ha intentado ejecutar una instruccion incorrecta");
 		executionResult = handleProcessError();
 	}
-
 
 	if((executionResult == INSTRUCTION_NOT_EXECUTED) || (executionResult == PROCESS_KILLED))
 	{
@@ -1206,7 +1198,7 @@ uint32_t handleProcessError()
 	tellMemoryToFreeProcessData();
 
 	log_info(cpuLog, "El proceso %d finalizo su ejecucion (debido a un error) luego de ejecutar %d instrucciones", (*processInExecutionPCB)->pid, instructionsExecuted);
-	return PROCESS_ERROR;
+	return PROCESS_KILLED;
 }
 
 void tellMemoryToFreeProcessData()
@@ -1337,7 +1329,7 @@ uint32_t handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToA
 	{
 		log_error(cpuLog, "Error al enviar a la memoria el path del archivo a modificar\n");
 
-		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+		log_info(cpuLog, "Debido a una desconexion de la memoria, este proceso se cerrara\n");
 
 		log_error(socketErrorLog, "Send error: %s", strerror(errno));
 
@@ -1348,7 +1340,7 @@ uint32_t handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToA
 	{
 		log_error(cpuLog, "Error al indicar a la memoria el numero de linea a modificar en el archivo\n");
 
-		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+		log_info(cpuLog, "Debido a una desconexion de la memoria, este proceso se cerrara\n");
 
 		log_error(socketErrorLog, "Send error: %s", strerror(errno));
 
@@ -1359,7 +1351,7 @@ uint32_t handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToA
 	{
 		log_error(cpuLog, "Error al enviar a la memoria el dato a asignar en la linea del archivo especificado\n");
 
-		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+		log_info(cpuLog, "Debido a una desconexion de la memoria, este proceso se cerrara\n");
 
 		log_error(socketErrorLog, "Send error: %s", strerror(errno));
 
@@ -1371,11 +1363,11 @@ uint32_t handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToA
 	if((nbytes = receive_int(memoryServerSocket, &message)) <= 0)
 	{
 		if(nbytes == 0)
-			log_error(cpuLog, "EL planificador fue desconectado al intentar recibir la confirmacion de si un archivo se encuentra abierto\n");
+			log_error(cpuLog, "La memoria fue desconectada al intentar recibir el resultado de modificar un archivo en ella\n");
 		if(nbytes < 0)
-			log_error(cpuLog, "Error al intentar recibir la confirmacion de si un archivo se encuentra abierto del planificador\n");
+			log_error(cpuLog, "Error al intentar recibir el resultado de modificar un archivo de la memoria\n");
 
-		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+		log_info(cpuLog, "Debido a una desconexion de la memoria, este proceso se cerrara\n");
 
 		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
 
@@ -1798,6 +1790,8 @@ char* requestScriptFromMemory(uint32_t* scriptLines)
 
 		exit(EXIT_FAILURE);
 	}
+
+	printf("\nscript que llega de memoria: %s\n\n", scriptContent);
 
 	(*scriptLines) = (uint32_t) _scriptLines;
 

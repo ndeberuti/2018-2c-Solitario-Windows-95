@@ -103,6 +103,7 @@ char* requestScriptFromMemory(uint32_t*);
 void showConfigs();
 void sendOpenFileRequestToDMA(char*, uint32_t);
 void freePCB(PCB_t*);
+void executionDelay();
 
 
 #endif /* SRC_CPU_H_ */

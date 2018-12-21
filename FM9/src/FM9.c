@@ -360,11 +360,11 @@ void guardar_archivo(int socket_diego){
 
 	int cantidad_lineas = recibir_int(socket_diego);
 	printf("cantidad_lineas: %d\n",cantidad_lineas);
-	int longitud = cantidad_lineas * config.MAX_LINEA +1;
+	int longitud = (cantidad_lineas * config.MAX_LINEA) +1;
 	printf("longitud: %d\n",longitud);
 	char* buffer_recepcion = recibir_char(socket_diego, longitud);
 
-	printf("buffer_recepcion: %s\n",buffer_recepcion);
+	//printf("buffer_recepcion: %s\n",buffer_recepcion);
 
 
 
@@ -517,17 +517,16 @@ void close_process(int socket_cpu){
 void modificar_linea(int socket_cpu){
 
 	int longitud_path = recibir_int(socket_cpu);
-		char* buffer =  malloc(longitud_path);
-		buffer = recibir_char(socket_cpu, longitud_path);
-		int id = transformar_path(buffer);
-		free(buffer);
+	char* buffer = recibir_char(socket_cpu, longitud_path);
+	int id = transformar_path(buffer);
+	free(buffer);
 	int numero_linea = recibir_int(socket_cpu);
 	int longitud_linea = recibir_int(socket_cpu);
-	char* nueva_linea = calloc(1, longitud_linea);
-	nueva_linea = recibir_char(socket_cpu, longitud_linea);
+	char* nueva_linea = recibir_char(socket_cpu, longitud_linea);
 	char* linea_tratada = malloc(config.MAX_LINEA);
 
-	memcpy(linea_tratada, nueva_linea, config.MAX_LINEA);
+	memset(linea_tratada, '\n', config.MAX_LINEA);
+	memcpy(linea_tratada, nueva_linea, longitud_linea);
 
 	free(nueva_linea);
 
@@ -639,7 +638,7 @@ void inicializar_memoria_segmentacion_simple(){
 
 
 	puntero_memoria_segmentada = malloc(config.TAMANIO);
-	memset(puntero_memoria_segmentada, '\n', config.TAMANIO);
+	memset(puntero_memoria_segmentada, '~', config.TAMANIO);
 
 	tabla_de_segmentos = list_create();
 
@@ -841,7 +840,7 @@ void abrir_archivo_segmentacion_simple(int socket_cpu,int id){
 	memcpy(buffer_envio+ sizeof(int)*2,puntero_memoria_segmentada + segmento_linea->base * config.MAX_LINEA , segmento_linea->limite * config.MAX_LINEA);
 	memcpy(buffer_envio + sizeof(int)*2 + tamanio , &(segmento_linea->limite), sizeof(int));
 
-	log_info(log_fm9, "Datos archivo enviado -> buffer_envio: %s; tamanio: %d; resultado: %d\n", buffer_envio, tamanio, resultado);
+	log_info(log_fm9, "Datos archivo enviado ->buffer: %s; tamanio: %d; resultado: %d\n", buffer_envio, tamanio, resultado);
 
 
 
@@ -877,7 +876,9 @@ void modificar_linea_segmentacion_simple(int socket_cpu,int id,int numero_linea,
 
 			}
 
-		segmento_linea = list_find(tabla_de_segmentos, (void*) es_id);
+		printf("\n\id de segmento a buscar: %d: \n", id);
+
+		segmento_linea = list_find(tabla_de_segmentos, es_id);
 
 		if(segmento_linea != NULL && numero_linea <= segmento_linea->limite){
 			log_info(log_fm9, "Modificando linea");

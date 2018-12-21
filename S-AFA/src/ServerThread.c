@@ -282,7 +282,7 @@ void blockProcessInit(uint32_t _socket, uint32_t* process)
 			exit(EXIT_FAILURE);
 		}
 
-		log_info(schedulerLog, "El proceso %d fue quitado de la cola de ejecucion (el sera bloqueado)", processToBlock->pid);
+		log_info(schedulerLog, "El proceso %d fue quitado de la cola de ejecucion (el proceso sera bloqueado)", processToBlock->pid);
 
 		blockProcess(processToBlock, true);
 		freeCPUBySocket(_socket);
@@ -366,15 +366,15 @@ void _killProcess(uint32_t _socket)
 		log_info(schedulerLog, "El DMA solicito la terminacion del proceso con id %d debido a un error", processPidToKill);
 
 
-		PCB_t* oldPCB = removeProcessFromQueueWithId(processPidToKill, executionQueue);
+		PCB_t* oldPCB = removeProcessFromQueueWithId(processPidToKill, blockedQueue);
 
 		if(oldPCB == NULL)
 		{
-			log_error(schedulerLog, "El proceso %d deberia estar en la cola de ejecucion, pero no se encuentra en ella, por lo que no deberia poder ser bloqueado. Este modulo sera abortado para que evalue la situacion", processPidToKill);
+			log_error(schedulerLog, "El proceso %d deberia estar en la cola de bloqueados, pero no se encuentra ella. Este modulo sera abortado para que evalue la situacion", processPidToKill);
 			exit(EXIT_FAILURE);
 		}
 
-		log_info(schedulerLog, "El proceso %d fue quitado de la cola de ejecucion (el sera bloqueado)", processPidToKill);
+		log_info(schedulerLog, "El proceso %d fue quitado de la cola de bloqueados para terminarlo debido a un error", processPidToKill);
 
 		killProcessWithPCB(oldPCB);
 	}
@@ -802,7 +802,7 @@ void unlockProcess(uint32_t _socket)
 	int32_t processId = 0;
 	int32_t nbytes = 0;
 	char* filePath = NULL;
-	int32_t fileIsScript = 0;
+	int32_t addFileToFileTable = 0;
 	bool processWasKilled = false;
 
 	if((nbytes = receive_int(_socket, &processId)) <= 0)
@@ -826,7 +826,7 @@ void unlockProcess(uint32_t _socket)
 		FD_CLR(_socket, &master);
 		close(_socket);
 	}
-	else if((nbytes = receive_int(_socket, &fileIsScript)) <= 0)
+	else if((nbytes = receive_int(_socket, &addFileToFileTable)) <= 0)
 	{
 		if(nbytes == 0)
 			log_error(consoleLog, "ServerThread (unlockProcess) - El DMA fue desconectado al intentar recibir un mensaje indicando si el archivo abierto es un script");
@@ -845,7 +845,7 @@ void unlockProcess(uint32_t _socket)
 		//					me decide whether to unblock the process or not (if the file got claimed by
 		//					another process, the current one should not be unblocked)
 
-		if(!fileIsScript)
+		if(addFileToFileTable)
 			processWasKilled = saveFileDataToFileTable(filePath, processId);
 
 		if(!processWasKilled)

@@ -300,6 +300,7 @@ t_list* parseScriptFromMemory(char* script, uint32_t scriptLines)
 	uint32_t currentLineOffset = 0;
 	uint32_t currentMemoryLineStart = 0;
 	uint32_t lineLength = 0;
+	uint32_t charsToCopy = 0;
 	t_list* parsedScript = NULL;
 	parsedScript = list_create();
 
@@ -309,7 +310,7 @@ t_list* parseScriptFromMemory(char* script, uint32_t scriptLines)
 		currentLineOffset = currentMemoryLineStart;	 //That memoryLine contains an instruction line ending in '\n' (so I need to read until I find that char)
 
 
-		//This is to see how many chars after
+		//This is to see how many chars until a '\n'
 		while(script[currentLineOffset] != '\n')
 			currentLineOffset++;
 
@@ -317,13 +318,20 @@ t_list* parseScriptFromMemory(char* script, uint32_t scriptLines)
 		lineLength = currentLineOffset - currentMemoryLineStart;  //I need to subtract them because the offset starts with the number of the
 																  //currentLine (see above, at the beginning of the 'for' loop!)
 
-		buffer = calloc(1, lineLength);	//This string has the size of the line calculated above
-										//(the offset is how many chars after the start of the line there are until a '\n' char)
+		if(lineLength > 0)	//The line contains more chars besides the '\n'
+		{
+			charsToCopy = lineLength;
 
-		//'curentLineOffset - 2' is the char before the '\n' (indexes start at 0, so 'currentLineOffset - 1' is the last character of the buffer)
-		//At 'currentLineOffset - 1' there should be a '\0' character (it is a string!) to replace the '\n' char that marked the end of the line
-		//(that '\n' is not needed here)
-		memcpy(buffer, (script + currentMemoryLineStart), (lineLength - 2));
+			buffer = calloc(1, lineLength + 1);	//This string has the size of the line calculated above (length including the '\n' char)
+
+			//'lineLength - 1' is the length of the file without the '\n' char.
+			//I need to exclude the '\n' char from the string (in its place there will be a '\0' char)
+			memcpy(buffer, (script + currentMemoryLineStart), charsToCopy);
+		}
+		else //The line only has a '\n' char
+		{
+			buffer = calloc(1, 1);
+		}
 
 		list_add(parsedScript, buffer);
 	}
@@ -334,13 +342,17 @@ t_list* parseScriptFromMemory(char* script, uint32_t scriptLines)
 char* convertParsedFileToMemoryBuffer(t_list* parsedFile, uint32_t* bufferSize)
 {
 	uint32_t fileLines = list_size(parsedFile);
-	size_t _bufferSize = (fileLines * sizeof(char) * memoryLineSize) + 1;	//The '\n' of each line is part of the size of a line
-	char* memoryBuffer = calloc(1, _bufferSize);
+	size_t _bufferSize = (fileLines * sizeof(char) * memoryLineSize);	//The '\n' of each line is part of the size of a line
+
+	char* memoryBuffer = calloc(1, _bufferSize + 1);
+	memset(memoryBuffer, '~', _bufferSize);	//fill the buffer with '~' chars, as each memory line's free space should be filled with '~' chars
+
 	char* line = NULL;
 	uint32_t lineSize = 0;
 	uint32_t bufferOffset = 0;
+	uint32_t nextMemoryLine = 0;
 
-	(*bufferSize) = _bufferSize;
+	(*bufferSize) = _bufferSize + 1;
 
 	if(memoryBuffer == NULL)
 	{
@@ -353,26 +365,30 @@ char* convertParsedFileToMemoryBuffer(t_list* parsedFile, uint32_t* bufferSize)
 		line = (char*) list_get(parsedFile, i);
 		lineSize = string_length(line);
 
+		nextMemoryLine = (memoryLineSize * i) + memoryLineSize;
+
 		if(lineSize > memoryLineSize)
 		{
 			return NULL;	//A file line's size cannot be more than a memory line's size (because that line would not fit into the memory) -> A line is like a byte for the memory
 		}
 
-
 		//Copy a file line only if the line is not a null string. If that line is a null string, it was a line (the last line of the script or not)
-		//that contained only a '\n' char, and it wat deleted when parsing the file into a list.
-		//That line should only contain a '\n' char, followed by as many '\0' chars as needed to complete that memoryLine
-		if(string_length > 0)
+		//that contained only a '\n' char, and it was deleted when parsing the file into a list.
+		//That line should only contain a '\n' char at the end of the line, followed by as many '~' chars as needed to complete the memory line
+		if(lineSize > 0)
 		{
 			memcpy(memoryBuffer + bufferOffset, line, lineSize);
-			bufferOffset += memoryLineSize - 1;	//Move from the beginning of the last memoryLine (which contains a fileLine), to the end space for that memoryLine
+			bufferOffset += lineSize;	//offset + lineSize is the space where the '\n' that indicates the end of that line should go
+
+			memcpy(memoryBuffer + bufferOffset, "\n", 1);
+			bufferOffset = nextMemoryLine;	//This is the beginning of the next line
 		}
-
-		//In memoryLineSize -1, which is the last space for a memoryLine, copy a '\n' char to end that line
-		memcpy(memoryBuffer + bufferOffset, "\n", 1);
-		bufferOffset++;	//Move the offset 1 space to begin copying the next line from that space (outside of the space of the last line)
+		else
+		{
+			memcpy(memoryBuffer + bufferOffset, "\n", 1);	//Put a '\n' char in the first space of the current line, to make it so it is an empty line
+			bufferOffset += nextMemoryLine; 				//and move to the beginning of the next line
+		}
 	}
-
 
 	return memoryBuffer;
 }
@@ -637,7 +653,7 @@ int32_t sendFileToFileSystem(char* filePath, char* dataToReplace)
 	return operationResult;
 }
 
-void tellSchedulerToUnblockProcess(uint32_t process, char* filePath, bool fileIsScript)
+void tellSchedulerToUnblockProcess(uint32_t process, char* filePath, bool addFileToFileTable, char* operation)
 {
 	int32_t nbytes = 0;
 
@@ -659,18 +675,20 @@ void tellSchedulerToUnblockProcess(uint32_t process, char* filePath, bool fileIs
 	}
 	if((nbytes = send_string(schedulerServerSocket, filePath)) < 0)
 	{
-		log_error(dmaLog, "DMAFunctions (tellSchedulerToUnblockProcess) - Error al enviar al planificador el path del archivo solicitado por el proceso");
+		log_error(dmaLog, "DMAFunctions (tellSchedulerToUnblockProcess) - Error al enviar al planificador la ruta del archivo que el proceso solicito %s", operation);
 
 		log_info(dmaLog, "Debido a la desconexion del planificador, este proceso se cerrara");
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int(schedulerServerSocket, fileIsScript)) < 0)
+	if((nbytes = send_int(schedulerServerSocket, addFileToFileTable)) < 0)
 	{
-		log_error(dmaLog, "DMAFunctions (tellSchedulerToUnblockProcess) - Error al indicar al planificador si el archivo abierto es un script");
+		log_error(dmaLog, "DMAFunctions (tellSchedulerToUnblockProcess) - Error al indicar al planificador si el archivo que el proceso solitico %s debe ser guardado en la tabla de archivos"), operation;
 
 		log_info(dmaLog, "Debido a la desconexion del planificador, este proceso se cerrara");
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
+
+	log_info(dmaLog, "Se solicito al planificador desbloquear el proceso %d luego de %s el archivo %s", process, operation, filePath);
 }

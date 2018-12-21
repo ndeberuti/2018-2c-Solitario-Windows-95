@@ -98,11 +98,11 @@ void commandHandler(uint32_t command, uint32_t _socket)
 		break;
 
 		case OPEN_FILE:
-			openFile(_socket, false);
+			openFile(_socket, true);
 		break;
 
 		case OPEN_SCRIPT:
-			openFile(_socket, true);
+			openFile(_socket, false);
 		break;
 
 		case FLUSH_FILE:
@@ -124,7 +124,7 @@ void commandHandler(uint32_t command, uint32_t _socket)
 }
 
 
-void openFile(uint32_t _socket, bool fileIsScript)
+void openFile(uint32_t _socket, bool addFileToFileTable)
 {
 	int32_t nbytes = 0;
 	int32_t currentProcess = 0;
@@ -200,7 +200,7 @@ void openFile(uint32_t _socket, bool fileIsScript)
 		{
 			log_info(dmaLog, "El archivo \"%s\" fue abierto para el proceso %d de forma exitosa", currentFilePath, currentProcess);
 
-			tellSchedulerToUnblockProcess(currentProcess, currentFilePath, fileIsScript);
+			tellSchedulerToUnblockProcess(currentProcess, currentFilePath, addFileToFileTable, "abrir");
 		}
 		else
 		{
@@ -304,7 +304,7 @@ void flushFile(uint32_t _socket)
 
 		log_info(dmaLog, "El archivo \"%s\" fue guardado en el FS para el proceso %d de forma exitosa", currentFilePath, currentProcess);
 
-		tellSchedulerToUnblockProcess(currentProcess, currentFilePath, false);
+		tellSchedulerToUnblockProcess(currentProcess, currentFilePath, false, "guardar");
 
 		list_destroy_and_destroy_elements(parsedFile, free);
 		free(fileBuffer);
@@ -366,7 +366,7 @@ void createFile(uint32_t _socket)
 
 	//The file of the size will be the maximum size of each line (defined by the memoryLineSize) plus a char for
 	//each line (to put the '\n' character at the end of each line)
-	fileSize = (linesInFileToCreate * memoryLineSize * sizeof(char)) + (linesInFileToCreate * sizeof(char)) + 1;
+	fileSize = (linesInFileToCreate * memoryLineSize * sizeof(char));
 
 
 	//Send the task, the filePath and the size (in bytes) of the file to create to the FS
@@ -414,7 +414,7 @@ void createFile(uint32_t _socket)
 	if(operationResult == OPERACION_OK)
 	{
 		log_info(dmaLog, "Se creo el archivo \"%s\" para el proceso %d de forma exitosa", currentFilePath, currentProcess);
-		tellSchedulerToUnblockProcess(currentProcess, currentFilePath, false);
+		tellSchedulerToUnblockProcess(currentProcess, currentFilePath, false, "crear");
 	}
 	else if(operationResult == BLOQUES_INSUFICIENTES)
 	{
@@ -497,7 +497,7 @@ void deleteFile(uint32_t _socket)
 	if(operationResult == OPERACION_OK)
 	{
 		log_info(dmaLog, "Se elimino el archivo \"%s\" para el proceso %d de forma exitosa", currentFilePath, currentProcess);
-		tellSchedulerToUnblockProcess(currentProcess, currentFilePath, false);
+		tellSchedulerToUnblockProcess(currentProcess, currentFilePath, false, "eliminar");
 		free(currentFilePath);
 	}
 	else
