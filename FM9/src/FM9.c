@@ -235,21 +235,21 @@ void command_handler(uint32_t command, uint32_t socket) {
 		abrir_archivo(socket);
 			break;
 	case ASIGNAR:
-		modificar_linea(socket);
 		log_info(log_consola, "Modificando linea");
+		modificar_linea(socket);
 			break;
 	case FLUSH:
-		flush(socket);
 		log_info(log_consola, "Flushing");
+		flush(socket);
 			break;
 	case CLOSE_FILE:
-		close_file(socket);
 		log_info(log_consola, "Closing file");
-			break;
+		close_file(socket);
+		break;
 	case CLOSE_PROCESS:
-			close_file(socket);
-			log_info(log_consola, "Closing process");
-			break;
+		log_info(log_consola, "Closing process");
+		close_process(socket);
+		break;
 
 	default:
 		log_warning(log_consola, "%d: Comando recibido incorrecto", command);
