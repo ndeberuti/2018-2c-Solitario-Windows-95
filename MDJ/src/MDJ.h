@@ -72,6 +72,7 @@ char *pathActual;
 char *pathConsola;
 pthread_t thread_servidor;
 pthread_t thread_consola;
+int32_t tamanioLineasMemoria;
 
 // funciones
 config_t *load_config();

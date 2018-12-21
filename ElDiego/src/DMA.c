@@ -14,20 +14,11 @@ void connectToServers()
 
 	log_info(dmaLog, "Conexion con S-AFA exitosa");
 
-	if ((fileSystemServerSocket = connect_server(config.fileSystemIp, config.fileSystemPort, NEW_DMA_CONNECTION, dmaLog)) == 0)
-	{
-		log_error(dmaLog, "Error al conectar con MDJ");
-		exit(EXIT_FAILURE);
-	}
-
-	log_info(dmaLog, "Conexion con MDJ exitosa");
-
 	if ((memoryServerSocket = connect_server(config.memoryIp, config.memoryPort, NEW_DMA_CONNECTION, dmaLog)) == 0)
 	{
 		log_error(dmaLog, "Error al conectar con FM9");
 		exit(EXIT_FAILURE);
 	}
-
 	if((nbytes = receive_int(memoryServerSocket, &_lineSize)) <= 0)
 	{
 		if(nbytes == 0)
@@ -39,6 +30,19 @@ void connectToServers()
 	}
 
 	log_info(dmaLog, "Conexion con FM9 exitosa");
+
+	if ((fileSystemServerSocket = connect_server(config.fileSystemIp, config.fileSystemPort, NEW_DMA_CONNECTION, dmaLog)) == 0)
+	{
+		log_error(dmaLog, "Error al conectar con MDJ");
+		exit(EXIT_FAILURE);
+	}
+	if((nbytes = send_int(fileSystemServerSocket, _lineSize)) < 0)
+	{
+		log_error(dmaLog, "El FS fue desconectads al enviarle el tamaño de lineas de la memoria");
+		exit(EXIT_FAILURE);
+	}
+
+	log_info(dmaLog, "Conexion con MDJ exitosa");
 
 	memoryLineSize = _lineSize;
 }

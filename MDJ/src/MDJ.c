@@ -260,6 +260,11 @@ void command_handler(int32_t socket, int32_t command) {
 	switch (command) {
 	case NEW_DMA_CONNECTION:
 		log_info(log_consola, "Nueva conexion desde El Diego");
+
+		//Recibo tamaño lineas memoria
+		 if (receive_int(socket, &tamanioLineasMemoria) <= 0)
+				log_error(log_consola, "recv tamanioLineasMemoria (command handler)");
+
 		break;
 	case VALIDAR_ARCHIVO:
 		log_info(log_consola, "Operacion VALIDAR_ARCHIVO recibida");
@@ -318,6 +323,7 @@ void validar_archivo(int32_t socket) {
 		log_error(log_consola, "send (validar_archivo)");
 }
 
+/*
 void crear_archivo(int32_t socket) {
 	char *path;
 	int32_t rta;
@@ -419,6 +425,146 @@ void crear_archivo(int32_t socket) {
 		}
 		free(path);
 	}
+
+	usleep(config->RETARDO * 1000);
+
+	if (send_int(socket, rta) == -1)
+		log_error(log_consola, "send (crear_archivo)");
+}
+
+*/
+
+void crear_archivo(int32_t socket)
+{
+	char *path;
+	int32_t rta;
+	int32_t bytes;
+
+	if (receive_string(socket, &path) <= 0)
+	{
+		log_error(log_consola, "recv path (validar_archivo)");
+		rta = ERROR_OPERACION;
+	}
+	else if (receive_int(socket, &bytes) <= 0)
+	{
+		log_error(log_consola, "recv bytes (validar_archivo)");
+		rta = ERROR_OPERACION;
+	}
+	else
+	{
+		log_info(log_consola, "Crear archivo %s de %d bytes", path, bytes);
+
+		int32_t cant_bloques = calcular_cant_bloques(bytes);
+
+		log_info(log_consola, "El archivo ocupa %d bloques", cant_bloques);
+
+		int32_t *prox_bloque;
+		int32_t pos_actual = 0;
+		int32_t bloque_inicial = 0;
+		int32_t bloques[cant_bloques];
+		char* datosArchivoNuevo = calloc(1, bytes + 1);
+		int32_t lineasArchivo = bytes / tamanioLineasMemoria;
+		int32_t offsetMagico = 0;
+
+		//Lleno el string de datos del archivo nuevo con basura y lo divido en las lineas que me piden para el archivo (separandolas con '\n')
+		for(int32_t i = 0; i < lineasArchivo; i++)
+		{
+			offsetMagico = tamanioLineasMemoria * i;
+
+			memset(datosArchivoNuevo + offsetMagico, '~', (tamanioLineasMemoria - 2));	//'tamanioLineasMemoria - 1' tiene el '\n' que indica fin de linea
+			offsetMagico++;
+			memset(datosArchivoNuevo + offsetMagico, '\n', 1);
+		}
+
+		while (pos_actual < cant_bloques && (prox_bloque = proximo_bloque_libre(bloque_inicial)) != NULL)
+		{
+			bloques[pos_actual] = *prox_bloque;
+			bloque_inicial = *prox_bloque + 1;
+			pos_actual++;
+		}
+
+		if (prox_bloque == NULL)
+		{
+			log_warning(log_consola, "No hay suficientes bloques libres para guardar el archivo");
+			rta = BLOQUES_INSUFICIENTES;
+		}
+		else
+		{
+			int32_t bytes_del_bloque;
+			int32_t bytes_restantes = bytes;
+			char *relleno;
+			char *nro_bloque;
+			int32_t largo_lista_bloques = 1;
+			char *nombre_bloque;
+			FILE *fptr;
+			uint32_t offsetDatos = 0;
+
+			for (int32_t i = 0; i < cant_bloques; i++)
+			{
+				//CREAR EL BLOQUE
+				bytes_del_bloque = bytes_restantes > fs_config->TAMANIO_BLOQUES ? fs_config->TAMANIO_BLOQUES : bytes_restantes;
+				relleno = calloc(1, sizeof(char) * (bytes_del_bloque + 1));
+				bytes_restantes -= bytes_del_bloque;
+
+				nro_bloque = string_itoa(bloques[i]);
+				largo_lista_bloques += strlen(nro_bloque) + 1;
+				nombre_bloque = malloc(sizeof(char) * (strlen(carpeta_bloques) + strlen(nro_bloque) + 5));
+				strcpy(nombre_bloque, carpeta_bloques);
+				strcat(nombre_bloque, nro_bloque);
+				strcat(nombre_bloque, ".bin");
+
+				fptr = fopen(nombre_bloque, "w");
+				//Copio datos del string que contiene los datos del archivo nuevo, desde el offset
+				//(basado en los bytes copiados en bloques hasta el momento), hasta el maximo de bytes que permite el bloque
+				strncpy(relleno, (datosArchivoNuevo + offsetDatos), bytes_del_bloque);
+				offsetDatos += bytes_del_bloque;
+				fputs(relleno, fptr);
+				fclose(fptr);
+
+
+				log_info(log_consola, "Se creo el bloque %s.bin", nro_bloque);
+
+				free(relleno);
+				free(nro_bloque);
+				free(nombre_bloque);
+
+				//ACTUALIZAR BITARRAY
+				set_bitarray(bloques[i]);
+				log_info(log_consola, "Se actualizo el bit %d del bitmap", bloques[i]);
+			}
+
+			//CREAR EL ARCHIVO
+			char *lista_bloques = malloc(sizeof(char) * (largo_lista_bloques + 1));
+
+			strcpy(lista_bloques, "[");
+
+			for (int32_t i = 0; i < cant_bloques; i++)
+			{
+				strcat(lista_bloques, string_itoa(bloques[i]));
+				if (i < cant_bloques - 1)
+						strcat(lista_bloques, ",");
+			}
+
+			strcat(lista_bloques, "]");
+
+			char *path_archivo = malloc(sizeof(char) * (strlen(carpeta_archivos) + strlen(path) + 1));
+			strcpy(path_archivo, carpeta_archivos);
+			strcat(path_archivo, path);
+
+			save_file(path_archivo, bytes, lista_bloques);
+			
+			free(path_archivo);
+			free(lista_bloques);
+
+			log_info(log_consola, "Se creo el archivo %s", path);
+			log_info(log_consola, "Operacion finalizada con exito");
+			rta = OPERACION_OK;
+		}
+
+		free(datosArchivoNuevo);
+	}
+
+	free(path);
 
 	usleep(config->RETARDO * 1000);
 

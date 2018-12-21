@@ -752,7 +752,7 @@ void closeFile(uint32_t _socket)
 				list_destroy(dataToRemove->processesWaitingForFile);
 				free(dataToRemove);
 
-				log_info(schedulerLog, "No existen procesos esperando a que el archivo \"%s\" sea liberado");
+				log_info(schedulerLog, "No existen procesos esperando a que el archivo \"%s\" sea liberado", fileName);
 			}
 			else	//Unblock the waiting processes and remove the key; a process should not request to close a file if it was not assigned to it, so no need to check if the file is assignet to that process
 			{
@@ -1051,7 +1051,8 @@ void freeCPUBySocket(uint32_t _socket)
 	int32_t timesTheSTSWasCalled;
 	sem_getvalue(&shortTermScheduler, &timesTheSTSWasCalled);
 
-	if((cpuToFree->isFree) && (processesReadyToExecute > 0) && (processesReadyToExecute > timesTheSTSWasCalled))
+	//if((cpuToFree->isFree) && (processesReadyToExecute > 0) && (processesReadyToExecute > timesTheSTSWasCalled))
+	if((cpuToFree->isFree) && (processesReadyToExecute > timesTheSTSWasCalled))
 	{
 		sem_post(&shortTermScheduler);
 	}
@@ -1119,7 +1120,8 @@ void handleCpuConnection(uint32_t _socket)
 	int32_t timesTheSTSWasCalled;
 	sem_getvalue(&shortTermScheduler, &timesTheSTSWasCalled);
 
-	if((newCPU->isFree) && (processesReadyToExecute > 0) && (processesReadyToExecute > timesTheSTSWasCalled))
+	//if((newCPU->isFree) && (processesReadyToExecute > 0) && (processesReadyToExecute > timesTheSTSWasCalled))
+	if((newCPU->isFree) && (processesReadyToExecute > timesTheSTSWasCalled))
 	{
 		sem_post(&shortTermScheduler);
 	}

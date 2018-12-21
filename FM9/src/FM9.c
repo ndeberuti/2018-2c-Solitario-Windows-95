@@ -828,7 +828,7 @@ void abrir_archivo_segmentacion_simple(int socket_cpu,int id){
 	if(segmento_linea != NULL){
 	resultado = OK;
 
-	char* buffer_envio = calloc(1, (segmento_linea->limite * config.MAX_LINEA) + (sizeof(int)*3) + 1);
+	void* buffer_envio = calloc(1, (segmento_linea->limite * config.MAX_LINEA) + (sizeof(int)*3));
 
 	tamanio = segmento_linea->limite * config.MAX_LINEA;
 
@@ -841,12 +841,11 @@ void abrir_archivo_segmentacion_simple(int socket_cpu,int id){
 	memcpy(buffer_envio+ sizeof(int)*2,puntero_memoria_segmentada + segmento_linea->base * config.MAX_LINEA , segmento_linea->limite * config.MAX_LINEA);
 	memcpy(buffer_envio + sizeof(int)*2 + tamanio , &(segmento_linea->limite), sizeof(int));
 
-	log_info(log_fm9, "Datos archivo enviado ->buffer: %s; tamanio: %d; resultado: %d\n", buffer_envio, tamanio, resultado);
-
-
-
-	resultado_envio = send(socket_cpu, buffer_envio, tamanio +sizeof(int)* 3, MSG_WAITALL);
+	resultado_envio = send(socket_cpu, buffer_envio, tamanio + (sizeof(int)* 3), MSG_WAITALL);
 	free(buffer_envio);
+
+
+	log_info(log_fm9, "Datos archivo enviado ->buffer: %s; tamanio: %d; resultado: %d\n", buffer_envio, tamanio, resultado);
 
 		if(resultado_envio != -1){
 		log_info(log_fm9, "Se envió el archivo %d al CPU del proceso %d", segmento_linea->id, segmento_linea->pid);
@@ -914,7 +913,7 @@ void modificar_linea_segmentacion_simple(int socket_cpu,int id,int numero_linea,
 
 
 
-   send(socket_cpu, &resultado, config.MAX_LINEA, MSG_WAITALL);
+   send(socket_cpu, &resultado, sizeof(int), MSG_WAITALL);
 
 }
 
@@ -952,8 +951,8 @@ void flush_segmentacion_simple(int socket_diego, int id){
 
 		send(socket_diego, buffer_envio, sizeof(int)*3+ segmento->limite * config.MAX_LINEA, MSG_WAITALL);
 
-		free(buffer_envio);
 
+		free(buffer_envio);
 
 		log_info(log_fm9, "Se completo el flush para el archivo %d" , id );
 }else{

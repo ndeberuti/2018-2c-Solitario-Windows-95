@@ -284,13 +284,74 @@ void sendProcessErrorMessageToScheduler(uint32_t process)
 
 t_list* parseScriptFromFS(char* script)
 {
-	//Receives the script that the memory sends and transforms it to a list; the line/instruction 1 of the script is the element with index 0 of the list, and so on...
-
 	t_list* parsedScript = NULL;
 	parsedScript = string_split_to_list(script, "\n");
 
+	uint32_t scriptLines = list_size(parsedScript);
+	char* currentLine = NULL;
+	char* emptyLine = NULL;
+
+	for(uint32_t i = 0; i < scriptLines; i++)
+	{
+		currentLine = (char*) list_get(parsedScript, i);
+
+		if(currentLine[0] == '~')	//If the current line starts with that strange character, the line is from a file that was created by a process
+		{							//and that line is still empty. The FS puts that character in the empty lines (the complete line has that
+									//char repated as many times as specified by the memoryLineSize, minus 1 char for the '\n') so they can be parsed here
+
+			list_remove(parsedScript, i); //Remove the current line
+			free(currentLine);	//As the current line is no longer present in the list, I can free it
+
+			emptyLine = calloc(1, 1); //Allocate a string with only a space for the '\0' (it is an empty string)
+
+			list_add_in_index(parsedScript, i, emptyLine); //Add the empty line in the position the currentLine was at
+		}
+	}
 	return parsedScript;
 }
+
+/*
+t_list* parseScriptFromFS(char* script) //No funca por una razon extraña
+{
+	//Receives the script that the memory sends and transforms it to a list; the line/instruction 1 of the script is the element with index 0 of the list, and so on...
+
+	t_list* parsedScript = list_create();
+	uint32_t scriptLength = string_length(script);
+	char* currentLine = calloc(1, memoryLineSize + 1);	//As it is defined in this assignment's document, a line from a FS file will
+														//never have more bytes/characters than a memoryLine
+	uint32_t currentLineOffset = 0;
+
+	for(uint32_t i = 0; i != '\0'; i++)
+	{
+		if(script[i] == '~')
+		{
+			continue;
+		}
+		else if(script[i] == '\n')
+		{
+			memset(currentLine + currentLineOffset, script[i], 1);	//Copy the actual character to the final line
+			currentLineOffset++;
+			memset(currentLine + currentLineOffset, 0, 1);	//The current character is a '\n' which means I have to begin a new line
+															//Put a '\0' next to the '\n'
+
+			realloc(currentLine, currentLineOffset);
+			list_add(parsedScript, currentLine);
+
+			currentLine = calloc(1, memoryLineSize + 1);	//Allocate another pointer to begin another line and continue parsing the script
+			currentLineOffset = 0;
+		}
+		else
+		{
+			memset(currentLine + currentLineOffset, script[i], 1);
+			currentLineOffset++;
+		}
+	}
+
+	printf("\n\nelementos de la lista parseada: %d\n\n", list_size(parsedScript));
+
+	return parsedScript;
+}
+*/
 
 
 //TODO - This is ok for segmentation but maybe not for pagination; this function may be needed to be changed to work well with pagination

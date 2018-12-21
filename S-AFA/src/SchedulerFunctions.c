@@ -979,3 +979,20 @@ void killProcessWithPCB(PCB_t* process)
 
 	log_info(schedulerLog, "El proceso %d fue terminado de forma exitosa, y los recursos que tenia tomados fueron liberados", process->pid);
 }
+
+void postShortTermScheduler()
+{
+	int32_t stsPosts;
+	sem_getvalue(&shortTermScheduler, &stsPosts);
+
+	if((processesReadyToExecute > 0))
+	{
+		if(processesReadyToExecute > stsPosts)
+		{
+			uint32_t timesToPostSTS = processesReadyToExecute < stsPosts;
+
+			for(uint32_t i = 0; i < timesToPostSTS; i++)
+				sem_post(&shortTermScheduler);
+		}
+	}
+}

@@ -138,8 +138,8 @@ bool LTSAlreadyExecuting;
 bool terminateModule;
 bool stsWantsToExecute; 		//The LTS tried to wake the STS, but there were no free CPUs; when a CPU is free, it must wake the STS
 sem_t shortTermScheduler;
-sem_t schedulerNotRunning;
 sem_t longTermScheduler;
+pthread_mutex_t schedulerNotRunning;
 pthread_mutex_t configFileMutex;
 pthread_mutex_t readyQueueMutex;
 pthread_mutex_t newQueueMutex;
@@ -243,6 +243,7 @@ cpu_t* findCPUBy_socket(uint32_t);
 void terminateProcess(uint32_t);
 void handleConfigFileChanged();
 void handleCpuConnection(uint32_t);
+void postShortTermScheduler();
 
 
 #endif /* SRC_SCHEDULER_H_ */

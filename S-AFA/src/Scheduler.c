@@ -9,7 +9,7 @@ void shortTermSchedulerThread()
 	while(!killThreads)
 	{
 		sem_wait(&shortTermScheduler);	//Wait until this scheduler is needed
-		sem_wait(&schedulerNotRunning);	//Extra security measure to avoid 2 the schedulers running at the same time and thus, producing unexpected behavior
+		pthread_mutex_lock(&schedulerNotRunning);	//Extra security measure to avoid 2 the schedulers running at the same time and thus, producing unexpected behavior
 
 		//TODO: Review that last semaphore wait?
 
@@ -19,46 +19,35 @@ void shortTermSchedulerThread()
 
 		log_info(schedulerLog, "STS: Comenzando ejecucion");
 
-		pthread_mutex_lock(&readyQueueMutex);
-		pthread_mutex_lock(&ioReadyQueueMutex);
-
 		if(getFreeCPUsQty() == 0)
 		{
 			log_info(schedulerLog, "STS: No hay CPUs disponibles para ejecutar procesos. Se debera esperar a que haya un proceso nuevo.");
-
-			pthread_mutex_unlock(&readyQueueMutex);
-			pthread_mutex_unlock(&ioReadyQueueMutex);
-			pthread_mutex_unlock(&canCommunicateWithCPUs);
-			sem_post(&schedulerNotRunning);
-
-			return;
-		}
-
-		schedulableProcessesFromReadyQueue = getSchedulableProcesses();
-
-		scheduleableProcessesQty = list_size(schedulableProcessesFromReadyQueue);
-		scheduleableProcessesQty += list_size(ioReadyQueue);
-
-		if(scheduleableProcessesQty == 0)
-		{
-			log_info(schedulerLog, "STS: No es posible planificar ya que no hay procesos listos. Se debe crear un nuevo proceso, o desbloquear uno ya existente, para poder planificar");
 		}
 		else
 		{
-			bool aProcessWasExecuted = (*scheduleProcesses)();
+			schedulableProcessesFromReadyQueue = getSchedulableProcesses();
 
-			if(aProcessWasExecuted)
-				processesReadyToExecute--;
+			scheduleableProcessesQty = list_size(schedulableProcessesFromReadyQueue);
+			scheduleableProcessesQty += list_size(ioReadyQueue);
+
+			if(scheduleableProcessesQty == 0)
+			{
+				log_info(schedulerLog, "STS: No es posible planificar ya que no hay procesos listos. Se debe crear un nuevo proceso, o desbloquear uno ya existente, para poder planificar");
+			}
+			else
+			{
+				bool aProcessWasExecuted = (*scheduleProcesses)();
+
+				if(aProcessWasExecuted)
+					processesReadyToExecute--;
+			}
 		}
-
-		pthread_mutex_unlock(&readyQueueMutex);
-		pthread_mutex_unlock(&ioReadyQueueMutex);
 
 		pthread_mutex_unlock(&canCommunicateWithCPUs);
 
 		STSAlreadyExecuting = false;
 
-		sem_post(&schedulerNotRunning);
+		pthread_mutex_unlock(&schedulerNotRunning);
 		log_info(schedulerLog, "STS: Ejecucion finalizada");
 	}
 }
@@ -72,14 +61,12 @@ void longTermSchedulerThread()
 	while(!killThreads)
 	{
 		sem_wait(&longTermScheduler);	//Wait until this scheduler is needed
-		sem_wait(&schedulerNotRunning);	//Extra security measure to avoid 2 the schedulers running at the same time and thus, producing unexpected behavior
+		pthread_mutex_lock(&schedulerNotRunning);	//Extra security measure to avoid 2 the schedulers running at the same time and thus, producing unexpected behavior
 
 		LTSAlreadyExecuting = true;
 
 		pthread_mutex_lock(&canCommunicateWithCPUs);	//To avoid the other threads to message CPUs when this one needs to do so
 
-		pthread_mutex_lock(&newQueueMutex);		//Need to prevent the threads accessing the readyQueue/newQueue
-		pthread_mutex_lock(&readyQueueMutex); 	//at the same time. Otherwise, unexpected things may happen...
 
 		log_info(schedulerLog, "LTS: Comenzando ejecucion...");
 
@@ -129,15 +116,12 @@ void longTermSchedulerThread()
 			pthread_mutex_unlock(&cpuListMutex);
 		}
 
-		pthread_mutex_unlock(&readyQueueMutex);
-		pthread_mutex_unlock(&newQueueMutex);
-
 		pthread_mutex_unlock(&canCommunicateWithCPUs);
 
 		LTSAlreadyExecuting = false;
 		log_info(schedulerLog, "LTS: Ejecucion finalizada");
 
-		sem_post(&schedulerNotRunning);
+		pthread_mutex_unlock(&schedulerNotRunning);
 	}
 }
 
@@ -201,7 +185,6 @@ void initializeVariables()
 
 	sem_init(&shortTermScheduler, 0, 0);
 	sem_init(&longTermScheduler, 0, 0);
-	sem_init(&schedulerNotRunning, 0, 1);
 
 	consoleLog = init_log("../../Logs/S-AFA_Consola.log", "Consola S-AFA", true, LOG_LEVEL_INFO);
 	schedulerLog = init_log("../../Logs/S-AFA_Planif.log", "Proceso S-AFA", true, LOG_LEVEL_INFO);
