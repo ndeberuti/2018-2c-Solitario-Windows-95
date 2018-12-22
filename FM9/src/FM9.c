@@ -1026,7 +1026,7 @@ void dump_segmentacion_simple(int pid){
 						free(buffer_muestra);
 						}
 
-						list_destroy(lista_filtrada);
+
 
 				}else{
 
