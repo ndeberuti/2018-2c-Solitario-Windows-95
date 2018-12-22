@@ -168,8 +168,6 @@ void getProcessMetrics(uint32_t processId)
 	pthread_mutex_unlock(&blockedQueueMutex);
 	pthread_mutex_unlock(&executionQueueMutex);
 	pthread_mutex_unlock(&finishedQueueMutex);
-
-	free(queueName);
 }
 
 void getSystemMetrics()

@@ -640,6 +640,7 @@ void checkAndFreeProcessFiles(uint32_t processId)	//Checks if there are any file
 
 
 					processToUnblock = (uint32_t) list_remove(processWaitList, 0);
+					unblockProcess(processToUnblock, false, true);
 
 					char* processId = string_itoa(processToUnblock);
 					char* procWaitingForFileString = string_new();

@@ -506,6 +506,7 @@ t_list* parseScript(char* script, uint32_t scriptLines)
 		}
 		else //The line only has a '\n' char
 		{
+			printf("hola");
 			buffer = calloc(1, 1);
 		}
 

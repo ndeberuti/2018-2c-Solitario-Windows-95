@@ -120,17 +120,17 @@ void moduleHandler(uint32_t command, uint32_t _socket)
 {
 	if(command == NEW_DMA_CONNECTION)
 	{
-		uint32_t priority = 5;
+		//uint32_t priority = 5;
 		//Set high priority to that socket
-		setsockopt(_socket, SOL_SOCKET, SO_PRIORITY, &priority, sizeof(uint32_t));
+		//setsockopt(_socket, SOL_SOCKET, SO_PRIORITY, &priority, sizeof(uint32_t));
 		log_info(consoleLog, "Nueva conexion desde el DMA");
 		dmaSocket = _socket;
 	}
 	else if(command == NEW_CPU_CONNECTION)
 	{
-		uint32_t priority = 1;
+		//uint32_t priority = 1;
 		//Set socket priority to low
-		setsockopt(_socket, SOL_SOCKET, SO_PRIORITY, &priority, sizeof(uint32_t));
+		//setsockopt(_socket, SOL_SOCKET, SO_PRIORITY, &priority, sizeof(uint32_t));
 		handleCpuConnection(_socket);
 	}
 	else if((command >= LIM_INF_TAREAS_CPU) && (command <= LIM_SUP_TAREAS_CPU)) //The CPU task codes range from 3 to 12
@@ -782,6 +782,7 @@ void closeFile(uint32_t _socket)
 			else	//Unblock the waiting processes and remove the key; a process should not request to close a file if it was not assigned to it, so no need to check if the file is assignet to that process
 			{
 				processToUnblock = (uint32_t) list_remove(processWaitList, 0);
+				unblockProcess(processToUnblock, false, true);
 
 				char* processId = string_itoa(processToUnblock);
 				char* procWaitingForFileString = string_new();
