@@ -2018,7 +2018,7 @@ int close_file_paginacion(int socket_cpu,int id){
 
 								}
 
-					paginas_encontradas = list_filter(tabla_de_segmentos_sp, (void*) es_id);
+					paginas_encontradas = list_filter(tabla_de_paginas, (void*) es_id);
 
 					paginas= list_size(paginas_encontradas);
 
@@ -2037,7 +2037,7 @@ int close_file_paginacion(int socket_cpu,int id){
 
 							while(numero_pagina < paginas ){
 
-							entrada_buscada = list_get(tabla_de_paginas, numero_pagina);
+							entrada_buscada = list_get(paginas_encontradas, numero_pagina);
 
 							frame = entrada_buscada->frame;
 
@@ -2053,7 +2053,7 @@ int close_file_paginacion(int socket_cpu,int id){
 
 							}
 
-
+							list_destroy(paginas_encontradas);
 							list_remove_by_condition(tabla_de_paginas, (void*) es_id);
 
 
@@ -2078,7 +2078,7 @@ int close_file_paginacion(int socket_cpu,int id){
 int close_process_paginacion(int socket_cpu,int pid){
 
 	int resultado, aciertos;
-	entrada_tabla_invertida_t * entrada_buscada = malloc(sizeof(entrada_tabla_invertida_t));
+	entrada_tabla_invertida_t * entrada_buscada;
 		t_list* lista_filtrada;
 
 
@@ -2114,12 +2114,12 @@ int close_process_paginacion(int socket_cpu,int pid){
 
 
 							contador++;
-
+							list_destroy(lista_filtrada);
 								}
 							}
 
 
-		list_destroy(lista_filtrada);
+
 		return resultado;
 
 
@@ -2152,21 +2152,6 @@ void modificar_linea_paginacion(int socket_cpu,int id,int numero_linea,char* lin
 						int corrimiento = (numero_pagina * config.TAM_PAGINA / config.MAX_LINEA) - numero_linea -1;
 
 
-			/*
-			int numero_pagina = numero_linea/ config.TAM_PAGINA / config.MAX_LINEA  ;
-
-			resto = numero_linea % config.TAM_PAGINA / config.MAX_LINEA;
-
-				if(resto > 0){
-
-					numero_pagina++;
-
-				}
-
-
-
-			int corrimiento = numero_linea - (numero_pagina * config.TAM_PAGINA / config.MAX_LINEA);
-*/
 
 			bool es_id(entrada_tabla_invertida_t* entrada){
 
@@ -2262,14 +2247,14 @@ void flush_paginacion_invertida(int socket_diego,int id){
 					memcpy(buffer_envio + sizeof(int)*2 + offset, &cantidad_lineas, sizeof(int));
 					send(socket_diego, buffer_envio, sizeof(int)* 3 + config.MAX_LINEA * paginas, MSG_WAITALL);
 					free(buffer_envio);
-
+					list_destroy(paginas_encontradas);
 
 
 		}
 
 
 
-		list_destroy(paginas_encontradas);
+
 
 
 
