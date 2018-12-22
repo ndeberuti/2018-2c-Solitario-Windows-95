@@ -2054,7 +2054,7 @@ int close_file_paginacion(int socket_cpu,int id){
 
 							}
 
-							list_destroy(paginas_encontradas);
+
 							list_remove_by_condition(tabla_de_paginas, es_id);
 
 
@@ -2335,7 +2335,7 @@ void dump_paginacion_invertida(int pid){
 							}
 
 
-list_destroy(lista_filtrada);
+
 
 
 }
