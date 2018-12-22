@@ -1197,7 +1197,8 @@ segmento->segmento = base;
 //SEGMENTACION PAGINADA
 
 void inicializar_memoria_segmentacion_paginada(){
-	int forzar_bitarray;
+
+	int forzar_bitarray = (config.TAMANIO / config.TAM_PAGINA / 8);
 
 tamanio_bitarray_sp = config.TAMANIO / config.TAM_PAGINA;
 
@@ -1211,7 +1212,7 @@ if(config.TAMANIO % config.TAM_PAGINA > 0){
 
 if(tamanio_bitarray_sp % 8 > 0){
 
-				forzar_bitarray = (config.TAMANIO / config.TAM_PAGINA / 8) + 1;
+				forzar_bitarray++;
 
 
 
@@ -1222,10 +1223,10 @@ if(tamanio_bitarray_sp % 8 > 0){
 		tabla_de_segmentos_sp = list_create();
 
 		puntero_memoria_sp = malloc(config.TAMANIO);
-		memset(puntero_memoria_sp, '\n', config.TAMANIO);
+		memset(puntero_memoria_sp, '~', config.TAMANIO);
 
 
-		b_m_s = calloc(0,forzar_bitarray);
+		b_m_s = calloc(1,forzar_bitarray);
 
 		bitarray_memoria = bitarray_create(b_m_s,forzar_bitarray);
 
@@ -1418,7 +1419,7 @@ void abrir_archivo_segmentacion_paginada(int socket_cpu, int id){
 			cantidad_lineas = tamanio / config.MAX_LINEA;
 			resultado = OK;
 
-			char* buffer_envio = calloc(1,sizeof(int)* 3 + tamanio);
+			char* buffer_envio = calloc(1, (sizeof(int)* 3) + tamanio + 1);
 
 			memcpy(buffer_envio, &resultado, sizeof(int));
 			memcpy(buffer_envio + sizeof(int), &tamanio, sizeof(int));
@@ -1541,7 +1542,7 @@ void flush_segmentacion_paginada(int socket_diego,int id){
 
 					int tamanio_paginas = paginas * config.TAM_PAGINA;
 					cantidad_lineas = tamanio_paginas / config.MAX_LINEA;
-					char* buffer_envio = malloc(sizeof(int) * 3 +paginas * config.TAM_PAGINA);
+					char* buffer_envio = malloc((sizeof(int) * 3) + (paginas * config.TAM_PAGINA) + 1);
 
 					memcpy(buffer_envio, &resultado, sizeof(int));
 					memcpy(buffer_envio+ sizeof(int), &tamanio_paginas, sizeof(int));
@@ -1562,10 +1563,10 @@ void flush_segmentacion_paginada(int socket_diego,int id){
 
 					}
 
-					memcpy(sizeof(int)*2 + paginas*config.TAM_PAGINA,cantidad_lineas, sizeof(int) );
+					memcpy(buffer_envio + (sizeof(int)*2) + (paginas*config.TAM_PAGINA), &cantidad_lineas, sizeof(int) );
 
 
-					send(socket_diego, buffer_envio, sizeof(int)*3 + paginas* config.TAM_PAGINA, MSG_WAITALL);
+					send(socket_diego, buffer_envio, (sizeof(int)*3) + (paginas* config.TAM_PAGINA), MSG_WAITALL);
 					free(buffer_envio);
 
 
@@ -1859,7 +1860,7 @@ void inicializar_memoria_paginacion_invertida(){
 			tabla_de_paginas = list_create();
 
 			puntero_memoria_paginada = malloc(config.TAMANIO);
-			memset(puntero_memoria_paginada, '\n', config.TAMANIO);
+			memset(puntero_memoria_paginada, '~', config.TAMANIO);
 
 
 			b_m_s = calloc(1,forzar_bitarray);

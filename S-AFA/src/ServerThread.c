@@ -417,9 +417,9 @@ void _killProcess(uint32_t _socket)
 
 			killProcessWithPCB(processToKill);
 		}
-	}
 
-	freeCPUBySocket(_socket);
+		freeCPUBySocket(_socket);
+	}
 }
 
 void processQuantumEnd(uint32_t _socket, uint32_t* process)
