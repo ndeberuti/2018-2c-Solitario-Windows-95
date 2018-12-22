@@ -350,7 +350,7 @@ void executeProcess()
 
 			return;
 		}
-		else if((instructionExecutionResult == INSTRUCTION_NOT_EXECUTED) || (instructionExecutionResult == PROCESS_KILLED))
+		else if(instructionExecutionResult == PROCESS_KILLED)
 		{
 			//Do nothing, the error was treated before. Just end the execution
 
@@ -360,10 +360,8 @@ void executeProcess()
 
 			return;
 		}
-		else
+		else if(instructionExecutionResult == INSTRUCTION_NOT_EXECUTED) //An empty line was read
 		{
-			//Revert changes from the beginning of the while loop
-			currentProgramCounter--;
 			currentProcessQuantum++;
 			instructionsExecuted--;
 		}
@@ -534,7 +532,7 @@ uint32_t checkAndExecuteInstruction(t_list* parsedLine)	//The 'parsedLine' list 
 	if(listSize == 0)
 	{
 		//Received a line without instructions; return and skip to the next line
-		return false;
+		return INSTRUCTION_NOT_EXECUTED;
 	}
 
 	log_info(cpuLog, "Instruccion a ejecutar: %s", instruction);
@@ -702,7 +700,7 @@ uint32_t checkAndExecuteInstruction(t_list* parsedLine)	//The 'parsedLine' list 
 		executionResult = handleProcessError();
 	}
 
-	if((executionResult == INSTRUCTION_NOT_EXECUTED) || (executionResult == PROCESS_KILLED))
+	if(executionResult == PROCESS_KILLED)
 	{
 		log_info(cpuLog, "La ultima instruccion que se intento ejecutar para el proceso %d produjo un error, por lo que se ordeno la terminacion de dicho proceso...", (*processInExecutionPCB)->pid);
 	}
