@@ -43,6 +43,8 @@ void server()
 	{
 		read_fds = master; //Copy the master set
 
+		sleep(2);	//To allow other threads to take the above lock
+
 		pthread_mutex_lock(&canCommunicateWithCPUs);
 
 		if((result = select(fdmax + 1, &read_fds, NULL, NULL, &selectTimeout)) < 0)
@@ -53,7 +55,6 @@ void server()
 		else if(result == 0)	//The select returned due to a timeout
 		{
 			pthread_mutex_unlock(&canCommunicateWithCPUs);
-			sleep(0.5);	//To allow other threads to take the above lock
 			continue;
 		}
 
@@ -788,10 +789,12 @@ void closeFile(uint32_t _socket)
 
 				free(processId);
 
+				processesWaitingForFile = list_size(processWaitList);
+
 				for(uint32_t i = 0; i < processesWaitingForFile; i++)
 				{
 					processToUnblock = (uint32_t) list_remove(processWaitList, i);
-					unblockProcess(processToUnblock, false);
+					unblockProcess(processToUnblock, false, true);
 
 					processId = string_from_format(", %d", processToUnblock);
 					string_append(&procWaitingForFileString, processId);
@@ -875,9 +878,9 @@ void unlockProcess(uint32_t _socket)
 		if(!processWasKilled)
 		{
 			if(addFileToFileTable)	//Then it is a normal DMA operation
-				unblockProcess(processId, true);
+				unblockProcess(processId, true, false);
 			else	//Not a normal DMA operation (like script initialization); the process should never be added to the ioReadyQueue
-				unblockProcess(processId, false);
+				unblockProcess(processId, false, false);
 		}
 
 	}
@@ -886,10 +889,23 @@ void unlockProcess(uint32_t _socket)
 void signalResource(uint32_t _socket)
 {
 	int32_t nbytes = 0;
+	int32_t pid = 0;
+	uint32_t processToUnblock = 0;
 	char* semaphoreName = NULL;
 	bool result = 0;
 	semaphoreData* data = NULL;
 
+
+	if((nbytes = receive_int(_socket, &pid)) <= 0)
+	{
+		if(nbytes == 0)
+			log_error(consoleLog, "ServerThread (waitResource) - La CPU fue desconectada al intentar recibir un pid");
+		else
+			log_error(consoleLog, "ServerThread (waitResource) - Error al recibir un pid de la CPU");
+
+		FD_CLR(_socket, &master);
+		closeSocketAndRemoveCPU(_socket);
+	}
 	if((nbytes = receive_string(_socket, &semaphoreName)) <= 0)
 	{
 		if(nbytes == 0)
@@ -912,20 +928,21 @@ void signalResource(uint32_t _socket)
 			data = dictionary_get(semaphoreList, semaphoreName);
 			(data->semaphoreValue)++;
 
-			if((nbytes = send_int_with_delay(_socket, SIGNAL_OK)) < 0)
+			bool _process_equals(uint32_t process)
 			{
-				log_error(consoleLog, "ServerThread (signalResource) - Error al indicar a la CPU que un signal fue exitoso");
-				return;
-				//TODO (Optional) - Send Error Handling
+				return process == pid;
 			}
 
-			log_info(schedulerLog, "No existia ningun semaforo con el nombre \"%s\", por lo que este fue creado e inicializado con valor 1", semaphoreName);
-		}
-		else	//The key is not in the dictionary, create it with value 1
-		{
-			data = calloc(1, sizeof(semaphoreData));
-			data->semaphoreValue = 1;
-			data->waitingProcesses = list_create();
+			list_remove_by_condition(data->processesUsingTheSemaphore, _process_equals);
+
+			if(list_size(data->waitingProcesses) > 0)
+			{
+				//Unblock the first waiting process
+				processToUnblock = (uint32_t) list_remove(data->waitingProcesses, 0);
+				unblockProcess(processToUnblock, false, true);
+
+				log_info(schedulerLog, "Debido a que un proceso libero una instancia del semaforo \"%s\", el proceso %d, el cual esperaba por dicho semaforo, fue desbloqueado", semaphoreName, processToUnblock);
+			}
 
 			if((nbytes = send_int_with_delay(_socket, SIGNAL_OK)) < 0)
 			{
@@ -935,6 +952,25 @@ void signalResource(uint32_t _socket)
 			}
 
 			log_info(schedulerLog, "El valor del semaforo \"%s\" fue incrementado", semaphoreName);
+		}
+		else	//The key is not in the dictionary, create it with value 1
+		{
+			data = calloc(1, sizeof(semaphoreData));
+			data->semaphoreValue = 1;
+			data->waitingProcesses = list_create();
+			data->processesUsingTheSemaphore = list_create();
+			list_add(data->processesUsingTheSemaphore, pid);
+
+			list_add(semaphoreListKeys, semaphoreName);
+
+			if((nbytes = send_int_with_delay(_socket, SIGNAL_OK)) < 0)
+			{
+				log_error(consoleLog, "ServerThread (signalResource) - Error al indicar a la CPU que un signal fue exitoso");
+				return;
+				//TODO (Optional) - Send Error Handling
+			}
+
+			log_info(schedulerLog, "No existia ningun semaforo con el nombre \"%s\", por lo que este fue creado e inicializado con valor 1", semaphoreName);
 		}
 
 		pthread_mutex_unlock(&semaphoreListMutex);
@@ -948,7 +984,6 @@ void waitResource(uint32_t _socket)
 	char* semaphoreName = NULL;
 	bool dictionaryHasKey = 0;
 	semaphoreData* data = NULL;
-	t_list* processWaitList = NULL;
 
 	if((nbytes = receive_int(_socket, &pid)) <= 0)
 	{
@@ -981,7 +1016,6 @@ void waitResource(uint32_t _socket)
 		if(dictionaryHasKey)
 		{
 			data = dictionary_get(semaphoreList, semaphoreName);
-			processWaitList = data->waitingProcesses;
 
 			if(data->semaphoreValue > 0)
 			{
@@ -999,7 +1033,7 @@ void waitResource(uint32_t _socket)
 			}
 			else	//Add the process to the semaphore wait list, and tell the CPU the wait could not be done, so it requests a process block
 			{
-				list_add(processWaitList, pid);
+				list_add(data->waitingProcesses, pid);
 
 				if((nbytes = send_int_with_delay(_socket, WAIT_ERROR)) < 0)
 				{
@@ -1017,6 +1051,7 @@ void waitResource(uint32_t _socket)
 			data->semaphoreValue = 0;	//Created with value 0 (already taken by the requesting process)
 			data->waitingProcesses = list_create();
 			data->processesUsingTheSemaphore = list_create();
+			list_add(data->processesUsingTheSemaphore, pid);
 
 			dictionary_put(semaphoreList, semaphoreName, data);
 

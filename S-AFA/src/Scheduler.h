@@ -183,7 +183,7 @@ void moveProcessToReadyQueue(PCB_t*, bool);
 void addProcessToBlockedQueue(PCB_t*);
 PCB_t* createProcess(char*);
 void terminateExecutingProcess(PCB_t*);
-void unblockProcess(uint32_t, bool);
+void unblockProcess(uint32_t, bool, bool);
 void blockProcess(PCB_t*, bool);
 uint32_t getFreeCPUsQty();
 t_list* getFreeCPUs();

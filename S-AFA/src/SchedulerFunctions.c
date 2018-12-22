@@ -320,7 +320,7 @@ void terminateExecutingProcess(PCB_t* process)
 										//posted several times by new processes and it runs several times
 }
 
-void unblockProcess(uint32_t processId, bool unblockedByDMA)
+void unblockProcess(uint32_t processId, bool unblockedByDMA, bool unlockFromResource)
 {
 	pthread_mutex_lock(&configFileMutex);
 
@@ -334,8 +334,17 @@ void unblockProcess(uint32_t processId, bool unblockedByDMA)
 
 	if(process == NULL)
 	{
-		log_error(schedulerLog, "El proceso %d deberia estar en la cola de bloqueados, pero no se encuentra en ella, por lo que no deberia poder ser desbloqueado (y no deberiua haber llegado una llamada del DMA para desbloquearlo). Este modulo sera abortado para que evalue la situacion", processId);
-		exit(EXIT_FAILURE);
+		if(unlockFromResource)
+		{
+			log_warning(schedulerLog, "CUIDADO - Se intento desbloquear el proceso %d que se encontraba en la lista de procesos en espera de un archivo o semaforo, pero no se encuentra en la cola de bloqueados, por lo que pudo haber sido eliminado de dicha lista con anterioridad");
+			return;
+		}
+		else
+		{
+			log_error(schedulerLog, "El proceso %d deberia estar en la cola de bloqueados, pero no se encuentra en ella, por lo que no deberia poder ser desbloqueado (y no deberia haber llegado una llamada del DMA para desbloquearlo). Este modulo sera abortado para que evalue la situacion", processId);
+			exit(EXIT_FAILURE);
+		}
+
 	}
 
 	log_info(schedulerLog, "El proceso %d fue quitado de la cola de bloqueados", processId);
@@ -638,10 +647,12 @@ void checkAndFreeProcessFiles(uint32_t processId)	//Checks if there are any file
 
 					free(processId);
 
-					for(uint32_t i = 1; i < processesWaitingForFile; i++)
+					processesWaitingForFile = list_size(processWaitList);
+
+					for(uint32_t i = 0; i < processesWaitingForFile; i++)
 					{
 						processToUnblock = (uint32_t) list_remove(processWaitList, i);
-						unblockProcess(processToUnblock, false);
+						unblockProcess(processToUnblock, false, true);
 
 						processId = string_from_format(", %d", processToUnblock);
 						string_append(&procWaitingForFileString, processId);
@@ -710,7 +721,7 @@ void checkAndFreeProcessSemaphores(uint32_t processId)
 			if(list_size(processWaitList) > 0)
 			{
 				processToUnblock = (uint32_t) list_remove(processWaitList, 0);
-				unblockProcess(processToUnblock, false);
+				unblockProcess(processToUnblock, false, true);
 
 				log_info(schedulerLog, "Debido a que un proceso libero una instancia del semaforo \"%s\", el proceso %d, el cual esperaba por dicho semaforo, fue desbloqueado", currentSemaphore, processToUnblock);
 			}

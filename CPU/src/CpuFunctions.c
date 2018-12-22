@@ -270,7 +270,7 @@ void executeProcess()
 																		//If this is the first execution for that PCB, the currentProgramCounter == 0
 	scriptContent = requestScriptFromMemory(&scriptLines);
 
-	log_info(cpuLog, "Me llego de memoria un scirpt con %d lineas", scriptLines);
+	log_info(cpuLog, "Me llego de memoria un script con %d lineas", scriptLines);
 
 	if(scriptContent == NULL)	//Error getting the file from the memory
 	{
@@ -501,6 +501,8 @@ t_list* parseScript(char* script, uint32_t scriptLines)
 			//'lineLength - 1' is the length of the file without the '\n' char.
 			//I need to exclude the '\n' char from the string (in its place there will be a '\0' char)
 			memcpy(buffer, (script + currentMemoryLineStart), charsToCopy);
+
+			printf("\ncopie la linea %d -> %s\n", i+1, buffer);
 		}
 		else //The line only has a '\n' char
 		{
@@ -509,6 +511,8 @@ t_list* parseScript(char* script, uint32_t scriptLines)
 
 		list_add(parsedScript, buffer);
 	}
+
+	printf("\n");
 
 	return parsedScript;
 }

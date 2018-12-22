@@ -305,7 +305,7 @@ void flushFile(uint32_t _socket)
 		tellSchedulerToUnblockProcess(currentProcess, currentFilePath, false, "guardar");
 
 		list_destroy_and_destroy_elements(parsedFile, free);
-		free(fileBuffer);
+		//free(fileBuffer);
 	}
 	else
 	{

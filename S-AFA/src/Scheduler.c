@@ -80,11 +80,20 @@ void longTermSchedulerThread()
 				log_info(schedulerLog, "LTS: No hay procesos para planificar");
 			else
 			{
+				/*
 				pthread_mutex_lock(&executionQueueMutex);
-
 				_checkExecProc_and_algorithm(); //Call the STS if there are no new processes to add, but there are ready ones
-
 				pthread_mutex_unlock(&executionQueueMutex);
+				*/
+
+				int32_t semValue;
+				sem_getvalue(&shortTermScheduler, &semValue);
+
+				if(processesReadyToExecute > semValue)
+				{
+					sem_post(&shortTermScheduler);
+					log_info(schedulerLog, "Hay %d procesos para planificar. Se activo el STS para planificarlos...", processesReadyToExecute);
+				}
 			}
 		}
 		else
