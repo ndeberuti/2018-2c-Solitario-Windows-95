@@ -2079,7 +2079,7 @@ int close_file_paginacion(int socket_cpu,int id){
 int close_process_paginacion(int socket_cpu,int pid){
 
 	int resultado, aciertos;
-	entrada_tabla_invertida_t * entrada_buscada = malloc(sizeof(entrada_tabla_invertida_t));
+	entrada_tabla_invertida_t * entrada_buscada;
 		t_list* lista_filtrada = NULL;
 
 
@@ -2212,7 +2212,7 @@ void flush_paginacion_invertida(int socket_diego,int id){
 
 						}
 
-					paginas_encontradas = list_filter(tabla_de_paginas, (void*) es_id);
+					paginas_encontradas = list_filter(tabla_de_paginas,  es_id);
 					paginas= list_size(paginas_encontradas);
 
 					if(paginas ==0){
@@ -2255,7 +2255,7 @@ void flush_paginacion_invertida(int socket_diego,int id){
 					memcpy(buffer_envio + sizeof(int)*2 + offset, &cantidad_lineas, sizeof(int));
 					send(socket_diego, buffer_envio, sizeof(int)* 3 + config.MAX_LINEA * paginas, MSG_WAITALL);
 					free(buffer_envio);
-					list_destroy(paginas_encontradas);
+
 
 
 		}
@@ -2400,7 +2400,7 @@ void paginar(int pid, int id, int cantidad_lineas, char* buffer_recepcion){
 
 		char*buffer_envio= malloc(cantidad_paginas * config.TAM_PAGINA);
 
-		memset(buffer_envio, "~", cantidad_paginas*config.TAM_PAGINA);
+		memset(buffer_envio, '~', cantidad_paginas*config.TAM_PAGINA);
 
 		memcpy(buffer_envio, buffer_recepcion, cantidad_lineas * config.MAX_LINEA);
 
