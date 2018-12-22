@@ -294,6 +294,16 @@ void blockProcessInit(uint32_t _socket, uint32_t* process)
 		log_info(schedulerLog, "El proceso %d fue quitado de la cola de ejecucion (el proceso sera bloqueado)", processToBlock->pid);
 
 		blockProcess(processToBlock, true);
+
+		//Send the confirmation to the CPU telling it that the process was blocked successfully
+		if((nbytes = send_int(_socket, OK)) <= 0)
+		{
+			log_error(consoleLog, "ServerThread (blockProcessInit) - Error al enviar la confirmacion de bloqueo de proceso a la CPU");
+
+			FD_CLR(_socket, &master);
+			closeSocketAndRemoveCPU(_socket);
+		}
+
 		freeCPUBySocket(_socket);
 
 		(*process) = pid;
@@ -346,6 +356,15 @@ void _blockProcess(uint32_t _socket, uint32_t* process)
 		log_info(schedulerLog, "El proceso %d fue quitado de la cola de ejecucion (el proceso sera bloqueado)", processToBlock->pid);
 
 		blockProcess(processToBlock, true);	//send the updated process received from the CPU to the blocked queue, not the old one
+
+		//Send the confirmation to the CPU telling it that the process was blocked successfully
+		if((nbytes = send_int(_socket, OK)) <= 0)
+		{
+			log_error(consoleLog, "ServerThread (blockProcessInit) - Error al enviar la confirmacion de bloqueo de proceso a la CPU");
+
+			FD_CLR(_socket, &master);
+			closeSocketAndRemoveCPU(_socket);
+		}
 
 		freeCPUBySocket(_socket);
 

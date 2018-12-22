@@ -400,6 +400,7 @@ void initializeProcess()
 {
 	int32_t nbytes = 0;
 	PCB_t* processToInitialize = NULL;
+	uint32_t message = 0;
 
 	log_info(cpuLog, "El planificador solicita la incializacion de un proceso");
 
@@ -420,8 +421,6 @@ void initializeProcess()
 	processInExecutionPCB = &processToInitialize;
 
 	log_info(cpuLog, "Se recibio del planificador el PCB correspondiente al proceso %d", (*processInExecutionPCB)->pid);
-
-	sendOpenFileRequestToDMA(processToInitialize->scriptPathInFS, OPEN_SCRIPT);
 
 	if((nbytes = send_int(schedulerServerSocket, BLOCK_PROCESS_INIT)) < 0)
 	{
@@ -446,6 +445,22 @@ void initializeProcess()
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
+
+	//Wait for the scheduler to confirm the process was blocked, so the DMA will never try to unblock a process that was not blocked
+	if((nbytes = receive_int(schedulerServerSocket, &message)) <= 0)
+	{
+		if(nbytes == 0)
+			log_error(cpuLog, "El planificador fue desconectado al intentar recibir la confirmacion del bloqueo de un proceso\n");
+		if(nbytes < 0)
+			log_error(cpuLog, "Error al intentar recibir la confirmacion del bloqueo de un proceso del planificador\n");
+
+		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+
+		exit(EXIT_FAILURE);
+	}
+
+	sendOpenFileRequestToDMA(processToInitialize->scriptPathInFS, OPEN_SCRIPT);
 }
 
 /* The below function, I think, does not work for the type of information I need to handle, because
@@ -977,6 +992,8 @@ uint32_t createFile(char* filePathInFS, uint32_t numberOfLines)
 	int32_t nbytes = 0;
 	uint32_t processId = (*processInExecutionPCB)->pid;
 
+	uint32_t result = tellSchedulerToBlockProcess(true);
+
 	//Tell the DMA to create the file in the specified path and with the specified number of lines; also send the ID of the process that asks for the file creation
 	if((nbytes = send_int(dmaServerSocket, CREATE_FILE)) < 0)
 	{
@@ -1022,13 +1039,15 @@ uint32_t createFile(char* filePathInFS, uint32_t numberOfLines)
 
 	log_info(cpuLog, "Se solicito al DMA la creacion del archivo \"%s\" con %d lineas para el proceso %d", filePathInFS, numberOfLines, processId);
 	executionDelay();
-	return tellSchedulerToBlockProcess(true);
+	return result;
 }
 
 uint32_t deleteFile(char* filePathInFS)
 {
 	int32_t nbytes = 0;
 	uint32_t processId = (*processInExecutionPCB)->pid;
+
+	uint32_t result = tellSchedulerToBlockProcess(true);
 
 	//Tell the DMA to delete the file in the specified path
 	if((nbytes = send_int(dmaServerSocket, DELETE_FILE)) < 0)
@@ -1067,7 +1086,7 @@ uint32_t deleteFile(char* filePathInFS)
 
 	log_info(cpuLog, "Se solicito al DMA la eliminacion del archivo \"%s\" para el proceso %d", filePathInFS, processId);
 	executionDelay();
-	return tellSchedulerToBlockProcess(true);
+	return result;
 }
 
 uint32_t askSchedulerIfFileOpen(char* filePathInFS)
@@ -1137,8 +1156,10 @@ uint32_t handleFileNotOpen(char* filePathInFS, bool raiseError)
 	{
 		executionDelay();
 
+		uint32_t result = tellSchedulerToBlockProcess(false);
+
 		sendOpenFileRequestToDMA(filePathInFS, OPEN_FILE);
-		return tellSchedulerToBlockProcess(false);
+		return result;
 	}
 	else
 	{
@@ -1268,6 +1289,7 @@ void tellMemoryToFreeProcessData()
 uint32_t tellSchedulerToBlockProcess(bool isDmaCall)
 {
 	int32_t nbytes = 0;
+	int32_t message = 0;
 
 	updateCurrentPCB();
 
@@ -1306,6 +1328,20 @@ uint32_t tellSchedulerToBlockProcess(bool isDmaCall)
 		//TODO (Optional) - Send Error Handling
 	}
 
+	//Wait for the scheduler to tell me it blocked the current process (that is to avoid the dma trying to unlock the process before it is blocked...just in case)
+	if((nbytes = receive_int(schedulerServerSocket, &message)) <= 0)
+	{
+		if(nbytes == 0)
+			log_error(cpuLog, "El planificador fue desconectado al intentar recibir la confirmacion del bloqueo de un proceso\n");
+		if(nbytes < 0)
+			log_error(cpuLog, "Error al intentar recibir la confirmacion del bloqueo de un proceso del planificador\n");
+
+		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+		log_error(socketErrorLog, "Receive error: %s", strerror(errno));
+
+		exit(EXIT_FAILURE);
+	}
+
 
 	log_info(cpuLog, "El proceso %d finalizo su ejecucion (por bloqueo), luego de ejecutar %d instrucciones", (*processInExecutionPCB)->pid, instructionsExecuted);
 	return PROCESS_BLOCKED;
@@ -1315,7 +1351,6 @@ uint32_t handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToA
 {
 	int32_t nbytes = 0;
 	int32_t message = 0;
-	int biga = 0;
 
 	//Tell the memory to modify a file and send the filePath, the number of the line that should be modified, and the data to insert in that line
 	if((nbytes = send_int(memoryServerSocket, ASIGNAR)) < 0)
@@ -1414,6 +1449,8 @@ uint32_t handleFlushFile(char* filePathInFS)
 {
 	int32_t nbytes = 0;
 
+	uint32_t result = tellSchedulerToBlockProcess(true);
+
 	//Tell the DMA to flush the file and send the filePath
 	if((nbytes = send_int(dmaServerSocket, FLUSH_FILE)) < 0)
 	{
@@ -1451,7 +1488,7 @@ uint32_t handleFlushFile(char* filePathInFS)
 
 	log_info(cpuLog, "Se solicito al DMA la descarga de la informacion en memoria del archivo del path \"%s\"\n", filePathInFS);
 	executionDelay();
-	return tellSchedulerToBlockProcess(true);
+	return result;
 }
 
 uint32_t handleCloseFile(char* filePathInFS)

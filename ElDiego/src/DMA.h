@@ -27,6 +27,7 @@ typedef struct
 	char* memoryIp;
 	uint32_t memoryPort;
 	uint32_t transferSize;
+	uint32_t messageDelay;
 	//
 } config_t;
 
