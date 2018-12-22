@@ -42,23 +42,28 @@
 
 	//ESTRUCTURAS
 	typedef struct {
-		uint32_t PUERTO;
+		uint PUERTO;
 		char *MODO;
-		uint32_t TAMANIO;
-		uint32_t MAX_LINEA;
-		uint32_t TAM_PAGINA;
-		uint32_t TRANSFER_SIZE;
+		uint TAMANIO;
+		uint MAX_LINEA;
+		uint TAM_PAGINA;
+		uint TRANSFER_SIZE;
 	} config_t;
 
 
 	typedef struct {
 		char *comando;
 		char *param[MAX_PARAMS];
-		uint32_t cant_params;
+		uint cant_params;
 	} console_t;
 
 
-
+	typedef struct
+	{
+		char* path;
+		uint pid;	//Proceso al que esta asignado ese archivo
+		uint idSegmento;
+	}dataDePath;
 
 
 	typedef struct {
@@ -107,8 +112,8 @@
 	pthread_t thread_servidor;
 
 	pthread_t thread_consola;
-	uint32_t diego;
-	uint32_t cpu;
+	uint diego;
+	uint cpu;
 
 	void* buffer_envio;
 
@@ -127,7 +132,7 @@
 	config_t load_config();
 	void server();
 
-	void command_handler(uint32_t command, uint32_t socket);
+	void command_handler(int command, int socket);
 	void consola();
 
 	void inicializar_diccionario();
@@ -205,9 +210,9 @@
 
 	typedef struct {
 
-			int pid;
-			int id;
-			int frame;
+		int pid;
+		int id;
+		int frame;
 		}entrada_tabla_invertida_t;
 
 
@@ -262,10 +267,12 @@
 
 	//diccionario
 	void inicializar_diccionario();
-	int transformar_path(char* path);
+	int transformar_path(char* path, int pid);
+	int agregarPathAlDiccionario(char* path, int pid);
+	bool eliminar_id_segmento_de_diccionario(int idSegmento, char* path, int pid);
 
 	int id_nuevo();
 	int id_global = 0;
-	t_dictionary *diccionario;
+	t_list *diccionario;
 
 	#endif /* SRC_FM9_H_ */

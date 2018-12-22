@@ -154,16 +154,16 @@ void server() {
 	fd_set master; // conjunto maestro de descriptores de fichero
 	fd_set read_fds; // conjunto temporal de descriptores de fichero para select()
 	struct sockaddr_in remoteaddr; // dirección del cliente
-	uint32_t fdmax; // número máximo de descriptores de fichero
-	uint32_t newfd; // descriptor de socket de nueva conexión aceptada
-	uint32_t command; // comando del cliente
-	uint32_t nbytes;
-	uint32_t addrlen;
+	int fdmax; // número máximo de descriptores de fichero
+	int newfd; // descriptor de socket de nueva conexión aceptada
+	int command; // comando del cliente
+	int nbytes;
+	int addrlen;
 	FD_ZERO(&master); // borra los conjuntos maestro y temporal
 	FD_ZERO(&read_fds);
 
 	// obtener socket a la escucha
-	uint32_t servidor = build_server(config.PUERTO, log_consola);
+	int servidor = build_server(config.PUERTO, log_consola);
 
 	// añadir listener al conjunto maestro
 	FD_SET(servidor, &master);
@@ -178,7 +178,7 @@ void server() {
 			exit(EXIT_FAILURE);
 		}
 		// explorar conexiones existentes en busca de datos que leer
-		for (uint32_t i = 0; i <= fdmax; i++)
+		for (int i = 0; i <= fdmax; i++)
 			if (FD_ISSET(i, &read_fds)) { // ¡¡tenemos datos!!
 				if (i == servidor) {
 					// gestionar nuevas conexiones
@@ -215,7 +215,7 @@ void server() {
 	} // while (true)
 }
 
-void command_handler(uint32_t command, uint32_t socket) {
+void command_handler(int command, int socket) {
 	switch (command) {
 	case NEW_DMA_CONNECTION:
 		log_info(log_consola, "Nueva conexion desde El Diego");
@@ -295,7 +295,7 @@ void consola() {
 					print_c(log_consola, "%s: Comando incorrecto\n", consola->comando);
 
 				free(consola->comando);
-				for (uint32_t i = 0; i < consola->cant_params; i++)
+				for (uint i = 0; i < consola->cant_params; i++)
 					free(consola->param[i]);
 				free(consola);
 			}
@@ -352,7 +352,7 @@ void guardar_archivo(int socket_diego){
 	char* buffer  = recibir_char(socket_diego, longitud_path);
 	printf("path: %s\n",buffer);
 
-	int id = transformar_path(buffer);
+	int id = transformar_path(buffer, pid);
 
 
 
@@ -364,7 +364,7 @@ void guardar_archivo(int socket_diego){
 	printf("longitud: %d\n",longitud);
 	char* buffer_recepcion = recibir_char(socket_diego, longitud);
 
-	//printf("buffer_recepcion: %s\n",buffer_recepcion);
+	printf("\nbuffer_recepcion: %s\n",buffer_recepcion);
 
 
 
@@ -430,10 +430,10 @@ void liberear_estructuras(){
 void abrir_archivo(int socket_cpu){
 
 
-
+	int pid = recibir_int(socket_cpu);
 		int longitud_path = recibir_int(socket_cpu);
 		char* buffer = recibir_char(socket_cpu, longitud_path);
-		int id = transformar_path(buffer);
+		int id = transformar_path(buffer, pid);
 		free(buffer);
 
 
@@ -461,11 +461,11 @@ void abrir_archivo(int socket_cpu){
 void close_file(int socket_cpu){
 	int resultado;
 
+	int pid = recibir_int(socket_cpu);
 	int longitud_path = recibir_int(socket_cpu);
-	char* buffer =  malloc(longitud_path);
-	buffer = recibir_char(socket_cpu, longitud_path);
-	int id = transformar_path(buffer);
-	free(buffer);
+	char* path = recibir_char(socket_cpu, longitud_path);
+	int id = transformar_path(path, pid);
+
 
 
 
@@ -487,6 +487,12 @@ void close_file(int socket_cpu){
 
 		send(socket_cpu, &resultado, sizeof(int), MSG_WAITALL);
 
+		bool eliminacionOk = eliminar_id_segmento_de_diccionario(id, path, pid);
+
+		if(!eliminacionOk)
+			//TODO mostrar un error y romper todo
+
+		free(path);
 }
 
 void close_process(int socket_cpu){
@@ -516,9 +522,10 @@ void close_process(int socket_cpu){
 
 void modificar_linea(int socket_cpu){
 
+	int pid = recibir_int(socket_cpu);
 	int longitud_path = recibir_int(socket_cpu);
 	char* buffer = recibir_char(socket_cpu, longitud_path);
-	int id = transformar_path(buffer);
+	int id = transformar_path(buffer, pid);
 	free(buffer);
 	int numero_linea = recibir_int(socket_cpu);
 	int longitud_linea = recibir_int(socket_cpu);
@@ -551,9 +558,10 @@ free(linea_tratada);
 
 void flush(int socket_diego){
 
+	int pid = recibir_int(socket_diego);
 	int longitud_path = recibir_int(socket_diego);
 		char* buffer = recibir_char(socket_diego, longitud_path);
-		int id = transformar_path(buffer);
+		int id = transformar_path(buffer, pid);
 		free(buffer);
 
 	if(strcmp("SEG", config.MODO)== 0){
@@ -593,9 +601,8 @@ void dump(int pid){
 }
 
 int recibir_int(int socket){
-int buffer;
-
-int resultado_recv = recv(socket, &buffer, sizeof(int), MSG_WAITALL);
+	int buffer;
+	int resultado_recv = recv(socket, &buffer, sizeof(int), MSG_WAITALL);
 
 if(resultado_recv == -1){
 
@@ -667,7 +674,7 @@ void inicializar_memoria_segmentacion_simple(){
 
 int guardar_archivo_segmentacion_simple(int pid ,int id,int cantidad_lineas, char* buffer_recepcion){
 
-int entra_memoria;
+	int entra_memoria;
 
 segmento_offset_t* segmento_nuevo = malloc(sizeof(segmento_offset_t));
 segmento_tabla_t* entrada_tabla = malloc(sizeof(segmento_tabla_t));
@@ -759,7 +766,7 @@ if(buffer_recepcion == NULL){
 }
 free(segmento_nuevo);
 
-
+return 0;
 
 
 }
@@ -770,8 +777,8 @@ int entra_en_memoria(int cantidad_lineas){
 
 
 
-		int base = 0;
-		int otra_base = 0;
+	int base = 0;
+	int otra_base = 0;
 
 		while(base < max_bit && otra_base- base < cantidad_lineas ){
 
@@ -843,10 +850,10 @@ void abrir_archivo_segmentacion_simple(int socket_cpu,int id){
 	memcpy(buffer_envio + sizeof(int)*2 + tamanio , &(segmento_linea->limite), sizeof(int));
 
 	resultado_envio = send(socket_cpu, buffer_envio, tamanio + (sizeof(int)* 3), MSG_WAITALL);
-	free(buffer_envio);
-
 
 	log_info(log_fm9, "Datos archivo enviado ->buffer: %s; tamanio: %d; resultado: %d\n", buffer_envio, tamanio, resultado);
+
+	free(buffer_envio);
 
 		if(resultado_envio != -1){
 		log_info(log_fm9, "Se envió el archivo %d al CPU del proceso %d", segmento_linea->id, segmento_linea->pid);
@@ -968,8 +975,8 @@ void flush_segmentacion_simple(int socket_diego, int id){
 
 void dump_segmentacion_simple(int pid){
 
-			int aciertos;
-			int contador = 0;
+	int aciertos;
+	int contador = 0;
 			t_list* lista_filtrada = NULL;
 			segmento_tabla_t* segmento = NULL;
 
@@ -1136,7 +1143,7 @@ void liberar_segmento(int pid, int base, int limite){
 
 void buscar_segmento_vacio(int cantidad_lineas, segmento_offset_t* segmento){
 
-int max_bit = bitarray_get_max_bit(bitarray_memoria);
+	int max_bit = bitarray_get_max_bit(bitarray_memoria);
 
 
 
@@ -1190,7 +1197,7 @@ segmento->segmento = base;
 //SEGMENTACION PAGINADA
 
 void inicializar_memoria_segmentacion_paginada(){
-int forzar_bitarray;
+	int forzar_bitarray;
 
 tamanio_bitarray_sp = config.TAMANIO / config.TAM_PAGINA;
 
@@ -1237,7 +1244,7 @@ if(tamanio_bitarray_sp % 8 > 0){
 }
 
 int guardar_archivo_segmentacion_paginada(int pid ,int id,int cantidad_lineas,char* buffer_recepcion){
-int resultado;
+	int resultado;
 
 
 
@@ -1447,9 +1454,9 @@ void abrir_archivo_segmentacion_paginada(int socket_cpu, int id){
 void modificar_linea_segmentacion_paginada(int socket_cpu,int id,int numero_linea,char* linea_tratada){
 
 	segmento_paginado_t * segmento_buscado;
-		int resultado, frame, resto;
+	int resultado, frame;
 
-		int numero_pagina = (config.MAX_LINEA * numero_linea / config.TAM_PAGINA );
+	int numero_pagina = (config.MAX_LINEA * numero_linea / config.TAM_PAGINA );
 
 		if((config.MAX_LINEA * numero_linea) % config.TAM_PAGINA > 0 ){
 
@@ -1502,12 +1509,11 @@ void modificar_linea_segmentacion_paginada(int socket_cpu,int id,int numero_line
 void flush_segmentacion_paginada(int socket_diego,int id){
 
 	segmento_paginado_t * segmento_buscado = malloc(sizeof(segmento_paginado_t));
-			int resultado, frame, cantidad_lineas;
+	int resultado, frame, cantidad_lineas;
 
-			int offset = 0;
-			int paginas;
-			int numero_pagina = 0;
-			int* puntero_frame = malloc(sizeof(int));
+	int offset = 0;
+	int paginas;
+	int numero_pagina = 0;
 
 
 
@@ -1576,13 +1582,13 @@ void dump_segmentacion_paginada(int pid){
 	segmento_paginado_t * segmento_buscado;
 		t_list* lista_filtrada;
 
-						int frame, aciertos;
+		int frame, aciertos;
 
-						int offset = 0;
-						int contador = 0;
+		int offset = 0;
+		int contador = 0;
 
-						int paginas;
-						int numero_pagina;
+		int paginas;
+		int numero_pagina;
 
 
 
@@ -1666,12 +1672,12 @@ void dump_segmentacion_paginada(int pid){
 
 int close_file_segmentacion_paginada(int socket_cpu,int id){
 	segmento_paginado_t * segmento_buscado;
-				int resultado;
-				int frame;
+	int resultado;
+	int frame;
 
-				int offset = 0;
-				int paginas;
-				int numero_pagina = 0;
+	int offset = 0;
+	int paginas;
+	int numero_pagina = 0;
 
 
 
@@ -1743,9 +1749,9 @@ int close_process_segmentacion_paginada(int socket_cpu,int pid){
 	segmento_paginado_t * segmento_buscado = malloc(sizeof(segmento_paginado_t));
 	t_list* lista_filtrada;
 
-					int resultado, aciertos;
+	int resultado, aciertos;
 
-					int contador = 0;
+	int contador = 0;
 
 
 
@@ -1816,7 +1822,7 @@ void liberar_bitarray(t_bitarray* bitarray_memoria,int base,int limite){
 	for(int i= base; i < (base +limite); i++){
 
 		bitarray_clean_bit(bitarray_memoria, i);
-		printf("BITARRAY LIBERADO : %d", i);
+		log_info("BITARRAY LIBERADO : %d", i);
 
 	}
 
@@ -1995,10 +2001,10 @@ int close_file_paginacion(int socket_cpu,int id){
 
 	t_list* paginas_encontradas;
 	entrada_tabla_invertida_t * entrada_buscada;
-					int resultado;
-					int frame;
+	int resultado;
+	int frame;
 
-					int offset = 0;
+	int offset = 0;
 					int paginas;
 					int numero_pagina = 0;
 
@@ -2077,7 +2083,7 @@ int close_process_paginacion(int socket_cpu,int pid){
 
 
 
-						int contador = 0;
+		int contador = 0;
 
 
 
@@ -2127,12 +2133,11 @@ int close_process_paginacion(int socket_cpu,int pid){
 
 
 void modificar_linea_paginacion(int socket_cpu,int id,int numero_linea,char* linea_tratada){
-	entrada_tabla_invertida_t * entrada_buscada;
 	t_list* lista_filtrada;
-			int resultado, frame, resto;
+	int resultado, frame, resto;
 
 
-			int numero_pagina = (config.MAX_LINEA * numero_linea / config.TAM_PAGINA ) - 1;
+	int numero_pagina = (config.MAX_LINEA * numero_linea / config.TAM_PAGINA ) - 1;
 
 					resto =  (config.MAX_LINEA * numero_linea) % config.TAM_PAGINA ;
 
@@ -2144,7 +2149,7 @@ void modificar_linea_paginacion(int socket_cpu,int id,int numero_linea,char* lin
 
 
 
-			int corrimiento = (numero_pagina * config.TAM_PAGINA / config.MAX_LINEA) - numero_linea -1;
+						int corrimiento = (numero_pagina * config.TAM_PAGINA / config.MAX_LINEA) - numero_linea -1;
 
 
 			/*
@@ -2282,7 +2287,7 @@ void dump_paginacion_invertida(int pid){
 
 
 
-							int offset = 0;
+			int offset = 0;
 							int contador = 0;
 
 							int paginas;
@@ -2380,7 +2385,6 @@ int entra_memoria_paginada(int cantidad_paginas){
 }
 
 void paginar(int pid, int id, int cantidad_lineas, char* buffer_recepcion){
-	entrada_tabla_invertida_t* entrada_tabla= malloc(sizeof(entrada_tabla_invertida_t));
 
 	int offset=0;
 	int contador=0;
@@ -2465,7 +2469,7 @@ void paginar(int pid, int id, int cantidad_lineas, char* buffer_recepcion){
 void inicializar_diccionario(){
 
 
-	diccionario = dictionary_create();
+	diccionario = list_create();
 
 
 
@@ -2474,24 +2478,60 @@ void inicializar_diccionario(){
 
 }
 
-int transformar_path(char* path){
+int transformar_path(char* path, int pid)
+{
+	int id;
+	char* path_diccionario = strdup(path);
 
- int id;
-char* path_diccionario = strdup(path);
+	bool _path_coincide_al_dado(dataDePath* data)
+	{
+		return (strcmp(data->path, path_diccionario) == 0);
+	}
 
- if(dictionary_has_key(diccionario, path_diccionario)){
+	bool _path_esta_asignado_al_proceso_dado(dataDePath* data)
+	{
+		return (data->pid == pid);
+	}
 
-	id = dictionary_get(diccionario, path_diccionario);
+	t_list* filtroPorPath = NULL;
+	t_list* filtroPathPorPid = NULL;
+	dataDePath* data = NULL;
 
- }else{
+	filtroPorPath = list_filter(diccionario, _path_coincide_al_dado);
 
-	 id = id_nuevo();
+	if(filtroPorPath == 0)	//El archivo no esta en el diccionario
+	{
+		id = agregarPathAlDiccionario(path_diccionario, pid);
+	}
+	else if(filtroPorPath > 0) //El archivo esta en el diccionario. Tengo que ver si esta asignado al proceso dado; si no lo esta, agrego una entrada
+	{
+		filtroPathPorPid = list_filter(filtroPorPath, _path_esta_asignado_al_proceso_dado);
 
-	dictionary_put(diccionario, path_diccionario, id);
+		if(list_size(filtroPathPorPid) == 0)
+		{
+			id = agregarPathAlDiccionario(path_diccionario, pid);
+		}
+		else
+		{
+			data = list_get(filtroPathPorPid, 0);
+			id = data->idSegmento;
+		}
+	}
 
- }
+	return id;
+}
 
-return id;
+int agregarPathAlDiccionario(char* path, int pid)
+{
+	dataDePath* data = calloc(1, sizeof(dataDePath));
+
+	data->idSegmento = id_nuevo();
+	data->path = path;
+	data->pid = pid;
+
+	list_add(diccionario, data);
+
+	return data->idSegmento;
 }
 
 int id_nuevo(){
@@ -2501,4 +2541,27 @@ int id_nuevo(){
 	return id_global;
 }
 
+bool eliminar_id_segmento_de_diccionario(int idSegmento, char* path, int pid)
+{
+	dataDePath* datax = NULL;
+
+	bool _es_id(dataDePath* data)
+	{
+		return data->idSegmento == idSegmento;
+	}
+
+	datax = list_remove_by_condition(diccionario, _es_id);
+
+	if((datax->pid == pid) && (strcmp(datax->path, path) == 0))	//Si el id que saque de la lista esta correcto, deberia terner el mismo path y pid que los pasados a esta funcion
+	{
+		log_info(log_fm9, "Se elimino una entrada del diccionario de bloques perteneciente al bloque %d", datax->idSegmento);
+		return true;	//Si es asi, salio todo bien
+	}
+	else
+	{
+		log_warning(log_fm9, "Se intento eliminar la entrada del bloque %d del diccionario de bloques, pero su path y pid no coinciden con los solicitados", datax->idSegmento);
+		list_add(diccionario, datax);	//Si el path y pid del elemento obtenido no coinciden con los pasados a esta funcion, vuelvo a meter el
+		return false;					//elemento en el diccionario y lo informo (devolviendo falso)
+	}
+}
 

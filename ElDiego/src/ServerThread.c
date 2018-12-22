@@ -257,7 +257,7 @@ void flushFile(uint32_t _socket)
 	{
 		t_list* parsedFile = NULL;
 		uint32_t scriptLines = 0;
-		char* fileContents = getFileFromMemory(currentFilePath, &scriptLines);
+		char* fileContents = getFileFromMemory(currentFilePath, &scriptLines, currentProcess);
 		char* fileBuffer = NULL; //Contains a buffer with all the lines of a file, each line contained in a sub-buffer that has the size of a memory line;
 								 //each line is separated by a '\n' character
 
@@ -325,7 +325,7 @@ void createFile(uint32_t _socket)
 	int32_t currentProcess = 0;
 	char* currentFilePath = NULL;		//Path of the file to open
 	int32_t linesInFileToCreate = 0;
-	uint32_t fileSize = 0;
+	//uint32_t fileSize = 0;
 
 	//Receive from the CPU the pid of the requesting process, the path where the file will be created, and the number of lines the file should have
 	if((nbytes = receive_int(_socket, &currentProcess)) <= 0)
@@ -364,7 +364,8 @@ void createFile(uint32_t _socket)
 
 	//The file of the size will be the maximum size of each line (defined by the memoryLineSize) plus a char for
 	//each line (to put the '\n' character at the end of each line)
-	fileSize = (linesInFileToCreate * memoryLineSize * sizeof(char));
+	//fileSize = (linesInFileToCreate * memoryLineSize * sizeof(char)); //No more need to send the file size to the FS;
+																		//Now I will send how many lines the new file should have
 
 
 	//Send the task, the filePath and the size (in bytes) of the file to create to the FS
@@ -385,7 +386,8 @@ void createFile(uint32_t _socket)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int(fileSystemServerSocket, fileSize)) < 0)
+	//if((nbytes = send_int(fileSystemServerSocket, fileSize)) < 0)
+	if((nbytes = send_int(fileSystemServerSocket, linesInFileToCreate)) < 0)
 	{
 		log_error(dmaLog, "ServerThread (createFile) - Error al enviar al FS el tamaño del archivo que debe ser creado");
 

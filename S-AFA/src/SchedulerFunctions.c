@@ -599,57 +599,68 @@ void checkAndFreeProcessFiles(uint32_t processId)	//Checks if there are any file
 	uint32_t processToUnblock = 0;
 	t_list* processWaitList = NULL;
 	uint32_t processesWaitingForFile = 0;
+	bool fileIsInDictionary = false;
 
 	pthread_mutex_lock(&fileTableMutex);
 
 	for(uint32_t i = 0; i < fileTableKeysQty; i++)
 	{
 		currentFile = list_get(fileTableKeys, i);
-		data = dictionary_get(fileTable, currentFile);
 
-		if(data->processFileIsAssignedTo == processId)
+		fileIsInDictionary = dictionary_has_key(fileTable, currentFile);
+
+		if(fileIsInDictionary)
 		{
-			//Unblock all of the processes that were waiting for the file, which was taken by the process that is being terminated
-			//Then remove the file from the file table
+			data = dictionary_get(fileTable, currentFile);
 
-			processWaitList = data->processesWaitingForFile;
-			processesWaitingForFile = list_size(processWaitList);
-
-			if(processesWaitingForFile == 0)
+			if(data->processFileIsAssignedTo == processId)
 			{
-				log_info(schedulerLog, "El archivo \"%s\", el cual habia sido tomado por el proceso %d (que esta siendo terminado), no tiene procesos en espera", currentFile, processId);
-			}
-			else
-			{
-				log_info(schedulerLog, "El archivo \"%s\", el cual habia sido tomado por el proceso %d (que esta siendo terminado), tiene procesos en espera", currentFile, processId);
+				//Unblock all of the processes that were waiting for the file, which was taken by the process that is being terminated
+				//Then remove the file from the file table
 
+				processWaitList = data->processesWaitingForFile;
+				processesWaitingForFile = list_size(processWaitList);
 
-				processToUnblock = (uint32_t) list_remove(processWaitList, 0);
-
-				char* processId = string_itoa(processToUnblock);
-				char* procWaitingForFileString = string_new();
-				string_append(&procWaitingForFileString, processId);
-
-				free(processId);
-
-				for(uint32_t i = 1; i < processesWaitingForFile; i++)
+				if(processesWaitingForFile == 0)
 				{
-					processToUnblock = (uint32_t) list_remove(processWaitList, i);
-					unblockProcess(processToUnblock, false);
+					log_info(schedulerLog, "El archivo \"%s\", el cual habia sido tomado por el proceso %d (que esta siendo terminado), no tiene procesos en espera", currentFile, processId);
+				}
+				else
+				{
+					log_info(schedulerLog, "El archivo \"%s\", el cual habia sido tomado por el proceso %d (que esta siendo terminado), tiene procesos en espera", currentFile, processId);
 
-					processId = string_from_format(", %d", processToUnblock);
+
+					processToUnblock = (uint32_t) list_remove(processWaitList, 0);
+
+					char* processId = string_itoa(processToUnblock);
+					char* procWaitingForFileString = string_new();
 					string_append(&procWaitingForFileString, processId);
 
 					free(processId);
+
+					for(uint32_t i = 1; i < processesWaitingForFile; i++)
+					{
+						processToUnblock = (uint32_t) list_remove(processWaitList, i);
+						unblockProcess(processToUnblock, false);
+
+						processId = string_from_format(", %d", processToUnblock);
+						string_append(&procWaitingForFileString, processId);
+
+						free(processId);
+					}
+
+					log_info(schedulerLog, "Los siguientes procesos esperaban por la liberacion del archivo \"%s\" y fueron desbloqueados: %s", currentFile, processesWaitingForFile);
+					free(procWaitingForFileString);
 				}
 
-				log_info(schedulerLog, "Los siguientes procesos esperaban por la liberacion del archivo \"%s\" y fueron desbloqueados: %s", currentFile, processesWaitingForFile);
-				free(procWaitingForFileString);
+				dataToRemove = dictionary_remove(fileTable, currentFile);
+				list_destroy(dataToRemove->processesWaitingForFile);
+				free(dataToRemove);
 			}
-
-			dataToRemove = dictionary_remove(fileTable, currentFile);
-			list_destroy(dataToRemove->processesWaitingForFile);
-			free(dataToRemove);
+		}
+		else	//That file from the fileTableKeys list is not in the dictionary, so it must be removed from that list
+		{
+			list_remove(fileTableKeys, i);
 		}
 	}
 

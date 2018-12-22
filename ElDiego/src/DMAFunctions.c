@@ -286,12 +286,11 @@ t_list* parseScriptFromFS(char* script)
 {
 	t_list* parsedScript = NULL;
 	parsedScript = string_split_to_list(script, "\n");
-
-	uint32_t scriptLines = list_size(parsedScript);
 	char* currentLine = NULL;
 	char* emptyLine = NULL;
 
-	for(uint32_t i = 0; i < scriptLines; i++)
+
+	for(uint32_t i = 0; i != '\0'; i++)
 	{
 		currentLine = (char*) list_get(parsedScript, i);
 
@@ -566,7 +565,7 @@ char* convertParsedFileToFileSystemBuffer(t_list* parsedFile)
 	return filesystemBuffer;
 }
 
-char* getFileFromMemory(char* filePath, uint32_t* scriptLines)
+char* getFileFromMemory(char* filePath, uint32_t* scriptLines, uint32_t process)
 {
 	char* fileContents = NULL;
 	int32_t nbytes = 0;
@@ -579,6 +578,15 @@ char* getFileFromMemory(char* filePath, uint32_t* scriptLines)
 		log_error(dmaLog, "DMAFunctions (getFileFromMemory) - Error al solicitar a la memoria que obtenga datos de un archivo");
 
 		log_info(dmaLog, "Debido a la desconexion de la memoria, este proceso se cerrara");
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_int(memoryServerSocket, process)) < 0)
+	{
+		log_error(dmaLog, "DMAFunctions (getFileFromMemory) - Error al enviar a la memoria el id del proceso que solicita guardar un archivo en el FS\n");
+
+		log_info(dmaLog, "Debido a una desconexion de la memoria, este proceso se cerrara\n");
+
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}

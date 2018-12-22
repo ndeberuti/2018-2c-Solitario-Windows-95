@@ -708,7 +708,7 @@ uint32_t checkAndExecuteInstruction(t_list* parsedLine)	//The 'parsedLine' list 
 	}
 	else if(executionResult == 0)
 	{
-		log_error(cpuLog, "Se recibio un mensaje in correcto de algun modulo. Se debe revisar la comunicacion con los demas modulos. Este modulo sera abortado debido a ello; se deberian abortar los demas modulos...");
+		log_error(cpuLog, "Se recibio un mensaje incorrecto de algun modulo. Se debe revisar la comunicacion con los demas modulos. Este modulo sera abortado debido a ello; se deberian abortar los demas modulos...");
 		exit(EXIT_FAILURE);
 	}
 
@@ -1312,6 +1312,7 @@ uint32_t handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToA
 {
 	int32_t nbytes = 0;
 	int32_t message = 0;
+	int biga = 0;
 
 	//Tell the memory to modify a file and send the filePath, the number of the line that should be modified, and the data to insert in that line
 	if((nbytes = send_int(memoryServerSocket, ASIGNAR)) < 0)
@@ -1319,6 +1320,17 @@ uint32_t handleModifyFile(char* filePathInFS, uint32_t lineNumber, char* dataToA
 		log_error(cpuLog, "Error al solicitar a la memoria que modifique un archivo\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_int(memoryServerSocket, (*processInExecutionPCB)->pid)) < 0)
+	{
+		log_error(cpuLog, "Error al enviar a la memoria el id del proceso que solicita modificar un archivo\n");
+
+		log_info(cpuLog, "Debido a una desconexion de la memoria, este proceso se cerrara\n");
 
 		log_error(socketErrorLog, "Send error: %s", strerror(errno));
 
@@ -1458,7 +1470,7 @@ uint32_t handleCloseFile(char* filePathInFS)
 	}
 	if((nbytes = send_int(schedulerServerSocket, (*processInExecutionPCB)->pid)) < 0)
 	{
-		log_error(cpuLog, "Error al enviar al planificador el pid del proceso para el cual debe cerrar un archivo\n");
+		log_error(cpuLog, "Error al enviar al planificador el id del proceso que solicita cerrar un archivo\n");
 
 		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
 
@@ -1483,6 +1495,17 @@ uint32_t handleCloseFile(char* filePathInFS)
 	if((nbytes = send_int(memoryServerSocket, CLOSE_FILE)) < 0)
 	{
 		log_error(cpuLog, "Error al solicitar a la memoria que cierre un archivo\n");
+
+		log_info(cpuLog, "Debido a una desconexion de la memoria, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_int(memoryServerSocket, (*processInExecutionPCB)->pid)) < 0)
+	{
+		log_error(cpuLog, "Error al enviar a la memoria el id del proceso que solicita cerrar un archivo\n");
 
 		log_info(cpuLog, "Debido a una desconexion de la memoria, este proceso se cerrara\n");
 
@@ -1727,7 +1750,18 @@ char* requestScriptFromMemory(uint32_t* scriptLines)
 	{
 		log_error(cpuLog, "Error al solicitar a la memoria que envie un script\n");
 
-		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+		log_info(cpuLog, "Debido a una desconexion de la memoria, este proceso se cerrara\n");
+
+		log_error(socketErrorLog, "Send error: %s", strerror(errno));
+
+		exit(EXIT_FAILURE);
+		//TODO (Optional) - Send Error Handling
+	}
+	if((nbytes = send_int(memoryServerSocket, (*processInExecutionPCB)->pid)) < 0)
+	{
+		log_error(cpuLog, "Error al enviar a la memoria el id del proceso que solicita un archivo\n");
+
+		log_info(cpuLog, "Debido a una desconexion de la memoria, este proceso se cerrara\n");
 
 		log_error(socketErrorLog, "Send error: %s", strerror(errno));
 
@@ -1738,7 +1772,7 @@ char* requestScriptFromMemory(uint32_t* scriptLines)
 	{
 		log_error(cpuLog, "Error al enviar a la memoria el nombre del script requerido\n");
 
-		log_info(cpuLog, "Debido a una desconexion del planificador, este proceso se cerrara\n");
+		log_info(cpuLog, "Debido a una desconexion de la memoria, este proceso se cerrara\n");
 
 		log_error(socketErrorLog, "Send error: %s", strerror(errno));
 

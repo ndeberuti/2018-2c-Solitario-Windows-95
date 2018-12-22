@@ -119,11 +119,19 @@ void moduleHandler(uint32_t command, uint32_t _socket)
 {
 	if(command == NEW_DMA_CONNECTION)
 	{
+		uint32_t priority = 5;
+		//Set high priority to that socket
+		setsockopt(_socket, SOL_SOCKET, SO_PRIORITY, &priority, sizeof(uint32_t));
 		log_info(consoleLog, "Nueva conexion desde el DMA");
 		dmaSocket = _socket;
 	}
 	else if(command == NEW_CPU_CONNECTION)
+	{
+		uint32_t priority = 1;
+		//Set socket priority to low
+		setsockopt(_socket, SOL_SOCKET, SO_PRIORITY, &priority, sizeof(uint32_t));
 		handleCpuConnection(_socket);
+	}
 	else if((command >= LIM_INF_TAREAS_CPU) && (command <= LIM_SUP_TAREAS_CPU)) //The CPU task codes range from 3 to 12
 	{
 		log_info(schedulerLog, "Se recibio una tarea de la CPU");
@@ -334,7 +342,7 @@ void _blockProcess(uint32_t _socket, uint32_t* process)
 			exit(EXIT_FAILURE);
 		}
 
-		log_info(schedulerLog, "El proceso %d fue quitado de la cola de ejecucion (el sera bloqueado)", processToBlock->pid);
+		log_info(schedulerLog, "El proceso %d fue quitado de la cola de ejecucion (el proceso sera bloqueado)", processToBlock->pid);
 
 		blockProcess(processToBlock, true);	//send the updated process received from the CPU to the blocked queue, not the old one
 
@@ -405,7 +413,7 @@ void _killProcess(uint32_t _socket)
 				exit(EXIT_FAILURE);
 			}
 
-			log_info(schedulerLog, "El proceso %d fue quitado de la cola de ejecucion (el sera bloqueado)", processToKill->pid);
+			log_info(schedulerLog, "El proceso %d fue quitado de la cola de ejecucion (el proceso sera terminado)", processToKill->pid);
 
 			killProcessWithPCB(processToKill);
 		}
@@ -557,7 +565,19 @@ void checkIfFileOpen(uint32_t _socket) //Receives pid, fileName length, fileName
 				//TODO (Optional) - Send Error Handling
 			}
 
-			log_info(schedulerLog, "El archivo \"%s\" no fue abierto por ningun proceso. Se le informara a la CPU para que le pida al DMA que lo cargue en memoria", fileName);
+			//Assign that file to the requesting process, to avoid sincronization problems. For example, if 2 files go to the DMA requesting the
+			//same file, the 2nd that gets unlocked will get an error because the file was already taken by the 1st process. That case may happen
+			//if those 2 processes enter a CPU, check if the same file is open, and get a negative response, so both will ask the DMA to open the file
+			fileTableData* data = calloc(1, sizeof(fileTableData));
+
+			data->processFileIsAssignedTo = pid;
+			data->processesWaitingForFile = list_create();
+
+			dictionary_put(fileTable, fileName, data);
+			list_add(fileTableKeys, fileName);
+
+
+			log_info(schedulerLog, "El archivo \"%s\" no fue abierto por ningun proceso, por lo que sera asignado al proceso %d. Se le informara a la CPU para que le pida al DMA que lo cargue en memoria", fileName, pid);
 		}
 		else	//Key is in the dictionary
 		{
@@ -600,7 +620,7 @@ void checkIfFileOpen(uint32_t _socket) //Receives pid, fileName length, fileName
 					//TODO (Optional) - Send Error Handling
 				}
 
-				log_info(schedulerLog, "El archivo \"%s\" fue abierto por el proceso %d. El proceso que lo solicitaba (con id %d) sera agregado a la lista de espera del archivo", data->processFileIsAssignedTo, pid);
+				log_info(schedulerLog, "El archivo \"%s\" fue abierto por el proceso %d. El proceso que lo solicitaba (con id %d) sera agregado a la lista de espera del archivo", fileName, data->processFileIsAssignedTo, pid);
 
 				t_list* fileWaitingList = data->processesWaitingForFile;
 
@@ -653,7 +673,7 @@ bool saveFileDataToFileTable(char* filePath, uint32_t pid) //Receives pid, fileN
 			//ERROR - A process is asking for a file that was taken by another process..
 			//		  this should not happen; the requesting process will be terminated
 
-			log_error(schedulerLog, "ERROR - El archivo \"%s\" fue reservado por el proceso %d, y no podra ser asignado al proceso %d (el cual el DMA solicito desbloquear)", data->processFileIsAssignedTo, pid);
+			log_error(schedulerLog, "ERROR - El archivo \"%s\" fue reservado por el proceso %d, y no podra ser asignado al proceso %d (el cual el DMA solicito desbloquear). El proceso %d sera terminado...", filePath, data->processFileIsAssignedTo, pid, pid);
 			killProcess(pid);
 			return true;
 
@@ -665,11 +685,15 @@ bool saveFileDataToFileTable(char* filePath, uint32_t pid) //Receives pid, fileN
 			//		  the DMA to load it in memory
 
 
-			log_error(schedulerLog, "ERROR - El archivo \"%s\" no fue reservado por el proceso %d antes de solicitar al DMA que lo cargue en memoria", pid);
+			log_error(schedulerLog, "ERROR - El archivo \"%s\" no fue reservado por el proceso %d antes de solicitar al DMA que lo cargue en memoria. El proceso %d sera terminado...", pid, pid);
 			killProcess(pid);
 			return true;
 
 			//TODO - Remove terminated process' script from the memory (for that, I need to send that request to a CPU)
+		}
+		else if(data->processFileIsAssignedTo == pid)
+		{
+			log_info(schedulerLog, "Ya existe una entrada en la tabla de archivos para el archivo \"%s\" el cual fue asignado al proceso %d. Posiblemente el archivo haya sido asignado al verificar que no fue abierto por ningun proceso. No se realizaran cambios...", filePath, pid);
 		}
 	}
 	else //Key is not in the fileTable; add the key and fill the key data with the values obtained from the DMA
@@ -764,7 +788,7 @@ void closeFile(uint32_t _socket)
 
 				free(processId);
 
-				for(uint32_t i = 1; i < processesWaitingForFile; i++)
+				for(uint32_t i = 0; i < processesWaitingForFile; i++)
 				{
 					processToUnblock = (uint32_t) list_remove(processWaitList, i);
 					unblockProcess(processToUnblock, false);
@@ -779,7 +803,7 @@ void closeFile(uint32_t _socket)
 				list_destroy(dataToRemove->processesWaitingForFile);
 				free(dataToRemove);
 
-				log_info(schedulerLog, "Los siguientes procesos esperaban por la liberacion del archivo \"%s\" y fueron desbloqueados: %s", fileName, processesWaitingForFile);
+				log_info(schedulerLog, "Los siguientes procesos esperaban por la liberacion del archivo \"%s\" y fueron desbloqueados: %s", fileName, procWaitingForFileString);
 
 				free(procWaitingForFileString);
 			}
@@ -849,7 +873,13 @@ void unlockProcess(uint32_t _socket)
 			processWasKilled = saveFileDataToFileTable(filePath, processId);
 
 		if(!processWasKilled)
-			unblockProcess(processId, true);
+		{
+			if(addFileToFileTable)	//Then it is a normal DMA operation
+				unblockProcess(processId, true);
+			else	//Not a normal DMA operation (like script initialization); the process should never be added to the ioReadyQueue
+				unblockProcess(processId, false);
+		}
+
 	}
 }
 

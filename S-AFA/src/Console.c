@@ -261,23 +261,25 @@ void getQueuesStatus()
 	pthread_mutex_lock(&finishedQueueMutex);
 
 	char *queueName = NULL;
-	char *stringToReplace = NULL;
+	char **stringToReplace = NULL;
 	uint32_t pid = 0;
 	char* stringToAppend = NULL;
 	t_list* queueToSearch = NULL;
 	t_list* mappedList = NULL;
 	uint32_t mappedListSize = 0;
-	char* readyProcesses = NULL;
-	char* readyIoProcesses = NULL;
-	char* blockedProcesses = NULL;
-	char* executingProcesses = NULL;
-	char* finishedProcesses = NULL;
+	char* readyProcesses = string_new();
+	char* blockedProcesses = string_new();
+	char* executingProcesses = string_new();
+	char* finishedProcesses = string_new();
+	char* ioReadyProcesses = string_new();
 
 
 	uint32_t get_pid_from_pcb(PCB_t* pcb)
 	{
 		return pcb->pid;
 	}
+
+	log_info(consoleLog, "-----Estado de las colas de planificacion-----");
 
 	for(uint32_t i = 0; i < 5; i++)
 	{
@@ -286,31 +288,31 @@ void getQueuesStatus()
 			case 0:
 				queueToSearch = readyQueue;
 				queueName = "READY";
-				stringToReplace = readyProcesses;
+				(*stringToReplace) = readyProcesses;
 			break;
 
 			case 1:
 				queueToSearch = blockedQueue;
 				queueName = "BLOCK";
-				stringToReplace = blockedProcesses;
+				(*stringToReplace) = blockedProcesses;
 			break;
 
 			case 2:
 				queueToSearch = executionQueue;
 				queueName = "EXEC";
-				stringToReplace = executingProcesses;
+				(*stringToReplace) = executingProcesses;
 			break;
 
 			case 3:
 				queueToSearch = finishedQueue;
 				queueName = "FINISH";
-				stringToReplace = finishedProcesses;
+				(*stringToReplace) = finishedProcesses;
 			break;
 
 			case 4:
 				queueToSearch = ioReadyQueue;
 				queueName = "READY_IO";
-				stringToReplace = readyIoProcesses;
+				(*stringToReplace) = ioReadyProcesses;
 			break;
 		}
 
@@ -323,8 +325,6 @@ void getQueuesStatus()
 		//So, the first "%s" gets replaced by the string in "queueName" and the "%%s" get replaced
 		//by "%s", so it can be used in another format function
 
-		stringToReplace = string_new();
-
 		mappedList = list_map(queueToSearch, get_pid_from_pcb);
 		mappedListSize = list_size(mappedList);
 
@@ -332,7 +332,7 @@ void getQueuesStatus()
 		{
 			pid = (uint32_t) list_get(mappedList, 0);
 			stringToAppend = string_from_format("%d", pid);
-			string_append(&stringToReplace, stringToAppend);
+			string_append(stringToReplace, stringToAppend);
 
 			free(stringToAppend);
 
@@ -340,7 +340,7 @@ void getQueuesStatus()
 			{
 				pid = (uint32_t) list_get(mappedList, j);
 				stringToAppend = string_from_format(", %d", pid);
-				string_append(&stringToReplace, pid);
+				string_append(stringToReplace, stringToAppend);
 
 				free(stringToAppend);
 			}
@@ -349,7 +349,7 @@ void getQueuesStatus()
 		}
 	}
 
-	log_info(consoleLog, "-----Estado de las colas de planificacion-----");
+
 
 	if(string_length(readyProcesses) > 0)
 		log_info(consoleLog, "\tProcesos en la cola de listos -> %s", readyProcesses);
@@ -357,30 +357,30 @@ void getQueuesStatus()
 		log_info(consoleLog, "\tProcesos en la cola de listos -> VACIA");
 
 	if(string_length(blockedProcesses) > 0)
-		log_info(consoleLog, "\tProcesos en la cola de listos -> %s", blockedProcesses);
+		log_info(consoleLog, "\tProcesos en la cola de bloqueados -> %s", blockedProcesses);
 	else
-		log_info(consoleLog, "\tProcesos en la cola de listos -> VACIA");
+		log_info(consoleLog, "\tProcesos en la cola de bloqueados -> VACIA");
 
 	if(string_length(executingProcesses) > 0)
-		log_info(consoleLog, "\tProcesos en la cola de listos -> %s", executingProcesses);
+		log_info(consoleLog, "\tProcesos en la cola de ejecucion -> %s", executingProcesses);
 	else
-		log_info(consoleLog, "\tProcesos en la cola de listos -> VACIA");
+		log_info(consoleLog, "\tProcesos en la cola de ejecucion -> VACIA");
 
 	if(string_length(finishedProcesses) > 0)
-		log_info(consoleLog, "\tProcesos en la cola de listos -> %s", finishedProcesses);
+		log_info(consoleLog, "\tProcesos en la cola de terminados -> %s", finishedProcesses);
 	else
-		log_info(consoleLog, "\tProcesos en la cola de listos -> VACIA");
+		log_info(consoleLog, "\tProcesos en la cola de terminados -> VACIA");
 
-	if(string_length(readyIoProcesses) > 0)
-		log_info(consoleLog, "\tProcesos en la cola de listos -> %s", readyIoProcesses);
+	if(string_length(ioReadyProcesses) > 0)
+		log_info(consoleLog, "\tProcesos en la cola auxiliar de listos -> %s", ioReadyProcesses);
 	else
-		log_info(consoleLog, "\tProcesos en la cola de listos -> VACIA");
+		log_info(consoleLog, "\tProcesos en la cola auxiliar de listos -> VACIA");
 
 	free(readyProcesses);
 	free(executingProcesses);
 	free(blockedProcesses);
 	free(finishedProcesses);
-	free(readyIoProcesses);
+	free(ioReadyProcesses);
 
 
 	pthread_mutex_unlock(&readyQueueMutex);

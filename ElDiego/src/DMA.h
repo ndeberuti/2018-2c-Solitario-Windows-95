@@ -56,7 +56,7 @@ t_list* parseScriptFromFS(char*);
 char* convertParsedFileToMemoryBuffer(t_list*, uint32_t*);
 bool sendFileToMemory(char*, uint32_t, char*, uint32_t, uint32_t);
 char* convertParsedFileToFileSystemBuffer(t_list*);
-char* getFileFromMemory(char*, uint32_t*);
+char* getFileFromMemory(char*, uint32_t*, uint32_t);
 int32_t sendFileToFileSystem(char*, char*);
 void tellSchedulerToUnblockProcess(uint32_t, char*, bool, char*);
 

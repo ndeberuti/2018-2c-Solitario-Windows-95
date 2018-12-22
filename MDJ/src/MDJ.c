@@ -438,6 +438,7 @@ void crear_archivo(int32_t socket)
 {
 	char *path;
 	int32_t rta;
+	int32_t lineas;
 	int32_t bytes;
 
 	if (receive_string(socket, &path) <= 0)
@@ -445,14 +446,16 @@ void crear_archivo(int32_t socket)
 		log_error(log_consola, "recv path (validar_archivo)");
 		rta = ERROR_OPERACION;
 	}
-	else if (receive_int(socket, &bytes) <= 0)
+	else if (receive_int(socket, &lineas) <= 0)
 	{
 		log_error(log_consola, "recv bytes (validar_archivo)");
 		rta = ERROR_OPERACION;
 	}
 	else
 	{
-		log_info(log_consola, "Crear archivo %s de %d bytes", path, bytes);
+		bytes = lineas * 2;
+
+		log_info(log_consola, "Crear archivo %s de %d lineas", path, lineas);
 
 		int32_t cant_bloques = calcular_cant_bloques(bytes);
 
@@ -463,17 +466,12 @@ void crear_archivo(int32_t socket)
 		int32_t bloque_inicial = 0;
 		int32_t bloques[cant_bloques];
 		char* datosArchivoNuevo = calloc(1, bytes + 1);
-		int32_t lineasArchivo = bytes / tamanioLineasMemoria;
 		int32_t offsetMagico = 0;
 
-		//Lleno el string de datos del archivo nuevo con basura y lo divido en las lineas que me piden para el archivo (separandolas con '\n')
-		for(int32_t i = 0; i < lineasArchivo; i++)
+		for(int i = 0; i < lineas; i++)
 		{
-			offsetMagico = tamanioLineasMemoria * i;
-
-			memset(datosArchivoNuevo + offsetMagico, '~', (tamanioLineasMemoria - 2));	//'tamanioLineasMemoria - 1' tiene el '\n' que indica fin de linea
-			offsetMagico++;
-			memset(datosArchivoNuevo + offsetMagico, '\n', 1);
+			memcpy(datosArchivoNuevo + offsetMagico, "~\n", 2);
+			offsetMagico += 2;
 		}
 
 		while (pos_actual < cant_bloques && (prox_bloque = proximo_bloque_libre(bloque_inicial)) != NULL)
