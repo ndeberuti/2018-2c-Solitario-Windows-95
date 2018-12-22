@@ -2252,24 +2252,15 @@ void flush_paginacion_invertida(int socket_diego,int id){
 					}
 
 
-					memcpy(buffer_envio + sizeof(int)*2 + offset, &cantidad_lineas, sizeof(int));
-					send(socket_diego, buffer_envio, sizeof(int)* 3 + config.MAX_LINEA * paginas, MSG_WAITALL);
+					memcpy(buffer_envio + sizeof(int)*2 + (paginas*config.TAM_PAGINA), &cantidad_lineas, sizeof(int));
+					send(socket_diego, buffer_envio, (sizeof(int)* 3) + (config.MAX_LINEA * paginas), MSG_WAITALL);
 					free(buffer_envio);
 
 
 
 		}
 
-
-
-
-
-
-
-
-
 }
-
 
 void dump_paginacion_invertida(int pid){
 	entrada_tabla_invertida_t * entrada_buscada;
