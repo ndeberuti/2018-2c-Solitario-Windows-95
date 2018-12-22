@@ -369,7 +369,7 @@ void createFile(uint32_t _socket)
 
 
 	//Send the task, the filePath and the size (in bytes) of the file to create to the FS
-	if((nbytes = send_int_with_delay(fileSystemServerSocket, CREAR_ARCHIVO)) < 0)
+	if((nbytes = send_int(fileSystemServerSocket, CREAR_ARCHIVO)) < 0)
 	{
 		log_error(dmaLog, "ServerThread (createFile) - Error al solicitar al FS que cree un archivo");
 
@@ -377,7 +377,7 @@ void createFile(uint32_t _socket)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_string_with_delay(fileSystemServerSocket, currentFilePath)) < 0)
+	if((nbytes = send_string(fileSystemServerSocket, currentFilePath)) < 0)
 	{
 		log_error(dmaLog, "ServerThread (createFile) - Error al enviar al FS el path del archivo que debe ser creado");
 
@@ -387,7 +387,7 @@ void createFile(uint32_t _socket)
 		//TODO (Optional) - Send Error Handling
 	}
 	//if((nbytes = send_int(fileSystemServerSocket, fileSize)) < 0)
-	if((nbytes = send_int_with_delay(fileSystemServerSocket, linesInFileToCreate)) < 0)
+	if((nbytes = send_int(fileSystemServerSocket, linesInFileToCreate)) < 0)
 	{
 		log_error(dmaLog, "ServerThread (createFile) - Error al enviar al FS el tamaño del archivo que debe ser creado");
 
@@ -463,7 +463,7 @@ void deleteFile(uint32_t _socket)
 	}
 
 	//Send the task and the filePath of the file to delete to the FS
-	if((nbytes = send_int_with_delay(fileSystemServerSocket, BORRAR_ARCHIVO)) < 0)
+	if((nbytes = send_int(fileSystemServerSocket, BORRAR_ARCHIVO)) < 0)
 	{
 		log_error(dmaLog, "ServerThread (deleteFile) - Error al solicitar al FS que elimine un archivo");
 
@@ -471,7 +471,7 @@ void deleteFile(uint32_t _socket)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_string_with_delay(fileSystemServerSocket, currentFilePath)) < 0)
+	if((nbytes = send_string(fileSystemServerSocket, currentFilePath)) < 0)
 	{
 		log_error(dmaLog, "ServerThread (deleteFile) - Error al enviar al FS el path del archivo que debe ser eliminado");
 

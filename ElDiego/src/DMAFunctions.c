@@ -149,7 +149,7 @@ bool checkIfFileIsInFS(char* filePath)
 	int32_t isFileInFS = 0;
 
 	//Send task and filePath to the FS
-	if((nbytes = send_int_with_delay(fileSystemServerSocket, VALIDAR_ARCHIVO)) < 0)
+	if((nbytes = send_int(fileSystemServerSocket, VALIDAR_ARCHIVO)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (checkIfFileIsInFS) - Error al indicar al solicitar al FS que valide la existencia de un archivo");
 
@@ -157,7 +157,7 @@ bool checkIfFileIsInFS(char* filePath)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_string_with_delay(fileSystemServerSocket, filePath)) < 0)
+	if((nbytes = send_string(fileSystemServerSocket, filePath)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (checkIfFileIsInFS) - Error al enviar al FS el path del archivo a validar");
 
@@ -199,7 +199,7 @@ char* getFileFromFS(char* filePath)
 	//Send task, filePath, offset & size to the FS;
 	//offset = 0; size = -1  -> means I want to get the whole file (from offset = 0), but I do not know the file size
 
-	if((nbytes = send_int_with_delay(fileSystemServerSocket, OBTENER_DATOS)) < 0)
+	if((nbytes = send_int(fileSystemServerSocket, OBTENER_DATOS)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (getFileFromFS) - Error al solicitar al FS que obtenga datos de un archivo");
 
@@ -207,7 +207,7 @@ char* getFileFromFS(char* filePath)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_string_with_delay(fileSystemServerSocket, filePath)) < 0)
+	if((nbytes = send_string(fileSystemServerSocket, filePath)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (getFileFromFS) - Error al enviar al FS el path del archivo del cual obtener datos");
 
@@ -215,7 +215,7 @@ char* getFileFromFS(char* filePath)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int_with_delay(fileSystemServerSocket, 0)) < 0)	//Offset = 0
+	if((nbytes = send_int(fileSystemServerSocket, 0)) < 0)	//Offset = 0
 	{
 		log_error(dmaLog, "DMAFunctions (getFileFromFS) - Error al enviar al FS el offset del archivo del cual se obtienen datos");
 
@@ -223,7 +223,7 @@ char* getFileFromFS(char* filePath)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int_with_delay(fileSystemServerSocket, UNKNOWN_FILE_SIZE)) < 0)	//Size = -1
+	if((nbytes = send_int(fileSystemServerSocket, UNKNOWN_FILE_SIZE)) < 0)	//Size = -1
 	{
 		log_error(dmaLog, "DMAFunctions (getFileFromFS) - Error al enviar al FS el tamaño de los datos a obtener de un archivo");
 
@@ -277,7 +277,7 @@ void sendProcessErrorMessageToScheduler(uint32_t process)
 {
 	int32_t nbytes = 0;
 
-	if((nbytes = send_int_with_delay(schedulerServerSocket, PROCESS_ERROR)) < 0)
+	if((nbytes = send_int(schedulerServerSocket, PROCESS_ERROR)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (sendProcessErrorMessageToScheduler) - Error al indicar al planificador que ocurrio un error");
 
@@ -285,7 +285,7 @@ void sendProcessErrorMessageToScheduler(uint32_t process)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int_with_delay(schedulerServerSocket, process)) < 0)
+	if((nbytes = send_int(schedulerServerSocket, process)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (sendProcessErrorMessageToScheduler) - Error al enviar al planificador el id del proceso con error");
 
@@ -470,7 +470,7 @@ bool sendFileToMemory(char* filePath, uint32_t lines, char* buffer, uint32_t buf
 	int32_t nbytes = 0;
 	int32_t operationResult = 0;
 
-	if((nbytes = send_int_with_delay(memoryServerSocket, CARGAR_ARCHIVO)) < 0)
+	if((nbytes = send_int(memoryServerSocket, CARGAR_ARCHIVO)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (sendFileToMemory) - Error al indicar a la memoria que debe cargar un archivo");
 
@@ -478,7 +478,7 @@ bool sendFileToMemory(char* filePath, uint32_t lines, char* buffer, uint32_t buf
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int_with_delay(memoryServerSocket, process)) < 0)
+	if((nbytes = send_int(memoryServerSocket, process)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (sendFileToMemory) - Error al enviar a la memoria el id del proceso para el cual se carga un archivo");
 
@@ -486,7 +486,7 @@ bool sendFileToMemory(char* filePath, uint32_t lines, char* buffer, uint32_t buf
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_string_with_delay(memoryServerSocket, filePath)) < 0)
+	if((nbytes = send_string(memoryServerSocket, filePath)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (sendFileToMemory) - Error al enviar a la memoria el path del archivo a cargar en ella");
 
@@ -494,7 +494,7 @@ bool sendFileToMemory(char* filePath, uint32_t lines, char* buffer, uint32_t buf
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int_with_delay(memoryServerSocket, lines)) < 0)
+	if((nbytes = send_int(memoryServerSocket, lines)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (sendFileToMemory) - Error al enviar a la memoria la cantidad de lineas del archivo a cargar en ella");
 
@@ -586,7 +586,7 @@ char* getFileFromMemory(char* filePath, uint32_t* scriptLines, uint32_t process)
 	int32_t _scriptLines = 0;
 
 	//Send task and filePath to the memory
-	if((nbytes = send_int_with_delay(memoryServerSocket, FLUSH)) < 0)
+	if((nbytes = send_int(memoryServerSocket, FLUSH)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (getFileFromMemory) - Error al solicitar a la memoria que obtenga datos de un archivo");
 
@@ -594,7 +594,7 @@ char* getFileFromMemory(char* filePath, uint32_t* scriptLines, uint32_t process)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int_with_delay(memoryServerSocket, process)) < 0)
+	if((nbytes = send_int(memoryServerSocket, process)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (getFileFromMemory) - Error al enviar a la memoria el id del proceso que solicita guardar un archivo en el FS\n");
 
@@ -603,7 +603,7 @@ char* getFileFromMemory(char* filePath, uint32_t* scriptLines, uint32_t process)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_string_with_delay(memoryServerSocket, filePath)) < 0)
+	if((nbytes = send_string(memoryServerSocket, filePath)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (getFileFromMemory) - Error al enviar a la memoria el path del archivo del cual obtener datos");
 
@@ -673,7 +673,7 @@ int32_t sendFileToFileSystem(char* filePath, char* dataToReplace)
 
 	//Send the task, filePath, offset, size and data of the file which needs to be flushed
 	//Offset = 0; Size = 0 -> This means that the file is replaced from the beginning (offset = 0) and all data is overwritten (size = 0)
-	if((nbytes = send_int_with_delay(fileSystemServerSocket, GUARDAR_DATOS)) < 0)
+	if((nbytes = send_int(fileSystemServerSocket, GUARDAR_DATOS)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (sendFileToFileSystem) - Error al solicitar al FS que guarde los datos de un archivo");
 
@@ -681,7 +681,7 @@ int32_t sendFileToFileSystem(char* filePath, char* dataToReplace)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_string_with_delay(fileSystemServerSocket, filePath)) < 0)
+	if((nbytes = send_string(fileSystemServerSocket, filePath)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (sendFileToFileSystem) - Error al enviar al FS el path del archivo para el cual se deben guardar datos");
 
@@ -689,7 +689,7 @@ int32_t sendFileToFileSystem(char* filePath, char* dataToReplace)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int_with_delay(fileSystemServerSocket, 0)) < 0)	//Offset = 0
+	if((nbytes = send_int(fileSystemServerSocket, 0)) < 0)	//Offset = 0
 	{
 		log_error(dmaLog, "DMAFunctions (sendFileToFileSystem) - Error al enviar al FS el offset del archivo del cual se obtienen datos");
 
@@ -697,7 +697,7 @@ int32_t sendFileToFileSystem(char* filePath, char* dataToReplace)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int_with_delay(fileSystemServerSocket, 0)) < 0)	//Size = 0
+	if((nbytes = send_int(fileSystemServerSocket, 0)) < 0)	//Size = 0
 	{
 		log_error(dmaLog, "DMAFunctions (sendFileToFileSystem) - Error al enviar al FS el tamaño de los datos a obtener de un archivo");
 
@@ -705,7 +705,7 @@ int32_t sendFileToFileSystem(char* filePath, char* dataToReplace)
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_string_with_delay(fileSystemServerSocket, dataToReplace)) < 0)
+	if((nbytes = send_string(fileSystemServerSocket, dataToReplace)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (sendFileToFileSystem) - Error al enviar al FS el contenido del archivo para el cual se deben guardar datos");
 
@@ -752,7 +752,7 @@ void tellSchedulerToUnblockProcess(uint32_t process, char* filePath, bool addFil
 {
 	int32_t nbytes = 0;
 
-	if((nbytes = send_int_with_delay(schedulerServerSocket, UNLOCK_PROCESS)) < 0)
+	if((nbytes = send_int(schedulerServerSocket, UNLOCK_PROCESS)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (tellSchedulerToUnblockProcess) - Error al indicar al planificador que desbloquee un proceso");
 
@@ -760,7 +760,7 @@ void tellSchedulerToUnblockProcess(uint32_t process, char* filePath, bool addFil
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int_with_delay(schedulerServerSocket, process)) < 0)
+	if((nbytes = send_int(schedulerServerSocket, process)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (tellSchedulerToUnblockProcess) - Error al enviar al planificador pid del proceso a desbloquear");
 
@@ -768,7 +768,7 @@ void tellSchedulerToUnblockProcess(uint32_t process, char* filePath, bool addFil
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_string_with_delay(schedulerServerSocket, filePath)) < 0)
+	if((nbytes = send_string(schedulerServerSocket, filePath)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (tellSchedulerToUnblockProcess) - Error al enviar al planificador la ruta del archivo que el proceso solicito %s", operation);
 
@@ -776,7 +776,7 @@ void tellSchedulerToUnblockProcess(uint32_t process, char* filePath, bool addFil
 		exit(EXIT_FAILURE);
 		//TODO (Optional) - Send Error Handling
 	}
-	if((nbytes = send_int_with_delay(schedulerServerSocket, addFileToFileTable)) < 0)
+	if((nbytes = send_int(schedulerServerSocket, addFileToFileTable)) < 0)
 	{
 		log_error(dmaLog, "DMAFunctions (tellSchedulerToUnblockProcess) - Error al indicar al planificador si el archivo que el proceso solitico %s debe ser guardado en la tabla de archivos"), operation;
 
