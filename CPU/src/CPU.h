@@ -104,6 +104,7 @@ void showConfigs();
 void sendOpenFileRequestToDMA(char*, uint32_t);
 void freePCB(PCB_t*);
 void executionDelay();
+void showPCBInfo(PCB_t*);
 
 
 #endif /* SRC_CPU_H_ */

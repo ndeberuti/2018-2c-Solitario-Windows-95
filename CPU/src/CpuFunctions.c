@@ -257,6 +257,8 @@ void executeProcess()
 		exit(EXIT_FAILURE);
 	}
 
+	showPCBInfo(processToExecute);
+
 	processInExecutionPCB = &processToExecute;
 
 	log_info(cpuLog, "Se recibio del planificador el PCB correspondiente al proceso %d", (*processInExecutionPCB)->pid);
@@ -1929,4 +1931,11 @@ void executionDelay()
 	sleep(milisecondsSleep);
 
 	log_info(cpuLog, "Se ha finalizado la ejecucion de la instruccion\n");
+}
+
+void showPCBInfo(PCB_t* pcb)
+{
+	printf("\n\n----Info del PCB----\n\n");
+	printf("\tpid: %d\n\tscript: %s\n\tprogram counter: %d\n", pcb->pid, pcb->scriptPathInFS, pcb->programCounter);
+	printf("\tcpu: %d\n\tquantum: %d\n\n", pcb->cpuProcessIsAssignedTo, pcb->remainingQuantum);
 }
