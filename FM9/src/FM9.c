@@ -1495,7 +1495,7 @@ void modificar_linea_segmentacion_paginada(int socket_cpu,int id,int numero_line
 
 					resultado = OK;
 
-					log_info(log_fm9, "Modificando linea");
+					log_info(log_fm9, "Modificando linea %d\n", numero_linea);
 
 
 
@@ -1547,7 +1547,7 @@ void flush_segmentacion_paginada(int socket_diego,int id){
 					memcpy(buffer_envio, &resultado, sizeof(int));
 					memcpy(buffer_envio+ sizeof(int), &tamanio_paginas, sizeof(int));
 
-					while(numero_pagina <= paginas ){
+					while(numero_pagina < paginas ){
 
 						frame = list_get(segmento_buscado->tabla_de_paginas_segmento, numero_pagina);
 
@@ -1716,7 +1716,7 @@ int close_file_segmentacion_paginada(int socket_cpu,int id){
 						printf("FRAME BORRADO: %d \n", frame);
 
 
-						memset(puntero_memoria_sp + frame * config.TAM_PAGINA, '\n', config.TAM_PAGINA);
+						memset(puntero_memoria_sp + frame * config.TAM_PAGINA, '~', config.TAM_PAGINA);
 
 						bitarray_clean_bit(bitarray_memoria, frame);
 
@@ -1929,7 +1929,7 @@ int guardar_archivo_paginas_invertidas(int pid,int id,int cantidad_lineas,char* 
 }
 
 void abrir_archivo_paginacion(int socket_cpu,int id){
-		t_list* paginas_encontradas;
+		t_list* paginas_encontradas = NULL;
 		entrada_tabla_invertida_t* entrada_encontrada;
 
 		int resultado, frame, tamanio, paginas, cantidad_lineas;
@@ -1983,15 +1983,15 @@ void abrir_archivo_paginacion(int socket_cpu,int id){
 				contador++;
 				}
 
-				memcpy(buffer_envio+ sizeof(int)*2 + tamanio, &(cantidad_lineas), sizeof(int));
+				memcpy(buffer_envio+ sizeof(int)*2 + offset, &(cantidad_lineas), sizeof(int));
 
-				send(socket_cpu, buffer_envio, sizeof(int)* 3 + config.MAX_LINEA * paginas, MSG_WAITALL);
+				send(socket_cpu, buffer_envio, sizeof(int)* 3 + offset, MSG_WAITALL);
 
-				printf("BUFFER ABRIR: %s\n", buffer_envio+ sizeof(int)*2);
+				printf("BUFFER ABRIR: %s\n", buffer_envio+ sizeof(int)*3);
 
-
+				list_destroy(paginas_encontradas);
 	}
-	list_destroy(paginas_encontradas);
+
 	free(buffer_envio);
 	}
 
@@ -2000,14 +2000,14 @@ void abrir_archivo_paginacion(int socket_cpu,int id){
 
 int close_file_paginacion(int socket_cpu,int id){
 
-	t_list* paginas_encontradas;
+	t_list* paginas_encontradas = NULL;
 	entrada_tabla_invertida_t * entrada_buscada;
 	int resultado;
 	int frame;
+	int paginas;
 
 	int offset = 0;
-					int paginas;
-					int numero_pagina = 0;
+	int numero_pagina = 0;
 
 
 
@@ -2043,7 +2043,7 @@ int close_file_paginacion(int socket_cpu,int id){
 							frame = entrada_buscada->frame;
 
 
-							memset(puntero_memoria_paginada + frame * config.TAM_PAGINA,'\n',config.TAM_PAGINA);
+							memset(puntero_memoria_paginada + frame * config.TAM_PAGINA,'~',config.TAM_PAGINA);
 
 							bitarray_clean_bit(bitarray_memoria, frame);
 
@@ -2080,7 +2080,7 @@ int close_process_paginacion(int socket_cpu,int pid){
 
 	int resultado, aciertos;
 	entrada_tabla_invertida_t * entrada_buscada;
-		t_list* lista_filtrada;
+		t_list* lista_filtrada = NULL;
 
 
 
@@ -2138,19 +2138,19 @@ void modificar_linea_paginacion(int socket_cpu,int id,int numero_linea,char* lin
 	int resultado, frame, resto;
 
 
-	int numero_pagina = (config.MAX_LINEA * numero_linea / config.TAM_PAGINA ) - 1;
+	int numero_pagina = (config.MAX_LINEA * numero_linea / config.TAM_PAGINA );
 
-					resto =  (config.MAX_LINEA * numero_linea) % config.TAM_PAGINA ;
+		if((config.MAX_LINEA * numero_linea) % config.TAM_PAGINA > 0 ){
 
-						if(resto > 0){
+			numero_pagina++;
 
-							numero_pagina++;
+		}
 
-						}
+		numero_pagina--;
 
 
 
-						int corrimiento = (numero_pagina * config.TAM_PAGINA / config.MAX_LINEA) - numero_linea -1;
+	int corrimiento = numero_linea - (numero_pagina*config.TAM_PAGINA / config.MAX_LINEA) -1;
 
 
 
@@ -2173,14 +2173,14 @@ void modificar_linea_paginacion(int socket_cpu,int id,int numero_linea,char* lin
 
 
 						}else{
-						resultado = OK;
 
-						log_info(log_fm9, "Modificando linea %d", numero_linea);
+
+						log_info(log_fm9, "Modificando linea %d\n", numero_linea);
 						frame = list_get(lista_filtrada, numero_pagina);
 
+                    resultado = OK;
 
-
-					memcpy(puntero_memoria_sp + (frame * config.TAM_PAGINA)+ (corrimiento * config.MAX_LINEA),linea_tratada, sizeof(config.MAX_LINEA));
+					memcpy(puntero_memoria_paginada + (frame * config.TAM_PAGINA)+ (corrimiento * config.MAX_LINEA),linea_tratada, sizeof(config.MAX_LINEA));
 
 					}
 					send(socket_cpu, &resultado, sizeof(int), MSG_WAITALL);
@@ -2192,7 +2192,7 @@ void modificar_linea_paginacion(int socket_cpu,int id,int numero_linea,char* lin
 }
 
 void flush_paginacion_invertida(int socket_diego,int id){
-			t_list* paginas_encontradas;
+			t_list* paginas_encontradas = NULL;
 			entrada_tabla_invertida_t* entrada_encontrada;
 
 			int resultado, frame, tamanio, paginas, cantidad_lineas;
@@ -2223,7 +2223,7 @@ void flush_paginacion_invertida(int socket_diego,int id){
 					cantidad_lineas = tamanio / config.MAX_LINEA;
 					resultado = OK;
 
-					char* buffer_envio = malloc(sizeof(int)* 3 + tamanio);
+					char* buffer_envio = malloc(sizeof(int)* 3 + tamanio +1);
 
 					memcpy(buffer_envio, &resultado, sizeof(int));
 					memcpy(buffer_envio + sizeof(int), &tamanio, sizeof(int));
@@ -2262,6 +2262,7 @@ void flush_paginacion_invertida(int socket_diego,int id){
 
 
 }
+
 
 void dump_paginacion_invertida(int pid){
 	entrada_tabla_invertida_t * entrada_buscada;
@@ -2418,7 +2419,7 @@ void paginar(int pid, int id, int cantidad_lineas, char* buffer_recepcion){
 						log_info(log_fm9,  "Guardando pagina en frame: %d \n", n_frame);
 						bitarray_set_bit(bitarray_memoria, n_frame);
 
-						memcpy(puntero_memoria_paginada + (n_frame) * config.TAM_PAGINA, buffer_envio +  offset, config.TAM_PAGINA);
+						memcpy(puntero_memoria_paginada + (n_frame * config.TAM_PAGINA), buffer_envio +  offset, config.TAM_PAGINA);
 						offset+= config.TAM_PAGINA;
 						contador++;
 
